@@ -85,7 +85,7 @@ fi
 
 	# Set the CORE MaCh3 directory
 	if [ -z $MACH3CORE ]; then
-	  export MACH3CORE=$(pwd)/../MaCh3_refactor
+	  export MACH3CORE=$(pwd)/../MaCh3_core
 fi
 
 export CMTPATH=$(pwd):CMTPATH
