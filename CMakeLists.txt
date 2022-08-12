@@ -57,6 +57,6 @@ add_compile_options(-I$ENV{MACH3CORE})
 add_link_options(-fopenmp)
 
 # Build components
-add_subdirectory(../MaCh3_refactor ../bMaCh3_re)
+add_subdirectory(../MaCh3_core  ../build_core)
 add_subdirectory(samplePDFDUNE)
 add_subdirectory(src)
