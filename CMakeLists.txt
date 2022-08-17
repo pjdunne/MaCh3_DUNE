@@ -39,8 +39,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_SCRIPT_SETUP) 
 
 #CUDA
-if(NOT ${CPU_ONLY})
+if(NOT ${CPU_ONLY}) 
   include(${CMAKE_SOURCE_DIR}/cmake/CUDASetup.cmake)
+else()
+  cmessage(STATUS "CPU ONLY SELECTED")
 endif()
 
 # ROOT
@@ -50,13 +52,25 @@ include(${CMAKE_SOURCE_DIR}/cmake/ROOTSetup.cmake)
 # Custom commands
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
-#Compile and link options 
-add_compile_options(-I${CUDA_SAMPLES}/common/inc -L${ROOT_LIBDIR})
-add_compile_options(-g -fopenmp -std=c++11 -O3 -Wextra)
-add_compile_options(-I$ENV{MACH3CORE})
-add_link_options(-fopenmp)
+#If Single thread is chosen MultiThread flags are omitted
+if(NOT ${SINGLE_THREAD_ONLY})
+
+  #Compile and link options (Should be in experiment project but copied in case CORE is built alone) 
+  add_compile_options(-I${CUDA_SAMPLES}/common/inc -L${ROOT_LIBDIR})
+  add_compile_options(-g -fopenmp -O3 -Wextra -Werror -DMULTITHREAD)
+  add_compile_options(-I$ENV{MACH3CORE})
+  add_link_options(-fopenmp -DMULTITHREAD)
+
+else()
+
+  #Compile and link options (Should be in experiment project but copied in case CORE is built alone) 
+  add_compile_options(-I${CUDA_SAMPLES}/common/inc -L${ROOT_LIBDIR})
+  add_compile_options(-g -O3 -Wextra -Werror)
+  add_compile_options(-I$ENV{MACH3CORE})
+
+endif()
 
 # Build components
-add_subdirectory(../MaCh3_core  ../build_core)
+add_subdirectory(../MaCh3_core ../build_core)
 add_subdirectory(samplePDFDUNE)
 add_subdirectory(src)
