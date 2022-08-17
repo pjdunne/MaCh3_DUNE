@@ -1,6 +1,5 @@
 set(APPS 
-	 SamplePDFDUNE_test
-         jointFitDUNE)
+	 SamplePDFDUNE_test)
 
 
 foreach(a ${APPS})
@@ -11,7 +10,7 @@ foreach(a ${APPS})
 	  target_include_directories(${a} PRIVATE ${CMAKE_SOURCE_DIR})
           #set_source_files_properties(${a} PROPERTIES COMPILE_OPTIONS)
           link_directories(${CMAKE_BINARY_DIR}/lib)	  
-	  target_link_libraries(${a} -L${CMAKE_BINARY_DIR}/lib SamplePDFDUNE throwParms SamplePDF Covariance MCMC Splines Manager ThreeProb_1.00 ${CMAKE_BINARY_DIR}/lib/libconfig++.so.9.1.3 ${ROOT_LD_FLAGS})
+	  target_link_libraries(${a} -L${CMAKE_BINARY_DIR}/lib SamplePDFDUNE throwParms SamplePDF Covariance Splines Manager ThreeProb_1.00 ${CMAKE_BINARY_DIR}/lib/libconfig++.so.9.1.3 ${ROOT_LD_FLAGS})
 	  install(TARGETS ${a} DESTINATION bin)
 endforeach()
 
