@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include <iomanip>
 #include <vector>
 
@@ -76,27 +77,25 @@ int main(int argc, char * argv[]) {
     return 1;
   }
 
-  //manager *fitMan = new manager(argv[1]);
+  manager *fitMan = new manager(argv[1]);
 
-  /*
+  
 
   // there's a check inside the manager class that does this; left here for demonstrative purposes
-  if (fitMan->getGoodConfig() == false) {
+  if (fitMan->GetGoodConfig() == false) {
     std::cerr << "Didn't find a good config in input configuration" << std::endl;
     throw;
   }
 
-  std::string  fluxMatrixFile = fitMan -> getFluxCovMatrix();
-  std::string  fluxMatrixName = fitMan -> getFluxCovName();
-  std::string  xsecMatrixFile = fitMan -> getXsecCovMatrix();
-  std::string  xsecMatrixName = fitMan -> getXsecCovName();
-  std::string  skdetMatrixFile = fitMan -> getSKdetCovMatrix();
-  std::string  skdetMatrixName = fitMan -> getSKdetCovName();
+  std::string  fluxMatrixFile = fitMan -> GetFluxCovMatrix();
+  std::string  fluxMatrixName = fitMan -> GetFluxCovName();
+  std::string  xsecMatrixFile = fitMan -> GetXsecCovMatrix();
+  std::string  xsecMatrixName = fitMan -> GetXsecCovName();
 
   // Asimov fit
-  bool asimovfit = fitMan->getAsimovFitFlag();
+  bool asimovfit = fitMan->GetAsimovFitFlag();
   
-  */
+  
 
 
   // ----------------------- COVARIANCE AND SAMPLEPDF OBJECTS ---------------------------------------- //
@@ -107,7 +106,7 @@ int main(int argc, char * argv[]) {
   TFile *Outfile = new TFile("Dummy_Hist.root" , "RECREATE");
 
 
-  covarianceXsec *xsec = new covarianceXsec("xsec_cov", "inputs/dummy_xsec_covariance.root") ;
+  covarianceXsec *xsec = new covarianceXsec("xsec_cov", "xsecMatrix");
 
 
   std::cout << "---------- Printing off nominal parameter values ----------" << std::endl;
@@ -175,6 +174,9 @@ int main(int argc, char * argv[]) {
 
   // Unoscillated
   osc -> setParameters(oscpars_un);
+  vector<double> xsecpar = xsec->getNominalArray();
+  xsecpar[0] = xsec->getNominal(0)+sqrt((*xsec->getCovMatrix())(0,0));
+  xsec->setParameters(xsecpar);
   numu_pdf -> reweight(osc->getPropPars(), osc->getPropPars());
 
   TH1D *numu_unosc = (TH1D*)numu_pdf -> get1DHist() -> Clone("numu_plain");
@@ -187,7 +189,7 @@ int main(int argc, char * argv[]) {
   //nomcanv->cd(2);
   //numu_nominal_hist->Draw("HIST");
 
-  std::string plotname = "Dummy Hist" ;
+  std::string plotname = "Dummy_Hist" ;
   saveCanvas(nomcanv, plotname,"_nominal_spectra") ;
 
   Outfile -> cd();
