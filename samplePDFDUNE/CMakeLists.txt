@@ -1,20 +1,17 @@
 set(SamplePDFDUNE_implementation_files 
 	samplePDFDUNEBase.cpp) 
-        
 
 set(SamplePDFDUNE_header_files 
 	samplePDFDUNEBase.h)
 
 add_library(SamplePDFDUNE SHARED ${SamplePDFDUNE_implementation_files})
-
-target_include_directories(SamplePDFDUNE PRIVATE $ENV{MACH3CORE})
-target_compile_features(SamplePDFDUNE PUBLIC)
+target_include_directories(SamplePDFDUNE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_link_libraries(SamplePDFDUNE MaCh3)
 
 if(NOT ${CPU_ONLY})
   set_target_properties(SamplePDFDUNE PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-  add_dependencies(SamplePDFDUNE SamplePDF Splines Covariance probGpu)
+  target_link_libraries(SamplePDFDUNE probGpu)
 else()
-  add_dependencies(SamplePDFDUNE SamplePDF Splines Covariance)
 endif()
 
 install(TARGETS SamplePDFDUNE DESTINATION lib)

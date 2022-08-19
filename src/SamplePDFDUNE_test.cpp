@@ -13,6 +13,7 @@
 #include <TMath.h>
 
 #include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "manager/manager.h"
 
 
 std::string getNameNoExt(std::string name, std::string ext)  
@@ -82,18 +83,19 @@ int main(int argc, char * argv[]) {
   
 
   // there's a check inside the manager class that does this; left here for demonstrative purposes
-  if (fitMan->GetGoodConfig() == false) {
-    std::cerr << "Didn't find a good config in input configuration" << std::endl;
-    throw;
-  }
+  // if (fitMan->GetGoodConfig() == false) {
+  //   std::cerr << "Didn't find a good config in input configuration" << std::endl;
+  //   throw;
+  // }
 
-  std::string  fluxMatrixFile = fitMan -> GetFluxCovMatrix();
-  std::string  fluxMatrixName = fitMan -> GetFluxCovName();
-  std::string  xsecMatrixFile = fitMan -> GetXsecCovMatrix();
-  std::string  xsecMatrixName = fitMan -> GetXsecCovName();
+throw; //FIX THIS BEFORE TRYING ANYTHING -- Manager has been changed
+  std::string  fluxMatrixFile = ""; //fitMan -> GetFluxCovMatrix();
+  std::string  fluxMatrixName = ""; //fitMan -> GetFluxCovName();
+  std::string  xsecMatrixFile = ""; //fitMan -> GetXsecCovMatrix();
+  std::string  xsecMatrixName = ""; //fitMan -> GetXsecCovName();
 
   // Asimov fit
-  bool asimovfit = fitMan->GetAsimovFitFlag();
+  bool asimovfit = false;//fitMan->GetAsimovFitFlag();
   
   
 
