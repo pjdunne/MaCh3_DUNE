@@ -28,7 +28,7 @@ include(CPM)
 
 CPMFindPackage(
     NAME MaCh3
-    GIT_TAG v0.0.1
+    GIT_TAG "feature/removelibconfig_addyamlcpp"
     GITHUB_REPOSITORY mach3-software/MaCh3
 )
 
