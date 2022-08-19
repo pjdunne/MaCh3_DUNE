@@ -12,14 +12,14 @@
 ### Quick-start
 
 ```
-$ git clone mach3-software/MaCh3
-$ cd MaCh3; git checkout feature/removelibconfig_addyamlcpp;
-$ cd ../;
-$ git clone luketpickering/MaCh3_DUNE
-$ cd MaCh3_DUNE; git checkout feature/CPMCore;
-$ mkdir build; cd build;
-$ cmake .. -DCPM_MaCh3_SOURCE=../../MaCh3
-$ make -j 10
+git clone git@github.com:mach3-software/MaCh3
+cd MaCh3; git checkout feature/removelibconfig_addyamlcpp
+cd ../
+git clone git@github.com:luketpickering/MaCh3_DUNE
+cd MaCh3_DUNE; git checkout feature/CPMCore
+mkdir build; cd build
+cmake .. -DCPM_MaCh3_SOURCE=../../MaCh3
+make -j 10
 ```
 
 ### MaCh3 Core
@@ -29,7 +29,7 @@ This build uses CPM to include configure-, build- and run-time dependencies. CPM
 ### Optional Falgs
 
 ```
-$ cmake ../MaCh3_DUNE -DCPU_ONLY=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples 
+cmake ../MaCh3_DUNE -DCPU_ONLY=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples 
 #CUDA_SAMPLES not necessary if using CPU_ONLY=ON
-$ make
+make
 ```
