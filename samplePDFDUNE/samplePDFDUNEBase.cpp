@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdexcept>
 #include "TMath.h"
+#include "manager/manager.h"
 
 
 //#define DEBUG
@@ -78,14 +79,32 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   std::vector<bool> sample_signal = sample_manager->getSignal(); */
 
 
-  IsRHC = false;
+  manager* SampleManager = new manager(sample_char);
+
+  //Bools
+  IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
+  //SampleDetID = SampleManager->raw()[""][""];
+  iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
+
+  //Cuts
+  up_bnd = SampleManager->raw()["SampleCuts"]["up_bnd"].as<float>();
+
+  //Inputs
+  mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
+  mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
+  splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
+  splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
+
+
+
+  //IsRHC = false;
   SampleDetID = 25;
-  iselike = false;
-  up_bnd = 30.;
-  mtupleprefix = "inputs/DUNE_CAF_files_2021/FD_FHC_ger_";
-  mtuplesuffix = "_numuselec.root";
-  splineprefix = "inputs/DUNE_spline_files_2021/FD_FHC_ger_";
-  splinesuffix = "_numuselec_splines.root";;
+  //iselike = false;
+  //up_bnd = 30.;
+  //mtupleprefix = "inputs/DUNE_CAF_files/FD_FHC_ger_";
+  //mtuplesuffix = "_numuselec.root";
+  //splineprefix = "inputs/DUNE_spline_files/FD_FHC_ger_";
+  //splinesuffix = "_numuselec_splines.root";;
   std::vector<std::string> mtuple_files; mtuple_files.push_back("numu_x_numu");
   std::vector<std::string> spline_files; spline_files.push_back("numu_x_numu");
   std::vector<int> sample_vecno; sample_vecno.push_back(0);
