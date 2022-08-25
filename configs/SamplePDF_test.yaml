@@ -1,0 +1,11 @@
+General:
+  Systematics:
+    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_060921_v3.root"
+    XsecCovName: "xsec_cov"
+    OscCovFile: "inputs/oscillation_covariance_6par_nondouble_PDG2019.root"
+    OscCovName: "osc_cov"
+  Output:
+    FileName: "test_outputfile.root"
+  ProcessMCMC: No
+  Seed: 0
+  Debug: No
