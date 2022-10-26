@@ -26,6 +26,8 @@ LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 include(CPM)
 
+#Go get the core MAch3, this will be public one day....
+#This is over-riden with -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
 CPMFindPackage(
     NAME MaCh3
     GIT_TAG "feature/removelibconfig_addyamlcpp"
@@ -48,5 +50,6 @@ else()
 
 endif()
 
+add_subdirectory(splines)
 add_subdirectory(samplePDFDUNE)
 add_subdirectory(src)
