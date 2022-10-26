@@ -31,27 +31,34 @@
 #include <fstream>
 #include <iomanip>
 #include <TH2Poly.h>
+ // end MaCh3Utils namespace
 
+enum KinematicTypes {
 
-// ***************************
-// A handy namespace for ND280 psyche extraction
-namespace MaCh3Utils {
-  // ***************************
+  kTrueNeutrinoEnergy = 0,
+  kRecoNeutrinoEnergy = 1,
+  kTrueQ2 = 2,
+  kRecoQ2 = 3,
+  kTrueQ0 = 4,
+  kRecoQ0 = 5,
+  kTrueXPos = 6,
+  kTrueYPos = 7,
+  kTrueZPos = 8,
+  kNKinematicParams
+};
 
-  // ***************************
-  // Return mass for given PDG
-  double GetMassFromPDG(int PDG);
-  // ***************************
+inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr){
 
+  if (KinematicParameterStr.find("TrueNeutrinoEnergy") != std::string::npos) {return kTrueNeutrinoEnergy;}
+  if (KinematicParameterStr.find("RecoNeutrinoEnergy") != std::string::npos) {return kRecoNeutrinoEnergy;}
+  if (KinematicParameterStr.find("TrueQ2") != std::string::npos) {return kTrueQ2;}
+  if (KinematicParameterStr.find("RecoQ2") != std::string::npos) {return kRecoQ2;}
+  if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
+  if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
+  if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
 
-
-  // Neutrino direction
-  extern const double ND280NuDir[3];
-
-  extern const double SKNuDir[3];
-
-} // end MaCh3Utils namespace
-
+  return kNKinematicParams; 
+}
 
 
 // ***************************
@@ -120,74 +127,6 @@ enum MaCh3_Mode {
   kMaCh3_nModes
 };
 
-// ***************************
-// Struct to describe the NEUT interactionkWeakMix                   =   13 modes
-// Note: this modes can be found in neut/src/nemodsel.F
-enum NEUT_Mode {
-  // ***************************
-
-  // CCQE
-  kNEUT_CCQE      = 1,
-  // (Nieves) 2p2h aka MEC
-  kNEUT_2p2h      = 2,
-  // CC 1pi+ 1p
-  kNEUT_CC1pip1p  = 11,
-  // CC 1pi0
-  kNEUT_CC1pi0    = 12,
-  // CC 1pi+ 1n
-  kNEUT_CC1pip1n  = 13,
-  // CC 1pi diffractive
-  kNEUT_CC1pidiff = 15,
-  // CC coherent (1pi+ for neutrino)
-  kNEUT_CCcoh     = 16,
-  // CC 1 gamma
-  kNEUT_CC1gam    = 17,
-  // CC multi pi (1.3 < W < 2.0)
-  kNEUT_CCMpi     = 21,
-  // CC 1 eta
-  kNEUT_CC1eta    = 22,
-  // CC 1 Kaon
-  kNEUT_CC1K      = 23,
-  // CC DIS (PYTHIA/JETSET)
-  kNEUT_CCDIS     = 26,
-
-  // NC 1pi0 1n
-  kNEUT_NC1pi01n  = 31,
-  // NC 1pi0 1p
-  kNEUT_NC1pi01p  = 32,
-  // NC 1pi- 1p
-  kNEUT_NC1pim1p  = 33,
-  // NC 1pi+ 1n
-  kNEUT_NC1pip1n  = 34,
-  // NC 1pi diffractive
-  kNEUT_NC1pidiff = 35,
-  // NC coherent (1pi0)
-  kNEUT_NCcoh     = 36,
-  // NC 1 gamma 1n
-  kNEUT_NC1gam1n  = 38,
-  // NC 1 gamma 1p
-  kNEUT_NC1gam1p  = 39,
-
-  // NC multi pi
-  kNEUT_NCMpi     = 41,
-  // NC 1 eta 1n from Delta
-  kNEUT_NC1eta1n  = 42,
-  // NC 1 eta 1p from Delta
-  kNEUT_NC1eta1p  = 43,
-  // NC 1 K0 1 Lambda from Delta
-  kNEUT_NC1K01Lam = 44,
-  // NC 1 K+ 1 Lambda from Delta
-  kNEUT_NC1Kp1Lam = 45,
-  // NC DIS
-  kNEUT_NCDIS     = 46,
-  // NC elastic 1p
-  kNEUT_NCEL1p    = 51,
-  // NC elastic 1n
-  kNEUT_NCEL1n    = 52,
-
-  // Keep a counter of the number of NEUT modes we have
-  kNEUT_nModes
-};
 
 // ***************************
 // Struct to describe the SIMB interaction modes which are found inside the FD CAF files
@@ -469,6 +408,79 @@ inline std::string MaCh3mode_ToDUNEString(MaCh3_Mode i) {
 
   return name;
 }
+
+enum MaCh3_Spline_Modes {
+
+  // ***************************
+
+  // CCQE
+  kMaCh3_Spline_CCQE              = 0,
+  // 1 Kaon
+  kMaCh3_Spline_CC_Single_Kaon     = 1,
+  // CC DIS
+  kMaCh3_Spline_CC_DIS            = 2,
+  // CC RES
+  kMaCh3_Spline_CC_RES             = 3,
+  // CC COH
+  kMaCh3_Spline_CC_COH             = 4,
+  // CC Diffractive
+  kMaCh3_Spline_CC_Diffractive     = 5,
+  // CC Electron EL
+  kMaCh3_Spline_CC_Nue_EL          = 6,
+  // CC Inverse Muon Decay
+  kMaCh3_Spline_CC_IMD             = 7,
+  // CC Atmospheric Neutrino Gamma
+  kMaCh3_Spline_CC_AMnuGamma       = 8,
+  // CC MEC (aka 2p2h)
+  kMaCh3_Spline_CC_MEC             = 9,
+  // CC Coherent Elastic
+  kMaCh3_Spline_CC_COHEL           = 10,
+  // CC Inverse Beta Decay
+  kMaCh3_Spline_CC_IBD             = 11,
+  // CC GlashowRES 
+  kMaCh3_Spline_CC_GlashowRES      = 12,
+  // CC IMD Annihilation
+  kMaCh3_Spline_CC_IMDAnnihalation = 13,
+  
+  // NCQE
+  kMaCh3_Spline_NCQE              = 14,
+  // NC DIS
+  kMaCh3_Spline_NC_DIS            = 15,
+  // NC RES
+  kMaCh3_Spline_NC_RES             = 16,
+  // NC COH
+  kMaCh3_Spline_NC_COH             = 17,
+  // CC Diffractive
+  kMaCh3_Spline_NC_Diffractive     = 18,
+  // NC Electron EL
+  kMaCh3_Spline_NC_Nue_EL          = 19,
+  // NC Inverse Muon Decay
+  kMaCh3_Spline_NC_IMD             = 20,
+  // NC Atmospheric Neutrino Gamma
+  kMaCh3_Spline_NC_AMnuGamma       = 21,
+  // NC MEC (aka 2p2h)
+  kMaCh3_Spline_NC_MEC             = 22,
+  // NC Coherent Elastic
+  kMaCh3_Spline_NC_COHEL           = 23,
+  // NC Inverse Beta Decay
+  kMaCh3_Spline_NC_IBD             = 24,
+  // NC GlashowRES 
+  kMaCh3_Spline_NC_GlashowRES      = 25,
+  // NC IMD Annihilation
+  kMaCh3_Spline_NC_IMDAnnihalation = 26,
+
+  // Keep a counter of the number of MaCh3 modes we have
+  kMaCh3_Spline_nModes
+
+};
+
+
+int MaCh3Mode_to_SplineMode(int iMode){
+
+  //No grouping of modes in MaCh3
+  return iMode;
+}
+
 
 // Helper function for calculating unbinned Integral of TH2Poly i.e including overflow
 double OverflowIntegral(TH2Poly*);
