@@ -9,86 +9,56 @@
 #export MACH3_DATA=/home/cwret/P6Data
 #export MACH3_MC=/home/cwret/P6MC
 
-
+export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/src:$PATH
+export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/_deps/mach3-build/yaml_test:$PATH
 #################################################################
 
 if [[ $HOSTNAME == *gpu.rl.ac.uk ]]; then
-    # Add lockfile to path (required on emerald!) (commented out for those not on EMERALD)
-    export PATH=$PATH:/home/oxford/eisox159/procmail/bin
+  # Add lockfile to path (required on emerald!) (commented out for those not on EMERALD)
+  export PATH=$PATH:/home/oxford/eisox159/procmail/bin
 
-    # setup root on EMERALD (commented out for those not on EMERALD)
-    source /home/stfc/eisext13/root/bin/thisroot.sh
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/stfc/eisext13/root/lib
-    export PATH=$PATH:/home/stfc/eisext13/root/bin
-    export ROOTLIBDIR=/home/stfc/eisext13/root/lib
-    export ROOTINCLUDEDIR=/home/stfc/eisext13/root/include
-    module load cuda/8.0.44
-    export CUDAPATH=${CUDA_HOME}
+  # setup root on EMERALD (commented out for those not on EMERALD)
+  source /home/stfc/eisext13/root/bin/thisroot.sh
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/stfc/eisext13/root/lib
+  export PATH=$PATH:/home/stfc/eisext13/root/bin
+  export ROOTLIBDIR=/home/stfc/eisext13/root/lib
+  export ROOTINCLUDEDIR=/home/stfc/eisext13/root/include
+  module load cuda/8.0.44
+  export CUDAPATH=${CUDA_HOME}
 fi
 
 # Cuda directory
 #   Unset if you don't have a CUDA GPU
 #   If you want GPU point CUDAPATH to your CUDA install and makefile will pick this up
 if [[ $HOSTNAME == *hep.ph.ic.ac.uk ]]; then
-    if [ -z $CUDAPATH ]; then
-        source /vols/software/cuda/setup.sh 11.2.0 # (Latest = 11.2.0) Can give this an argument to get a particular CUDA version, e.g. 10.2.2
+  if [ -z $CUDAPATH ]; then
+	source /vols/software/cuda/setup.sh 11.2.0 # (Latest = 11.2.0) Can give this an argument to get a particular CUDA version, e.g. 10.2.2
 	export CUDAPATH=$CUDA_PATH
-    fi
+  fi
 fi
 
-	# Multithreading? 
-	# MULTITHREAD=1 means MP is on, if environment variable doesn't exist it's off
-	unset MULTITHREAD
-	export MULTITHREAD=1
+# Multithreading? 
+# MULTITHREAD=1 means MP is on, if environment variable doesn't exist it's off
+unset MULTITHREAD
+export MULTITHREAD=1
 
-	# Normal DEBUG flag (internal for MaCh3; mostly timing info)
-	# for samplePDFND2014: 1 = print event rates for each iteration broken down by systematic contrib.
-	#                      2 = print event by event weights broken down by systematic contrib.
-	# Also turns on things like checking TSpline3->Eval() calls are good, that we have no negative weights, etc
-	unset DEBUG_ND280
-	#export DEBUG_ND280=1
-	# Debugging is most verbose for multithreading enabled and OMP_NUM_THREADS=1 is then required. Could be fixed but hasn't happened yet
-	export OMP_NUM_THREADS=20
-
-	# For GPU code we can additionally dump CPU and GPU cross-section weight output
-	# This checks for biases in the weights
-	unset DEBUG_ND280_DUMP
-	#export DEBUG_ND280_DUMP=1
-
-	# Debug flags for MaCh3 GPU (internal for MaCh3)
-	unset DEBUG_CUDA_ND280
-	#export DEBUG_CUDA_ND280=1
-
-
-	# Automatically set CUDA for Emerald
-	if [[ $HOSTNAME == *gpu.rl.ac.uk ]]; then
-	  module load cuda/8.0.44
-	  export CUDAPATH=${CUDA_HOME}
-	# Automatically set up for ComputeCanada
-	elif [[ $HOSTNAME == lg-1r[47]* ]]; then
-	  module load CUDA/7.5.18
-	  export CUDAPATH=${CUDA_HOME}
-	  # Also need GSL for some external dependencies
-	  module load GSL
-        fi
-
-
-	# Multithreading? (COMMENT OUT TO TURN OFF MULTIPLE CPU)
-	#unset MULTITHREAD
-	#export MULTITHREAD=1
-
-
-	# Set the EXPERIMENT MaCh3 directory
-	if [ -z $MACH3 ]; then
-	  export MACH3=$(pwd)
+# Automatically set CUDA for Emerald
+if [[ $HOSTNAME == *gpu.rl.ac.uk ]]; then
+  module load cuda/8.0.44
+  export CUDAPATH=${CUDA_HOME}
+  # Automatically set up for ComputeCanada
+elif [[ $HOSTNAME == lg-1r[47]* ]]; then
+  module load CUDA/7.5.18
+  export CUDAPATH=${CUDA_HOME}
+  # Also need GSL for some external dependencies
+  module load GSL
 fi
 
-	# Set the CORE MaCh3 directory
-	if [ -z $MACH3CORE ]; then
-	  export MACH3CORE=$(pwd)/../MaCh3_core
+# Set the EXPERIMENT MaCh3 directory
+if [ -z $MACH3 ]; then
+  export MACH3=$(pwd)
 fi
 
-export CMTPATH=$(pwd):CMTPATH
 # Add the libraries to lib path
 # Add the executables to path
 export PATH=${MACH3}/bin:${PATH}
@@ -115,7 +85,6 @@ fi
 
 mkdir -pv ${MACH3}/bin
 mkdir -pv ${MACH3}/lib
-#mkdir -pv ${MACH3}/utils/agf/include
 mkdir -pv ${MACH3}/plots
 
 echo ========================================================
