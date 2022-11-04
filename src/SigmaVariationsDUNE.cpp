@@ -44,30 +44,6 @@ void saveCanvas(TCanvas* canvas, std::string name, std::string legend)
 
 } 
 
-std::vector<double> get_default_CAFana_bins(){
-  // From CAFana - probability binning -
-  const int kNumTrueEnergyBins = 100;
-
-  // N+1 bin low edges
-  std::vector<double> edges(kNumTrueEnergyBins+1);
-
-  const double Emin = 0.5; // 500 MeV: there's really no events below there
-
-  // How many edges to generate. Allow room for 0-Emin bi            const double N = kNumTrueEnergyBins-1;
-  const double N = kNumTrueEnergyBins-1;
-  const double A = N*Emin;
-
-  edges[0] = 0;
-
-  for(int i = 1; i <= N; ++i){
-	edges[kNumTrueEnergyBins-i] = A/i;
-  }
-
-  edges[kNumTrueEnergyBins] = 120; // Replace the infinity that would be here
-  return edges;
-
-}
-
 
 int main(int argc, char * argv[]) {
 
