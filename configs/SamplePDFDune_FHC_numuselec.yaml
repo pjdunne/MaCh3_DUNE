@@ -16,7 +16,7 @@
 # 	oscnutype = "nutype after oscillation";
 # 	signal = true for signal samples;,
 # },
-SampleName: "FHC_nue"
+SampleName: "FHC_numu"
 SelectionCuts:
   - KinematicStr: "TrueXPos"
     Bounds: [ -310.0, 310.0 ]
@@ -30,12 +30,12 @@ Binning:
   YVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
 SampleBools:
   isrhc: no
-  iselike: yes
+  iselike: no
 InputFiles:
   mtupleprefix: "inputs/DUNE_CAF_files/FD_FHC_ger_"
-  mtuplesuffix: "_nueselec.root"
+  mtuplesuffix: "_numuselec.root"
   splineprefix: "inputs/DUNE_spline_files/FD_FHC_ger_"
-  splinesuffix: "_nueselec_splines.root"
+  splinesuffix: "_numuselec_splines.root"
 SampleCuts:
   up_bnd: 30.
 NSubSamples: 12
