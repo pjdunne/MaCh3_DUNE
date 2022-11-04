@@ -104,15 +104,9 @@ int main(int argc, char * argv[]) {
   std::cout << "Cross section parameters:" << std::endl;
   xsec->printNominal();
 
+  bool XsecParsAtGen = fitMan->raw()["General"]["Systematics"]["XsecAtGen"].as<bool>();
+
   std::cout << "---------- Finished printing nominal parameter values ----------" << std::endl;
-
-  std::vector<double> generated_vec = xsec->getNominalArray();
-
-  for( int param_i = 0 ; param_i < generated_vec.size() ; ++param_i){
-	std::cout << "Generated value for param " << param_i << " is " << generated_vec[param_i] << std::endl;
-  }
-  //xsec->setStepScale(fitMan->getXsecStepScale());
-  xsec->setStepScale(0.01);
 
   covarianceOsc *osc = new covarianceOsc(OscMatrixName.c_str(), OscMatrixFile.c_str());
 
@@ -147,12 +141,8 @@ int main(int argc, char * argv[]) {
   // Set some sample....
   samplePDFDUNEBase * numu_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
   SamplePDFs.push_back(numu_pdf);
-  samplePDFDUNEBase * numu_pdf_no_cut = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec_no_eff_cut.yaml", xsec);
-  SamplePDFs.push_back(numu_pdf_no_cut);
   samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
   SamplePDFs.push_back(nue_pdf);
-  samplePDFDUNEBase * nue_pdf_no_cut = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec_no_eff_cut.yaml", xsec);
-  SamplePDFs.push_back(nue_pdf_no_cut);
 
   // Oscillated
   osc -> setParameters(oscpars);
@@ -171,13 +161,33 @@ int main(int argc, char * argv[]) {
   //oscpars_un[3] = 0;
   //oscpars_un[4] = 0;
 
-  vector<double> xsecpar = xsec->getNominalArray();
-  xsec->setParameters(xsecpar);
+  //Setup the cross-section parameters
+  //This should get the prior values.
+  std::vector<double> XsecParVals = xsec->getNominalArray();
 
+  if(XsecParsAtGen){
+	TFile* XsecFile = new TFile(XsecMatrixFile.c_str(), "READ");
+	TVectorD* XsecGeneratedParamArray = (TVectorD*)XsecFile->Get("xsec_param_nom");
+	std::cout << "Setting xsec systs to their generated values " << std::endl;
+	for (int param_i = 0 ; param_i < XsecParVals.size() ; ++param_i) {
+	  std::cout << "Generated value for param " << param_i << " is " << (*XsecGeneratedParamArray)(param_i) << std::endl;
+	  XsecParVals[param_i] = (*XsecGeneratedParamArray)(param_i);
+	  std::cout << "Set parameter " << param_i << " to value " << XsecParVals[param_i] << std::endl;
+	}
+  }
+  else{
+	std::cout << "Keeping xsec parameters at their prior values" << std::endl;
+  }
+
+  xsec->setParameters(XsecParVals);
+  //xsec->setStepScale(fitMan->getXsecStepScale());
+  xsec->setStepScale(0.01);
+
+
+  //Some place to store the histograms
   std::vector<TH1D*> oscillated_hists;
   std::vector<TH1D*> unoscillated_hists;
   std::vector<std::string> sample_names;
-
 
   for( auto sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i){
 
@@ -211,8 +221,7 @@ int main(int argc, char * argv[]) {
 
   }
 
-  
-  
+  //Now print out some event rates, we'll make a nice latex table at some point 
   for (auto sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i){
 	std::cout << "Integrals of nominal hists: " << std::endl;
 	std::cout << sample_names[sample_i].c_str() << " unosc:      " << unoscillated_hists[sample_i]-> Integral() << std::endl;
@@ -220,7 +229,6 @@ int main(int argc, char * argv[]) {
 	std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
 	//<< "Numu osc:        " << numu_nominal_hist		-> Integral() << std::endl;
   }
-
 
   return 0;
  }
