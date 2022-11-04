@@ -14,12 +14,12 @@
 //!!rewrite execs to give arguments in new order
 samplePDFDUNEBase::samplePDFDUNEBase(double pot, std::string mc_version, covarianceXsec* xsec_cov)
   : samplePDFBase(pot)
-{
- 
+{ 
   std::cout << "- Using DUNE sample config in this file " << mc_version << std::endl;
   //ETA - safety feature so you can't pass a NULL xsec_cov
   if(xsec_cov == NULL){std::cerr << "[ERROR:] You've passed me a NULL xsec covariance matrix... I need this to setup splines!" << std::endl; throw;}
   init(pot, mc_version, xsec_cov);          
+
 }
 
 samplePDFDUNEBase::~samplePDFDUNEBase()
@@ -28,11 +28,20 @@ samplePDFDUNEBase::~samplePDFDUNEBase()
 
 void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov)
 {
+
+  bNu = new BargerPropagator();
+  bNu->UseMassEigenstates(false);
+  bNu->SetOneMassScaleMode(false);
+  bNu->SetWarningSuppression(true);
+  
+  Beta=1;
+  useBeta=false;
+  applyBetaNue=false;
+  applyBetaDiag=false;
+
   //flux = NULL;
   //skdet_joint = NULL;
-  // ETA - If xsec_cov hasn't been passed to the samplePDFDUNEBase constructor then it's NULL
-  // and the old funcitonality is kepy
-  setXsecCov(xsec_cov); 
+
   // Initialise xsec model variable, gets set properly when xsec cov is set
   // What cross-section model are we using? (only applies to 2015 onwards)
   // 2015a = 0, 2015b = 1, 2015c = 2, 2016a = 3, see Structs.h
@@ -58,27 +67,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   std::string splinesuffix;
 
   char* sample_char = (char*)samplecfgfile.c_str();
-
-  //ETA - try initialising a manager with the samplecfg
-  //MANAGER NOT READY YET
-  /*
-  manager* sample_manager = new manager(sample_char, false);
-  std::cout << "isRHC is " << sample_manager->getIsRHC() << std::endl;
-  IsRHC = sample_manager->getIsRHC();
-  iselike = sample_manager->getiselike();
-  up_bnd = sample_manager->getUpBnd();
-  mtupleprefix = (std::string)sample_manager->getMtuplePrefix();
-  mtuplesuffix = (std::string)sample_manager->getMtupleSuffix();
-  splineprefix = (std::string)sample_manager->getSplinePrefix();
-  splinesuffix = (std::string)sample_manager->getSplineSuffix();
-  std::vector<std::string> mtuple_files = sample_manager->getMtupleFiles();
-  std::vector<std::string> spline_files = sample_manager->getSplineFiles();
-  std::vector<int> sample_vecno = sample_manager->getSamplevecno();
-  std::vector<int> sample_oscnutype = sample_manager->getOscNuType();
-  std::vector<int> sample_nutype = sample_manager->getNuType();
-  std::vector<bool> sample_signal = sample_manager->getSignal(); */
-
-
+  //ETA - trying to read stuff from yaml file
   manager* SampleManager = new manager(sample_char);
 
   //Bools
@@ -95,37 +84,44 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
   splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
 
+  //Binning
+  BinningOpt = SampleManager->raw()["Binning"]["BinningOpt"].as<int>();  
+  std::vector<double> sample_erec_bins = SampleManager->raw()["Binning"]["XVarBins"].as<std::vector<double>>();
+  std::vector<double> sample_theta_bins = SampleManager->raw()["Binning"]["YVarBins"].as<std::vector<double>>();
 
+  samplename = SampleManager->raw()["SampleName"].as<std::string>();
 
-  //IsRHC = false;
   SampleDetID = 25;
-  //iselike = false;
-  //up_bnd = 30.;
-  //mtupleprefix = "inputs/DUNE_CAF_files/FD_FHC_ger_";
-  //mtuplesuffix = "_numuselec.root";
-  //splineprefix = "inputs/DUNE_spline_files/FD_FHC_ger_";
-  //splinesuffix = "_numuselec_splines.root";;
-  std::vector<std::string> mtuple_files; mtuple_files.push_back("numu_x_numu");
-  std::vector<std::string> spline_files; spline_files.push_back("numu_x_numu");
-  std::vector<int> sample_vecno; sample_vecno.push_back(0);
-  std::vector<int> sample_oscnutype; sample_oscnutype.push_back(2);
-  std::vector<int> sample_nutype; sample_nutype.push_back(2);
-  std::vector<bool> sample_signal; sample_signal.push_back(false);
 
-  //ETA - only have support for erec and erec-theta binning options.
-  //if you want to add in the option to do p-theta binning and enu-Q2
-  //then just add in the binning option to the manager class and
-  //add a switch statement below
-  std::vector<double> sample_erec_bins {0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4.,  5.,   6.,  10.};
-  std::vector<double> sample_theta_bins {0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4.,  5.,   6.,  10.};
-  /* if(iselike){
-    sample_erec_bins = sample_manager->getNueErecBins();
-    sample_theta_bins = sample_manager->getNueThetaBins();
+  std::vector<std::string> mtuple_files;
+  std::vector<std::string> spline_files;
+  std::vector<int> sample_vecno;
+  std::vector<int> sample_oscnutype;
+  std::vector<int> sample_nutype;
+  std::vector<bool> sample_signal;
+  
+  //Loop over all the sub-samples
+  for (auto const &osc_channel : SampleManager->raw()["SubSamples"]) {
+	std::cout << "Found sub sample" << std::endl;
+	mtuple_files.push_back(osc_channel["mtuplefile"].as<std::string>());
+	spline_files.push_back(osc_channel["splinefile"].as<std::string>());
+	sample_vecno.push_back(osc_channel["samplevecno"].as<int>());
+	sample_nutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["nutype"].as<int>())));
+	sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
+	sample_signal.push_back(osc_channel["signal"].as<bool>());
   }
-  else{
-	sample_erec_bins = sample_manager->getNumuErecBins();
-    sample_theta_bins = sample_manager->getNumuThetaBins();
-  } */
+
+
+  //Now loop over the kinematic cuts
+  for ( auto const &SelectionCuts : SampleManager->raw()["SelectionCuts"]) {
+	std::cout << "Looping over selection cuts " << std::endl;
+	SelectionStr.push_back(SelectionCuts["KinematicStr"].as<std::string>());
+
+	SelectionBounds.push_back(SelectionCuts["Bounds"].as<std::vector<double>>());
+	std::cout << "Found cut on string " << SelectionCuts["KinematicStr"].as<std::string>() << std::endl;
+	std::cout << "With bounds " << SelectionCuts["Bounds"].as<std::vector<double>>()[0] << " to " << SelectionCuts["Bounds"].as<std::vector<double>>()[1] << std::endl;
+  }
+  NSelections = SelectionStr.size();
 
   //Make some arrays so we can initialise _hPDF1D and _hPDF2D with these
   double erec_bin_edges[sample_erec_bins.size()];
@@ -133,18 +129,16 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   for(unsigned erec_i = 0 ; erec_i < sample_erec_bins.size() ; erec_i++){erec_bin_edges[erec_i] = sample_erec_bins[erec_i];}
   for(unsigned theta_i = 0 ; theta_i < sample_theta_bins.size() ; theta_i++){theta_bin_edges[theta_i] = sample_theta_bins[theta_i];}
 
-
   // create dunemc storage
-  int nSamples = 1;
+  int nSamples = SampleManager->raw()["NSubSamples"].as<int>();
   for (int i=0;i<nSamples;i++) {
     struct dunemc_base obj = dunemc_base();
     dunemcSamples.push_back(obj);
   }
 
-
-  //delete sample_manager;
-
-  cout << "Oscnutype size: " << sample_oscnutype.size() << ", dunemcSamples size: " << dunemcSamples.size() << endl;  
+  //Now down with yaml file for sample
+  delete SampleManager;
+  std::cout << "Oscnutype size: " << sample_oscnutype.size() << ", dunemcSamples size: " << dunemcSamples.size() << endl;  
   if(sample_oscnutype.size() != dunemcSamples.size()){std::cerr << "[ERROR:] samplePDFDUNEBase::samplePDFDUNEBase() - something went wrong either getting information from sample config" << std::endl; throw;}
 
   for(unsigned iSample=0 ; iSample < dunemcSamples.size() ; iSample++){
@@ -160,6 +154,18 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
     setupFDMC(&dunemcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]], (splineprefix+spline_files[iSample]+splinesuffix).c_str());
   }
 
+  // ETA - If xsec_cov hasn't been passed to the samplePDFDUNEBase constructor then it's NULL
+  // and the old funcitonality is kepy
+  // this calls this function in the core code
+  // this needs to come after setupFDMC as otherwise MCSamples.splinefile will be NULL
+  setXsecCov(xsec_cov); 
+
+  for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
+	std::cout << "Setting up Splines" << std::endl;
+	setupSplines(&MCSamples[sample_vecno[iSample]] , (splineprefix+spline_files[iSample]+splinesuffix).c_str(), MCSamples[iSample].nutype, MCSamples[iSample].signal);
+  }
+
+  setupWeightPointers();
 
   fillSplineBins();
   
@@ -181,7 +187,29 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   set1DBinning(sample_erec_bins.size()-1, erec_bin_edges);
   set2DBinning(sample_erec_bins.size()-1, erec_bin_edges, sample_theta_bins.size()-1, theta_bin_edges); 
 
+  return;
 }
+
+
+void samplePDFDUNEBase::setupWeightPointers() {
+  
+  for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
+	for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
+	  //DB Setting total weight pointers
+	  MCSamples[i].ntotal_weight_pointers[j] = 6;
+	  MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+	  MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].pot_s);
+	  MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].norm_s);
+	  MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
+	  MCSamples[i].total_weight_pointers[j][3] = &(dunemcSamples[i].rw_berpaacvwgt[j]);
+	  MCSamples[i].total_weight_pointers[j][4] = &(MCSamples[i].flux_w[j]);
+	  MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
+	}
+  }
+
+  return;
+}
+
 
 void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
 {
@@ -189,9 +217,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   // set up splines
   std::cout << "-------------------------------------------------------------------" << std::endl;
   std::cout << "input file: " << sampleFile << std::endl;
-
-  
-  std::cout << "Setup splines! " << std::endl;
   
   _sampleFile = new TFile(sampleFile, "READ");
   _data = (TTree*)_sampleFile->Get("caf");
@@ -201,8 +226,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
     std::cout << "N of entries: " << _data->GetEntries() << std::endl;
   }
   
-
-
   _data->SetBranchStatus("*", 0);
   _data->SetBranchStatus("Ev", 1);
   _data->SetBranchAddress("Ev", &_ev);
@@ -245,7 +268,7 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   _data->SetBranchStatus("LepPDG",1); 
   _data->SetBranchAddress("LepPDG",&_ipnu); 
   _data->SetBranchStatus("LepNuAngle",1); 
-  _data->SetBranchAddress("LepPDG",&_LepTheta); 
+  _data->SetBranchAddress("LepNuAngle",&_LepTheta); 
   _data->SetBranchStatus("Q2",1); 
   _data->SetBranchAddress("Q2",&_Q2); 
 
@@ -258,12 +281,9 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
     throw;
   } 
 
-
   // now fill the actual variables
   duneobj->norm_s = norm->GetBinContent(1);
   duneobj->pot_s = pot/norm->GetBinContent(2);
-  //duneobj->norm_s = 0.08369969415;
-  //duneobj->pot_s = 1.0;
   std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
   std::cout<< "norm_s = " << duneobj->norm_s << std::endl;
   duneobj->nEvents = _data->GetEntries();
@@ -273,16 +293,13 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   
   std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
-
   // allocate memory for dunemc variables
   duneobj->rw_etru = new double[duneobj->nEvents];
-  duneobj->osc_w = new double[duneobj->nEvents];
   duneobj->rw_erec = new double[duneobj->nEvents];
   duneobj->rw_theta = new double[duneobj->nEvents];
   duneobj->rw_Q2 = new double[duneobj->nEvents];
   duneobj->beam_w = new double[duneobj->nEvents];
   duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->skdet_w = new double[duneobj->nEvents];
   duneobj->xsec_w = new double[duneobj->nEvents];
   duneobj->rw_cvnnumu = new double[duneobj->nEvents];
   duneobj->rw_cvnnue = new double[duneobj->nEvents];
@@ -296,7 +313,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   duneobj->rw_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
-
 
 
   duneobj->energyscale_w = new double[duneobj->nEvents];
@@ -313,15 +329,12 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   //duneobj->theta_s_bin = new unsigned int[duneobj->nEvents];
   duneobj->flux_bin = new int[duneobj->nEvents];
   duneobj->xsec_norms_bins = new std::list< int >[duneobj->nEvents];
-  duneobj->Eb_bin = new int[duneobj->nEvents];
+  duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
   
-  double dir_beam[3]     = {MaCh3Utils::SKNuDir[0], MaCh3Utils::SKNuDir[1], MaCh3Utils::SKNuDir[2]};// T2K beam direction at SK
-  
 
   //FILL DUNE STRUCT
-
   for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
     {
       _data->GetEntry(i);
@@ -347,38 +360,25 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
       duneobj->rw_vtx_y[i] = _vtx_y;
       duneobj->rw_vtx_z[i] = _vtx_z;
 
-      
-      duneobj->osc_w[i] = 1.0; // not oscillated
+	  //Assume everything is on Argon for now....
+	  duneobj->Target[i] = 40;
+ 
       duneobj->beam_w[i] = 1.0;
       duneobj->xsec_w[i] = 1.0;
-      duneobj->skdet_w[i] = 1.0;
-
 
       // fill modes
       modes->Fill(_mode);
       //!!possible cc1pi exception might need to be 11
-      int mode= TMath::Abs(_mode);
+      int mode= TMath::Abs(_mode);       
 
-      //Adjust SIMB modes into CC and NC
-       
-
-      //duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
-      duneobj->mode[i]= mode;
+      duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
  
       duneobj->energyscale_w[i] = 1.0;
       
       duneobj->flux_w[i] = 1.0;
-
-      //ETA - Now Find the correct global bin number which then gets used in getDiscVar	  
-      //doing this here saves repeating this many times when running a chain
-      duneobj->Eb_bin[i] = -999;
  
     }
   
-
-
-
-
   //std::vector<double> etruVector(duneobj->rw_etru, duneobj->rw_etru + duneobj->nEvents);
   //duneobj->kNu = new cudaprob3::BeamCpuPropagator<double>(duneobj->nEvents, 1); 
   //duneobj->kNu = new cudaprob3::BeamCudaPropagatorSingle(0, duneobj->nEvents); 
@@ -388,12 +388,38 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   
 }
 
+double samplePDFDUNEBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent){
+
+ KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
+ double KinematicValue = -999;
+
+ switch(KinPar){
+   case kTrueNeutrinoEnergy:
+	 KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
+	 break;
+   case kTrueXPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
+	   break;
+   case kTrueYPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
+	   break;
+   case kTrueZPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
+	   break;
+   default:
+	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
+	 throw;
+ }
+
+  return KinematicValue;
+}
+
 void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile) 
 {
+
   fdobj->nEvents = duneobj->nEvents;
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
-
   fdobj->x_var = new double*[fdobj->nEvents];
   fdobj->y_var = new double*[fdobj->nEvents];
   fdobj->enu_s_bin = new unsigned int[fdobj->nEvents];
@@ -423,98 +449,112 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
   fdobj->rw_etru = new double*[fdobj->nEvents];
   fdobj->nxsec_spline_pointers = new int[fdobj->nEvents];
   fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
+  fdobj->ntotal_weight_pointers = new int[fdobj->nEvents];
+  fdobj->total_weight_pointers = new double**[fdobj->nEvents];
+  fdobj->Target = new int*[fdobj->nEvents];
 
-  switch(BinningOpt){
-	case 0:
-	case 1:
-	  for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
+  for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
+	fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
+	fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
+	fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
+	//ETA - set these to a dummy value to begin with, these get set in set1DBinning or set2DBinning
+	fdobj->NomXBin[iEvent] = -1;
+	fdobj->NomYBin[iEvent] = -1;
+	fdobj->XBin[iEvent] = -1;
+	fdobj->YBin[iEvent] = -1;	 
+	fdobj->rw_lower_xbinedge[iEvent] = -1;
+	fdobj->rw_lower_lower_xbinedge[iEvent] = -1;
+	fdobj->rw_upper_xbinedge[iEvent] = -1;
+	fdobj->rw_upper_upper_xbinedge[iEvent] = -1;
+	fdobj->xsec_w[iEvent] = 1.0;
+	fdobj->osc_w[iEvent] = 1.0;
+	fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+	fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
+	fdobj->SampleDetID = SampleDetID;
+
+	//ETA - this is where the variables that you want to bin your samples in are defined
+	//If you want to bin in different variables this is where you put it for now
+	switch(BinningOpt){
+	  case 0:
+	  case 1:
 		//Just point to xvar to the address of the variable you want to bin in
 		//This way we don't have to update both fdmc and skmc when we apply shifts
 		//to variables we're binning in
 		fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
 		fdobj->y_var[iEvent] = &(duneobj->dummy_y);//ETA - don't think we even need this as if we have a 1D sample we never need this, just not sure I like an unitialised variable in fdmc struct? 
-		fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
-		fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
-		//ETA - set these to a dummy value to begin with, these get set in set1DBinning or set2DBinning
-		fdobj->NomXBin[iEvent] = -1;
-		fdobj->NomYBin[iEvent] = -1;
-		fdobj->XBin[iEvent] = -1;
-		fdobj->YBin[iEvent] = -1;	 
-		fdobj->rw_lower_xbinedge[iEvent] = -1;
-		fdobj->rw_lower_lower_xbinedge[iEvent] = -1;
-		fdobj->rw_upper_xbinedge[iEvent] = -1;
-		fdobj->rw_upper_upper_xbinedge[iEvent] = -1;
-		fdobj->xsec_w[iEvent] = 1.0;
-		fdobj->osc_w[iEvent] = 1.0;
-		fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-		fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
-                fdobj->SampleDetID = SampleDetID;
-	  }
-	  break;
-	case 2:
-	  for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
+		break;
+	  case 2:
 		//Just point to xvar to the address of the variable you want to bin in
 		//This way we don't have to update both fdmc and skmc when we apply shifts
 		//to variables we're binning in
 		fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
 		fdobj->y_var[iEvent] = &(duneobj->rw_theta[iEvent]);
-		fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
-		fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
-		//ETA - set these to a dummy value to begin with, these get set in set1DBinning or set2DBinning
-		fdobj->NomXBin[iEvent] = -1;
-		fdobj->NomYBin[iEvent] = -1;
-		fdobj->XBin[iEvent] = -1;
-		fdobj->YBin[iEvent] = -1;	 
-		fdobj->rw_lower_xbinedge[iEvent] = -1;
-		fdobj->rw_lower_lower_xbinedge[iEvent] = -1;
-		fdobj->rw_upper_xbinedge[iEvent] = -1;
-		fdobj->rw_upper_upper_xbinedge[iEvent] = -1;
-		fdobj->xsec_w[iEvent] = 1.0;
-		fdobj->osc_w[iEvent] = 1.0;
-		fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]); 
-		fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
-                fdobj->SampleDetID = SampleDetID;
-		//std::cout << "Set MCSamples flux_w to " << skmcSamples[iSample].flux_w[iEvent] << std::endl;
-	  }
-	  break;
-	default:
-	  std::cout << "[ERROR:] ___LINE___ unrecognised binning option" << std::endl;
-	  break;
+		break;
+	  default:
+		std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << BinningOpt << std::endl;
+		throw;
+		break;
+	}
   }
-  
-
-  std::cout << "Setting up Splines" << std::endl;
-  setupSplines(fdobj, splineFile, fdobj->nutype, fdobj->signal);
   
   std::cout << "~~~~~~~~~~~~~~~~~~~~~" << std::endl;
   std::cout << "Done is setupFDMC" << std::endl;
   std::cout << "~~~~~~~~~~~~~~~~~~~~~" << std::endl;
 
   return;
+}
+
+void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype, int signal) {
+
+  int nevents = fdobj->nEvents;
+  std::cout << "##################" << std::endl;
+  std::cout << "Initialising splines from file: " << splineFile << std::endl;
+  std::cout << "##################" << std::endl;
+
+  switch (BinningOpt){
+	case 0:
+	case 1:
+	  if (signal){
+		fdobj->splineFile = new splinesDUNE((char*)splineFile, nutype, nevents, fdobj->SampleDetID, xsecCov);
+	  }
+	  else{
+		fdobj->splineFile = new splinesDUNE((char*)splineFile, nutype, nevents, fdobj->SampleDetID, xsecCov);
+		if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)){
+		  std::cerr << "problem setting up splines in erec" << std::endl;
+		}
+	  }
+	  break;
+	case 2:
+	  std::cout << "Creating splineDUNEBase" << std::endl;
+	  fdobj->splineFile = new splinesDUNE((char*)splineFile, nutype, nevents, (double)BinningOpt, SampleDetID, xsecCov);
+	  if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)) {
+		std::cerr << "problem setting up splines in erec" << std::endl;
+	  } 
+	  break;
+    default:
+	  break;
   }
-  
 
+  // ETA - Moved SetupSplineInfoArrays to be here
+  fdobj->splineFile->SetupSplineInfoArray(xsecCov);
+  fdobj->splineFile->SetSplineInfoArrays();
 
+  return;
+}
+
+//This is currently here just for show. We'll implement functional parameters soon!
 double samplePDFDUNEBase::calcFuncSystWeight(int iSample, int iEvent) 
 {
-  std::cout << "calcFuncSystWeight" << std::endl;
-  return 0.0;
+  //std::cout << "calcFuncSystWeight" << std::endl;
+  return 1.0;
 }
 
-
-double samplePDFDUNEBase::ReturnKinematicParameter(KinematicTypes Var, int i, int j) 
-{
-  std::cout << "ReturnKinematicVar" << std::endl;
-  return 0.0;
-}
-
-std::vector<double> samplePDFDUNEBase::ReturnKinematicParameterBinning(KinematicTypes Var) 
+std::vector<double> samplePDFDUNEBase::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
 {
   std::cout << "ReturnKinematicVarBinning" << std::endl;
   std::vector<double> binningVector;
   return binningVector;
 }
-
 
 double samplePDFDUNEBase::getDiscVar(int iSample, int iEvent, int varindx) 
 {

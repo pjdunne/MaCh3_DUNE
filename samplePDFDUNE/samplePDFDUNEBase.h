@@ -11,9 +11,8 @@
 #include <vector>
 #include <omp.h>
 #include <list>
-//#include "CUDAProb3/beamcudapropagator.cuh"
-//#include "CUDAProb3/atmoscudapropagator.cuh"
-#include "splines/splineFDBase.h"
+
+#include "splines/splinesDUNE.h"
 #include "covariance/covarianceXsec.h"
 #include "covariance/covarianceOsc.h"
 #include "samplePDF/samplePDFFDBase.h"
@@ -21,49 +20,21 @@
 #include "StructsDUNE.h"
 
 
-
 //constructors are same for all three so put in here
 struct dunemc_base {
+
   int nutype;            
   int oscnutype;    
   bool signal; // true if signue                                              
   int nEvents; // how many MC events are there                              
+  int *Target; //Target the interaction was on
   
   // spline bins                                                              
   unsigned int *enu_s_bin;
   unsigned int *erec_s_bin;
 
-  // Global bin number for Eb variation templates
-  int *Eb_bin;
-
   // flux bin
   int *flux_bin;
-
-  //CAFAna binned Oscillation 
-  std::vector<double> get_default_CAFana_bins(){
-     // From CAFana - probability binning -
-     const int kNumTrueEnergyBins = 100;
-  
-     // N+1 bin low edges
-     std::vector<double> edges(kNumTrueEnergyBins+1);
-  
-     const double Emin = 0.5; // 500 MeV: there's really no events below there
-  
-     // How many edges to generate. Allow room for 0-Emin bi            const double N = kNumTrueEnergyBins-1;
-     const double N = kNumTrueEnergyBins-1;
-     const double A = N*Emin;
-  
-     edges[0] = 0;
-  
-     for(int i = 1; i <= N; ++i){
-       edges[kNumTrueEnergyBins-i] = A/i;
-     }
-  
-     edges[kNumTrueEnergyBins] = 120; // Replace the infinity that would be here
-     return edges;
-                                 
-    }
-  
 
   // xsec bins  
   std::list< int > *xsec_norms_bins;
@@ -75,6 +46,7 @@ struct dunemc_base {
 #else
   //cudaprob3::BeamCpuPropagator<double> *kNu; 
 #endif
+
   // histo pdf bins
   double *rw_erec;
   double *rw_etru;
@@ -105,27 +77,16 @@ struct dunemc_base {
   int *mode;
   int *isbound;
   int **rw_ipnu;
-  // ---------- Pi+ rweighting test only (commented out by default) ----------- //
-  // See http://www.t2k.org/asg/oagroup/meeting/2017/2017-02-07-banff-oa-pre-meeting/SKpionreweighting/
-  /* int *rw_numnu;
-  double **rw_pnu;
-  int **rw_ipnu; */
-  // ---------------------- End: Pi+ rweighting test only --------------------- //
 
 
   double pot_s; // s is for scale                                             
   double norm_s;//    
 
-  //double *osc_w_point;                                                      
-  double *osc_w; // oscillation weight                                        
   double *beam_w;
   double *flux_w; // not the same as beam systematics weight!                 
-  double *skdet_w;
   double *xsec_w;
   double *energyscale_w;
   //float *relRPA_w;
-
-  splineBase *splineFile; 
 
 };
 
@@ -137,15 +98,14 @@ public:
 
   void printPosteriors();
 
-  //DUNE FD FV cut
-  inline bool IsInFDFV(double pos_x_cm, double pos_y_cm, double pos_z_cm) {
-    return (abs(pos_x_cm) < 310 && abs(pos_y_cm) < 550 && pos_z_cm > 50 &&
-      pos_z_cm < 1244);
-      	      }
+  void setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype, int signal);
+
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
   void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
   void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile);
+
+  void setupWeightPointers();
 
   // oscillation: Prob3++ 
   TH1D *modes;
@@ -162,8 +122,9 @@ public:
 
   //Generic Function applying shifts
   double calcFuncSystWeight(int iSample, int iEvent);
-  double ReturnKinematicParameter (KinematicTypes Var, int i, int j);
-  std::vector<double> ReturnKinematicParameterBinning(KinematicTypes Var);
+  //double ReturnKinematicParameter (KinematicTypes Var, int i, int j);
+  double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent);
+  std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
 
 
   //Likelihood
@@ -175,10 +136,8 @@ public:
 
 
   // dunemc
-  vector<struct dunemc_base> dunemcSamples;
+  std::vector<struct dunemc_base> dunemcSamples;
 
-  //fdmc
-  vector<struct fdmc_base> fdmcSamples;
 
   TFile *_sampleFile;
   TTree *_data;
@@ -230,12 +189,8 @@ public:
   bool do_xsec_rw;
   bool do_det_rw;
 
-  bool IsRHC; // If true, this instance of the class is RHC
   int SampleDetID;
   
-  // option for binning scheme (0 = 1D erec, 1 = 2D p-theta, 2 = 2D erec-theta, 3 = 2D erec-Q2)  
-  int BinningOpt;
-
   //stuff for xsec norms  
   int nxsec_norm_modes;
   int *xsec_norm_modes;
@@ -243,7 +198,7 @@ public:
   std::vector<std::vector<int> > xsec_norm_targets;
   int *xsec_norm_startbin;
   std::vector<std::string> xsec_norm_names;
-  std::vector<XsecNorms3> xsec_norms;
+  //std::vector<XsecNorms3> xsec_norms;
 
   //for nuebar appearance
   double Beta;
@@ -256,7 +211,6 @@ public:
 
   // Using the smarter xsec covariance matrix reader?
   bool DoItSmart;
-
 
   // Parameters used in the DoItSmart xsec setup
   // The old version hard-codes these instead
