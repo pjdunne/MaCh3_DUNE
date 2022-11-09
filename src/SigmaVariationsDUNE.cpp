@@ -120,12 +120,8 @@ int main(int argc, char * argv[]) {
   // Set some sample....
   samplePDFDUNEBase * numu_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
   SamplePDFs.push_back(numu_pdf);
-  //samplePDFDUNEBase * numu_pdf_no_cut = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec_no_eff_cut.yaml", xsec);
-  //SamplePDFs.push_back(numu_pdf_no_cut);
   samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
   SamplePDFs.push_back(nue_pdf);
-  //samplePDFDUNEBase * nue_pdf_no_cut = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec_no_eff_cut.yaml", xsec);
-  //SamplePDFs.push_back(nue_pdf_no_cut);
 
   // Oscillated
   osc -> setParameters(oscpars);
@@ -152,7 +148,7 @@ int main(int argc, char * argv[]) {
 	TFile* XsecFile = new TFile(XsecMatrixFile.c_str(), "READ");
 	TVectorD* XsecGeneratedParamArray = (TVectorD*)XsecFile->Get("xsec_param_nom");
 	std::cout << "Setting xsec systs to their generated values " << std::endl;
-	for (int param_i = 0 ; param_i < XsecParVals.size() ; ++param_i) {
+	for (unsigned param_i = 0 ; param_i < XsecParVals.size() ; ++param_i) {
 	  std::cout << "Generated value for param " << param_i << " is " << (*XsecGeneratedParamArray)(param_i) << std::endl;
 	  XsecParVals[param_i] = (*XsecGeneratedParamArray)(param_i);
 	  std::cout << "Set parameter " << param_i << " to value " << XsecParVals[param_i] << std::endl;
@@ -173,7 +169,7 @@ int main(int argc, char * argv[]) {
   std::vector<std::string> sample_names;
   std::vector<std::string> names;
 
-  for( auto sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i){
+  for (unsigned sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i) {
 
 	std::string name = SamplePDFs[sample_i]->GetSampleName();
 	names.push_back("fhc_nue");
@@ -199,7 +195,6 @@ int main(int argc, char * argv[]) {
 
 	OutputFile -> cd();
 	numu_unosc			-> Write("numu_unosc");
-	//numu_nominal_hist			-> Write("numu_nominal_hist");
 
 	osc -> setParameters(oscpars);
 	osc -> acceptStep();
@@ -211,7 +206,7 @@ int main(int argc, char * argv[]) {
   }
 
   //Now print out some event rates, we'll make a nice latex table at some point 
-  for (auto sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i){
+  for (unsigned sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i){
 	std::cout << "Integrals of nominal hists: " << std::endl;
 	std::cout << sample_names[sample_i].c_str() << " unosc:      " << unoscillated_hists[sample_i]-> Integral() << std::endl;
 	std::cout << sample_names[sample_i].c_str() << "   osc:      " << oscillated_hists[sample_i]-> Integral() << std::endl; 
@@ -239,7 +234,7 @@ int main(int argc, char * argv[]) {
   osc->setParameters(oscpars_un);
 
   for(unsigned ipdf=0;ipdf<SamplePDFs.size();ipdf++){
-	SamplePDFs[ipdf]->reweight(osc->getPropPars(), osc->getPropPars());
+	SamplePDFs[ipdf]->reweight(osc->getPropPars());
   }
 
 
@@ -253,8 +248,23 @@ int main(int argc, char * argv[]) {
 	//	std::cout << mode_names[i] << std::endl;
   }
 
-  char *OscChannelNames[nsubsamples];
-  OscChannelNames[0] = "numu";
+  /*
+  std::vector<std::string> OscChannelNames;
+  OscChannelNames.push_back("numu");
+  OscChannelNames.push_back("nue");
+  OscChannelNames.push_back("numub");
+  OscChannelNames.push_back("nueb");
+  OscChannelNames.push_back("signue");
+  OscChannelNames.push_back("signueb");
+  OscChannelNames.push_back("signumu");
+  OscChannelNames.push_back("signumub");
+  OscChannelNames.push_back("nuenutau");
+  OscChannelNames.push_back("numunutau");
+  OscChannelNames.push_back("nuebnutaub");
+  OscChannelNames.push_back("numubnutaub");
+  */
+
+  /*
   OscChannelNames[1] = "nue";
   OscChannelNames[2] = "numub";
   OscChannelNames[3] = "nueb";
@@ -266,6 +276,7 @@ int main(int argc, char * argv[]) {
   OscChannelNames[9] = "numunutau";
   OscChannelNames[10] = "nuebnutaub";
   OscChannelNames[11] = "numubnutaub";
+  */
 
   char houtname[100];
 
@@ -310,7 +321,7 @@ int main(int argc, char * argv[]) {
 	  //	  std::vector<TH1D*> var_hists;
 	  //	  var_hists.reserve(pdfs.size());
 
-	  for(int ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++){
+	  for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++){
 
 		//Now loop over the sigma values you want to evaluate at (usual -3, -1, 0, +1, +3)
 		for (int j=-3; j<=3; j+=2){
@@ -320,7 +331,7 @@ int main(int argc, char * argv[]) {
 		  xsecpar[i] = xsec->getNominal(i)+j*sqrt((*xsec->getCovMatrix())(i,i));
 		  xsec->setParameters(xsecpar);
 		  //Reweight prediction
-		  SamplePDFs[ipdf]->reweight(osc->getPropPars(), osc->getPropPars());
+		  SamplePDFs[ipdf]->reweight(osc->getPropPars());
 
 		  sprintf( houtname, "%s_xsec_par_%i_sig_%c%i", sample_names[ipdf].c_str(), i, sign,abs(j));
 		  TH1D * hist = (TH1D*)SamplePDFs[ipdf]->get1DHist()->Clone(houtname);
