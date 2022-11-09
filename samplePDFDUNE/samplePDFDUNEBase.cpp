@@ -39,14 +39,6 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   applyBetaNue=false;
   applyBetaDiag=false;
 
-  //flux = NULL;
-  //skdet_joint = NULL;
-
-  // Initialise xsec model variable, gets set properly when xsec cov is set
-  // What cross-section model are we using? (only applies to 2015 onwards)
-  // 2015a = 0, 2015b = 1, 2015c = 2, 2016a = 3, see Structs.h
-  // Undefined -> old 2012 model no longer supported
-
   //doubled_angle =true ;
   useNonDoubledAngles(true);
   if (doubled_angle) std::cout << "- Using non doubled angles for oscillation parameters" << std::endl;
@@ -154,16 +146,24 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
     setupFDMC(&dunemcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]], (splineprefix+spline_files[iSample]+splinesuffix).c_str());
   }
 
+  std::cout << "################" << std::endl;
+  std::cout << "Setup FD MC   " << std::endl;
+  std::cout << "################" << std::endl;
+
   // ETA - If xsec_cov hasn't been passed to the samplePDFDUNEBase constructor then it's NULL
   // and the old funcitonality is kepy
   // this calls this function in the core code
   // this needs to come after setupFDMC as otherwise MCSamples.splinefile will be NULL
   setXsecCov(xsec_cov); 
 
+  std::cout << "Now setting up Splines" << std::endl;
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-	std::cout << "Setting up Splines" << std::endl;
 	setupSplines(&MCSamples[sample_vecno[iSample]] , (splineprefix+spline_files[iSample]+splinesuffix).c_str(), MCSamples[iSample].nutype, MCSamples[iSample].signal);
   }
+
+  std::cout << "################" << std::endl;
+  std::cout << "Setup FD splines   " << std::endl;
+  std::cout << "################" << std::endl;
 
   setupWeightPointers();
 
@@ -497,10 +497,6 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
 	}
   }
   
-  std::cout << "~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-  std::cout << "Done is setupFDMC" << std::endl;
-  std::cout << "~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-
   return;
 }
 
@@ -508,7 +504,7 @@ void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, i
 
   int nevents = fdobj->nEvents;
   std::cout << "##################" << std::endl;
-  std::cout << "Initialising splines from file: " << splineFile << std::endl;
+  std::cout << "Initialising splines from file: " << (splineFile) << std::endl;
   std::cout << "##################" << std::endl;
 
   switch (BinningOpt){
@@ -543,9 +539,8 @@ void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, i
 }
 
 //This is currently here just for show. We'll implement functional parameters soon!
-double samplePDFDUNEBase::calcFuncSystWeight(int iSample, int iEvent) 
+double samplePDFDUNEBase::CalcXsecWeightFunc(int iSample, int iEvent) 
 {
-  //std::cout << "calcFuncSystWeight" << std::endl;
   return 1.0;
 }
 

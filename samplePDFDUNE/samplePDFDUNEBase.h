@@ -113,15 +113,10 @@ public:
   bool osc_binned;
   // an axis to set binned oscillation weights
   TAxis *osc_binned_axis ;
-  double calcOscWeights(int nutype, int oscnutype, double en, double *oscpar);
-  double calcOscWeights(int nutype, int oscnutype, double en, double *oscpar_nub, double *oscpar_nu);
-  void calcOscWeightsKProb(int sample, int nutype, int oscnutype,  double *w, double *oscpar_nub, double *oscpar_nu);
-  void calcOscWeightsKProb(int sample, int nutype, int oscnutype,  double *w, double *oscpar_nu);
-  void calcOscWeightsGPU(double *en, double *w, int num, int nutype, int oscnutype, double *oscpar);
-  void calcOscWeightsGPU(double *en, double *w, int num, int nutype, int oscnutype, double *oscpar_nub, double *oscpar_nu);
 
   //Generic Function applying shifts
-  double calcFuncSystWeight(int iSample, int iEvent);
+  double CalcXsecWeightFunc(int iSample, int iEvent);
+  //double CalcFuncSystWeight(int iSample, int iEvent);
   //double ReturnKinematicParameter (KinematicTypes Var, int i, int j);
   double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);

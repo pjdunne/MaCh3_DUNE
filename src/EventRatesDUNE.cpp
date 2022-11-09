@@ -116,8 +116,8 @@ int main(int argc, char * argv[]) {
   // Set some sample....
   samplePDFDUNEBase * numu_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
   SamplePDFs.push_back(numu_pdf);
-  samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
-  SamplePDFs.push_back(nue_pdf);
+  //samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+  //SamplePDFs.push_back(nue_pdf);
 
   // Oscillated
   osc -> setParameters(oscpars);
@@ -128,13 +128,14 @@ int main(int argc, char * argv[]) {
 	    << "oscpars[4] = " << (osc -> getPropPars())[4] << std::endl
 	    << "oscpars[5] = " << (osc -> getPropPars())[5] << std::endl;
 
+
   // unosc
   std::vector<double> oscpars_un(oscpars);
   oscpars_un[0] = 0;
   oscpars_un[1] = 0;
   oscpars_un[2] = 0;
-  //oscpars_un[3] = 0;
-  //oscpars_un[4] = 0;
+  oscpars_un[3] = 0;
+  oscpars_un[4] = 0;
 
   //Setup the cross-section parameters
   //This should get the prior values.
@@ -144,7 +145,7 @@ int main(int argc, char * argv[]) {
 	TFile* XsecFile = new TFile(XsecMatrixFile.c_str(), "READ");
 	TVectorD* XsecGeneratedParamArray = (TVectorD*)XsecFile->Get("xsec_param_nom");
 	std::cout << "Setting xsec systs to their generated values " << std::endl;
-	for (int param_i = 0 ; param_i < XsecParVals.size() ; ++param_i) {
+	for (unsigned param_i = 0 ; param_i < XsecParVals.size() ; ++param_i) {
 	  std::cout << "Generated value for param " << param_i << " is " << (*XsecGeneratedParamArray)(param_i) << std::endl;
 	  XsecParVals[param_i] = (*XsecGeneratedParamArray)(param_i);
 	  std::cout << "Set parameter " << param_i << " to value " << XsecParVals[param_i] << std::endl;
@@ -164,7 +165,7 @@ int main(int argc, char * argv[]) {
   std::vector<TH1D*> unoscillated_hists;
   std::vector<std::string> sample_names;
 
-  for( auto sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i){
+  for (unsigned sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i) {
 
 	std::string name = SamplePDFs[sample_i]->GetSampleName();
 	sample_names.push_back(name);
@@ -183,12 +184,19 @@ int main(int argc, char * argv[]) {
 	std::string plotname = "Dummy_Hist" ;
 	saveCanvas(nomcanv, plotname,"_nominal_spectra") ;
 
-	Outfile -> cd();
-	numu_unosc			-> Write("numu_unosc");
-	//numu_nominal_hist			-> Write("numu_nominal_hist");
+	Outfile->cd();
+	numu_unosc->Write("numu_unosc");
 
-	osc -> setParameters(oscpars);
-	osc -> acceptStep();
+	osc->setParameters(oscpars);
+	osc->acceptStep();
+	// Oscillated
+	std::cout << "oscpars[0] = " << (osc -> getPropPars())[0] << std::endl
+	  << "oscpars[1] = " << (osc -> getPropPars())[1] << std::endl
+	  << "oscpars[2] = " << (osc -> getPropPars())[2] << std::endl
+	  << "oscpars[3] = " << (osc -> getPropPars())[3] << std::endl
+	  << "oscpars[4] = " << (osc -> getPropPars())[4] << std::endl
+	  << "oscpars[5] = " << (osc -> getPropPars())[5] << std::endl;
+
 
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
 	TH1D *numu_osc = (TH1D*)SamplePDFs[sample_i] -> get1DHist()->Clone(NameTString+"_osc");
@@ -197,12 +205,11 @@ int main(int argc, char * argv[]) {
   }
 
   //Now print out some event rates, we'll make a nice latex table at some point 
-  for (auto sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i){
+  for (unsigned sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i) {
 	std::cout << "Integrals of nominal hists: " << std::endl;
 	std::cout << sample_names[sample_i].c_str() << " unosc:      " << unoscillated_hists[sample_i]-> Integral() << std::endl;
 	std::cout << sample_names[sample_i].c_str() << "   osc:      " << oscillated_hists[sample_i]-> Integral() << std::endl; 
 	std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
-	//<< "Numu osc:        " << numu_nominal_hist		-> Integral() << std::endl;
   }
 
   return 0;
