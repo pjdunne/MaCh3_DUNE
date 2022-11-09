@@ -43,10 +43,12 @@ for child in fromxml:
 
         nelem+=1 #Only have this line once par par
 
-        if( child.tag == 'experiment'):
-		    #KS: sligtlhy hardcoded but we can have only one baselin and earth density
-	        osc_baseline[0] = float(child.attrib['L'])
-	        osc_density[0] = float(child.attrib['density'])
+    if( child.tag == 'experiment'):
+	    #KS: sligtlhy hardcoded but we can have only one baselin and earth density
+        print "Setting baseline to be"
+        print(float(child.attrib['L']))
+        osc_baseline[0] = float(child.attrib['L'])
+        osc_density[0] = float(child.attrib['density'])
 
 # Resize the vectors to a reasonable number of elements
 osc_param_nom.ResizeTo(nelem)
