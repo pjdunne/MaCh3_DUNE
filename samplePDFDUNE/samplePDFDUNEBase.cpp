@@ -67,9 +67,6 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   //SampleDetID = SampleManager->raw()[""][""];
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
-  //Cuts
-  up_bnd = SampleManager->raw()["SampleCuts"]["up_bnd"].as<float>();
-
   //Inputs
   mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
   mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
@@ -178,9 +175,9 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   //The binning here is arbitrary, now we get info from cfg so the 
   //set1DBinning and set2Dbinning calls below will make the binning
   //to be what we actually want
-  _hPDF1D = new TH1D("hErec_nue", "Reconstructed Energy", 200, 0 , up_bnd);
-  dathist = new TH1D("dat_nue","",200,0,up_bnd); 
-  _hPDF2D = new TH2D(histname,histtitle,15,0,up_bnd*1000,15,0,150);
+  _hPDF1D = new TH1D("hErec_nue", "Reconstructed Energy", 200, 0 , 50.0);
+  dathist = new TH1D("dat_nue","",200,0, 50.0); 
+  _hPDF2D = new TH2D(histname,histtitle,15,0,50.0*1000,15,0,150);
   dathist2d = new TH2D("dat2d_nue","",15,0,1500,15,0,150);
 
   //ETA Don't forget the -1 on the size here, as it's number of bins not bin edges
@@ -510,14 +507,9 @@ void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, i
   switch (BinningOpt){
 	case 0:
 	case 1:
-	  if (signal){
-		fdobj->splineFile = new splinesDUNE((char*)splineFile, nutype, nevents, fdobj->SampleDetID, xsecCov);
-	  }
-	  else{
-		fdobj->splineFile = new splinesDUNE((char*)splineFile, nutype, nevents, fdobj->SampleDetID, xsecCov);
-		if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)){
-		  std::cerr << "problem setting up splines in erec" << std::endl;
-		}
+	  fdobj->splineFile = new splinesDUNE((char*)splineFile, nutype, nevents, fdobj->SampleDetID, xsecCov);
+	  if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)){
+		std::cerr << "problem setting up splines in erec" << std::endl;
 	  }
 	  break;
 	case 2:
