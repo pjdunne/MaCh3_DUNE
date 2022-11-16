@@ -19,7 +19,7 @@ $ cd MaCh3_DUNE
 ~~~~~~~~~~~~~~
 
 Currently need to first checkout a tag of the core code and set it up manually. When the repo is public CPM will do this for you but for now we'll do it this way.
-You can build core whereever, You'll just need to make sure that CPM_MACH3_SOURCE is set to it correctly later.
+You can build core whereever, you'll just need to make sure that CPM_MACH3_SOURCE is set to it correctly later.
 
 ~~~~~~~~~~~~~~
 $ mkdir MaCh3_core
@@ -48,8 +48,12 @@ $ make
 A few notes:
 CUDA_SAMPLES not necessary if using CPU_ONLY=ON
 
-If you want to simultaneously develop both the MaCh3 core code and the MaCh3 DUNE code then you can build against a local version of MaCh3 by adding
+If you want to simultaneously develop both the MaCh3 core code and the MaCh3 DUNE code then you can build against a local version of MaCh3 by adding:
+
+~~~~~~~~~~~~~~
 $ -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
+~~~~~~~~~~~~~~
+
 this is overrule the CPMFindPackage command in the CMakeList.txt and will tell CPM to build that instead.
 As already described this is the default way to build for now. Eventually we won't need this and CPM will find the tag we give it in the CMakeList
 
@@ -57,7 +61,7 @@ As already described this is the default way to build for now. Eventually we won
 # Event Rates ######
 ###################################
 
-Once you've got setup you'll then need to setup some symlinks to point to your MC and spline files. You can do this by modifying scripts/pd_link_files.sh script. 
+Once you've got setup you'll then need to setup some symlinks to point to your MC and spline files. You can do this by modifying scripts/link_files.sh script. 
 
 Current (November 2022) event rates using DUNE TDR inputs are below. These are made using xsec systematics at their prior central value. Oscillation parameter values used here are:
 
