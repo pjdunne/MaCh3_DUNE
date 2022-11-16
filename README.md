@@ -25,7 +25,7 @@ You can build core whereever, you'll just need to make sure that CPM_MACH3_SOURC
 $ mkdir MaCh3_core
 $ git clone git@github.com:mach3-software/MaCh3.git MaCh3_core
 $ cd MaCh3_core
-$ git checkout tags/v1.0-alpha
+$ git checkout tags/v1.0.1-alpha
 $ cd ../
 ~~~~~~~~~~~~~~
 
