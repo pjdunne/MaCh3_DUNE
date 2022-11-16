@@ -12,30 +12,38 @@ Dependencies
 
 Building:
 
+~~~~~~~~~~~~~~
 $ mkdir MaCh3_DUNE
 $ git clone git@github.com:DUNE/MaCh3_DUNE.git MaCh3_DUNE
 $ cd MaCh3_DUNE
+~~~~~~~~~~~~~~
 
 Currently need to first checkout a tag of the core code and set it up manually. When the repo is public CPM will do this for you but for now we'll do it this way.
 You can build core whereever, You'll just need to make sure that CPM_MACH3_SOURCE is set to it correctly later.
 
+~~~~~~~~~~~~~~
 $ mkdir MaCh3_core
 $ git clone git@github.com:mach3-software/MaCh3.git MaCh3_core
 $ cd MaCh3_core
 $ git checkout tags/v1.0-alpha
 $ cd ../
+~~~~~~~~~~~~~~
 
 Now setup some dependencies and then actually build MaCh3_DUNE
 
+~~~~~~~~~~~~~~~
 $ source setup.sh # !! Here you need to make sure that ROOTSYS and Cuda libraries are also set !!
 $ source setup_dune_env.sh
 $ mkdir build;
 $ cd build
+~~~~~~~~~~~~~~~
 
 Optional flags are described briefly below, options are shown grouped by square brackets and delimited by vertical lines. Default is on the left.
 
+~~~~~~~~~~~~~~
 $ cmake .. -DCPU_ONLY=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples -DCPM_MaCh3_SOURCE=/path/to/MaCh3_core
 $ make
+~~~~~~~~~~~~~~
 
 A few notes:
 CUDA_SAMPLES not necessary if using CPU_ONLY=ON
