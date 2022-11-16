@@ -7,7 +7,7 @@
 Dependencies
 
 - CMake (version > 3.8). 
-- MaCh3 Core tag: v1.0-alpha
+- MaCh3 Core tag: v1.0.1-alpha
 - ROOT (currently tested on 6.18)
 
 Building:
@@ -35,6 +35,7 @@ $ cd build
 Optional flags are described briefly below, options are shown grouped by square brackets and delimited by vertical lines. Default is on the left.
 
 $ cmake .. -DCPU_ONLY=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples -DCPM_MaCh3_SOURCE=/path/to/MaCh3_core
+$ make
 
 A few notes:
 CUDA_SAMPLES not necessary if using CPU_ONLY=ON
@@ -51,27 +52,30 @@ As already described this is the default way to build for now. Eventually we won
 Once you've got setup you'll then need to setup some symlinks to point to your MC and spline files. You can do this by modifying scripts/pd_link_files.sh script. 
 
 Current (November 2022) event rates using DUNE TDR inputs are below. These are made using xsec systematics at their prior central value. Oscillation parameter values used here are:
+
 sin2th12 = 0.307
+
 sin2th23 = 0.52
+
 sin2th13 = 0.0218
+
 dm2_32 = 7.53E-5 eV^2
+
 dm2_12 = 2.509E-3 eV^2 
+
 dCP = -1.601 radians
 
-
+~~~~~~~~~~~~~~~~
 Integrals of nominal hists: 
 FHC_numu unosc:      25941.57467
 FHC_numu   osc:      7979.64829
-~~~~~~~~~~~~~~~~
-Integrals of nominal hists: 
+
 FHC_nue unosc:      391.59946
 FHC_nue   osc:      1702.14708
-~~~~~~~~~~~~~~~~
-Integrals of nominal hists: 
+
 RHC_numu unosc:      12492.61743
 RHC_numu   osc:      4219.10087
-~~~~~~~~~~~~~~~~
-Integrals of nominal hists: 
+
 RHC_nue unosc:      208.80159
 RHC_nue   osc:      447.97657
 ~~~~~~~~~~~~~~~~
