@@ -29,11 +29,6 @@ samplePDFDUNEBase::~samplePDFDUNEBase()
 void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov)
 {
 
-  bNu = new BargerPropagator();
-  bNu->UseMassEigenstates(false);
-  bNu->SetOneMassScaleMode(false);
-  bNu->SetWarningSuppression(true);
-  
   Beta=1;
   useBeta=false;
   applyBetaNue=false;
@@ -165,6 +160,14 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   setupWeightPointers();
 
   fillSplineBins();
+
+  SetupOscCalc(); 
+
+  #ifdef USE_PROB3
+  std::cout << "- Setup Prob3++" << std::endl;
+  #else
+  std::cout << "- Setup CUDAProb3" << std::endl;
+  #endif
   
   _sampleFile->Close();
   char *histname = (char*)"blah";
@@ -492,8 +495,9 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
 		throw;
 		break;
 	}
+
   }
-  
+
   return;
 }
 
