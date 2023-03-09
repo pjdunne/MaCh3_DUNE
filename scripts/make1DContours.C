@@ -155,7 +155,7 @@ TH1D* get1Dcred(TH1D* hist, double level, double &bf, double &up, double &low, i
 void makePlot(TString ReducedChain, int hierarchy, bool doRC = false, bool LogY = false, bool levSigs = true)
 {
   TFile* f = new TFile(ReducedChain);
-  TTree* t = (TTree*)f->Get("posteriors");
+  TTree* t = (TTree*)f->Get("osc_posteriors");
 
   TH1D* delta_cp_hist = new TH1D("delta_cp_hist",";#delta_{CP};posterior probability",180,-1.*TMath::Pi(),TMath::Pi());
   TH1D* th23_hist = new TH1D("th23_hist",";sin^{2}#theta_{23};posterior probability",150,0.35,0.65);
@@ -180,22 +180,22 @@ void makePlot(TString ReducedChain, int hierarchy, bool doRC = false, bool LogY 
   }
 
   if(hierarchy == 1) {
-    t->Draw("delta_cp>>delta_cp_hist","(step>80000)*(delm2_23>0.)");
-    t->Draw("sin2th_23>>th23_hist","(step>80000)*(delm2_23>0.)");
-    t->Draw("sin2th_13>>th13_hist","(step>80000)*(delm2_23>0.)");
-    t->Draw("delm2_23>>dm2_hist","(step>80000)*(delm2_23>0.)");
+    t->Draw("dcp>>delta_cp_hist","(step>80000)*(dm23>0.)");
+    t->Draw("theta23>>th23_hist","(step>80000)*(dm23>0.)");
+    t->Draw("theta13>>th13_hist","(step>80000)*(dm23>0.)");
+    t->Draw("dm23>>dm2_hist","(step>80000)*(dm23>0.)");
   }
   else if(hierarchy == 0) {
-    t->Draw("delta_cp>>delta_cp_hist","(step>80000)");
-    t->Draw("sin2th_23>>th23_hist","(step>80000)");
-    t->Draw("sin2th_13>>th13_hist","(step>80000)");
-    t->Draw("delm2_23>>dm2_hist","(step>80000)");
+    t->Draw("dcp>>delta_cp_hist","(step>80000)");
+    t->Draw("theta23>>th23_hist","(step>80000)");
+    t->Draw("theta13>>th13_hist","(step>80000)");
+    t->Draw("dm23>>dm2_hist","(step>80000)");
   }
   else if(hierarchy == -1) {
-    t->Draw("delta_cp>>delta_cp_hist","(step>80000)*(delm2_23<0.)");
-    t->Draw("sin2th_23>>th23_hist","(step>80000)*(delm2_23<0.)");
-    t->Draw("sin2th_13>>th13_hist","(step>80000)*(delm2_23<0.)");
-    t->Draw("delm2_23>>dm2_hist","(step>80000)*(delm2_23<0.)");
+    t->Draw("dcp>>delta_cp_hist","(step>80000)*(dm23<0.)");
+    t->Draw("theta23>>th23_hist","(step>80000)*(dm23<0.)");
+    t->Draw("theta13>>th13_hist","(step>80000)*(dm23<0.)");
+    t->Draw("dm23>>dm2_hist","(step>80000)*(dm23<0.)");
   }
   else {
    std::cout << "Error: invalid hierarchy option. 1 for NH, 0 for both, -1 for IH" <<std::endl;

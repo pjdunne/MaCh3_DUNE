@@ -123,15 +123,15 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   g_asim_dcp_th23->SetMarkerStyle(47);
 
   TFile* f_DUNE = new TFile(ReducedChain);
-  TTree* t_DUNE = (TTree*)f_DUNE->Get("posteriors");
+  TTree* t_DUNE = (TTree*)f_DUNE->Get("osc_posteriors");
 
   TH2D* h_dcp_th13_DUNE;
   TH2D* h_dcp_th23_DUNE;
   TH2D* h_dm32_th23_DUNE;
 
-  h_dcp_th13_DUNE = new TH2D("h_dcp_th13_DUNE","DUNE FD stat-only;sin^{2}#theta_{13};#delta_{CP}",80,0.01,0.05,100,-1.*TMath::Pi(),TMath::Pi());
-  h_dcp_th23_DUNE = new TH2D("h_dcp_th23_DUNE","DUNE FD stat-only;sin^{2}#theta_{23};#delta_{CP}",50,0.4,0.6,100,-1.*TMath::Pi(),TMath::Pi());
-  h_dm32_th23_DUNE = new TH2D("h_dm32_th23_DUNE","DUNE FD stat-only;sin^{2}#theta_{23};#Delta m^{2}_{32}",75,0.4,0.6,400,-0.003,0.003);
+  h_dcp_th13_DUNE = new TH2D("h_dcp_th13_DUNE","DUNE FD ;sin^{2}#theta_{13};#delta_{CP}",100,0.01,0.05,100,-1.*TMath::Pi(),TMath::Pi());
+  h_dcp_th23_DUNE = new TH2D("h_dcp_th23_DUNE","DUNE FD ;sin^{2}#theta_{23};#delta_{CP}",40,0.4,0.6,60,-1.*TMath::Pi(),TMath::Pi());
+  h_dm32_th23_DUNE = new TH2D("h_dm32_th23_DUNE","DUNE FD ;sin^{2}#theta_{23};#Delta m^{2}_{32}",100,0.4,0.6,300,-0.003,0.003);
 
   h_dcp_th13_DUNE->GetXaxis()->SetTitleFont(132);
   h_dcp_th13_DUNE->GetXaxis()->SetTitleOffset(0.9);
@@ -149,7 +149,7 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   h_dcp_th23_DUNE->GetXaxis()->SetTitleOffset(0.9);
   h_dcp_th23_DUNE->GetXaxis()->SetTitleSize(0.07);
   h_dcp_th23_DUNE->GetXaxis()->SetLabelFont(132);
-  h_dcp_th23_DUNE->GetXaxis()->SetLabelSize(0.07);
+  h_dcp_th23_DUNE->GetXaxis()->SetLabelSize(0.05);
   TGaxis::SetMaxDigits(3) ;
   h_dcp_th23_DUNE->GetYaxis()->SetTitleFont(132);
   h_dcp_th23_DUNE->GetYaxis()->SetTitleOffset(0.9);
@@ -179,7 +179,7 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
     }
     else if(hierarchy==0) {
       t_DUNE->Draw("dcp:theta13>>h_dcp_th13_DUNE","step>80000");
-      t_DUNE->Draw("dcp:theta23>>h_dcp_th23_DUNE","step>80000");
+      t_DUNE->Draw("dcp:theta23>>h_dcp_th23_DUNE","step>3000000");
       t_DUNE->Draw("dm23:theta23>>h_dm32_th23_DUNE","step>80000");
       //hlab->AddText("NH+IH");
     }
@@ -332,7 +332,8 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   leg->SetTextFont(132);
   leg->SetTextSize(0.04);
   gStyle->SetLegendBorderSize(0);
-  leg->SetHeader("DUNE Credible Regions");
+  //leg->SetHeader("DUNE Credible Regions");
+  leg->SetHeader("BURN-IN = 3000000");
   TH2D* solid = new TH2D("solid","solid",10,-0.05,0.05,10,0.3,0.7);
   TH2D* dashed = new TH2D("dashed","dashed",10,-0.05,0.05,10,0.3,0.7);
   solid->SetLineColor(kBlack);
@@ -404,6 +405,7 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   else {
     if(!app && hierarchy==1) h_dcp_th13_cont_1sig_DUNE->GetYaxis()->SetRangeUser(0.0023,0.0028);
     else if(!app && hierarchy==-1) h_dcp_th13_cont_1sig_DUNE->GetYaxis()->SetRangeUser(-0.0028,-0.0023);
+    //h_dcp_th23_DUNE->Draw("colz same");
     h_dcp_th13_cont_1sig_DUNE->Draw("cont3 same");
     h_dcp_th13_cont_2sig_DUNE->Draw("cont3 same");
     h_dcp_th13_cont_3sig_DUNE->Draw("cont3 same");
@@ -476,7 +478,7 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
     else {
       if(app && th23dcp) {
         if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth23_NH_sigs.pdf");
-        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth23_both_sigs.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth23_both_sigs_12.pdf");
         else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth23_IH_sigs.pdf");
       }
       else if (app == true && th23dcp == false){
@@ -501,13 +503,13 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
 void make2DContours(TString ReducedChain) {
 //void makePlot(int hierarchy,bool app=true, bool th23dcp = false, bool RC=false, int levOpt=0) {
 
-  //Appearance = th13_cp
+  //Appearance = th13_dcp
   //makePlot(ReducedChain,0,true,false,1);
-  makePlot(ReducedChain,0,true,false);
+  //makePlot(ReducedChain,0,true,false);
 
   //Dissappearance = th23_dm32
   //makePlot(ReducedChain,0,false,false,1);
-  makePlot(ReducedChain,1,false,false);
+  //makePlot(ReducedChain,1,false,false);
 
   // th23dCP plots
   //makePlot(ReducedChain,0,true,true,false,1);
