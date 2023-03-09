@@ -81,7 +81,7 @@ SubSamples:
     samplevecno: 5
     nutype: -14
     oscnutype: -12 
-    signal: false
+    signal: true
   - name: "FHC_nue_x_numu"
     mtuplefile: "nue_x_numu"
     splinefile: "nue_x_numu"
