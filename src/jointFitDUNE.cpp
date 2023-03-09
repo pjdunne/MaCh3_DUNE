@@ -303,7 +303,8 @@ int main(int argc, char **argv)
   //numu_fds->Write();
 
   // set up
-  markovChain->setChainLength(1e3);
+  int NSteps = fitMan->raw()["General"]["NSTEPS"].as<int>(); 
+  markovChain->setChainLength(NSteps);
   markovChain->addOscHandler(osc, osc);
   if(lastStep > 0) markovChain->setInitialStepNumber(lastStep+1);
 

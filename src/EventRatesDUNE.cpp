@@ -116,8 +116,12 @@ int main(int argc, char * argv[]) {
   // Set some sample....
   samplePDFDUNEBase * numu_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
   SamplePDFs.push_back(numu_pdf);
-  //samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
-  //SamplePDFs.push_back(nue_pdf);
+  samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+  SamplePDFs.push_back(nue_pdf);
+  samplePDFDUNEBase * numubar_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+  SamplePDFs.push_back(numubar_pdf);
+  samplePDFDUNEBase * nuebar_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+  SamplePDFs.push_back(nuebar_pdf);
 
   // Oscillated
   osc -> setParameters(oscpars);
