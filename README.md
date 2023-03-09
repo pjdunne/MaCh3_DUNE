@@ -79,15 +79,16 @@ dCP = -1.601 radians
 
 ~~~~~~~~~~~~~~~~
 Integrals of nominal hists: 
-FHC_numu unosc:      25941.57467
-FHC_numu   osc:      7979.64829
+FHC_numu unosc:      25722.11458
+FHC_numu   osc:      7757.90848
 
-FHC_nue unosc:      391.59946
-FHC_nue   osc:      1702.14708
+FHC_nue unosc:      307.81627
+FHC_nue   osc:      1618.28931
 
-RHC_numu unosc:      12492.61743
-RHC_numu   osc:      4219.10087
+RHC_numu unosc:      12380.38205
+RHC_numu   osc:      4105.54501
 
-RHC_nue unosc:      208.80159
-RHC_nue   osc:      447.97657
+RHC_nue unosc:      167.78451
+RHC_nue   osc:      407.06125
 ~~~~~~~~~~~~~~~~
+
