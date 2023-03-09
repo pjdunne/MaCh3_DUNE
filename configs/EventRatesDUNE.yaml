@@ -1,5 +1,5 @@
 General:
-  POT: 1.3628319e+23 
+  POT: 1.3628319e+23
   Systematics:
     XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_v1.root"
     XsecCovName: "xsec_cov"
@@ -7,7 +7,7 @@ General:
     OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
     OscCovName: "osc_cov"
   Output:
-    FileName: "deleteme2.root"
+    FileName: "TestEventRates.root"
   ProcessMCMC: No
   Seed: 0
   Debug: No
