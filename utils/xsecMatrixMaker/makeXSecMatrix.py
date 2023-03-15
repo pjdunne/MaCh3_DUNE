@@ -13,10 +13,6 @@ import sys
 # Second argument is the output root file
 # Code is hugely hacked and ugly, but totes functional
 #
-# ETA - Oct 2021
-# Adding in a few elements to read in generic xsec kinematic strings that
-# then gets converted within MaCh3 to get the kinematic variable for an event
-# which then gets cut on
 
 if len(sys.argv) != 3:
   print "Sorry, I need two arguments"
@@ -26,7 +22,7 @@ if len(sys.argv) != 3:
 tree = ET.parse(sys.argv[1])
 fromxml = tree.getroot()
 
-maxelements=200
+maxelements=300
 nummodes=12
 
 
@@ -41,26 +37,23 @@ xsec_error              = ROOT.TVectorD(maxelements)
 xsec_stepscale          = ROOT.TVectorD(maxelements)
 xsec_param_id           = ROOT.TMatrixD(maxelements, 2)
 
-xsec_fd_spline_names    = ROOT.TObjArray()
-xsec_fd_spline_modes    = ROOT.TObjArray()
+xsec_sk_spline_names    = ROOT.TObjArray()
+xsec_sk_spline_modes    = ROOT.TObjArray()
 
 xsec_nd_spline_names    = ROOT.TObjArray()
 
+xsec_norm_etru_bnd_low  = ROOT.TObjArray()
+xsec_norm_etru_bnd_high = ROOT.TObjArray()
+xsec_norm_q2_true_bnd_low  = ROOT.TObjArray()
+xsec_norm_q2_true_bnd_high = ROOT.TObjArray()
 xsec_norm_modes         = ROOT.TObjArray()
 xsec_norm_elements      = ROOT.TObjArray()
 xsec_norm_nupdg         = ROOT.TObjArray()
 xsec_norm_prod_nupdg         = ROOT.TObjArray()
 xsec_norm_horncurrents         = ROOT.TObjArray()
-#ETA - adding in generic kinematic type
-xsec_norm_kinematic_type = ROOT.TObjArray()
-xsec_norm_kinematic_lb = ROOT.TVectorD(maxelements) 
-xsec_norm_kinematic_ub = ROOT.TVectorD(maxelements)
-
 
 corr_dicts = []
 corr_names = []
-
-kinematic_dicts = []
 
 
 nelem = 0
@@ -138,26 +131,26 @@ for child in fromxml:
         # Get the SK spline file name attribute
         print xsec_param_id[nelem][1]
 
-        if 'fd_spline_name' in child.attrib:
-          fd_spline_name = ROOT.TObjString(child.attrib['fd_spline_name'])
+        if 'sk_spline_name' in child.attrib:
+          sk_spline_name = ROOT.TObjString(child.attrib['sk_spline_name'])
         else: 
-          fd_spline_name=ROOT.TObjString("")
-        xsec_fd_spline_names.AddAtAndExpand(fd_spline_name, nelem)
-        if "_" in str(fd_spline_name):
-          print "ERROR : ", fd_spline_name, " contains _ (this is a problem for MaCh3!)"
+          sk_spline_name=ROOT.TObjString("")
+        xsec_sk_spline_names.AddAtAndExpand(sk_spline_name, nelem)
+        if "_" in str(sk_spline_name):
+          print "ERROR : ", sk_spline_name, " contains _ (this is a problem for MaCh3!)"
           sys.exit()
 
 
         # Find the mode which this parameter might apply to
-        spline_modes = child.findall('fd_mode')
+        spline_modes = child.findall('sk_mode')
         if(len(spline_modes)==0):
-          #print "Found no mode list for ",name," filling with blank which means apply to all"
+          print "Found no mode list for ",name," filling with blank which means apply to all"
           dummyvec = ROOT.TVectorD(0)
-          xsec_fd_spline_modes.AddAtAndExpand(dummyvec,nelem)
+          xsec_sk_spline_modes.AddAtAndExpand(dummyvec,nelem)
         else:
           for mode in spline_modes:
             if mode.text == None or mode.tail == None:
-              #print "Found empty mode list for",name," filling with blank which means apply to all"
+              print "Found empty mode list for",name," filling with blank which means apply to all"
               mode.text= ""
             # Split multiple entries up
             modelist = mode.text.split()
@@ -165,7 +158,7 @@ for child in fromxml:
             modevec = ROOT.TVectorD(len(modelist))
             for i in range(len(modelist)):
               modevec[i]=int(modelist[i])
-            xsec_fd_spline_modes.AddAtAndExpand(modevec, nelem)
+            xsec_sk_spline_modes.AddAtAndExpand(modevec, nelem)
 
         if 'nd_spline_name' in child.attrib:
           nd_spline_name = ROOT.TObjString(child.attrib['nd_spline_name'])
@@ -274,27 +267,82 @@ for child in fromxml:
             prodpdgvec[i]=int(prodpdglist[i])
         xsec_norm_prod_nupdg.AddAtAndExpand(prodpdgvec, nelem)
 
-	#Find if there are any kinematic cuts
-    kin_cuts = child.findall('kinematic_cut')
-    if(len(kin_cuts)!=0 and type=="norm"):
-	  #print "Didn't find any kinematic_cuts"  
-      print "FOUND kinematic cut"
-      for var in kin_cuts:
-        xsec_norm_kinematic_type.AddLast(ROOT.TObjString(var.attrib['var']))
-        bnds_list = var.text.split()
-        if(len(bnds_list) !=2):
-          print "ERROR: there should only be two bounds for a kinamatic cut; the upper and lower" 
-          sys.exit()
-        else:
-          xsec_norm_kinematic_lb[nelem] = float(bnds_list[0])
-          print "Found lower bound of ", xsec_norm_kinematic_lb[nelem], " and put it in element ", nelem
-          xsec_norm_kinematic_ub[nelem] = float(bnds_list[1])
-          print "Found upper bound of ", xsec_norm_kinematic_ub[nelem]
+    normetrubndlow = child.findall('etru_bnd_low')
+    if(len(normetrubndlow)==0 and type=="norm"):
+        print "Found no etrubndslow list for ",name," filling with blank which means apply to all"
+        dummyvec = ROOT.TVectorD(1)
+        dummyvec[0]=-999
+        xsec_norm_etru_bnd_low.AddAtAndExpand(dummyvec,nelem)
+    else:
+      for etrubndslow in normetrubndlow:
+        if etrubndslow.text == None or etrubndslow.tail == None:
+          print "Found empty etrubndslow list for ",name," filling with -999 which means don't apply a bound"
+          etrubndslow.text = "-999"
+        # Split multiple entries up
+        etrubndlowlist = etrubndslow.text.split()
+        # Make a TVectorD containing each mode
+        etrubndlowvec = ROOT.TVectorD(len(etrubndlowlist))
+        for i in range(len(etrubndlowlist)):
+            etrubndlowvec[i]=float(etrubndlowlist[i])
+        xsec_norm_etru_bnd_low.AddAtAndExpand(etrubndlowvec, nelem)
 
-          print "Name of kinematic var is ",var.attrib['var']
-    elif(type=="norm"):
-      print "NO KINEMATIC CUT FOUND!!"
-      xsec_norm_kinematic_type.AddLast(ROOT.TObjString(""))
+    normetrubndhigh = child.findall('etru_bnd_high')
+    if(len(normetrubndhigh)==0 and type=="norm"):
+        print "Found no etrubndshigh list for ",name," filling with blank which means apply to all"
+        dummyvec = ROOT.TVectorD(1)
+        dummyvec[0]=-999
+        xsec_norm_etru_bnd_high.AddAtAndExpand(dummyvec,nelem)
+    else:
+      for etrubndshigh in normetrubndhigh:
+        if etrubndshigh.text == None or etrubndshigh.tail == None:
+          print "Found empty etrubndshigh list for ",name," filling with -999 which means don't apply a bound"
+          etrubndshigh.text = "-999"
+        # Split multiple entries up
+        etrubndhighlist = etrubndshigh.text.split()
+        # Make a TVectorD containing each mode
+        etrubndhighvec = ROOT.TVectorD(len(etrubndhighlist))
+        for i in range(len(etrubndhighlist)):
+            etrubndhighvec[i]=float(etrubndhighlist[i])
+        xsec_norm_etru_bnd_high.AddAtAndExpand(etrubndhighvec, nelem)
+
+
+    normq2truebndlow = child.findall('q2_true_bnd_low')
+    if(len(normq2truebndlow)==0 and type=="norm"):
+        print "Found no q2_true_bnd_low list for ",name," filling with blank which means apply to all"
+        dummyvec = ROOT.TVectorD(1)
+        dummyvec[0]=-999
+        xsec_norm_q2_true_bnd_low.AddAtAndExpand(dummyvec,nelem)
+    else:
+      for q2_truebndslow in normq2truebndlow:
+        if q2_truebndslow.text == None or q2_truebndslow.tail == None:
+          print "Found empty q2_truebndslow list for ",name," filling with -999 which means don't apply a bound"
+          q2_truebndslow.text = "-999"
+        # Split multiple entries up
+        q2truebndlowlist = q2_truebndslow.text.split()
+        # Make a TVectorD containing each mode
+        q2truebndlowvec = ROOT.TVectorD(len(q2truebndlowlist))
+        for i in range(len(q2truebndlowlist)):
+            q2truebndlowvec[i]=float(q2truebndlowlist[i])
+        xsec_norm_q2_true_bnd_low.AddAtAndExpand(q2truebndlowvec, nelem)
+
+    normq2truebndhigh = child.findall('q2_true_bnd_high')
+    if(len(normq2truebndhigh)==0 and type=="norm"):
+        print "Found no q2_true_bnd_high list for ",name," filling with blank which means apply to all"
+        dummyvec = ROOT.TVectorD(1)
+        dummyvec[0]=-999
+        xsec_norm_q2_true_bnd_high.AddAtAndExpand(dummyvec,nelem)
+    else:
+      for q2_truebndshigh in normq2truebndhigh:
+        if q2_truebndshigh.text == None or q2_truebndshigh.tail == None:
+          print "Found empty q2_truebndshigh list for ",name," filling with -999 which means don't apply a bound"
+          q2_truebndshigh.text = "-999"
+        # Split multiple entries up
+        q2truebndhighlist = q2_truebndshigh.text.split()
+        # Make a TVectorD containing each mode
+        q2truebndhighvec = ROOT.TVectorD(len(q2truebndhighlist))
+        for i in range(len(q2truebndhighlist)):
+            q2truebndhighvec[i]=float(q2truebndhighlist[i])
+        xsec_norm_q2_true_bnd_high.AddAtAndExpand(q2truebndhighvec, nelem)
 
 
     nelem+=1 #Only have this line once par par
@@ -308,8 +356,6 @@ xsec_param_lb.ResizeTo(nelem)
 xsec_param_ub.ResizeTo(nelem)
 xsec_stepscale.ResizeTo(nelem)
 xsec_param_id.ResizeTo(nelem, 2)
-xsec_norm_kinematic_ub.ResizeTo(nelem)
-xsec_norm_kinematic_lb.ResizeTo(nelem)
 
 xsec_cov = ROOT.TMatrixD(nelem, nelem)
 
@@ -326,7 +372,7 @@ for i in range(nelem):
         corr2 = 0;
         if (str(corr_names[i]) in corr_dicts[index].keys()):
             corr2 = corr_dicts[index][str(corr_names[i])]
-        if (corr1 == corr2):
+        if (abs(corr1 - corr2) <= 1e-07):
             xsec_cov[i][index] = xsec_cov[index][i] = corr1 * xsec_error[i] * xsec_error[index]
         elif (corr2==0):
             print "Warning: no reciprocal correlation between "+str(item)+" and "+str(corr_names[i])+" proceeding with non-reciprocal"
@@ -362,8 +408,8 @@ hcov.GetZaxis().SetTitle("#sqrt{|V_{ij}|}#times sign(V_{ij})")
 # Write the output file
 file = ROOT.TFile(sys.argv[2], "RECREATE")
 xsec_param_names.Write("xsec_param_names", 1)
-xsec_fd_spline_names.Write("fd_spline_names", 1);
-xsec_fd_spline_modes.Write("fd_spline_modes",1);
+xsec_sk_spline_names.Write("sk_spline_names", 1);
+xsec_sk_spline_modes.Write("sk_spline_modes",1);
 xsec_nd_spline_names.Write("nd_spline_names", 1);
 xsec_param_nom.Write("xsec_param_nom")
 xsec_param_nom_unnorm.Write("xsec_param_nom_unnorm")
@@ -373,11 +419,12 @@ xsec_param_lb.Write("xsec_param_lb")
 xsec_param_ub.Write("xsec_param_ub")
 xsec_param_id.Write("xsec_param_id")
 xsec_stepscale.Write("xsec_stepscale")
-xsec_norm_kinematic_type.Write("xsec_norm_kinematic_type", 1)
-xsec_norm_kinematic_lb.Write("xsec_norm_kinematic_lb")
-xsec_norm_kinematic_ub.Write("xsec_norm_kinematic_ub")
 xsec_norm_modes.Write("xsec_norm_modes", 1)
 xsec_norm_horncurrents.Write("xsec_norm_horncurrents", 1)
+xsec_norm_etru_bnd_low.Write("xsec_norm_etru_bnd_low",1)
+xsec_norm_etru_bnd_high.Write("xsec_norm_etru_bnd_high",1)
+xsec_norm_q2_true_bnd_low.Write("xsec_norm_q2_true_bnd_low",1)
+xsec_norm_q2_true_bnd_high.Write("xsec_norm_q2_true_bnd_high",1)
 xsec_norm_elements.Write("xsec_norm_elements", 1)
 xsec_norm_nupdg.Write("xsec_norm_nupdg", 1)
 xsec_norm_prod_nupdg.Write("xsec_norm_prod_nupdg", 1)
