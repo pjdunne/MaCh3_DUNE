@@ -38,6 +38,7 @@ InputFiles:
   splinesuffix: "_nueselec_splines.root"
 SampleCuts:
   up_bnd: 30.
+DetID: 24
 NSubSamples: 12
 SubSamples:
   - name: "FHC_numu_x_numu"

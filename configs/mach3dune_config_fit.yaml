@@ -1,0 +1,17 @@
+General:
+  POT: 1.3628319e+23
+  NSTEPS: 1000000
+  StartFromPos: false
+  PosFileName: 
+  Systematics:
+    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.root"
+    XsecCovName: "xsec_cov"
+    XsecStepScale: 0.1
+    OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
+    OscCovName: "osc_cov"
+  Output:
+    FileName: "MaCh3_fit_check.root"
+  ProcessMCMC: No
+  Seed: 0
+  AutoSave: 500
+  Debug: Yes
