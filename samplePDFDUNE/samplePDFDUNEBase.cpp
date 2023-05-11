@@ -59,7 +59,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 
   //Bools
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
-  //SampleDetID = SampleManager->raw()[""][""];
+  SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
   //Inputs
@@ -74,8 +74,6 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   std::vector<double> sample_theta_bins = SampleManager->raw()["Binning"]["YVarBins"].as<std::vector<double>>();
 
   samplename = SampleManager->raw()["SampleName"].as<std::string>();
-
-  SampleDetID = 25;
 
   std::vector<std::string> mtuple_files;
   std::vector<std::string> spline_files;
@@ -161,8 +159,6 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 
   fillSplineBins();
 
-  SetupOscCalc(); 
-
   #ifdef USE_PROB3
   std::cout << "- Setup Prob3++" << std::endl;
   #else
@@ -221,58 +217,105 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   _sampleFile = new TFile(sampleFile, "READ");
   _data = (TTree*)_sampleFile->Get("caf");
 
+  _isND = false;
+
   if(_data){
     std::cout << "Found mtuple tree is " << sampleFile << std::endl;
     std::cout << "N of entries: " << _data->GetEntries() << std::endl;
   }
   
-  _data->SetBranchStatus("*", 0);
-  _data->SetBranchStatus("Ev", 1);
-  _data->SetBranchAddress("Ev", &_ev);
-  _data->SetBranchStatus("Ev_reco_numu", 1);
-  _data->SetBranchAddress("Ev_reco_numu", &_erec);
-  _data->SetBranchStatus("Ev_reco_nue", 1);
-  _data->SetBranchAddress("Ev_reco_nue", &_erec_nue);
-  _data->SetBranchStatus("mode",1);
-  _data->SetBranchAddress("mode",&_mode);
-  _data->SetBranchAddress("NuMomX", &_NuMomX);
-  _data->SetBranchAddress("NuMomY", &_NuMomY);
-  _data->SetBranchAddress("NuMomZ", &_NuMomZ);
-  _data->SetBranchAddress("LepMomX", &_LepMomX);
-  _data->SetBranchAddress("LepMomY", &_LepMomY);
-  _data->SetBranchAddress("LepMomZ", &_LepMomZ);
-  _data->SetBranchStatus("cvnnumu",1);
-  _data->SetBranchAddress("cvnnumu", &_cvnnumu);
-  _data->SetBranchStatus("cvnnue",1);
-  _data->SetBranchAddress("cvnnue", &_cvnnue);
-  _data->SetBranchStatus("isCC", 1);
-  _data->SetBranchAddress("isCC", &_isCC);
-  _data->SetBranchStatus("nuPDGunosc", 1);
-  _data->SetBranchAddress("nuPDGunosc", &_nuPDGunosc);
-  _data->SetBranchStatus("nuPDG", 1);
-  _data->SetBranchAddress("nuPDG", &_nuPDGunosc);
-  _data->SetBranchStatus("run", 1);
-  _data->SetBranchAddress("run", &_run);
-  _data->SetBranchStatus("isFD", 1);
-  _data->SetBranchAddress("isFD", &_isFD);
-  _data->SetBranchStatus("isFHC", 1);
-  _data->SetBranchAddress("isFHC", &_isFHC);
-  _data->SetBranchStatus("BeRPA_A_cvwgt", 1);
-  _data->SetBranchAddress("BeRPA_A_cvwgt", &_BeRPA_cvwgt);
-  _data->SetBranchStatus("vtx_x", 1);
-  _data->SetBranchAddress("vtx_x", &_vtx_x);
-  _data->SetBranchStatus("vtx_y", 1);
-  _data->SetBranchAddress("vtx_y", &_vtx_y);
-  _data->SetBranchStatus("vtx_z", 1);
-  _data->SetBranchAddress("vtx_z", &_vtx_z);  
-  _data->SetBranchStatus("LepPDG",1); 
-  _data->SetBranchAddress("LepPDG",&_ipnu); 
-  _data->SetBranchStatus("LepNuAngle",1); 
-  _data->SetBranchAddress("LepNuAngle",&_LepTheta); 
-  _data->SetBranchStatus("Q2",1); 
-  _data->SetBranchAddress("Q2",&_Q2); 
+  if (_isND) {
+    _data->SetBranchStatus("*", 0);
+    _data->SetBranchStatus("Ev", 1);
+    _data->SetBranchAddress("Ev", &_ev);
+    _data->SetBranchStatus("Ev_reco", 1);
+    _data->SetBranchAddress("Ev_reco", &_erec);
+    _data->SetBranchStatus("Ev_reco", 1);
+    _data->SetBranchAddress("Ev_reco", &_erec_nue);
+    _data->SetBranchStatus("mode",1);
+    _data->SetBranchAddress("mode",&_mode);
+    _data->SetBranchAddress("NuMomX", &_NuMomX);
+    _data->SetBranchAddress("NuMomY", &_NuMomY);
+    _data->SetBranchAddress("NuMomZ", &_NuMomZ);
+    _data->SetBranchAddress("LepMomX", &_LepMomX);
+    _data->SetBranchAddress("LepMomY", &_LepMomY);
+    _data->SetBranchAddress("LepMomZ", &_LepMomZ);
+    _data->SetBranchStatus("cvnnumu",1);
+    _data->SetBranchAddress("cvnnumu", &_cvnnumu);
+    _data->SetBranchStatus("cvnnue",1);
+    _data->SetBranchAddress("cvnnue", &_cvnnue);
+    _data->SetBranchStatus("isCC", 1);
+    _data->SetBranchAddress("isCC", &_isCC);
+    _data->SetBranchStatus("nuPDGunosc", 1);
+    _data->SetBranchAddress("nuPDGunosc", &_nuPDGunosc);
+    _data->SetBranchStatus("nuPDG", 1);
+    _data->SetBranchAddress("nuPDG", &_nuPDGunosc);
+    _data->SetBranchStatus("run", 1);
+    _data->SetBranchAddress("run", &_run);
+    _data->SetBranchStatus("isFHC", 1);
+    _data->SetBranchAddress("isFHC", &_isFHC);
+    _data->SetBranchStatus("BeRPA_A_cvwgt", 1);
+    _data->SetBranchAddress("BeRPA_A_cvwgt", &_BeRPA_cvwgt);
+    _data->SetBranchStatus("vtx_x", 1);
+    _data->SetBranchAddress("vtx_x", &_vtx_x);
+    _data->SetBranchStatus("vtx_y", 1);
+    _data->SetBranchAddress("vtx_y", &_vtx_y);
+    _data->SetBranchStatus("vtx_z", 1);
+    _data->SetBranchAddress("vtx_z", &_vtx_z);  
+    _data->SetBranchStatus("LepPDG",1); 
+    _data->SetBranchAddress("LepPDG",&_ipnu); 
+    _data->SetBranchStatus("LepNuAngle",1); 
+    _data->SetBranchAddress("LepNuAngle",&_LepTheta); 
+    _data->SetBranchStatus("Q2",1); 
+    _data->SetBranchAddress("Q2",&_Q2); 
+  }
+  else {	
+    _data->SetBranchStatus("*", 0);
+    _data->SetBranchStatus("Ev", 1);
+    _data->SetBranchAddress("Ev", &_ev);
+    _data->SetBranchStatus("Ev_reco_numu", 1);
+    _data->SetBranchAddress("Ev_reco_numu", &_erec);
+    _data->SetBranchStatus("Ev_reco_nue", 1);
+    _data->SetBranchAddress("Ev_reco_nue", &_erec_nue);
+    _data->SetBranchStatus("mode",1);
+    _data->SetBranchAddress("mode",&_mode);
+    _data->SetBranchAddress("NuMomX", &_NuMomX);
+    _data->SetBranchAddress("NuMomY", &_NuMomY);
+    _data->SetBranchAddress("NuMomZ", &_NuMomZ);
+    _data->SetBranchAddress("LepMomX", &_LepMomX);
+    _data->SetBranchAddress("LepMomY", &_LepMomY);
+    _data->SetBranchAddress("LepMomZ", &_LepMomZ);
+    _data->SetBranchStatus("cvnnumu",1);
+    _data->SetBranchAddress("cvnnumu", &_cvnnumu);
+    _data->SetBranchStatus("cvnnue",1);
+    _data->SetBranchAddress("cvnnue", &_cvnnue);
+    _data->SetBranchStatus("isCC", 1);
+    _data->SetBranchAddress("isCC", &_isCC);
+    _data->SetBranchStatus("nuPDGunosc", 1);
+    _data->SetBranchAddress("nuPDGunosc", &_nuPDGunosc);
+    _data->SetBranchStatus("nuPDG", 1);
+    _data->SetBranchAddress("nuPDG", &_nuPDGunosc);
+    _data->SetBranchStatus("run", 1);
+    _data->SetBranchAddress("run", &_run);
+    _data->SetBranchStatus("isFHC", 1);
+    _data->SetBranchAddress("isFHC", &_isFHC);
+    _data->SetBranchStatus("BeRPA_A_cvwgt", 1);
+    _data->SetBranchAddress("BeRPA_A_cvwgt", &_BeRPA_cvwgt);
+    _data->SetBranchStatus("vtx_x", 1);
+    _data->SetBranchAddress("vtx_x", &_vtx_x);
+    _data->SetBranchStatus("vtx_y", 1);
+    _data->SetBranchAddress("vtx_y", &_vtx_y);
+    _data->SetBranchStatus("vtx_z", 1);
+    _data->SetBranchAddress("vtx_z", &_vtx_z);  
+    _data->SetBranchStatus("LepPDG",1); 
+    _data->SetBranchAddress("LepPDG",&_ipnu); 
+    _data->SetBranchStatus("LepNuAngle",1); 
+    _data->SetBranchAddress("LepNuAngle",&_LepTheta); 
+    _data->SetBranchStatus("Q2",1); 
+    _data->SetBranchAddress("Q2",&_Q2);
+ }
 
-
+  //FIX Commenting out for now
   TH1D* norm = (TH1D*)_sampleFile->Get("norm");
   if(!norm){
     std::cout<< "Add a norm KEY to the root file using MakeNormHists.cxx"<<std::endl;
@@ -284,13 +327,17 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   // now fill the actual variables
   duneobj->norm_s = norm->GetBinContent(1);
   duneobj->pot_s = pot/norm->GetBinContent(2);
+  //duneobj->norm_s = 1.0;
+  //duneobj->pot_s = 1.0;
   std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
   std::cout<< "norm_s = " << duneobj->norm_s << std::endl;
   duneobj->nEvents = _data->GetEntries();
   duneobj->nutype = nutype;
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
+ 
   
+  std::cout << "signal: " << duneobj->signal << std::endl;
   std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
   // allocate memory for dunemc variables
@@ -308,7 +355,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
   duneobj->rw_run = new int[duneobj->nEvents];
   duneobj->rw_isFHC = new int[duneobj->nEvents];
-  duneobj->rw_isFD = new int[duneobj->nEvents];
   duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
   duneobj->rw_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
@@ -354,7 +400,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
       duneobj->rw_nuPDG[i] = _nuPDG;
       duneobj->rw_run[i] = _run;
       duneobj->rw_isFHC[i] = _isFHC;
-      duneobj->rw_isFD[i] = _isFD;
       duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
       duneobj->rw_vtx_x[i] = _vtx_x;
       duneobj->rw_vtx_y[i] = _vtx_y;
@@ -420,6 +465,7 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
   fdobj->nEvents = duneobj->nEvents;
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
+  fdobj->signal = duneobj->signal;
   fdobj->x_var = new double*[fdobj->nEvents];
   fdobj->y_var = new double*[fdobj->nEvents];
   fdobj->enu_s_bin = new unsigned int[fdobj->nEvents];

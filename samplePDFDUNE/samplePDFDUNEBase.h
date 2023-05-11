@@ -66,7 +66,6 @@ struct dunemc_base {
   int    *rw_nuPDGunosc;
   int    *rw_nuPDG;
   int    *rw_run;
-  int    *rw_isFD;
   int    *rw_isFHC;
   double *rw_vtx_x;
   double *rw_vtx_y;
@@ -163,13 +162,14 @@ public:
   int _nuPDGunosc;
   int _nuPDG;
   int _run;
-  int _isFD;
+  int _isND;
   int _isFHC;
   double _vtx_x;
   double _vtx_y;
   double _vtx_z;
   double _LepTheta;
   double _Q2;
+
 
 
   //covarianceFlux *flux;
@@ -183,8 +183,6 @@ public:
   bool do_flux_rw;
   bool do_xsec_rw;
   bool do_det_rw;
-
-  int SampleDetID;
   
   //stuff for xsec norms  
   int nxsec_norm_modes;
