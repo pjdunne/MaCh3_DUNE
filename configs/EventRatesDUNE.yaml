@@ -1,9 +1,10 @@
 General:
   POT: 1.3628319e+23
   Systematics:
-    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_v1.root"
+    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.root"
     XsecCovName: "xsec_cov"
-    XsecAtGen: false
+    XsecStepScale: 0.1
+    XsecAtGen: false 
     OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
     OscCovName: "osc_cov"
   Output:
