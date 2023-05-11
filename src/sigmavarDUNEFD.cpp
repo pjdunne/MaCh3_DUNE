@@ -172,6 +172,7 @@ int main (int argc, char *argv[])
   std::vector<TH1D*> osc_hists;
   std::vector<double> CAFana_default_edges = get_default_CAFana_bins();
   for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
+    pdfs[ipdf] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
         pdfs[ipdf]->useBinnedOscReweighting(true, CAFana_default_edges.size()-1, &CAFana_default_edges[0]);
 	pdfs[ipdf]->reweight(osc->getPropPars(), osc->getPropPars());
 	std::string names_osc = std::string(names[ipdf]) + std::string("_osc");

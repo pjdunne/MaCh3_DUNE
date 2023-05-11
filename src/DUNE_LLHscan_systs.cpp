@@ -165,6 +165,10 @@ int main(int argc, char * argv[]) {
 	    << "oscpars[4] = " << (osc -> getPropPars())[4] << std::endl
 	    << "oscpars[5] = " << (osc -> getPropPars())[5] << std::endl;
 
+  // Setup Oscillation Calculator
+  for (unsigned ipdf = 0 ; ipdf < pdfs.size() ; ++ipdf) {
+    pdfs[ipdf] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
+  }
 
   // Set to nominal pars
   vector<double> xsecpar = xsec->getNominalArray();  
@@ -200,7 +204,7 @@ int main(int argc, char * argv[]) {
 
   int n_points = 80;
  
-  for (int i=0; i < xsecpar.size(); i++) {
+  for (int i=56; i < xsecpar.size(); i++) {
 
     xsecpar = xsec->getNominalArray();
     double lowerb = xsec->getNominal(i)-3.1*sqrt((*xsec->getCovMatrix())(i,i));
@@ -214,16 +218,24 @@ int main(int argc, char * argv[]) {
 
     //double dsigma = (2*3)/(n_points-1)
     double dsigma = 0.07594936708;
+    double totalllh = 0;
     double samplellh = 0;
+    double penaltyllh = 0;
+    std::cout << "######## Flux Systematic " << i-56 << std::endl;
     for (int j=0; j < n_points; j++) {
       xsec->setParameters(xsecpar);
       for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++) {
         pdfs[ipdf] -> reweight(osc -> getPropPars());
-        samplellh += pdfs[ipdf]->getLikelihood();
+		std::cout << "Sample " << ipdf << " has sample llh " << pdfs[ipdf]->GetLikelihood() << " for variation " << j <<  std::endl; 
+        samplellh += pdfs[ipdf]->GetLikelihood();
       }
-      //std::cout << "xsec par value = " << xsecpar[i] << " || llh = " << samplellh << std::endl;
-      hScan->Fill(xsecpar[i], 2*samplellh);
+      penaltyllh += (xsec->GetLikelihood());
+      //std::cout << "xsec par = " << i << " || xsec par value = " << xsecpar[i] << " || sample llh = " << samplellh << " || penalty llh  = " <<  penaltyllh << std::endl;
+	  totalllh = samplellh ;//+ penaltyllh;
+      hScan->Fill(xsecpar[i], 2*totalllh);
       samplellh = 0;
+      penaltyllh = 0;
+      totalllh = 0;
       xsecpar[i] += dsigma*sqrt((*xsec->getCovMatrix())(i,i));
     }
     Outfile->cd();

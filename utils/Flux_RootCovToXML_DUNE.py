@@ -59,6 +59,8 @@ def CLASS9(*args):
      return {"par":' '.join(args)}
 def CLASS10(*args): 
      return {"stepscale":' '.join(args)}
+def CLASS11(*args): 
+     return {"var":' '.join(args)}
 
 #Opening Covariance matrix
 File =  TFile.Open(Input, 'read')
@@ -381,7 +383,8 @@ for n in range(0,208):
                       E.correlation(A[202], CLASS9("b_202")),E.correlation(A[203], CLASS9("b_203")),
                       E.correlation(A[204], CLASS9("b_204")),E.correlation(A[205], CLASS9("b_205")),
                       E.correlation(A[206], CLASS9("b_206")),E.correlation(A[207], CLASS9("b_207")),
-                      E.prod_nupdg(Tag[n]), E.etru_bnd_low(Low[n]),E.etru_bnd_high(Up[n]),E.horncurrent(HC[n])            
+					  E.kinematic_cut(Low[n], " ", Up[n],CLASS11("TrueNeutrinoEnergy")), 
+                      E.prod_nupdg(Tag[n]), E.horncurrent(HC[n])            
                                  )
                 )
                      

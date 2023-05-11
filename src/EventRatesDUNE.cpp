@@ -87,10 +87,8 @@ int main(int argc, char * argv[]) {
 
   // oscpars from manager in order:
   // sin2th_12, sin2th_23, sin2th_13, delm2_12, delm2_23, delta_cp
-  //std::vector<double> oscpars =fitMan->getOscParameters();   
   std::vector<double> oscpars{0.307,0.528,0.0218,7.53e-5, 2.509e-3,-1.601}; // Asimov A
-  //std::vector<double> oscpars{0.3097,0.580,0.02241,7.39e-5, 2.4511e-3, 3.752}; // NuFit
-  //OSCPARAM = [0.3097,0.580,0.02241,7.39e-5,2.4511e-3, 3.752]
+  //std::vector<double> oscpars{0.310,0.582,0.0224,7.39e-5,2.525e-3,-2.498}; //NuFit 4.0 NH
 
   std::cout<<"Using these oscillation parameters: ";
   for(unsigned ipar=0;ipar<oscpars.size();ipar++) std::cout<<" "<<oscpars.at(ipar);
@@ -122,6 +120,8 @@ int main(int argc, char * argv[]) {
   SamplePDFs.push_back(numubar_pdf);
   samplePDFDUNEBase * nuebar_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
   SamplePDFs.push_back(nuebar_pdf);
+
+  
 
   // Oscillated
   osc -> setParameters(oscpars);
@@ -160,8 +160,7 @@ int main(int argc, char * argv[]) {
   }
 
   xsec->setParameters(XsecParVals);
-  //xsec->setStepScale(fitMan->getXsecStepScale());
-  xsec->setStepScale(0.01);
+  xsec->setStepScale(fitMan->raw()["General"]["Systematics"]["XsecStepScale"].as<double>());
 
 
   //Some place to store the histograms
@@ -170,7 +169,8 @@ int main(int argc, char * argv[]) {
   std::vector<std::string> sample_names;
 
   for (unsigned sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i) {
-
+    
+	
 	std::string name = SamplePDFs[sample_i]->GetSampleName();
 	sample_names.push_back(name);
 	TString NameTString = TString(name.c_str());
@@ -178,6 +178,7 @@ int main(int argc, char * argv[]) {
 	osc -> setParameters(oscpars_un);
 	osc -> acceptStep();
 
+	SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
 	TH1D *numu_unosc = (TH1D*)SamplePDFs[sample_i] -> get1DHist() -> Clone(NameTString+"_unosc");
 	unoscillated_hists.push_back(numu_unosc);

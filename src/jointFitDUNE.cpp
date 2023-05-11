@@ -59,7 +59,9 @@ int main(int argc, char **argv)
 
   bool statsonly = false;
 
-  std::vector<double> oscpars{0.307,0.528,0.0218,7.53e-5, 2.509e-3,-1.601}; // Asimov A
+  //std::vector<double> oscpars{0.307,0.528,0.0218,7.53e-5, 2.509e-3,-1.601}; // Asimov A
+  std::vector<double> oscpars{0.310,0.582,0.0224,7.39e-5,2.525e-3,-2.498}; //NuFit 4.0 NH
+  //
   // set up oscillation parameters (init params are in constructor)
   osc = new covarianceOsc(OscMatrixName.c_str(), OscMatrixFile.c_str());
 
@@ -96,7 +98,7 @@ int main(int argc, char **argv)
   osc->acceptStep();
 
 
-  xsec->setStepScale(0.01);
+  xsec->setStepScale(fitMan->raw()["General"]["Systematics"]["XsecStepScale"].as<double>());
   osc->setStepScale(0.045);
 
   //###########################################################################################################
@@ -120,13 +122,9 @@ int main(int argc, char **argv)
   pdfs.push_back(nuebar_pdf);
 
   for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-    pdfs[ipdf]->setUseBeta(false);   // Set whether to use beta in oscillation probability calculation
-    pdfs[ipdf]->setApplyBetaNue(false);   // Set option to apply beta to nue appearance probability instead of nuebar appearance probability
-    pdfs[ipdf]->setApplyBetaDiag(false);        // Set option to apply (1/beta) to nue appearance probability and beta to nuebar appearance probability
     pdfs[ipdf]->useNonDoubledAngles(true);
+    pdfs[ipdf] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
   }
-
-
   
   // tell PDF where covariances are
   //for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
@@ -140,12 +138,12 @@ int main(int argc, char **argv)
   std::map<TString,std::vector<double> > parstarts;
   int lastStep = 0;
 
- /*
+ 
 
-  if(fitMan->GetStartFromPosterior()){//Start from values at the end of an already run chain
+  if(fitMan->raw()["General"]["StartFromPos"].as<bool>()) {//Start from values at the end of an already run chain
     //Read in paramter names and values from file
-    std::cout << "MCMC getting starting position from " << fitMan->GetPosteriorFiles() << std::endl;
-    TFile *infile = new TFile(fitMan->GetPosteriorFiles().c_str(), "READ");
+    std::cout << "MCMC getting starting position from " << fitMan->raw()["General"]["PosFileName"].as<std::string>() << std::endl;
+    TFile *infile = new TFile(fitMan->raw()["General"]["PosFileName"].as<std::string>().c_str(), "READ");
     TTree *posts = (TTree*)infile->Get("posteriors");
     TObjArray* brlis = (TObjArray*)posts->GetListOfBranches();
     int nbr = brlis->GetEntries();
@@ -173,12 +171,7 @@ int main(int argc, char **argv)
     
     //Make vectors of parameter value for each covariance
     std::vector<TString> covtypes;
-    else{
-      covtypes.push_back("xsec");
-      covtypes.push_back("b");
-      covtypes.push_back("ndd");
-    }
-    covtypes.push_back("skd_joint");
+    covtypes.push_back("xsec");
  
     for(unsigned icov=0;icov<covtypes.size();icov++){
       std::vector<double> covparstarts;
@@ -214,7 +207,7 @@ int main(int argc, char **argv)
     lastStep = step_val;
 
   }
-  */
+  
   // set to nominal
   xsec->setParameters();
 
@@ -223,7 +216,7 @@ int main(int argc, char **argv)
 
   std::vector<double> CAFana_default_edges = get_default_CAFana_bins();
   for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-    pdfs[ipdf]->useBinnedOscReweighting(true, CAFana_default_edges.size()-1, &CAFana_default_edges[0]);
+    //pdfs[ipdf]->useBinnedOscReweighting(true, CAFana_default_edges.size()-1, &CAFana_default_edges[0]);
     pdfs[ipdf]->reweight(osc->getPropPars());     // Get nominal predictions
   }
 
@@ -254,14 +247,14 @@ int main(int argc, char **argv)
   TH1D *nuebar_data;
 
 
-  // -------------------------------------------------------------------- //
+  
   // APPLY BANFF TUNING TO ASIMOV INPUT (Don't apply as a prior for fit, just use for Asimov "data")
   // Note: this is hardcoded for BANFF 2017b
 
-    std::cout << "-----------------------" << std::endl; 
+  std::cout << "-----------------------" << std::endl; 
 
-    // set nominal
-    xsec->setParameters();
+  // set nominal
+  xsec->setParameters();
 
 
   numu_pdf->reweight(osc->getPropPars());
@@ -293,7 +286,17 @@ int main(int argc, char **argv)
   // Back to actual nominal for fit
   // If starting from end values of a previous chain set everything to the values from there
   // and do acceptStep() to update fParCurr with these values
-  xsec->setParameters();
+  //
+  if(fitMan->raw()["General"]["StartFromPos"].as<bool>()) {
+    if(parstarts.find("xsec")!=parstarts.end()) {
+      xsec->setParameters(parstarts["xsec"]);
+      xsec->acceptStep();
+    }
+    else {xsec->setParameters();}
+  }
+  else {
+    xsec->setParameters();
+  }
 
   //###########################################################################################################
   // MCMC
@@ -309,15 +312,14 @@ int main(int argc, char **argv)
   if(lastStep > 0) markovChain->setInitialStepNumber(lastStep+1);
 
   // add samples
-  // if (useND280) {
-  //   markovChain->addSamplePDF(sample);
-  // }
   markovChain->addSamplePDF(numu_pdf);
   markovChain->addSamplePDF(numubar_pdf);
   markovChain->addSamplePDF(nue_pdf);
   markovChain->addSamplePDF(nuebar_pdf);
 
-  //!!add cc1pi
+  //start chain from random position
+  xsec->throwParameters();
+  osc->throwParameters();
 
   // add systematic objects
   if (!statsonly) {

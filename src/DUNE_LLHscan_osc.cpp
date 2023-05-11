@@ -165,6 +165,10 @@ int main(int argc, char * argv[]) {
 	    << "oscpars[4] = " << (osc -> getPropPars())[4] << std::endl
 	    << "oscpars[5] = " << (osc -> getPropPars())[5] << std::endl;
 
+  // Setup Oscillation Calculator
+  for (unsigned sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i) {
+    SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
+  }
 
   // Set to nominal pars
   vector<double> xsecpar = xsec->getNominalArray();  
@@ -227,7 +231,7 @@ int main(int argc, char * argv[]) {
       osc->setParameters(oscpars);
       for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
         pdfs[ipdf] -> reweight(osc -> getPropPars(), osc -> getPropPars());
-        samplellh += pdfs[ipdf]->getLikelihood();
+        samplellh += pdfs[ipdf]->GetLikelihood();
     }
     int gbin = hScan->GetBin(j+1, k+1);
     std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh <<  std::endl;
