@@ -41,6 +41,7 @@ fi
 # MULTITHREAD=1 means MP is on, if environment variable doesn't exist it's off
 unset MULTITHREAD
 export MULTITHREAD=1
+export OMP_NUM_THREADS=1
 
 # Automatically set CUDA for Emerald
 if [[ $HOSTNAME == *gpu.rl.ac.uk ]]; then
