@@ -317,9 +317,11 @@ int main(int argc, char **argv)
   markovChain->addSamplePDF(nue_pdf);
   markovChain->addSamplePDF(nuebar_pdf);
 
-  //start chain from random position
-  xsec->throwParameters();
-  osc->throwParameters();
+  if(!fitMan->raw()["General"]["StartFromPos"].as<bool>()) {
+    //start chain from random position unless starting from a previous chain
+    xsec->throwParameters();
+    osc->throwParameters();
+  }
 
   // add systematic objects
   if (!statsonly) {
