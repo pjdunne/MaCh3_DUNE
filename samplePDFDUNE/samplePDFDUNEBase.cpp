@@ -379,7 +379,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
 
   _data->GetEntry(0);
   
-
   //FILL DUNE STRUCT
   for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
     {
@@ -421,7 +420,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
       duneobj->energyscale_w[i] = 1.0;
       
       duneobj->flux_w[i] = 1.0;
- 
     }
   
   //std::vector<double> etruVector(duneobj->rw_etru, duneobj->rw_etru + duneobj->nEvents);
@@ -499,6 +497,12 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
   fdobj->total_weight_pointers = new double**[fdobj->nEvents];
   fdobj->Target = new int*[fdobj->nEvents];
 
+  //DB Example Atmospheric Implementation
+  fdobj->Unity = 1.;
+  fdobj->osc_w_pointer = new const double*[fdobj->nEvents];
+  fdobj->rw_truecz = new double[fdobj->nEvents];
+  TRandom3* CZ = new TRandom3(1);
+
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
 	fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
 	fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
@@ -517,6 +521,10 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
 	fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
 	fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
 	fdobj->SampleDetID = SampleDetID;
+
+	//DB Example Atmospheric Implementation
+	fdobj->osc_w_pointer[iEvent] = &(fdobj->Unity);
+	fdobj->rw_truecz[iEvent] = CZ->Uniform(-1.,1.);
 
 	//ETA - this is where the variables that you want to bin your samples in are defined
 	//If you want to bin in different variables this is where you put it for now
