@@ -76,7 +76,7 @@ int main(int argc, char * argv[]) {
   gStyle -> SetPalette(1);
 
   // make file to save plots
-  TFile *Outfile = new TFile(fitMan->raw()["General"]["Output"]["OUTPUTNAME"].as<std::string>().c_str(),"RECREATE");
+  TFile *Outfile = new TFile(fitMan->raw()["General"]["Output"]["FileName"].as<std::string>().c_str(),"RECREATE");
 
 
   covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str()) ;
