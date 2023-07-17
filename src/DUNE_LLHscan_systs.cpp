@@ -204,7 +204,7 @@ int main(int argc, char * argv[]) {
 
   int n_points = 80;
  
-  for (int i=56; i < xsecpar.size(); i++) {
+  for (int i=0; i < xsecpar.size(); i++) {
 
     std::vector<std::string> histnames;
     std::vector<std::string> histtitles;
