@@ -206,14 +206,53 @@ int main(int argc, char * argv[]) {
  
   for (int i=56; i < xsecpar.size(); i++) {
 
+    std::vector<std::string> histnames;
+    std::vector<std::string> histtitles;
+    std::vector<TH1D*> llh_hists;
+ 
+
     xsecpar = xsec->getNominalArray();
-    double lowerb = xsec->getNominal(i)-3.1*sqrt((*xsec->getCovMatrix())(i,i));
-    double upperb = xsec->getNominal(i)+3.1*sqrt((*xsec->getCovMatrix())(i,i));
+    double lowerb = xsec->getNominal(i)-3.01*sqrt((*xsec->getCovMatrix())(i,i));
+    double upperb = xsec->getNominal(i)+3.01*sqrt((*xsec->getCovMatrix())(i,i));
   
-    std::string histname = "xsec_" + std::to_string(i) + "_llhscan";
-    std::string histtitle = "xsec_" + std::to_string(i);
-   
-    TH1D *hScan = new TH1D(histname.c_str(), histtitle.c_str(), 40, lowerb, upperb);
+
+    std::string histname_fhcnumu = "xsec_" + std::to_string(i) + "_llh_FD_FHC_numu";
+    std::string histtitle_fhcnumu = "xsec_" + std::to_string(i) + "_FD_FHC_numu";
+	histnames.push_back(histname_fhcnumu);
+	histtitles.push_back(histtitle_fhcnumu);
+
+    std::string histname_rhcnumu = "xsec_" + std::to_string(i) + "_llh FD_RHC_numu";
+    std::string histtitle_rhcnumu = "xsec_" + std::to_string(i) + "_FD_RHC_numu";
+	histnames.push_back(histname_rhcnumu);
+	histtitles.push_back(histtitle_rhcnumu);
+
+    std::string histname_fhcnue = "xsec_" + std::to_string(i) + "_llh_FD_FHC_nue";
+    std::string histtitle_fhcnue = "xsec_" + std::to_string(i) + "_FD_FHC_nue"; ;
+	histnames.push_back(histname_fhcnue);
+	histtitles.push_back(histtitle_fhcnue);
+
+    std::string histname_rhcnue = "xsec_" + std::to_string(i) + "_llh_FD_RHC_nue";
+    std::string histtitle_rhcnue = "xsec_" + std::to_string(i) + "_FD_RHC_nue";
+	histnames.push_back(histname_rhcnue);
+	histtitles.push_back(histtitle_rhcnue);
+  
+    std::string histname_systpen = "xsec_" + std::to_string(i) + "_llh_syst";
+    std::string histtitle_systpen = "xsec_" + std::to_string(i) + "_syst";
+	histnames.push_back(histname_systpen);
+	histtitles.push_back(histtitle_systpen);
+
+    std::string histname = "xsec_" + std::to_string(i) + "_llh_total";
+    std::string histtitle = "xsec_" + std::to_string(i) + "_total";
+	histnames.push_back(histname);
+	histtitles.push_back(histtitle);
+
+	
+    for(int i=0; i < histnames.size(); i++)
+	{
+      TH1D *hScan = new TH1D(histnames[i].c_str(), histtitles[i].c_str(), 80, lowerb, upperb);
+	  llh_hists.push_back(hScan);
+	}
+
     xsecpar[i] = xsec->getNominal(i)-3*sqrt((*xsec->getCovMatrix())(i,i));
 
     //double dsigma = (2*3)/(n_points-1)
@@ -221,28 +260,34 @@ int main(int argc, char * argv[]) {
     double totalllh = 0;
     double samplellh = 0;
     double penaltyllh = 0;
-    std::cout << "######## Flux Systematic " << i-56 << std::endl;
+
     for (int j=0; j < n_points; j++) {
-      xsec->setParameters(xsecpar);
+      
+	  xsec->setParameters(xsecpar);
+
       for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++) {
         pdfs[ipdf] -> reweight(osc -> getPropPars());
-		std::cout << "Sample " << ipdf << " has sample llh " << pdfs[ipdf]->GetLikelihood() << " for variation " << j <<  std::endl; 
+		std::cout << "Sample " << ipdf << " has sample llh " << pdfs[ipdf]->GetLikelihood() << " for variation " << j <<  std::endl;
+	    llh_hists[ipdf]->Fill(xsecpar[i], 2*pdfs[ipdf]->GetLikelihood());	
         samplellh += pdfs[ipdf]->GetLikelihood();
       }
-      penaltyllh += (xsec->GetLikelihood());
+
+      penaltyllh = (xsec->GetLikelihood());
+	  llh_hists[4]->Fill(xsecpar[i], 2*penaltyllh);
       //std::cout << "xsec par = " << i << " || xsec par value = " << xsecpar[i] << " || sample llh = " << samplellh << " || penalty llh  = " <<  penaltyllh << std::endl;
 	  totalllh = samplellh ;//+ penaltyllh;
-      hScan->Fill(xsecpar[i], 2*totalllh);
+	  llh_hists[5]->Fill(xsecpar[i], 2*totalllh);
       samplellh = 0;
       penaltyllh = 0;
       totalllh = 0;
       xsecpar[i] += dsigma*sqrt((*xsec->getCovMatrix())(i,i));
     }
     Outfile->cd();
-    hScan->Write();
+	for(int i=0; i<llh_hists.size(); i++)
+	{
+      llh_hists[i]->Write();
+	}
     std::cout << "Finished xsec param " << i << std::endl;
   }
   return 0;
 }
-
-
