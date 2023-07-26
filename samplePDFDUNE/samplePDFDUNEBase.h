@@ -49,6 +49,23 @@ struct dunemc_base {
 
   // histo pdf bins
   double *rw_erec;
+  double *rw_erec_shifted;
+  double *rw_erec_had;
+  double *rw_erec_lep;
+  
+  double *rw_eRecoP;
+  double *rw_eRecoPip;
+  double *rw_eRecoPim;
+  double *rw_eRecoPi0;
+  double *rw_eRecoN;
+
+  double *rw_LepE;
+  double *rw_eP;
+  double *rw_ePip;
+  double *rw_ePim;
+  double *rw_ePi0;
+  double *rw_eN;
+
   double *rw_etru;
   double *rw_mom;
   double *rw_theta;
@@ -66,7 +83,7 @@ struct dunemc_base {
   int    *rw_nuPDGunosc;
   int    *rw_nuPDG;
   int    *rw_run;
-  int    *rw_isFHC;
+  bool    *rw_isFHC;
   double *rw_vtx_x;
   double *rw_vtx_y;
   double *rw_vtx_z;
@@ -128,6 +145,9 @@ public:
   int getNMCSamples();
   int getNEventsInSample(int sample);
 
+  //Apply shifts from functional parameters
+  void applyShifts(int iSample, int iEvent);
+
 
   // dunemc
   std::vector<struct dunemc_base> dunemcSamples;
@@ -143,9 +163,35 @@ public:
   int _ipnu;
 
   // DUNEMC Variables
-  double _ev;
+
+  //Reco Variables
   double _erec;
   double _erec_nue;
+  double _erec_had;
+  double _erec_had_nue;
+  double _erec_lep;
+  double _erec_lep_nue;
+
+  double _eRecoP;
+  double _eRecoPip;
+  double _eRecoPim;
+  double _eRecoPi0;
+  double _eRecoN;
+
+  double _cvnnumu;
+  double _cvnnue;
+  double _vtx_x;
+  double _vtx_y;
+  double _vtx_z;
+
+  //Truth Variables
+  double _ev;
+  double _LepE;
+  double _eP;
+  double _ePip;
+  double _ePim;
+  double _ePi0;
+  double _eN;
   double _NuMomX;
   double _NuMomY;
   double _NuMomZ;
@@ -153,8 +199,6 @@ public:
   double _LepMomY;
   double _LepMomZ;
   double _LepNuAngle;
-  double _cvnnumu;
-  double _cvnnue;
   double _BeRPA_cvwgt;
   double _maccres_cvwgt;
   double _nunpcc1_cvwgt;
@@ -162,11 +206,7 @@ public:
   int _nuPDGunosc;
   int _nuPDG;
   int _run;
-  int _isND;
   int _isFHC;
-  double _vtx_x;
-  double _vtx_y;
-  double _vtx_z;
   double _LepTheta;
   double _Q2;
 
@@ -205,15 +245,40 @@ public:
   // Using the smarter xsec covariance matrix reader?
   bool DoItSmart;
 
+  //Positions of FD Detector systematics
+  double tot_escale_fd_pos;
+  double tot_escale_sqrt_fd_pos;
+  double tot_escale_invsqrt_fd_pos;
+  double had_escale_fd_pos;
+  double had_escale_sqrt_fd_pos;
+  double had_escale_invsqrt_fd_pos;
+  double mu_escale_fd_pos;
+  double mu_escale_sqrt_fd_pos;
+  double mu_escale_invsqrt_fd_pos;
+  double n_escale_fd_pos;
+  double n_escale_sqrt_fd_pos;
+  double n_escale_invsqrt_fd_pos;
+  double em_escale_fd_pos;
+  double em_escale_sqrt_fd_pos;
+  double em_escale_invsqrt_fd_pos;
+  double had_res_fd_pos;
+  double mu_res_fd_pos;
+  double n_res_fd_pos;
+  double em_res_fd_pos;
+
+
+  std::vector<const double*> FDDetectorSystPointers;
+  int nFDDetectorSystPointers;
+
   // Parameters used in the DoItSmart xsec setup
   // The old version hard-codes these instead
   std::vector<int> normParsModes;
   std::vector< std::vector<int> > normParsTarget;
   std::vector< std::vector<int> > normParsPDG;
   std::vector<int> normParsIndex;
-  int nFuncParams;
-  std::vector<int> funcParsIndex;
-  std::vector<std::string> funcParsNames;
+  //int nFuncParams;
+  //std::vector<int> funcParsIndex;
+  //std::vector<std::string> funcParsNames;
   // spline params (don't technically need, just included for print-screen sanity check purposes)
   int nSplineParams;
   std::vector<int> splineParsIndex;
