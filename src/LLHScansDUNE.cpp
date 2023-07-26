@@ -219,8 +219,9 @@ int main(int argc, char * argv[]) {
     xsecpar[par] = xsec->getNominal(par)-n_sigma*sqrt((*xsec->getCovMatrix())(par,par));
  
 	// Increment in sigma units
-    double dsigma = (2*n_sigma)/(n_points-1);
-	
+    double dsigma = (2*n_sigma)/((double)n_points-1);
+	std::cout << "dsigma = " << dsigma << std::endl;
+
 	// Loop over parameter values
     for (unsigned val =0; val < n_points; val++) {
       double totalllh = 0;
