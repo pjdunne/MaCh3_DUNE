@@ -1,4 +1,4 @@
-set(APPS EventRatesDUNE SigmaVariationsDUNE jointFitDUNE)
+set(APPS EventRatesDUNE SigmaVariationsDUNE LLHScansDUNE jointFitDUNE)
 
 foreach(a ${APPS})
 	  add_executable(${a} ${a}.cpp)
