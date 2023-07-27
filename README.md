@@ -78,17 +78,18 @@ dm2_12 = 2.509E-3 eV^2
 dCP = -1.601 radians
 
 ~~~~~~~~~~~~~~~~
-Integrals of nominal hists: 
-FHC_numu unosc:      25722.11458
-FHC_numu   osc:      7757.90848
+Integrals of nominal hists:
 
-FHC_nue unosc:      307.81627
-FHC_nue   osc:      1618.28931
-
-RHC_numu unosc:      12380.38205
-RHC_numu   osc:      4105.54501
-
-RHC_nue unosc:      167.78451
-RHC_nue   osc:      407.06125
+FHC_numu unosc:      25941.57467
+FHC_numu   osc:      7977.36421
+ 
+FHC_nue unosc:      390.85150
+FHC_nue   osc:      1698.28079
+ 
+RHC_numu unosc:      12492.61743
+RHC_numu   osc:      4217.78765
+ 
+RHC_nue unosc:      208.31873
+RHC_nue   osc:      447.09673
 ~~~~~~~~~~~~~~~~
 
