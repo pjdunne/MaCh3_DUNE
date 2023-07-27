@@ -258,14 +258,14 @@ void samplePDFDUNEBaseND::setupDUNEMC(const char *sampleFile, dunendmc_base *dun
   }
 
   //x10 since we're using 1/10 the MC
-  duneobj->pot_s = (pot*1000)/1e21;
+  duneobj->pot_s = (pot)/1e21;
 
   //LW - eventually add norm bins to CAFs
   //duneobj->norm_s = norm->GetBinContent(1);
   //duneobj->pot_s = pot/norm->GetBinContent(2);
   std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
   std::cout<< "norm_s = " << duneobj->norm_s << std::endl;
-  duneobj->nEvents = _data->GetEntries()/1000;
+  duneobj->nEvents = _data->GetEntries();
   duneobj->nutype = nutype;
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
