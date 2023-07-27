@@ -211,14 +211,6 @@ int main(int argc, char * argv[]) {
 
 	osc->setParameters(oscpars);
 	osc->acceptStep();
-	// Oscillated
-	std::cout << "oscpars[0] = " << (osc -> getPropPars())[0] << std::endl
-	  << "oscpars[1] = " << (osc -> getPropPars())[1] << std::endl
-	  << "oscpars[2] = " << (osc -> getPropPars())[2] << std::endl
-	  << "oscpars[3] = " << (osc -> getPropPars())[3] << std::endl
-	  << "oscpars[4] = " << (osc -> getPropPars())[4] << std::endl
-	  << "oscpars[5] = " << (osc -> getPropPars())[5] << std::endl;
-
 
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
 	TH1D *sample_osc = (TH1D*)SamplePDFs[sample_i] -> get1DHist()->Clone(NameTString+"_osc");
@@ -238,12 +230,13 @@ int main(int argc, char * argv[]) {
   canv->Print((OutPlotName+"]").c_str());
 
   //Now print out some event rates, we'll make a nice latex table at some point 
+  std::cout << "Integrals of nominal hists: " << std::endl;
   for (unsigned sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i) {
-	std::cout << "Integrals of nominal hists: " << std::endl;
 	std::cout << sample_names[sample_i].c_str() << " unosc:      " << unoscillated_hists[sample_i]-> Integral() << std::endl;
 	std::cout << sample_names[sample_i].c_str() << "   osc:      " << oscillated_hists[sample_i]-> Integral() << std::endl; 
-	std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
+	std::cout << " " << std::endl;
   }
+  std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
 
   return 0;
  }

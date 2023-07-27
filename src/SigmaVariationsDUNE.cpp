@@ -212,12 +212,13 @@ int main(int argc, char * argv[]) {
   }
 
   //Now print out some event rates, we'll make a nice latex table at some point 
-  for (unsigned sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i){
-	std::cout << "Integrals of nominal hists: " << std::endl;
+  std::cout << "Integrals of nominal hists: " << std::endl;
+  for (unsigned sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i) {
 	std::cout << sample_names[sample_i].c_str() << " unosc:      " << unoscillated_hists[sample_i]-> Integral() << std::endl;
 	std::cout << sample_names[sample_i].c_str() << "   osc:      " << oscillated_hists[sample_i]-> Integral() << std::endl; 
-	std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
+	std::cout << " " << std::endl;
   }
+  std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
 
   /////////////////
   //
