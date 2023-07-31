@@ -41,70 +41,70 @@ BeRPA_A : Has CV weights but still has a generated value of 0
 <!-- ### FD detector parameters ### -->
 
 <!-- Total Energy Scale -->
-  <parameter name="TotalEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="TotalEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="TotalEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.01" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="TotalEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.01" renorm="0" type="function" detid="24" stepscale="0.8">
   </parameter>
 
-  <parameter name="TotalEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="TotalEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
 <!-- Charged Hadron Energy Scale -->
-  <parameter name="HadEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="HadEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="HadEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="HadEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="HadEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="HadEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.5">
   </parameter>
 
 <!-- Muon Energy Scale -->
-  <parameter name="MuEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="MuEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.5">
   </parameter>
 
-  <parameter name="MuEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.005" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="MuEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.005" renorm="0" type="function" detid="24" stepscale="0.8">
   </parameter>
 
-  <parameter name="MuEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="MuEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
 <!-- Neutron Energy Scale -->
-  <parameter name="NEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.2" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="NEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.2" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="NEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.3" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="NEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.3" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="NEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.3" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="NEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.3" renorm="0" type="function" detid="24" stepscale="0.3">
   </parameter>
 
 <!-- Electromagnetic Shower Energy Scale -->
-  <parameter name="EMEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="EMEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
-  <parameter name="EMEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="EMEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="0.9">
   </parameter>
 
-  <parameter name="EMEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="EMEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
 
 <!-- Charged Hadron Resolution -->
-  <parameter name="HadResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="HadResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
 <!-- Muon Resolution -->
-  <parameter name="MuResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="MuResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.7">
   </parameter>
 
 <!-- Neutron Resolution -->
-  <parameter name="NResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.1" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="NResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.1" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
 <!-- Electromagnetic Shower Resolution -->
-  <parameter name="EMResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="EMResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
 

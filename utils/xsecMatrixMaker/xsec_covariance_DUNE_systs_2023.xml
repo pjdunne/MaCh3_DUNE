@@ -37,70 +37,70 @@ BeRPA_A : Has CV weights but still has a generated value of 0
 <!-- ### FD detector parameters ### -->
 
 <!-- Total Energy Scale -->
-  <parameter name="TotalEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="TotalEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="TotalEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.01" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="TotalEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.01" renorm="0" type="function" detid="24" stepscale="0.8">
   </parameter>
 
-  <parameter name="TotalEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="TotalEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
 <!-- Charged Hadron Energy Scale -->
-  <parameter name="HadEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="HadEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="HadEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="HadEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="HadEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="HadEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.05" renorm="0" type="function" detid="24" stepscale="0.5">
   </parameter>
 
 <!-- Muon Energy Scale -->
-  <parameter name="MuEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="MuEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.5">
   </parameter>
 
-  <parameter name="MuEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.005" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="MuEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.005" renorm="0" type="function" detid="24" stepscale="0.8">
   </parameter>
 
-  <parameter name="MuEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="MuEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
 <!-- Neutron Energy Scale -->
-  <parameter name="NEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.2" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="NEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.2" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="NEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.3" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="NEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.3" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
-  <parameter name="NEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.3" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="NEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.3" renorm="0" type="function" detid="24" stepscale="0.3">
   </parameter>
 
 <!-- Electromagnetic Shower Energy Scale -->
-  <parameter name="EMEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="EMEScaleFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
-  <parameter name="EMEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="EMEScaleSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="0.9">
   </parameter>
 
-  <parameter name="EMEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="EMEScaleInvSqrtFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.025" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
 
 <!-- Charged Hadron Resolution -->
-  <parameter name="HadResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="HadResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
 <!-- Muon Resolution -->
-  <parameter name="MuResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="MuResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.7">
   </parameter>
 
 <!-- Neutron Resolution -->
-  <parameter name="NResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.1" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="NResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.1" renorm="0" type="function" detid="24" stepscale="0.6">
   </parameter>
 
 <!-- Electromagnetic Shower Resolution -->
-  <parameter name="EMResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="0.4">
+  <parameter name="EMResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
 
@@ -115,235 +115,235 @@ BeRPA_A : Has CV weights but still has a generated value of 0
 	<fd_mode>0</fd_mode>
   </parameter> -->
 
-  <parameter name="CCQEPauliSupViaKF" nom="0.0" prior="0.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="pauli" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="CCQEPauliSupViaKF" nom="0.0" prior="0.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="pauli" nd_spline_name="MAQEGraph" stepscale="0.0005">
 	<fd_mode>0</fd_mode>
   </parameter>
 
 <!-- Pure RES parameters -->
-  <parameter name="MaCCRES" nom="-0.36" prior="-0.36" lb="-0.72" ub="0.0" error="0.09" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="mares" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="MaCCRES" nom="-0.36" prior="-0.36" lb="-0.72" ub="0.0" error="0.09" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="mares" nd_spline_name="MAQEGraph" stepscale="0.007">
 	<fd_mode>3</fd_mode>
   </parameter>
 
-  <parameter name="MvCCRES" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="mvres" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="MvCCRES" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="mvres" nd_spline_name="MAQEGraph" stepscale="0.0002">
 	<fd_mode>3</fd_mode>
   </parameter>
 
- <parameter name="MaNCRES" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="mancres" nd_spline_name="MAQEGraph" stepscale="0.0001">
+ <parameter name="MaNCRES" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="mancres" nd_spline_name="MAQEGraph" stepscale="0.007">
 	<fd_mode>16</fd_mode>
   </parameter>
 
-  <parameter name="MvNCRES" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="mvncres" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="MvNCRES" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="mvncres" nd_spline_name="MAQEGraph" stepscale="0.2">
 	<fd_mode>16</fd_mode>
   </parameter>
 
-  <parameter name="ThetaDelta2NPi" nom="0.0" prior="0.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="thetadelta" nd_spline_name="MAQEGraph" stepscale="0.0001" >
+  <parameter name="ThetaDelta2NPi" nom="0.0" prior="0.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="thetadelta" nd_spline_name="MAQEGraph" stepscale="0.002" >
 	<fd_mode>3 16</fd_mode>
   </parameter>
 
 
   <!-- Pure DIS parameters -->
-  <parameter name="AhtBY" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="ahtby" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="AhtBY" nom="0.0" prior="0.0" lb="-3" ub="3" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="ahtby" nd_spline_name="MAQEGraph" stepscale="0.04">
 	<fd_mode>2 15</fd_mode>
   </parameter>
 
-  <parameter name="BhtBY" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="bhtby" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="BhtBY" nom="0.0" prior="0.0" lb="-3" ub="3" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="bhtby" nd_spline_name="MAQEGraph" stepscale="0.01">
 	<fd_mode>2 15</fd_mode>
   </parameter>
 
-  <parameter name="CV1uBY" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="cv1uby" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="CV1uBY" nom="0.0" prior="0.0" lb="-3" ub="3" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="cv1uby" nd_spline_name="MAQEGraph" stepscale="0.03">
 	<fd_mode>2 15</fd_mode>
   </parameter>
 
-  <parameter name="CV2uBY" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="cv2uby" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="CV2uBY" nom="0.0" prior="0.0" lb="-3" ub="3" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="cv2uby" nd_spline_name="MAQEGraph" stepscale="0.04">
 	<fd_mode>2 15</fd_mode>
   </parameter>
 
   <!-- DIS and RES parameters -->
-  <parameter name="FrCEx_pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frcexpi" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrCEx_pi" nom="0.0" prior="0.0" lb="-3" ub="3" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frcexpi" nd_spline_name="MAQEGraph" stepscale="0.08">
 	<fd_mode>2 3 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrElas_pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frelaspi" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrElas_pi" nom="0.0" prior="0.0" lb="-3" ub="3" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frelaspi" nd_spline_name="MAQEGraph" stepscale="0.3">
 	<fd_mode>2 3 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrInel_pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frinelpi" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrInel_pi" nom="0.0" prior="0.0" lb="-3" ub="3" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frinelpi" nd_spline_name="MAQEGraph" stepscale="0.04">
 	<fd_mode>2 3 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrAbs_pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frabspi" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrAbs_pi" nom="0.0" prior="0.0" lb="-3" ub="3" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frabspi" nd_spline_name="MAQEGraph" stepscale="0.04">
 	<fd_mode>2 3 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrPiProd_pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frpiprodpi" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrPiProd_pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frpiprodpi" nd_spline_name="MAQEGraph" stepscale="0.7">
 	<fd_mode>2 3 15 16</fd_mode>
   </parameter>
   
 
 <!-- most modes parameters -->
-  <parameter name="FrCEx_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frcexn" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrCEx_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frcexn" nd_spline_name="MAQEGraph" stepscale="0.06">
 	<fd_mode>0 2 3 14 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrElas_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frelasn" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrElas_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frelasn" nd_spline_name="MAQEGraph" stepscale="0.02">
 	<fd_mode>0 2 3 14 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrInel_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frineln" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrInel_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frineln" nd_spline_name="MAQEGraph" stepscale="0.05">
 	<fd_mode>0 2 3 14 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrAbs_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frabsn" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrAbs_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frabsn" nd_spline_name="MAQEGraph" stepscale="0.04">
 	<fd_mode>0 2 3 14 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrPiProd_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frpiprodn" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="FrPiProd_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frpiprodn" nd_spline_name="MAQEGraph" stepscale="0.6">
 	<fd_mode>0 2 3 14 15 16</fd_mode>
   </parameter>
 
   <!-- 2p2h modes -->
-  <parameter name="E2p2h_A_nu" nom="0.0" prior="0.0" lb="-1.0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="e2anu" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="E2p2h_A_nu" nom="0.0" prior="0.0" lb="-1.0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="e2anu" nd_spline_name="MAQEGraph" stepscale="0.0003">
 	<fd_mode>9 22</fd_mode>
   </parameter>
 
-  <parameter name="E2p2h_B_nu" nom="0.0" prior="0.0" lb="-1.0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="e2bnu" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="E2p2h_B_nu" nom="0.0" prior="0.0" lb="-1.0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="e2bnu" nd_spline_name="MAQEGraph" stepscale="0.0007">
 	<fd_mode>9 22</fd_mode>
   </parameter>
 
-  <parameter name="E2p2h_A_nubar" nom="0.0" prior="0.0" lb="-1.0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="e2anubar" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="E2p2h_A_nubar" nom="0.0" prior="0.0" lb="-1.0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="e2anubar" nd_spline_name="MAQEGraph" stepscale="0.0007">
 	<fd_mode>9 22</fd_mode>
   </parameter>
 
-  <parameter name="E2p2h_B_nubar" nom="0.0" prior="0.0" lb="-1.0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="e2bnubar" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="E2p2h_B_nubar" nom="0.0" prior="0.0" lb="-1.0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="e2bnubar" nd_spline_name="MAQEGraph" stepscale="0.0009">
 	<fd_mode>9 22</fd_mode>
   </parameter>
 
   
-  <parameter name="C12ToAr40_2p2hScaling_nu" nom="0.0" prior="0.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="c12nu" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="C12ToAr40_2p2hScaling_nu" nom="0.0" prior="0.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="c12nu" nd_spline_name="MAQEGraph" stepscale="0.003">
 	<fd_mode>9 22</fd_mode>
   </parameter>
 
-  <parameter name="C12ToAr40_2p2hScaling_nubar" nom="0.0" prior="0.0" lb="0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="c12nubar" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="C12ToAr40_2p2hScaling_nubar" nom="0.0" prior="0.0" lb="0" ub="1.0" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="c12nubar" nd_spline_name="MAQEGraph" stepscale="0.009">
 	<fd_mode>9 22</fd_mode>
   </parameter>
 
   <!-- More DIS Modes -->
-  <parameter name="NR_nu_n_CC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nuncc2" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_n_CC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nuncc2" nd_spline_name="MAQEGraph" stepscale="0.0004">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_n_CC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nuncc3" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_n_CC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nuncc3" nd_spline_name="MAQEGraph" stepscale="0.0007">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_p_CC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupcc2" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_p_CC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupcc2" nd_spline_name="MAQEGraph" stepscale="0.001">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_p_CC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupcc3" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_p_CC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupcc3" nd_spline_name="MAQEGraph" stepscale="0.001">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_np_CC_1pi" nom="-1.14" prior="-1.14" lb="-1.22" ub="-1.06" error="0.02" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nunpcc1" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_np_CC_1pi" nom="-1.14" prior="-1.14" lb="-1.22" ub="-1.06" error="0.2" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nunpcc1" nd_spline_name="MAQEGraph" stepscale="0.0001">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_n_NC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nunnc1" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_n_NC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nunnc1" nd_spline_name="MAQEGraph" stepscale="0.1">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_n_NC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nunnc2" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_n_NC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nunnc2" nd_spline_name="MAQEGraph" stepscale="0.1">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_n_NC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nunnc3" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_n_NC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nunnc3" nd_spline_name="MAQEGraph" stepscale="0.1">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_p_NC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupnc1" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_p_NC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupnc1" nd_spline_name="MAQEGraph" stepscale="0.6">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_p_NC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupnc2" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_p_NC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupnc2" nd_spline_name="MAQEGraph" stepscale="0.1">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nu_p_NC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupnc3" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nu_p_NC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nupnc3" nd_spline_name="MAQEGraph" stepscale="0.06">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_n_CC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarncc1" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_n_CC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarncc1" nd_spline_name="MAQEGraph" stepscale="0.04">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_n_CC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarncc2" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_n_CC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarncc2" nd_spline_name="MAQEGraph" stepscale="0.004">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_n_CC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarncc3" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_n_CC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarncc3" nd_spline_name="MAQEGraph" stepscale="0.01">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_p_CC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpcc1" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_p_CC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpcc1" nd_spline_name="MAQEGraph" stepscale="0.002">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_p_CC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpcc2" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_p_CC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpcc2" nd_spline_name="MAQEGraph" stepscale="0.008">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_p_CC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpcc3" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_p_CC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpcc3" nd_spline_name="MAQEGraph" stepscale="0.02">
 	<fd_mode>2</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_n_NC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarnnc1" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_n_NC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarnnc1" nd_spline_name="MAQEGraph" stepscale="0.6">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_n_NC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarnnc2" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_n_NC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarnnc2" nd_spline_name="MAQEGraph" stepscale="0.1">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_n_NC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarnnc3" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_n_NC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarnnc3" nd_spline_name="MAQEGraph" stepscale="0.2">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_p_NC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpnc1" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_p_NC_1pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpnc1" nd_spline_name="MAQEGraph" stepscale="0.3">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_p_NC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpnc2" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_p_NC_2pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpnc2" nd_spline_name="MAQEGraph" stepscale="0.2">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="NR_nubar_p_NC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpnc3" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="NR_nubar_p_NC_3pi" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nubarpnc3" nd_spline_name="MAQEGraph" stepscale="0.2">
 	<fd_mode>15</fd_mode>
   </parameter>
 
-  <parameter name="BeRPA_A" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="berpaa" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="BeRPA_A" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="berpaa" nd_spline_name="MAQEGraph" stepscale="0.0006">
 	<fd_mode>0</fd_mode>
   </parameter>
 
-  <parameter name="BeRPA_B" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="berpab" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="BeRPA_B" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="berpab" nd_spline_name="MAQEGraph" stepscale="0.0006">
 	<fd_mode>0</fd_mode>
   </parameter>
 
-  <parameter name="BeRPA_D" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="berpad" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="BeRPA_D" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="berpad" nd_spline_name="MAQEGraph" stepscale="0.001">
 	<fd_mode>0</fd_mode>
   </parameter>
   
   
-  <parameter name="nuenuebar_xsec_ratio" nom="1.0" prior="1.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nuexsec" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="nuenuebar_xsec_ratio" nom="1.0" prior="1.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nuexsec" nd_spline_name="MAQEGraph" stepscale="0.6">
 	<fd_mode>0 2 3 4 9</fd_mode>
   </parameter>
 
-  <parameter name="nuemumu_xsec_ratio" nom="1.0" prior="1.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nuemuxsec" nd_spline_name="MAQEGraph" stepscale="0.0001">
+  <parameter name="nuemumu_xsec_ratio" nom="1.0" prior="1.0" lb="0" ub="1" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="nuemuxsec" nd_spline_name="MAQEGraph" stepscale="0.6">
 	<fd_mode>0 2 3 4 9</fd_mode>
   </parameter>
 
  <!-- norm pars -->
 
-<parameter name="b_0" nom="1" prior="1" lb="-9999" ub="9999" error="0.125273361158" renorm="0" type="norm" detid="1" stepscale="0.0001">
+ <parameter name="b_0" nom="1" prior="1" lb="-9999" ub="9999" error="0.125273361158" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">1.0</correlation>
   <correlation par="b_1">0.907000866856</correlation>
   <correlation par="b_2">0.771384178567</correlation>
@@ -556,7 +556,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_1" nom="1" prior="1" lb="-9999" ub="9999" error="0.0926120290447" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_1" nom="1" prior="1" lb="-9999" ub="9999" error="0.0926120290447" renorm="0" type="norm" detid="1" stepscale="0.005">
   <correlation par="b_0">0.907000866856</correlation>
   <correlation par="b_1">1.0</correlation>
   <correlation par="b_2">0.960639291852</correlation>
@@ -769,7 +769,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_2" nom="1" prior="1" lb="-9999" ub="9999" error="0.0804767043985" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_2" nom="1" prior="1" lb="-9999" ub="9999" error="0.0804767043985" renorm="0" type="norm" detid="1" stepscale="0.003">
   <correlation par="b_0">0.771384178567</correlation>
   <correlation par="b_1">0.960639291852</correlation>
   <correlation par="b_2">1.0</correlation>
@@ -982,7 +982,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_3" nom="1" prior="1" lb="-9999" ub="9999" error="0.0774468678958" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_3" nom="1" prior="1" lb="-9999" ub="9999" error="0.0774468678958" renorm="0" type="norm" detid="1" stepscale="0.001">
   <correlation par="b_0">0.668384954479</correlation>
   <correlation par="b_1">0.895394898403</correlation>
   <correlation par="b_2">0.978494380257</correlation>
@@ -1195,7 +1195,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_4" nom="1" prior="1" lb="-9999" ub="9999" error="0.0801585961159" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_4" nom="1" prior="1" lb="-9999" ub="9999" error="0.0801585961159" renorm="0" type="norm" detid="1" stepscale="0.001">
   <correlation par="b_0">0.614799452504</correlation>
   <correlation par="b_1">0.840817657225</correlation>
   <correlation par="b_2">0.938006576896</correlation>
@@ -1408,7 +1408,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_5" nom="1" prior="1" lb="-9999" ub="9999" error="0.0767549557896" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_5" nom="1" prior="1" lb="-9999" ub="9999" error="0.0767549557896" renorm="0" type="norm" detid="1" stepscale="0.001">
   <correlation par="b_0">0.561344023656</correlation>
   <correlation par="b_1">0.782988833074</correlation>
   <correlation par="b_2">0.901013521016</correlation>
@@ -1621,7 +1621,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_6" nom="1" prior="1" lb="-9999" ub="9999" error="0.0738976671906" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_6" nom="1" prior="1" lb="-9999" ub="9999" error="0.0738976671906" renorm="0" type="norm" detid="1" stepscale="0.001">
   <correlation par="b_0">0.487473466558</correlation>
   <correlation par="b_1">0.695623349203</correlation>
   <correlation par="b_2">0.832844413167</correlation>
@@ -1834,7 +1834,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_7" nom="1" prior="1" lb="-9999" ub="9999" error="0.0753765092052" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_7" nom="1" prior="1" lb="-9999" ub="9999" error="0.0753765092052" renorm="0" type="norm" detid="1" stepscale="0.003">
   <correlation par="b_0">0.415728929742</correlation>
   <correlation par="b_1">0.607249577964</correlation>
   <correlation par="b_2">0.754969846608</correlation>
@@ -2047,7 +2047,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_8" nom="1" prior="1" lb="-9999" ub="9999" error="0.0754754390019" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_8" nom="1" prior="1" lb="-9999" ub="9999" error="0.0754754390019" renorm="0" type="norm" detid="1" stepscale="0.01">
   <correlation par="b_0">0.369395794412</correlation>
   <correlation par="b_1">0.549144543933</correlation>
   <correlation par="b_2">0.701006218751</correlation>
@@ -2260,7 +2260,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_9" nom="1" prior="1" lb="-9999" ub="9999" error="0.0789796908757" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_9" nom="1" prior="1" lb="-9999" ub="9999" error="0.0789796908757" renorm="0" type="norm" detid="1" stepscale="0.02">
   <correlation par="b_0">0.332358668703</correlation>
   <correlation par="b_1">0.502297564812</correlation>
   <correlation par="b_2">0.65322081386</correlation>
@@ -2473,7 +2473,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_10" nom="1" prior="1" lb="-9999" ub="9999" error="0.0898401873206" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_10" nom="1" prior="1" lb="-9999" ub="9999" error="0.0898401873206" renorm="0" type="norm" detid="1" stepscale="0.06">
   <correlation par="b_0">0.302496952533</correlation>
   <correlation par="b_1">0.446942633306</correlation>
   <correlation par="b_2">0.586239722764</correlation>
@@ -2686,7 +2686,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_11" nom="1" prior="1" lb="-9999" ub="9999" error="0.0883663024722" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_11" nom="1" prior="1" lb="-9999" ub="9999" error="0.0883663024722" renorm="0" type="norm" detid="1" stepscale="0.08">
   <correlation par="b_0">0.334619054654</correlation>
   <correlation par="b_1">0.48410133463</correlation>
   <correlation par="b_2">0.613941884875</correlation>
@@ -2899,7 +2899,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_12" nom="1" prior="1" lb="-9999" ub="9999" error="0.0863581148799" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_12" nom="1" prior="1" lb="-9999" ub="9999" error="0.0863581148799" renorm="0" type="norm" detid="1" stepscale="0.08">
   <correlation par="b_0">0.383126438258</correlation>
   <correlation par="b_1">0.546814582214</correlation>
   <correlation par="b_2">0.667253827545</correlation>
@@ -3112,7 +3112,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_13" nom="1" prior="1" lb="-9999" ub="9999" error="0.0957909278003" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_13" nom="1" prior="1" lb="-9999" ub="9999" error="0.0957909278003" renorm="0" type="norm" detid="1" stepscale="0.08">
   <correlation par="b_0">0.353606585102</correlation>
   <correlation par="b_1">0.503397994425</correlation>
   <correlation par="b_2">0.61329814182</correlation>
@@ -3325,7 +3325,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_14" nom="1" prior="1" lb="-9999" ub="9999" error="0.0853907781146" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_14" nom="1" prior="1" lb="-9999" ub="9999" error="0.0853907781146" renorm="0" type="norm" detid="1" stepscale="0.02">
   <correlation par="b_0">0.33634171228</correlation>
   <correlation par="b_1">0.483578273043</correlation>
   <correlation par="b_2">0.591167104224</correlation>
@@ -3538,7 +3538,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_15" nom="1" prior="1" lb="-9999" ub="9999" error="0.118445839742" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_15" nom="1" prior="1" lb="-9999" ub="9999" error="0.118445839742" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.0914901608718</correlation>
   <correlation par="b_1">0.170513271081</correlation>
   <correlation par="b_2">0.25624072088</correlation>
@@ -3751,7 +3751,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_16" nom="1" prior="1" lb="-9999" ub="9999" error="0.175350220656" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_16" nom="1" prior="1" lb="-9999" ub="9999" error="0.175350220656" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.0419965670004</correlation>
   <correlation par="b_1">0.122462098948</correlation>
   <correlation par="b_2">0.200135179299</correlation>
@@ -3964,7 +3964,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_17" nom="1" prior="1" lb="-9999" ub="9999" error="0.185646424801" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_17" nom="1" prior="1" lb="-9999" ub="9999" error="0.185646424801" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.034464996172</correlation>
   <correlation par="b_1">0.0854801504901</correlation>
   <correlation par="b_2">0.154412719611</correlation>
@@ -4177,7 +4177,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_18" nom="1" prior="1" lb="-9999" ub="9999" error="0.347006205066" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_18" nom="1" prior="1" lb="-9999" ub="9999" error="0.347006205066" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.0776315355917</correlation>
   <correlation par="b_1">0.0946533222171</correlation>
   <correlation par="b_2">0.114079539276</correlation>
@@ -4390,7 +4390,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_19" nom="1" prior="1" lb="-9999" ub="9999" error="0.153199620714" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_19" nom="1" prior="1" lb="-9999" ub="9999" error="0.153199620714" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.878628095684</correlation>
   <correlation par="b_1">0.775080101767</correlation>
   <correlation par="b_2">0.660106939679</correlation>
@@ -4603,7 +4603,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_20" nom="1" prior="1" lb="-9999" ub="9999" error="0.104531334342" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_20" nom="1" prior="1" lb="-9999" ub="9999" error="0.104531334342" renorm="0" type="norm" detid="1" stepscale="0.5">
   <correlation par="b_0">0.642701249247</correlation>
   <correlation par="b_1">0.774988683884</correlation>
   <correlation par="b_2">0.78201270366</correlation>
@@ -4816,7 +4816,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_21" nom="1" prior="1" lb="-9999" ub="9999" error="0.103605563829" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_21" nom="1" prior="1" lb="-9999" ub="9999" error="0.103605563829" renorm="0" type="norm" detid="1" stepscale="0.3">
   <correlation par="b_0">0.584577985698</correlation>
   <correlation par="b_1">0.742006090186</correlation>
   <correlation par="b_2">0.762148006</correlation>
@@ -5029,7 +5029,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_22" nom="1" prior="1" lb="-9999" ub="9999" error="0.102497513369" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_22" nom="1" prior="1" lb="-9999" ub="9999" error="0.102497513369" renorm="0" type="norm" detid="1" stepscale="0.2">
   <correlation par="b_0">0.551018975644</correlation>
   <correlation par="b_1">0.721788045312</correlation>
   <correlation par="b_2">0.753882767693</correlation>
@@ -5242,7 +5242,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_23" nom="1" prior="1" lb="-9999" ub="9999" error="0.102943383631" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_23" nom="1" prior="1" lb="-9999" ub="9999" error="0.102943383631" renorm="0" type="norm" detid="1" stepscale="0.3">
   <correlation par="b_0">0.503607894925</correlation>
   <correlation par="b_1">0.666899822041</correlation>
   <correlation par="b_2">0.707661496883</correlation>
@@ -5455,7 +5455,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_24" nom="1" prior="1" lb="-9999" ub="9999" error="0.101857930208" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_24" nom="1" prior="1" lb="-9999" ub="9999" error="0.101857930208" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.493772947809</correlation>
   <correlation par="b_1">0.655663776656</correlation>
   <correlation par="b_2">0.701094516639</correlation>
@@ -5668,7 +5668,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_25" nom="1" prior="1" lb="-9999" ub="9999" error="0.0985017454341" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_25" nom="1" prior="1" lb="-9999" ub="9999" error="0.0985017454341" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.496956975516</correlation>
   <correlation par="b_1">0.660226404188</correlation>
   <correlation par="b_2">0.716490966303</correlation>
@@ -5881,7 +5881,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_26" nom="1" prior="1" lb="-9999" ub="9999" error="0.10266107887" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_26" nom="1" prior="1" lb="-9999" ub="9999" error="0.10266107887" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.463371020995</correlation>
   <correlation par="b_1">0.62302915789</correlation>
   <correlation par="b_2">0.685656232982</correlation>
@@ -6094,7 +6094,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_27" nom="1" prior="1" lb="-9999" ub="9999" error="0.0950780750528" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_27" nom="1" prior="1" lb="-9999" ub="9999" error="0.0950780750528" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.475068602141</correlation>
   <correlation par="b_1">0.641800528397</correlation>
   <correlation par="b_2">0.710019505691</correlation>
@@ -6307,7 +6307,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_28" nom="1" prior="1" lb="-9999" ub="9999" error="0.0992667829062" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_28" nom="1" prior="1" lb="-9999" ub="9999" error="0.0992667829062" renorm="0" type="norm" detid="1" stepscale="0.08">
   <correlation par="b_0">0.401556816152</correlation>
   <correlation par="b_1">0.544377136407</correlation>
   <correlation par="b_2">0.612105499397</correlation>
@@ -6520,7 +6520,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_29" nom="1" prior="1" lb="-9999" ub="9999" error="0.106433821513" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_29" nom="1" prior="1" lb="-9999" ub="9999" error="0.106433821513" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.383463762814</correlation>
   <correlation par="b_1">0.516448069246</correlation>
   <correlation par="b_2">0.57846595256</correlation>
@@ -6733,7 +6733,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_30" nom="1" prior="1" lb="-9999" ub="9999" error="0.102909691851" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_30" nom="1" prior="1" lb="-9999" ub="9999" error="0.102909691851" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.389593731767</correlation>
   <correlation par="b_1">0.525347866253</correlation>
   <correlation par="b_2">0.592326114446</correlation>
@@ -6946,7 +6946,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_31" nom="1" prior="1" lb="-9999" ub="9999" error="0.0994042176524" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_31" nom="1" prior="1" lb="-9999" ub="9999" error="0.0994042176524" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.383198647935</correlation>
   <correlation par="b_1">0.520962837951</correlation>
   <correlation par="b_2">0.597038325833</correlation>
@@ -7159,7 +7159,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_32" nom="1" prior="1" lb="-9999" ub="9999" error="0.107849552145" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_32" nom="1" prior="1" lb="-9999" ub="9999" error="0.107849552145" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.355614401178</correlation>
   <correlation par="b_1">0.482792321075</correlation>
   <correlation par="b_2">0.550527065715</correlation>
@@ -7372,7 +7372,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_33" nom="1" prior="1" lb="-9999" ub="9999" error="0.132078471898" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_33" nom="1" prior="1" lb="-9999" ub="9999" error="0.132078471898" renorm="0" type="norm" detid="1" stepscale="0.03">
   <correlation par="b_0">0.263633902605</correlation>
   <correlation par="b_1">0.352160678556</correlation>
   <correlation par="b_2">0.399323003198</correlation>
@@ -7585,7 +7585,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_34" nom="1" prior="1" lb="-9999" ub="9999" error="0.15924116036" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_34" nom="1" prior="1" lb="-9999" ub="9999" error="0.15924116036" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.192431710076</correlation>
   <correlation par="b_1">0.258731260568</correlation>
   <correlation par="b_2">0.290743849207</correlation>
@@ -7798,7 +7798,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_35" nom="1" prior="1" lb="-9999" ub="9999" error="0.22479737126" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_35" nom="1" prior="1" lb="-9999" ub="9999" error="0.22479737126" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.19600412428</correlation>
   <correlation par="b_1">0.249677799329</correlation>
   <correlation par="b_2">0.269805267635</correlation>
@@ -8011,7 +8011,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_36" nom="1" prior="1" lb="-9999" ub="9999" error="0.215033791076" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_36" nom="1" prior="1" lb="-9999" ub="9999" error="0.215033791076" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.179674459825</correlation>
   <correlation par="b_1">0.185962067702</correlation>
   <correlation par="b_2">0.183756062957</correlation>
@@ -8224,7 +8224,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_37" nom="1" prior="1" lb="-9999" ub="9999" error="0.594284639504" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_37" nom="1" prior="1" lb="-9999" ub="9999" error="0.594284639504" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.128923550699</correlation>
   <correlation par="b_1">0.160547378774</correlation>
   <correlation par="b_2">0.176592827832</correlation>
@@ -8437,7 +8437,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_38" nom="1" prior="1" lb="-9999" ub="9999" error="0.0883315241115" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_38" nom="1" prior="1" lb="-9999" ub="9999" error="0.0883315241115" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.828354584059</correlation>
   <correlation par="b_1">0.929013018577</correlation>
   <correlation par="b_2">0.913675144669</correlation>
@@ -8650,7 +8650,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_39" nom="1" prior="1" lb="-9999" ub="9999" error="0.0709513400342" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_39" nom="1" prior="1" lb="-9999" ub="9999" error="0.0709513400342" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.625230041123</correlation>
   <correlation par="b_1">0.806341635645</correlation>
   <correlation par="b_2">0.880994992521</correlation>
@@ -8863,7 +8863,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_40" nom="1" prior="1" lb="-9999" ub="9999" error="0.0795096818781" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_40" nom="1" prior="1" lb="-9999" ub="9999" error="0.0795096818781" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.36859430809</correlation>
   <correlation par="b_1">0.510963364183</correlation>
   <correlation par="b_2">0.609771122142</correlation>
@@ -9076,7 +9076,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_41" nom="1" prior="1" lb="-9999" ub="9999" error="0.0913606273956" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_41" nom="1" prior="1" lb="-9999" ub="9999" error="0.0913606273956" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.19051890066</correlation>
   <correlation par="b_1">0.295427991365</correlation>
   <correlation par="b_2">0.388678400859</correlation>
@@ -9289,7 +9289,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_42" nom="1" prior="1" lb="-9999" ub="9999" error="0.1145125855" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_42" nom="1" prior="1" lb="-9999" ub="9999" error="0.1145125855" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.103291301904</correlation>
   <correlation par="b_1">0.1862366514</correlation>
   <correlation par="b_2">0.274344923727</correlation>
@@ -9502,7 +9502,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_43" nom="1" prior="1" lb="-9999" ub="9999" error="0.148054923254" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_43" nom="1" prior="1" lb="-9999" ub="9999" error="0.148054923254" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.042896073592</correlation>
   <correlation par="b_1">0.10557683089</correlation>
   <correlation par="b_2">0.184903623619</correlation>
@@ -9715,7 +9715,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_44" nom="1" prior="1" lb="-9999" ub="9999" error="0.255360042724" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_44" nom="1" prior="1" lb="-9999" ub="9999" error="0.255360042724" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.0265192229288</correlation>
   <correlation par="b_1">0.0828438984681</correlation>
   <correlation par="b_2">0.140551991185</correlation>
@@ -9928,7 +9928,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_45" nom="1" prior="1" lb="-9999" ub="9999" error="0.108389443607" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_45" nom="1" prior="1" lb="-9999" ub="9999" error="0.108389443607" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.814949171901</correlation>
   <correlation par="b_1">0.732505966458</correlation>
   <correlation par="b_2">0.636467389019</correlation>
@@ -10141,7 +10141,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_46" nom="1" prior="1" lb="-9999" ub="9999" error="0.0983768747454" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_46" nom="1" prior="1" lb="-9999" ub="9999" error="0.0983768747454" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.390113914072</correlation>
   <correlation par="b_1">0.468013625097</correlation>
   <correlation par="b_2">0.497730586912</correlation>
@@ -10354,7 +10354,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_47" nom="1" prior="1" lb="-9999" ub="9999" error="0.114267462176" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_47" nom="1" prior="1" lb="-9999" ub="9999" error="0.114267462176" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.20726949421</correlation>
   <correlation par="b_1">0.288514548286</correlation>
   <correlation par="b_2">0.341202418639</correlation>
@@ -10567,7 +10567,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_48" nom="1" prior="1" lb="-9999" ub="9999" error="0.137986953478" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_48" nom="1" prior="1" lb="-9999" ub="9999" error="0.137986953478" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.138918377726</correlation>
   <correlation par="b_1">0.213101010206</correlation>
   <correlation par="b_2">0.266099663382</correlation>
@@ -10780,7 +10780,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_49" nom="1" prior="1" lb="-9999" ub="9999" error="0.152545464064" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_49" nom="1" prior="1" lb="-9999" ub="9999" error="0.152545464064" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.0924857263703</correlation>
   <correlation par="b_1">0.160040362182</correlation>
   <correlation par="b_2">0.214160891653</correlation>
@@ -10993,7 +10993,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_50" nom="1" prior="1" lb="-9999" ub="9999" error="0.160069302489" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_50" nom="1" prior="1" lb="-9999" ub="9999" error="0.160069302489" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.074778242708</correlation>
   <correlation par="b_1">0.142590346493</correlation>
   <correlation par="b_2">0.202707196765</correlation>
@@ -11206,7 +11206,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_51" nom="1" prior="1" lb="-9999" ub="9999" error="0.209431444838" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_51" nom="1" prior="1" lb="-9999" ub="9999" error="0.209431444838" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.073380680308</correlation>
   <correlation par="b_1">0.159611391067</correlation>
   <correlation par="b_2">0.229100466263</correlation>
@@ -11419,7 +11419,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>1</horncurrent>
 </parameter>
-<parameter name="b_52" nom="1" prior="1" lb="-9999" ub="9999" error="0.1612193214" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_52" nom="1" prior="1" lb="-9999" ub="9999" error="0.1612193214" renorm="0" type="norm" detid="1" stepscale="0.3">
   <correlation par="b_0">0.958743300234</correlation>
   <correlation par="b_1">0.890924263291</correlation>
   <correlation par="b_2">0.774946680419</correlation>
@@ -11632,7 +11632,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_53" nom="1" prior="1" lb="-9999" ub="9999" error="0.107714786765" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_53" nom="1" prior="1" lb="-9999" ub="9999" error="0.107714786765" renorm="0" type="norm" detid="1" stepscale="0.08">
   <correlation par="b_0">0.747915317489</correlation>
   <correlation par="b_1">0.904075603075</correlation>
   <correlation par="b_2">0.91490728426</correlation>
@@ -11845,7 +11845,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_54" nom="1" prior="1" lb="-9999" ub="9999" error="0.0958234513258" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_54" nom="1" prior="1" lb="-9999" ub="9999" error="0.0958234513258" renorm="0" type="norm" detid="1" stepscale="0.09">
   <correlation par="b_0">0.662472370679</correlation>
   <correlation par="b_1">0.834217401059</correlation>
   <correlation par="b_2">0.879768457573</correlation>
@@ -12058,7 +12058,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_55" nom="1" prior="1" lb="-9999" ub="9999" error="0.0999305646731" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_55" nom="1" prior="1" lb="-9999" ub="9999" error="0.0999305646731" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.549490108963</correlation>
   <correlation par="b_1">0.724570704695</correlation>
   <correlation par="b_2">0.796905625226</correlation>
@@ -12271,7 +12271,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_56" nom="1" prior="1" lb="-9999" ub="9999" error="0.102185750196" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_56" nom="1" prior="1" lb="-9999" ub="9999" error="0.102185750196" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.505725824139</correlation>
   <correlation par="b_1">0.67282591771</correlation>
   <correlation par="b_2">0.755941311481</correlation>
@@ -12484,7 +12484,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_57" nom="1" prior="1" lb="-9999" ub="9999" error="0.10312950082" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_57" nom="1" prior="1" lb="-9999" ub="9999" error="0.10312950082" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.469371334597</correlation>
   <correlation par="b_1">0.636052158736</correlation>
   <correlation par="b_2">0.728095261073</correlation>
@@ -12697,7 +12697,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_58" nom="1" prior="1" lb="-9999" ub="9999" error="0.106154976254" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_58" nom="1" prior="1" lb="-9999" ub="9999" error="0.106154976254" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.446857936876</correlation>
   <correlation par="b_1">0.611803749129</correlation>
   <correlation par="b_2">0.708179337594</correlation>
@@ -12910,7 +12910,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_59" nom="1" prior="1" lb="-9999" ub="9999" error="0.108834546614" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_59" nom="1" prior="1" lb="-9999" ub="9999" error="0.108834546614" renorm="0" type="norm" detid="1" stepscale="0.09">
   <correlation par="b_0">0.421779363815</correlation>
   <correlation par="b_1">0.583321872767</correlation>
   <correlation par="b_2">0.678355831953</correlation>
@@ -13123,7 +13123,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_60" nom="1" prior="1" lb="-9999" ub="9999" error="0.111352585732" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_60" nom="1" prior="1" lb="-9999" ub="9999" error="0.111352585732" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.384852454028</correlation>
   <correlation par="b_1">0.540312619755</correlation>
   <correlation par="b_2">0.637189535069</correlation>
@@ -13336,7 +13336,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_61" nom="1" prior="1" lb="-9999" ub="9999" error="0.110317302578" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_61" nom="1" prior="1" lb="-9999" ub="9999" error="0.110317302578" renorm="0" type="norm" detid="1" stepscale="0.08">
   <correlation par="b_0">0.389283912269</correlation>
   <correlation par="b_1">0.554098337946</correlation>
   <correlation par="b_2">0.661085210104</correlation>
@@ -13549,7 +13549,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_62" nom="1" prior="1" lb="-9999" ub="9999" error="0.10791622741" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_62" nom="1" prior="1" lb="-9999" ub="9999" error="0.10791622741" renorm="0" type="norm" detid="1" stepscale="0.08">
   <correlation par="b_0">0.380280704481</correlation>
   <correlation par="b_1">0.543897420505</correlation>
   <correlation par="b_2">0.64905753231</correlation>
@@ -13762,7 +13762,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_63" nom="1" prior="1" lb="-9999" ub="9999" error="0.105977079735" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_63" nom="1" prior="1" lb="-9999" ub="9999" error="0.105977079735" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.365336787898</correlation>
   <correlation par="b_1">0.529353940782</correlation>
   <correlation par="b_2">0.636460754011</correlation>
@@ -13975,7 +13975,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_64" nom="1" prior="1" lb="-9999" ub="9999" error="0.126040076925" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_64" nom="1" prior="1" lb="-9999" ub="9999" error="0.126040076925" renorm="0" type="norm" detid="1" stepscale="0.06">
   <correlation par="b_0">0.284923412746</correlation>
   <correlation par="b_1">0.418608911261</correlation>
   <correlation par="b_2">0.513798105387</correlation>
@@ -14188,7 +14188,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_65" nom="1" prior="1" lb="-9999" ub="9999" error="0.123444801438" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_65" nom="1" prior="1" lb="-9999" ub="9999" error="0.123444801438" renorm="0" type="norm" detid="1" stepscale="0.7">
   <correlation par="b_0">0.321197196588</correlation>
   <correlation par="b_1">0.466617890757</correlation>
   <correlation par="b_2">0.567329560319</correlation>
@@ -14401,7 +14401,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_66" nom="1" prior="1" lb="-9999" ub="9999" error="0.116662604907" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_66" nom="1" prior="1" lb="-9999" ub="9999" error="0.116662604907" renorm="0" type="norm" detid="1" stepscale="0.03">
   <correlation par="b_0">0.268886777566</correlation>
   <correlation par="b_1">0.408332585891</correlation>
   <correlation par="b_2">0.516304902881</correlation>
@@ -14614,7 +14614,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_67" nom="1" prior="1" lb="-9999" ub="9999" error="0.146041746228" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_67" nom="1" prior="1" lb="-9999" ub="9999" error="0.146041746228" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.112764443143</correlation>
   <correlation par="b_1">0.219878690119</correlation>
   <correlation par="b_2">0.314903578186</correlation>
@@ -14827,7 +14827,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_68" nom="1" prior="1" lb="-9999" ub="9999" error="0.18290662659" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_68" nom="1" prior="1" lb="-9999" ub="9999" error="0.18290662659" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.0165022881804</correlation>
   <correlation par="b_1">0.0968480772878</correlation>
   <correlation par="b_2">0.176320938098</correlation>
@@ -15040,7 +15040,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_69" nom="1" prior="1" lb="-9999" ub="9999" error="0.194623999144" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_69" nom="1" prior="1" lb="-9999" ub="9999" error="0.194623999144" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.0431643813791</correlation>
   <correlation par="b_1">0.0901490276992</correlation>
   <correlation par="b_2">0.157079023543</correlation>
@@ -15253,7 +15253,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_70" nom="1" prior="1" lb="-9999" ub="9999" error="0.365017881095" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_70" nom="1" prior="1" lb="-9999" ub="9999" error="0.365017881095" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.0647004511957</correlation>
   <correlation par="b_1">0.0785803113256</correlation>
   <correlation par="b_2">0.0984827660944</correlation>
@@ -15466,7 +15466,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_71" nom="1" prior="1" lb="-9999" ub="9999" error="0.120635257733" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_71" nom="1" prior="1" lb="-9999" ub="9999" error="0.120635257733" renorm="0" type="norm" detid="1" stepscale="0.4">
   <correlation par="b_0">0.909985584734</correlation>
   <correlation par="b_1">0.771532757312</correlation>
   <correlation par="b_2">0.625013802729</correlation>
@@ -15679,7 +15679,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_72" nom="1" prior="1" lb="-9999" ub="9999" error="0.0888025452482" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_72" nom="1" prior="1" lb="-9999" ub="9999" error="0.0888025452482" renorm="0" type="norm" detid="1" stepscale="0.06">
   <correlation par="b_0">0.789966565423</correlation>
   <correlation par="b_1">0.826926328566</correlation>
   <correlation par="b_2">0.767801778743</correlation>
@@ -15892,7 +15892,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_73" nom="1" prior="1" lb="-9999" ub="9999" error="0.0777255922407" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_73" nom="1" prior="1" lb="-9999" ub="9999" error="0.0777255922407" renorm="0" type="norm" detid="1" stepscale="0.02">
   <correlation par="b_0">0.650365660004</correlation>
   <correlation par="b_1">0.779322025376</correlation>
   <correlation par="b_2">0.783992397507</correlation>
@@ -16105,7 +16105,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_74" nom="1" prior="1" lb="-9999" ub="9999" error="0.0740336925141" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_74" nom="1" prior="1" lb="-9999" ub="9999" error="0.0740336925141" renorm="0" type="norm" detid="1" stepscale="0.01">
   <correlation par="b_0">0.553928536199</correlation>
   <correlation par="b_1">0.723627408666</correlation>
   <correlation par="b_2">0.765005068147</correlation>
@@ -16318,7 +16318,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_75" nom="1" prior="1" lb="-9999" ub="9999" error="0.075020282706" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_75" nom="1" prior="1" lb="-9999" ub="9999" error="0.075020282706" renorm="0" type="norm" detid="1" stepscale="0.005">
   <correlation par="b_0">0.522650125535</correlation>
   <correlation par="b_1">0.697772312449</correlation>
   <correlation par="b_2">0.748802087096</correlation>
@@ -16531,7 +16531,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_76" nom="1" prior="1" lb="-9999" ub="9999" error="0.0698300677849" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_76" nom="1" prior="1" lb="-9999" ub="9999" error="0.0698300677849" renorm="0" type="norm" detid="1" stepscale="0.01">
   <correlation par="b_0">0.483214620035</correlation>
   <correlation par="b_1">0.652061014358</correlation>
   <correlation par="b_2">0.715515289751</correlation>
@@ -16744,7 +16744,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_77" nom="1" prior="1" lb="-9999" ub="9999" error="0.0650617530281" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_77" nom="1" prior="1" lb="-9999" ub="9999" error="0.0650617530281" renorm="0" type="norm" detid="1" stepscale="0.02">
   <correlation par="b_0">0.415175966528</correlation>
   <correlation par="b_1">0.568312217478</correlation>
   <correlation par="b_2">0.645195408595</correlation>
@@ -16957,7 +16957,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_78" nom="1" prior="1" lb="-9999" ub="9999" error="0.0652173360008" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_78" nom="1" prior="1" lb="-9999" ub="9999" error="0.0652173360008" renorm="0" type="norm" detid="1" stepscale="0.07">
   <correlation par="b_0">0.34373959112</correlation>
   <correlation par="b_1">0.476097341969</correlation>
   <correlation par="b_2">0.558587258992</correlation>
@@ -17170,7 +17170,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_79" nom="1" prior="1" lb="-9999" ub="9999" error="0.067013857191" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_79" nom="1" prior="1" lb="-9999" ub="9999" error="0.067013857191" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.291149001072</correlation>
   <correlation par="b_1">0.414623433141</correlation>
   <correlation par="b_2">0.505851835242</correlation>
@@ -17383,7 +17383,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_80" nom="1" prior="1" lb="-9999" ub="9999" error="0.072106899348" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_80" nom="1" prior="1" lb="-9999" ub="9999" error="0.072106899348" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.259655455801</correlation>
   <correlation par="b_1">0.381880966032</correlation>
   <correlation par="b_2">0.478548554037</correlation>
@@ -17596,7 +17596,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_81" nom="1" prior="1" lb="-9999" ub="9999" error="0.0822802356682" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_81" nom="1" prior="1" lb="-9999" ub="9999" error="0.0822802356682" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.224336960446</correlation>
   <correlation par="b_1">0.323790964935</correlation>
   <correlation par="b_2">0.415345431182</correlation>
@@ -17809,7 +17809,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_82" nom="1" prior="1" lb="-9999" ub="9999" error="0.0779165821275" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_82" nom="1" prior="1" lb="-9999" ub="9999" error="0.0779165821275" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.307076150674</correlation>
   <correlation par="b_1">0.412629419661</correlation>
   <correlation par="b_2">0.494136772785</correlation>
@@ -18022,7 +18022,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_83" nom="1" prior="1" lb="-9999" ub="9999" error="0.0801278105923" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_83" nom="1" prior="1" lb="-9999" ub="9999" error="0.0801278105923" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.340812399448</correlation>
   <correlation par="b_1">0.465726405292</correlation>
   <correlation par="b_2">0.544102732964</correlation>
@@ -18235,7 +18235,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_84" nom="1" prior="1" lb="-9999" ub="9999" error="0.0983192374144" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_84" nom="1" prior="1" lb="-9999" ub="9999" error="0.0983192374144" renorm="0" type="norm" detid="1" stepscale="0.1">
   <correlation par="b_0">0.355117201494</correlation>
   <correlation par="b_1">0.461714568019</correlation>
   <correlation par="b_2">0.522429667589</correlation>
@@ -18448,7 +18448,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_85" nom="1" prior="1" lb="-9999" ub="9999" error="0.0900200657746" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_85" nom="1" prior="1" lb="-9999" ub="9999" error="0.0900200657746" renorm="0" type="norm" detid="1" stepscale="0.08">
   <correlation par="b_0">0.379007689199</correlation>
   <correlation par="b_1">0.501210005518</correlation>
   <correlation par="b_2">0.564303992099</correlation>
@@ -18661,7 +18661,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_86" nom="1" prior="1" lb="-9999" ub="9999" error="0.134035329171" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_86" nom="1" prior="1" lb="-9999" ub="9999" error="0.134035329171" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.176249191595</correlation>
   <correlation par="b_1">0.222587524256</correlation>
   <correlation par="b_2">0.239840978241</correlation>
@@ -18874,7 +18874,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_87" nom="1" prior="1" lb="-9999" ub="9999" error="0.210272444664" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_87" nom="1" prior="1" lb="-9999" ub="9999" error="0.210272444664" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.158658687764</correlation>
   <correlation par="b_1">0.243505570311</correlation>
   <correlation par="b_2">0.27767930801</correlation>
@@ -19087,7 +19087,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_88" nom="1" prior="1" lb="-9999" ub="9999" error="0.213486017244" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_88" nom="1" prior="1" lb="-9999" ub="9999" error="0.213486017244" renorm="0" type="norm" detid="1" stepscale="0.6">
   <correlation par="b_0">0.231164310599</correlation>
   <correlation par="b_1">0.244046509506</correlation>
   <correlation par="b_2">0.239008606948</correlation>
@@ -19300,7 +19300,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_89" nom="1" prior="1" lb="-9999" ub="9999" error="0.649167360483" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_89" nom="1" prior="1" lb="-9999" ub="9999" error="0.649167360483" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.0681818136797</correlation>
   <correlation par="b_1">0.0519797053988</correlation>
   <correlation par="b_2">0.045377527886</correlation>
@@ -19513,7 +19513,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-14</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_90" nom="1" prior="1" lb="-9999" ub="9999" error="0.108367353345" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_90" nom="1" prior="1" lb="-9999" ub="9999" error="0.108367353345" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.849366483787</correlation>
   <correlation par="b_1">0.773173696228</correlation>
   <correlation par="b_2">0.674208286614</correlation>
@@ -19726,7 +19726,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_91" nom="1" prior="1" lb="-9999" ub="9999" error="0.0930550373398" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_91" nom="1" prior="1" lb="-9999" ub="9999" error="0.0930550373398" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.342234593561</correlation>
   <correlation par="b_1">0.434663789453</correlation>
   <correlation par="b_2">0.490278303936</correlation>
@@ -19939,7 +19939,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_92" nom="1" prior="1" lb="-9999" ub="9999" error="0.114330236084" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_92" nom="1" prior="1" lb="-9999" ub="9999" error="0.114330236084" renorm="0" type="norm" detid="1" stepscale="0.9">
   <correlation par="b_0">0.139731777742</correlation>
   <correlation par="b_1">0.222953508968</correlation>
   <correlation par="b_2">0.293735952726</correlation>
@@ -20152,7 +20152,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_93" nom="1" prior="1" lb="-9999" ub="9999" error="0.128955833776" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_93" nom="1" prior="1" lb="-9999" ub="9999" error="0.128955833776" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.0960551095734</correlation>
   <correlation par="b_1">0.183272070493</correlation>
   <correlation par="b_2">0.263910947728</correlation>
@@ -20365,7 +20365,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_94" nom="1" prior="1" lb="-9999" ub="9999" error="0.15951467851" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_94" nom="1" prior="1" lb="-9999" ub="9999" error="0.15951467851" renorm="0" type="norm" detid="1" stepscale="0.9">
   <correlation par="b_0">0.0649840915714</correlation>
   <correlation par="b_1">0.145134810773</correlation>
   <correlation par="b_2">0.223778540939</correlation>
@@ -20578,7 +20578,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_95" nom="1" prior="1" lb="-9999" ub="9999" error="0.161724572019" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_95" nom="1" prior="1" lb="-9999" ub="9999" error="0.161724572019" renorm="0" type="norm" detid="1" stepscale="0.9">
   <correlation par="b_0">0.0355694324589</correlation>
   <correlation par="b_1">0.106411425004</correlation>
   <correlation par="b_2">0.189392591897</correlation>
@@ -20791,7 +20791,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_96" nom="1" prior="1" lb="-9999" ub="9999" error="0.236872655124" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_96" nom="1" prior="1" lb="-9999" ub="9999" error="0.236872655124" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.0117336029727</correlation>
   <correlation par="b_1">0.0542885324879</correlation>
   <correlation par="b_2">0.111062674515</correlation>
@@ -21004,7 +21004,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_97" nom="1" prior="1" lb="-9999" ub="9999" error="0.087955395682" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_97" nom="1" prior="1" lb="-9999" ub="9999" error="0.087955395682" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.734272535487</correlation>
   <correlation par="b_1">0.774903199691</correlation>
   <correlation par="b_2">0.732583587134</correlation>
@@ -21217,7 +21217,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_98" nom="1" prior="1" lb="-9999" ub="9999" error="0.0691974666559" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_98" nom="1" prior="1" lb="-9999" ub="9999" error="0.0691974666559" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.527468838272</correlation>
   <correlation par="b_1">0.658149006408</correlation>
   <correlation par="b_2">0.694567331742</correlation>
@@ -21430,7 +21430,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_99" nom="1" prior="1" lb="-9999" ub="9999" error="0.0844609146932" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_99" nom="1" prior="1" lb="-9999" ub="9999" error="0.0844609146932" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.332434305603</correlation>
   <correlation par="b_1">0.440189588219</correlation>
   <correlation par="b_2">0.484663191293</correlation>
@@ -21643,7 +21643,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_100" nom="1" prior="1" lb="-9999" ub="9999" error="0.128874841305" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_100" nom="1" prior="1" lb="-9999" ub="9999" error="0.128874841305" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.174177362829</correlation>
   <correlation par="b_1">0.248356286133</correlation>
   <correlation par="b_2">0.285840483321</correlation>
@@ -21856,7 +21856,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_101" nom="1" prior="1" lb="-9999" ub="9999" error="0.132257068909" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_101" nom="1" prior="1" lb="-9999" ub="9999" error="0.132257068909" renorm="0" type="norm" detid="1" stepscale="0.9">
   <correlation par="b_0">0.158975977449</correlation>
   <correlation par="b_1">0.22676582018</correlation>
   <correlation par="b_2">0.274506962552</correlation>
@@ -22069,7 +22069,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_102" nom="1" prior="1" lb="-9999" ub="9999" error="0.148582318316" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_102" nom="1" prior="1" lb="-9999" ub="9999" error="0.148582318316" renorm="0" type="norm" detid="1" stepscale="1.0">
   <correlation par="b_0">0.0969922910475</correlation>
   <correlation par="b_1">0.167896326866</correlation>
   <correlation par="b_2">0.221593169102</correlation>
@@ -22282,7 +22282,7 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <prod_nupdg>-12</prod_nupdg>
   <horncurrent>-1</horncurrent>
 </parameter>
-<parameter name="b_103" nom="1" prior="1" lb="-9999" ub="9999" error="0.193734459966" renorm="0" type="norm" detid="1" stepscale="0.0001">
+<parameter name="b_103" nom="1" prior="1" lb="-9999" ub="9999" error="0.193734459966" renorm="0" type="norm" detid="1" stepscale="0.9">
   <correlation par="b_0">0.0618066120354</correlation>
   <correlation par="b_1">0.134121039458</correlation>
   <correlation par="b_2">0.188190328704</correlation>
