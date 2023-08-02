@@ -24,9 +24,9 @@ int main(int argc, char **argv)
   #endif
 
   #ifdef CPU_ONLY
-    std::cout << "GPU OSC CALC IS ON" << std::endl;
-  #else
     std::cout << "ONLY CPU OSC CALC" << std::endl;
+  #else
+    std::cout << "GPU OSC CALC IS ON" << std::endl;
   #endif
 
   // Read config
