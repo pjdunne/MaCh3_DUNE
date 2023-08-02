@@ -234,19 +234,23 @@ int main(int argc, char * argv[]) {
   //TH1D *hScan = new TH1D((std::string("full_") + name).c_str(), (name+"_full").c_str(), n_points, lower, upper);
   //hScan->SetTitle(std::string(std::string("2LLH_full, ") + name + ";" + name + "; -2(ln L_{sample} + ln L_{flux}").c_str());
   
-  TH2D *hScan = new TH2D("dCP Th23 LLH", "dCP Th23 LLH", 181, 0.40, 0.60, 181, -3.14, 3.14);
+  int nsteps = fitMan->raw()["General"]["LLH"]["nbins"].as<int>();
+
+  TH2D *hScan = new TH2D("dCP Th23 LLH", "dCP Th23 LLH", nsteps + 1, 0.40, 0.60, nsteps + 1, -3.14, 3.14);
   
   oscpars[1] = 0.3988888;
+
+
   
   osc->setParameters(oscpars);
-  double ddcp = 6.28/20;
-  double dth23 = 0.2/20;
+  double ddcp = 6.28/nsteps;
+  double dth23 = 0.2/nsteps;
   double samplellh = 0;
   // Scan over the parameter space
-  for (int j = 0; j < 181; j++) {
+  for (int j = 0; j < nsteps + 1; j++) {
     oscpars[5] = -3.1748888;
     oscpars[1] += dth23;
-    for (int k = 0; k < 181; k++) {
+    for (int k = 0; k < nsteps + 1; k++) {
       oscpars[5] += ddcp;
       osc->setParameters(oscpars);
       Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
@@ -255,7 +259,7 @@ int main(int argc, char * argv[]) {
         samplellh += pdfs[ipdf]->GetLikelihood();
     }
     int gbin = hScan->GetBin(j+1, k+1);
-    std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh <<  std::endl;
+    std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh << "   [" << (100*(j*(nsteps + 1) + k))/((nsteps + 1)*(nsteps + 1)) << "%]" << std::endl;
     hScan->SetBinContent(gbin, 2*samplellh);
     samplellh = 0;
    }
