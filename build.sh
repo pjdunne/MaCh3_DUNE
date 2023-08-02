@@ -1,0 +1,7 @@
+#!/bin/bash
+
+CURDIR=$PWD
+
+cd build && make && cd src && g++ -fopenmp CMakeFiles/Oscillator.dir/Oscillator.cpp.o -o Oscillator   -L/home/pgranger/software/root_build/lib  -Wl,-rpath,/home/pgranger/software/root_build/lib:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/samplePDFDUNE:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/splines:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/mach3-build/mcmc:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/mach3-build/samplePDF:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/mach3-build/OscClass:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/mach3-build/covariance:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/mach3-build/splines:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/mach3-build/throwParms:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/mach3-build/manager:/home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/yaml-cpp-build: ../samplePDFDUNE/libSamplePDFDUNE.so ../splines/libsplinesDUNE.so ../_deps/mach3-build/mcmc/libMCMC.so  ../_deps/mach3-build/OscClass/libOscClass.so ../_deps/mach3-build/covariance/libCovariance.so ../_deps/mach3-build/splines/libSplines.so ../_deps/mach3-build/throwParms/libThrowParms.so -lCore -lRIO -lXMLIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathMore -lMathCore -lThread -lEG -lGeom -lGenVector ../_deps/mach3-build/manager/libManager.so ../_deps/yaml-cpp-build/libyaml-cpp.so.0.7.0 ../_deps/mach3-build/samplePDF/libSamplePDF.so
+
+cd $CURDIR

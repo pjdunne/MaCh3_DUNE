@@ -94,12 +94,15 @@ int main(int argc, char * argv[]) {
   xsec->setStepScale(0.01);
 
   // Oscillation covariance
-  covarianceOsc *osc = new covarianceOsc("osc_cov","inputs/oscillation_covariance_6par_nondouble_PDG2019.root");
+  // covarianceOsc *osc = new covarianceOsc("osc_cov","inputs/oscillation_covariance_6par_nondouble_PDG2019.root");
+  covarianceOsc *osc = new covarianceOsc("osc_cov","inputs/osc_covariance_DUNE_PDG2021_v1.root");
   osc->setStepScale(0.045);
 
   // oscpars from manager in order:
   // sin2th_12, sin2th_23, sin2th_13, delm2_12, delm2_23, delta_cp
   std::vector<double> oscpars{0.307,0.528,0.0218,7.53e-5, 2.509e-3,-1.601}; // Asimov A
+
+  //  oscpars[1] = 0.3988888;
 
   std::cout<<"Using these oscillation parameters: ";
   for(unsigned ipar=0;ipar<oscpars.size();ipar++) std::cout<<" "<<oscpars.at(ipar);
@@ -119,20 +122,36 @@ int main(int argc, char * argv[]) {
   osc->setEvalLikelihood(5,false);
   // This line gives a crash and stack trace...
   osc->setParameters(oscpars);
-  //osc->acceptStep();
+  osc->acceptStep();
   //osc->setStepScale(fitMan->getOscStepScale());
 
   //  osc->setFlipDeltaM23(false);
+
+
+
+  std::cout << "-----------------------------------------------------------" << std::endl;
+  std::cout << "Creating Oscillator object" << std::endl;
+  std::string OscillatorCfgName("/home/pgranger/atmospherics/debug/MaCh3_DUNE/configs/OscillatorObj.yaml");
+  Oscillator* Oscill = new Oscillator(OscillatorCfgName);
+
+  Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
   
   std::vector<samplePDFDUNEBase*> pdfs;
-  samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
-  samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
-  samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
-  samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+    samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", xsec);
+    samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_nueselec.yaml", xsec);
+  // samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+  // samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+  // samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+  // samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+
+  // numu_pdf->SetOscillator(Oscill);
+  // nue_pdf->SetOscillator(Oscill);
+
   pdfs.push_back(numu_pdf);
-  pdfs.push_back(numubar_pdf);
   pdfs.push_back(nue_pdf);
-  pdfs.push_back(nuebar_pdf);
+  // pdfs.push_back(numubar_pdf);
+  // pdfs.push_back(nue_pdf);
+  // pdfs.push_back(nuebar_pdf);
 
   // From CAFana
   const int kNumTrueEnergyBins = 100;
@@ -155,6 +174,7 @@ int main(int argc, char * argv[]) {
   edges[kNumTrueEnergyBins] = 120; // Replace the infinity that would be here
   
   numu_pdf -> useBinnedOscReweighting(true, kNumTrueEnergyBins, &edges[0]);
+  nue_pdf -> useBinnedOscReweighting(true, kNumTrueEnergyBins, &edges[0]);
   
 
   osc -> setParameters(oscpars);
@@ -166,8 +186,8 @@ int main(int argc, char * argv[]) {
 	    << "oscpars[5] = " << (osc -> getPropPars())[5] << std::endl;
 
   // Setup Oscillation Calculator
-  for (unsigned sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i) {
-    SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
+  for (unsigned sample_i = 0 ; sample_i < pdfs.size() ; ++sample_i) {
+    pdfs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
   }
 
   // Set to nominal pars
@@ -175,26 +195,26 @@ int main(int argc, char * argv[]) {
   xsec->setParameters(xsecpar);
   //  xsec->Print();
 
-  numu_pdf->reweight(osc->getPropPars(), osc->getPropPars());
+  numu_pdf->reweight(osc->getPropPars());
   TH1D *numu_asimov = (TH1D*)numu_pdf->get1DHist()->Clone("numu_asimov");
-  nue_pdf->reweight(osc->getPropPars(), osc->getPropPars());
+  nue_pdf->reweight(osc->getPropPars());
   TH1D *nue_asimov = (TH1D*)nue_pdf->get1DHist()->Clone("nue_asimov");
-  numubar_pdf->reweight(osc->getPropPars(), osc->getPropPars());
-  TH1D *numubar_asimov = (TH1D*)numubar_pdf->get1DHist()->Clone("numubar_asimov");
-  nuebar_pdf->reweight(osc->getPropPars(), osc->getPropPars());
-  TH1D *nuebar_asimov = (TH1D*)nuebar_pdf->get1DHist()->Clone("nuebar_asimov");
+  // numubar_pdf->reweight(osc->getPropPars());
+  // TH1D *numubar_asimov = (TH1D*)numubar_pdf->get1DHist()->Clone("numubar_asimov");
+  // nuebar_pdf->reweight(osc->getPropPars());
+  // TH1D *nuebar_asimov = (TH1D*)nuebar_pdf->get1DHist()->Clone("nuebar_asimov");
 
   // Print event rates to check
   std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;
   std::cout << "FHC 1Rmu:   " << numu_asimov->Integral() << std::endl;
   std::cout << "FHC 1Re:    " << nue_asimov->Integral() << std::endl;
-  std::cout << "RHC 1Rmu:   " << numubar_asimov->Integral() << std::endl;
-  std::cout << "RHC 1Re:    " << nuebar_asimov->Integral() << std::endl;
+  // std::cout << "RHC 1Rmu:   " << numubar_asimov->Integral() << std::endl;
+  // std::cout << "RHC 1Re:    " << nuebar_asimov->Integral() << std::endl;
 
   numu_pdf->addData(numu_asimov); 
   nue_pdf->addData(nue_asimov); 
-  numubar_pdf->addData(numubar_asimov);  
-  nuebar_pdf->addData(nuebar_asimov); 
+  // numubar_pdf->addData(numubar_asimov);  
+  // nuebar_pdf->addData(nuebar_asimov); 
   
   
   TCanvas *sys_canv = new TCanvas("sys_canv","",1200,600);
@@ -219,8 +239,8 @@ int main(int argc, char * argv[]) {
   oscpars[1] = 0.3988888;
   
   osc->setParameters(oscpars);
-  double ddcp = 6.28/180;
-  double dth23 = 0.2/180;
+  double ddcp = 6.28/20;
+  double dth23 = 0.2/20;
   double samplellh = 0;
   // Scan over the parameter space
   for (int j = 0; j < 181; j++) {
@@ -229,8 +249,9 @@ int main(int argc, char * argv[]) {
     for (int k = 0; k < 181; k++) {
       oscpars[5] += ddcp;
       osc->setParameters(oscpars);
+      Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
       for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-        pdfs[ipdf] -> reweight(osc -> getPropPars(), osc -> getPropPars());
+        pdfs[ipdf] -> reweight(osc -> getPropPars());
         samplellh += pdfs[ipdf]->GetLikelihood();
     }
     int gbin = hScan->GetBin(j+1, k+1);
@@ -246,6 +267,8 @@ int main(int argc, char * argv[]) {
 
   Outfile -> cd();
   hScan->Write();
+  Outfile->Write();
+  Outfile->Close();
 
   return 0;
  }

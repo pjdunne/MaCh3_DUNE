@@ -9,4 +9,6 @@ General:
     OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
     OscCovName: "osc_cov"
   SampleConfigs:
-    - "configs/SamplePDFDune_FHC_numuselec.yaml"
+    # - "configs/SamplePDFDune_FHC_numuselec.yaml"
+    - "configs/AtmSample_numuselec.yaml"
+    - "configs/AtmSample_nueselec.yaml"

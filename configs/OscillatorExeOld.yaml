@@ -1,0 +1,13 @@
+General:
+    OscillatorConfigName: configs/OscillatorObj.yaml
+    POT: 1.3628319e+23
+    Systematics:
+      XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.root"
+      XsecCovName: "xsec_cov"
+      XsecStepScale: 0.1
+      XsecAtGen: false
+      OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
+      OscCovName: "osc_cov"
+    SampleConfigs:
+      - "configs/SamplePDFDune_FHC_numuselec.yaml"
+      # - "configs/AtmSample.yaml"

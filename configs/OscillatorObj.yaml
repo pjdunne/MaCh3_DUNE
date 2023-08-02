@@ -1,21 +1,21 @@
 OscillatorObj:
-  OscillatorEarthDensityFile: /dune/app/users/barrowd/CUDAProb3/MaCh3_DUNE/build/_deps/cudaprob3-src/models/PREM_4layer.dat
+  OscillatorEarthDensityFile: /home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/cudaprob3-src/models/PREM_4layer.dat
   #Uses single fine bin contrubtion to coarse bin if OscillatorArrayConfig==0, otherwise it uses many fine bin contributions
   OscillatorArrayConfig: 0
 
   #Is the binning of the oscillator specified in logarithmic or linear binning
-  OscillatorIsLinear: true
+  OscillatorIsLinear: false
 
   #Are we specifying the fine binning in terms of the number of fine bins per coarse bin
   OscillatorUseFineBinsPerCoarseBin: true
 
   #Binning uses Templates (OscillatorPrimaryBinningTemplateName,OscillatorSecondaryBinningTemplateName) from OscillatorInputFileName if OscillatorUseBinningTemplates==true, otherwise it uses the values specified below
-  OscillatorUseBinningTemplates: true
+  OscillatorUseBinningTemplates: false
   OscillatorInputFileName: "inputs/OscillationInputs/OscillogramTemplate.root"
   OscillatorPrimaryBinningTemplateName: "OscillogramTemplate_Coarse"
   OscillatorSecondaryBinningTemplateName: "OscillogramTemplate_Fine"
 
-  #If using Binning templates, these values aren't required
+  #If using Binning templates, these values aren't requiredg
   OscillatornCoarseCosz: 100
   OscillatorlCoarseCosz: -1.0
   OscillatorhCoarseCosz: 1.0
@@ -24,8 +24,8 @@ OscillatorObj:
   OscillatorlCoarseEnergy: 0.01
   OscillatorhCoarseEnergy: 1000.0
 
-  OscillatornFineCosz: 10
-  OscillatornFineEnergy: 10
+  OscillatornFineCosz: 1
+  OscillatornFineEnergy: 1
 
   #Binning uses OscillatornFineCosz if OscillatorfineCoarseRatioCosz==-1, otherwise it uses OscillatorfineCoarseRatioCosz
   #Binning uses OscillatornFineEnergy if OscillatorfineCoarseRatioEnergy==-1, otherwise it uses OscillatorfineCoarseRatioEnergy
@@ -46,4 +46,4 @@ OscillatorObj:
   OscillatorRebinMode: false
 
   #Do you need graphical information outputing from Oscillator
-  OscillatorFillHistograms: false
+  OscillatorFillHistograms: true

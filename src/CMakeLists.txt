@@ -1,4 +1,4 @@
-set(APPS EventRatesDUNE SigmaVariationsDUNE jointFitDUNE Oscillator mainatmos)
+set(APPS EventRatesDUNE SigmaVariationsDUNE jointFitDUNE oscPlots test Oscillator testAtmDUNE DUNE_LLHscan_osc)
 
 foreach(a ${APPS})
 	  add_executable(${a} ${a}.cpp)

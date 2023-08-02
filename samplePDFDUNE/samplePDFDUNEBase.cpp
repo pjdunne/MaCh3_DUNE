@@ -215,7 +215,8 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   std::cout << "input file: " << sampleFile << std::endl;
   
   _sampleFile = new TFile(sampleFile, "READ");
-  _data = (TTree*)_sampleFile->Get("caf");
+  _data = (TTree*)_sampleFile->Get("cafTree");
+  // _data = (TTree*)_sampleFile->Get("caf");
 
   _isND = false;
 
@@ -280,6 +281,7 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
     _data->SetBranchStatus("mode",1);
     _data->SetBranchAddress("mode",&_mode);
     _data->SetBranchAddress("NuMomX", &_NuMomX);
+    _data->SetBranchStatus("NuMomY", 1);
     _data->SetBranchAddress("NuMomY", &_NuMomY);
     _data->SetBranchAddress("NuMomZ", &_NuMomZ);
     _data->SetBranchAddress("LepMomX", &_LepMomX);
@@ -313,6 +315,8 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
     _data->SetBranchAddress("LepNuAngle",&_LepTheta); 
     _data->SetBranchStatus("Q2",1); 
     _data->SetBranchAddress("Q2",&_Q2);
+    _data->SetBranchStatus("weight",1); 
+    _data->SetBranchAddress("weight",&_weight);
  }
 
   //FIX Commenting out for now
@@ -325,8 +329,10 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   } 
 
   // now fill the actual variables
-  duneobj->norm_s = norm->GetBinContent(1);
-  duneobj->pot_s = pot/norm->GetBinContent(2);
+  // duneobj->norm_s = norm->GetBinContent(1);
+  // duneobj->pot_s = pot/norm->GetBinContent(2);
+  duneobj->norm_s = 1;
+  duneobj->pot_s = 1;
   //duneobj->norm_s = 1.0;
   //duneobj->pot_s = 1.0;
   std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
@@ -359,6 +365,7 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   duneobj->rw_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
+  duneobj->rw_truecz = new double[duneobj->nEvents];
 
 
   duneobj->energyscale_w = new double[duneobj->nEvents];
@@ -403,6 +410,7 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
       duneobj->rw_vtx_x[i] = _vtx_x;
       duneobj->rw_vtx_y[i] = _vtx_y;
       duneobj->rw_vtx_z[i] = _vtx_z;
+      duneobj->rw_truecz[i] = _NuMomY/_ev;
 
 	  //Assume everything is on Argon for now....
 	  duneobj->Target[i] = 40;
@@ -419,7 +427,7 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
  
       duneobj->energyscale_w[i] = 1.0;
       
-      duneobj->flux_w[i] = 1.0;
+      duneobj->flux_w[i] = _weight;
     }
   
   //std::vector<double> etruVector(duneobj->rw_etru, duneobj->rw_etru + duneobj->nEvents);
@@ -524,7 +532,8 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
 
 	//DB Example Atmospheric Implementation
 	fdobj->osc_w_pointer[iEvent] = &(fdobj->Unity);
-	fdobj->rw_truecz[iEvent] = CZ->Uniform(-1.,1.);
+	// fdobj->rw_truecz[iEvent] = CZ->Uniform(-1.,1.);
+	fdobj->rw_truecz[iEvent] = duneobj->rw_truecz[iEvent];
 
 	//ETA - this is where the variables that you want to bin your samples in are defined
 	//If you want to bin in different variables this is where you put it for now
@@ -535,8 +544,9 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
 		//This way we don't have to update both fdmc and skmc when we apply shifts
 		//to variables we're binning in
 		fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
-		fdobj->y_var[iEvent] = &(duneobj->dummy_y);//ETA - don't think we even need this as if we have a 1D sample we never need this, just not sure I like an unitialised variable in fdmc struct? 
-		break;
+		// fdobj->y_var[iEvent] = &(duneobj->dummy_y);//ETA - don't think we even need this as if we have a 1D sample we never need this, just not sure I like an unitialised variable in fdmc struct? 
+    fdobj->y_var[iEvent] = &(duneobj->rw_truecz[iEvent]);
+    break;
 	  case 2:
 		//Just point to xvar to the address of the variable you want to bin in
 		//This way we don't have to update both fdmc and skmc when we apply shifts
@@ -621,12 +631,14 @@ void samplePDFDUNEBase::printPosteriors()
 
 int samplePDFDUNEBase::getNMCSamples()
 {
-  std::cout << "getNMCSamples" << std::endl;
-  return 0;
+  // std::cout << "getNMCSamples" << std::endl;
+  // return 0;
+  return dunemcSamples.size();
 }
 
 int samplePDFDUNEBase::getNEventsInSample(int sample)
 {
-  std::cout << "getNEventsInSample" << std::endl;
-  return 0;
+  // std::cout << "getNEventsInSample" << std::endl;
+  // return 0;
+  return dunemcSamples[sample].nEvents;
 }

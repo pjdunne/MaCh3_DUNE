@@ -87,6 +87,8 @@ struct dunemc_base {
   double *energyscale_w;
   //float *relRPA_w;
 
+  double *rw_truecz;
+
 };
 
 class samplePDFDUNEBase : virtual public samplePDFFDBase
@@ -169,6 +171,7 @@ public:
   double _vtx_z;
   double _LepTheta;
   double _Q2;
+  double _weight;
 
 
 

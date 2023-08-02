@@ -9,6 +9,7 @@ General:
     OscCovName: "osc_cov"
   Output:
     FileName: "TestEventRates.root"
+    OUTPUTNAME: "TestLLH.root"
   ProcessMCMC: No
   Seed: 0
   Debug: No
