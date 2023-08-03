@@ -96,7 +96,7 @@ int main(int argc, char * argv[]) {
   std::vector<samplePDFDUNEBase*> SamplePDFs;
   for (std::string ConfigName : SampleConfigs) {
     samplePDFDUNEBase* SampleConfig = new samplePDFDUNEBase(POT, ConfigName.c_str(), xsec);
-    
+    std::cout << ConfigName << " : " << SampleConfig->get1DHist()->Integral() << std::endl;
     SampleConfig->SetOscillator(Oscill);
 
     SamplePDFs.push_back(SampleConfig);
@@ -129,6 +129,7 @@ int main(int argc, char * argv[]) {
 
 	SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
+  std::cout << "AFTER REWEIGHT: " << name << " : " << SamplePDFs[sample_i]->get1DHist()->Integral() << std::endl;
 	TH2D *numu_unosc = (TH2D*)SamplePDFs[sample_i] -> get2DHist() -> Clone(NameTString+"_unosc");
 	unoscillated_hists.push_back(numu_unosc);
 

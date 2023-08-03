@@ -1,5 +1,5 @@
 OscillatorObj:
-  OscillatorEarthDensityFile: /home/pgranger/atmospherics/debug/MaCh3_DUNE/build/_deps/cudaprob3-src/models/PREM_4layer.dat
+  OscillatorEarthDensityFile: /dune/app/users/pgranger/MaCh3_ana/MaCh3_DUNE/build/_deps/cudaprob3-src/models/PREM_4layer.dat
   #Uses single fine bin contrubtion to coarse bin if OscillatorArrayConfig==0, otherwise it uses many fine bin contributions
   OscillatorArrayConfig: 0
 

@@ -1,4 +1,5 @@
 General:
+  OscillatorConfigName: "configs/OscillatorObj.yaml"
   POT: 1.3628319e+23
   Systematics:
     XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.root"
@@ -11,7 +12,7 @@ General:
     FileName: "TestEventRates.root"
     OUTPUTNAME: "output/TestLLH.root"
   LLH:
-    nbins: 2
+    nbins: 50
   ProcessMCMC: No
   Seed: 0
   Debug: No

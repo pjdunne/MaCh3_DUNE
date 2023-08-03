@@ -121,6 +121,11 @@ int main(int argc, char * argv[]) {
   samplePDFDUNEBase * nuebar_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
   SamplePDFs.push_back(nuebar_pdf);
 
+   std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;
+  std::cout << "FHC 1Rmu:   " << numu_pdf->get1DHist()->Integral() << std::endl;
+  std::cout << "FHC 1Re:    " << nue_pdf->get1DHist()->Integral() << std::endl;
+  throw;
+
   
 
   // Oscillated

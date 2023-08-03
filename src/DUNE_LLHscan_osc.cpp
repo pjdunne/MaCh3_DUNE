@@ -131,7 +131,7 @@ int main(int argc, char * argv[]) {
 
   std::cout << "-----------------------------------------------------------" << std::endl;
   std::cout << "Creating Oscillator object" << std::endl;
-  std::string OscillatorCfgName("/home/pgranger/atmospherics/debug/MaCh3_DUNE/configs/OscillatorObj.yaml");
+  std::string OscillatorCfgName = fitMan->raw()["General"]["OscillatorConfigName"].as<std::string>();
   Oscillator* Oscill = new Oscillator(OscillatorCfgName);
 
   Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
@@ -144,8 +144,13 @@ int main(int argc, char * argv[]) {
   // samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
   // samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
 
-  // numu_pdf->SetOscillator(Oscill);
-  // nue_pdf->SetOscillator(Oscill);
+  // std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;
+  // std::cout << "FHC 1Rmu:   " << numu_pdf->get1DHist()->Integral() << std::endl;
+  // std::cout << "FHC 1Re:    " << nue_pdf->get1DHist()->Integral() << std::endl;
+  // throw;
+
+  numu_pdf->SetOscillator(Oscill);
+  nue_pdf->SetOscillator(Oscill);
 
   pdfs.push_back(numu_pdf);
   pdfs.push_back(nue_pdf);
@@ -186,9 +191,9 @@ int main(int argc, char * argv[]) {
 	    << "oscpars[5] = " << (osc -> getPropPars())[5] << std::endl;
 
   // Setup Oscillation Calculator
-  for (unsigned sample_i = 0 ; sample_i < pdfs.size() ; ++sample_i) {
-    pdfs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
-  }
+  // for (unsigned sample_i = 0 ; sample_i < pdfs.size() ; ++sample_i) {
+  //   pdfs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
+  // }
 
   // Set to nominal pars
   vector<double> xsecpar = xsec->getNominalArray();  
@@ -217,7 +222,7 @@ int main(int argc, char * argv[]) {
   // nuebar_pdf->addData(nuebar_asimov); 
   
   
-  TCanvas *sys_canv = new TCanvas("sys_canv","",1200,600);
+  // TCanvas *sys_canv = new TCanvas("sys_canv","",1200,600);
   
   // Save pars before modifying
   std::vector<double> tpar = xsecpar;
@@ -241,7 +246,6 @@ int main(int argc, char * argv[]) {
   oscpars[1] = 0.3988888;
 
 
-  
   osc->setParameters(oscpars);
   double ddcp = 6.28/nsteps;
   double dth23 = 0.2/nsteps;
@@ -257,6 +261,12 @@ int main(int argc, char * argv[]) {
       for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
         pdfs[ipdf] -> reweight(osc -> getPropPars());
         samplellh += pdfs[ipdf]->GetLikelihood();
+
+        std::string name = pdfs[ipdf]->GetSampleName() + "_" + std::to_string(oscpars[5]) + "dcp_" + std::to_string(oscpars[1]) + "th23"; 
+
+        TH1D *h = (TH1D*)pdfs[ipdf]->get1DHist()->Clone(name.c_str());
+        Outfile -> cd();
+        h->Write();
     }
     int gbin = hScan->GetBin(j+1, k+1);
     std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh << "   [" << (100*(j*(nsteps + 1) + k))/((nsteps + 1)*(nsteps + 1)) << "%]" << std::endl;
@@ -271,6 +281,8 @@ int main(int argc, char * argv[]) {
 
   Outfile -> cd();
   hScan->Write();
+  numu_asimov->Write();
+  nue_asimov->Write();
   Outfile->Write();
   Outfile->Close();
 
