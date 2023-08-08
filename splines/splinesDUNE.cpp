@@ -58,7 +58,7 @@ void splinesDUNE::SetupSplines()
 #endif
 	std::vector<std::vector<std::vector<bool> > > tmp_flat_mode; 
 	//ETA adding in this to store weights for all splines
-	std::vector<std::vector<std::vector<double> > > tmp_w_mode; 
+	std::vector<std::vector<std::vector<float> > > tmp_w_mode; 
 	for(int imode = 0; imode<nUniqueModes; imode++){ // loop over modes
 #if USE_SPLINE_FD == USE_TSpline3_FD
 	  std::vector<std::vector<TSpline3*> > tmp_mbin;
@@ -66,7 +66,7 @@ void splinesDUNE::SetupSplines()
 	  std::vector<std::vector<TSpline3_red*> > tmp_mbin;
 #endif
 	  std::vector<std::vector<bool> > tmp_flat_enu;
-	  std::vector<std::vector<double> > tmp_w_enu;
+	  std::vector<std::vector<float> > tmp_w_enu;
 	  for(int ienu = 0; ienu < enu_spline->GetNbins(); ienu++){ // loop over true nu energy
 #if USE_SPLINE_FD == USE_TSpline3_FD
 		std::vector<TSpline3*> tmp_enu;
@@ -74,7 +74,7 @@ void splinesDUNE::SetupSplines()
 		std::vector<TSpline3_red*> tmp_enu;
 #endif
 		std::vector<bool> tmp_flat_var1;
-		std::vector<double> tmp_w_erec;
+		std::vector<float> tmp_w_erec;
 		for(int ierec = 0; ierec < var1_spline->GetNbins(); ierec++){ // loop over 1st variable
 #if USE_SPLINE_FD == USE_TSpline3_FD
 		  TSpline3 *tmp_erec=NULL;
@@ -273,7 +273,7 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 #endif
 	std::vector<std::vector<std::vector<std::vector<bool> > > > tmp_flat_mode;
 	//ETA adding this to store the weights for each spline eval
-	std::vector<std::vector<std::vector<std::vector<double> > > > tmp_w_mode;
+	std::vector<std::vector<std::vector<std::vector<float> > > > tmp_w_mode;
 	for(int imode = 0; imode<nUniqueModes; imode++){ // loop over modes
 #if USE_SPLINE_FD == USE_TSpline3_FD
 	  std::vector< std::vector<std::vector<TSpline3*> > > tmp_mbin;
@@ -281,7 +281,7 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 	  std::vector< std::vector<std::vector<TSpline3_red*> > > tmp_mbin;
 #endif
 	  std::vector<std::vector<std::vector<bool> > > tmp_flat_enu;
-	  std::vector<std::vector<std::vector<double> > > tmp_w_enu;
+	  std::vector<std::vector<std::vector<float> > > tmp_w_enu;
 	  for(int ienu = 0; ienu < enu_spline->GetNbins(); ienu++){ // loop over true nu energy
 #if USE_SPLINE_FD == USE_TSpline3_FD
 		std::vector<std::vector<TSpline3*> > tmp_enu;
@@ -289,7 +289,7 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 		std::vector<std::vector<TSpline3_red*> > tmp_enu;
 #endif
 		std::vector<std::vector<bool> > tmp_flat_var1;
-		std::vector<std::vector<double> > tmp_w_var1;
+		std::vector<std::vector<float> > tmp_w_var1;
 		for(int i1 = 0; i1 < Nbins_1st_var; i1++){ // loop over 1st variable
 #if USE_SPLINE_FD == USE_TSpline3_FD
 		  std::vector<TSpline3*> tmp_var1;
@@ -297,7 +297,7 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 		  std::vector<TSpline3_red*> tmp_var1;
 #endif
 		  std::vector<bool> tmp_flat_var2;
-		  std::vector<double> tmp_w_var2;
+		  std::vector<float> tmp_w_var2;
 		  for (int i2 = 0; i2 < Nbins_2nd_var; i2++){ // loop over 2nd variable
 #if USE_SPLINE_FD == USE_TSpline3_FD
 			TSpline3 *tmp_var2=NULL;

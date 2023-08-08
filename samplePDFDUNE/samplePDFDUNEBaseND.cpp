@@ -189,7 +189,7 @@ void samplePDFDUNEBaseND::setupWeightPointers() {
 	for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
 	  //DB Setting total weight pointers
 	  MCSamples[i].ntotal_weight_pointers[j] = 6;
-	  MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+	  MCSamples[i].total_weight_pointers[j] = new float*[MCSamples[i].ntotal_weight_pointers[j]];
 	  MCSamples[i].total_weight_pointers[j][0] = &(dunendmcSamples[i].pot_s);
 	  MCSamples[i].total_weight_pointers[j][1] = &(dunendmcSamples[i].norm_s);
 	  MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
@@ -275,24 +275,24 @@ void samplePDFDUNEBaseND::setupDUNEMC(const char *sampleFile, dunendmc_base *dun
   std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
   // allocate memory for dunendmc variables
-  duneobj->rw_yrec = new double[duneobj->nEvents];
-  duneobj->rw_elep_reco = new double[duneobj->nEvents];
-  duneobj->rw_etru = new double[duneobj->nEvents];
-  duneobj->rw_erec = new double[duneobj->nEvents];
-  duneobj->rw_theta = new double[duneobj->nEvents];
-  duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->xsec_w = new double[duneobj->nEvents];
+  duneobj->rw_yrec = new float[duneobj->nEvents];
+  duneobj->rw_elep_reco = new float[duneobj->nEvents];
+  duneobj->rw_etru = new float[duneobj->nEvents];
+  duneobj->rw_erec = new float[duneobj->nEvents];
+  duneobj->rw_theta = new float[duneobj->nEvents];
+  duneobj->flux_w = new float[duneobj->nEvents];
+  duneobj->xsec_w = new float[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
-  duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
+  duneobj->rw_berpaacvwgt = new float[duneobj->nEvents]; 
 
-  duneobj->energyscale_w = new double[duneobj->nEvents];
+  duneobj->energyscale_w = new float[duneobj->nEvents];
   duneobj->mode = new int[duneobj->nEvents];
-  duneobj->rw_lower_erec_1d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_1d = new double[duneobj->nEvents]; //upper erec bound for bin
-  duneobj->rw_lower_erec_2d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_2d = new double[duneobj->nEvents]; //upper erec bound for bin
+  duneobj->rw_lower_erec_1d = new float[duneobj->nEvents]; //lower erec bound for bin
+  duneobj->rw_upper_erec_1d = new float[duneobj->nEvents]; //upper erec bound for bin
+  duneobj->rw_lower_erec_2d = new float[duneobj->nEvents]; //lower erec bound for bin
+  duneobj->rw_upper_erec_2d = new float[duneobj->nEvents]; //upper erec bound for bin
 
   //These spline bins get filled in fillSplineBins
   duneobj->enu_s_bin = new unsigned int[duneobj->nEvents];
@@ -310,15 +310,15 @@ void samplePDFDUNEBaseND::setupDUNEMC(const char *sampleFile, dunendmc_base *dun
   for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
     {
       _data->GetEntry(i);
-      duneobj->rw_erec[i] = _erec;
-      duneobj->rw_elep_reco[i] = _elep_reco;
-	  duneobj->rw_yrec[i] = (_erec - _elep_reco)/_erec;
-      duneobj->rw_etru[i] = _ev; // in GeV
-      duneobj->rw_theta[i] = _LepNuAngle;
+      duneobj->rw_erec[i] = (float)_erec;
+      duneobj->rw_elep_reco[i] = (float)_elep_reco;
+	  duneobj->rw_yrec[i] = (float)((_erec - _elep_reco)/_erec);
+      duneobj->rw_etru[i] = (float)_ev; // in GeV
+      duneobj->rw_theta[i] = (float)_LepNuAngle;
       duneobj->rw_isCC[i] = _isCC;
       duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
       duneobj->rw_nuPDG[i] = _nuPDG;
-      duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
+      duneobj->rw_berpaacvwgt[i] = (float)_BeRPA_cvwgt;
 
 	  //Assume everything is on Argon for now....
 	  duneobj->Target[i] = 40;
@@ -366,34 +366,34 @@ void samplePDFDUNEBaseND::setupFDMC(dunendmc_base *duneobj, fdmc_base *fdobj, co
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
-  fdobj->x_var = new double*[fdobj->nEvents];
-  fdobj->y_var = new double*[fdobj->nEvents];
+  fdobj->x_var = new float*[fdobj->nEvents];
+  fdobj->y_var = new float*[fdobj->nEvents];
   fdobj->enu_s_bin = new unsigned int[fdobj->nEvents];
   fdobj->xvar_s_bin = new unsigned int[fdobj->nEvents];
   fdobj->yvar_s_bin = new unsigned int[fdobj->nEvents];
-  fdobj->rw_etru = new double*[fdobj->nEvents];
+  fdobj->rw_etru = new float*[fdobj->nEvents];
   fdobj->XBin = new int[fdobj->nEvents];
   fdobj->YBin = new int[fdobj->nEvents];    
   fdobj->NomXBin = new int[fdobj->nEvents];
   fdobj->NomYBin = new int[fdobj->nEvents];
-  fdobj->rw_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_lower_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_upper_xbinedge = new double [fdobj->nEvents];
+  fdobj->rw_lower_xbinedge = new float [fdobj->nEvents];
+  fdobj->rw_lower_lower_xbinedge = new float [fdobj->nEvents];
+  fdobj->rw_upper_xbinedge = new float [fdobj->nEvents];
+  fdobj->rw_upper_upper_xbinedge = new float [fdobj->nEvents];
   fdobj->mode = new int*[fdobj->nEvents];
   fdobj->nxsec_spline_pointers = new int[fdobj->nEvents]; 
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
+  fdobj->xsec_spline_pointers = new const float**[fdobj->nEvents];
   fdobj->nxsec_norm_pointers = new int[fdobj->nEvents];
   fdobj->xsec_norm_pointers = new const double**[fdobj->nEvents];
   fdobj->xsec_norms_bins = new std::list< int >[fdobj->nEvents];
-  fdobj->xsec_w = new double[fdobj->nEvents];
-  fdobj->flux_w = new double[fdobj->nEvents];
-  fdobj->osc_w = new double[fdobj->nEvents];
+  fdobj->xsec_w = new float[fdobj->nEvents];
+  fdobj->flux_w = new float[fdobj->nEvents];
+  fdobj->osc_w = new float[fdobj->nEvents];
   fdobj->isNC = new bool[fdobj->nEvents];
   fdobj->nxsec_spline_pointers = new int[fdobj->nEvents];
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
+  fdobj->xsec_spline_pointers = new const float**[fdobj->nEvents];
   fdobj->ntotal_weight_pointers = new int[fdobj->nEvents];
-  fdobj->total_weight_pointers = new double**[fdobj->nEvents];
+  fdobj->total_weight_pointers = new float**[fdobj->nEvents];
   fdobj->Target = new int*[fdobj->nEvents];
 
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){

@@ -48,46 +48,46 @@ struct dunemc_base {
 #endif
 
   // histo pdf bins
-  double *rw_erec;
-  double *rw_erec_shifted;
-  double *rw_erec_had;
-  double *rw_erec_lep;
+  float *rw_erec;
+  float *rw_erec_shifted;
+  float *rw_erec_had;
+  float *rw_erec_lep;
   
-  double *rw_eRecoP;
-  double *rw_eRecoPip;
-  double *rw_eRecoPim;
-  double *rw_eRecoPi0;
-  double *rw_eRecoN;
+  float *rw_eRecoP;
+  float *rw_eRecoPip;
+  float *rw_eRecoPim;
+  float *rw_eRecoPi0;
+  float *rw_eRecoN;
 
-  double *rw_LepE;
-  double *rw_eP;
-  double *rw_ePip;
-  double *rw_ePim;
-  double *rw_ePi0;
-  double *rw_eN;
+  float *rw_LepE;
+  float *rw_eP;
+  float *rw_ePip;
+  float *rw_ePim;
+  float *rw_ePi0;
+  float *rw_eN;
 
-  double *rw_etru;
-  double *rw_mom;
-  double *rw_theta;
-  double *rw_Q2;
-  double *rw_pdf_bin_1d; //global bin in the PDF so we can do a faster fill1Dhist 
-  double *rw_lower_erec_1d; // lower to check if Eb has moved the erec bin
-  double *rw_upper_erec_1d; // upper to check if Eb has moved the erec bin
-  double *rw_pdf_bin_2d; //global bin in the PDF so we can do a faster fill2Dhist 
-  double *rw_lower_erec_2d; // lower to check if Eb has moved the erec bin
-  double *rw_upper_erec_2d; // upper to check if Eb has moved the erec bin
-  double *rw_cvnnumu;
-  double *rw_cvnnue;
-  double *rw_berpaacvwgt;
+  float *rw_etru;
+  float *rw_mom;
+  float *rw_theta;
+  float *rw_Q2;
+  float *rw_pdf_bin_1d; //global bin in the PDF so we can do a faster fill1Dhist 
+  float *rw_lower_erec_1d; // lower to check if Eb has moved the erec bin
+  float *rw_upper_erec_1d; // upper to check if Eb has moved the erec bin
+  float *rw_pdf_bin_2d; //global bin in the PDF so we can do a faster fill2Dhist 
+  float *rw_lower_erec_2d; // lower to check if Eb has moved the erec bin
+  float *rw_upper_erec_2d; // upper to check if Eb has moved the erec bin
+  float *rw_cvnnumu;
+  float *rw_cvnnue;
+  float *rw_berpaacvwgt;
   int    *rw_isCC;
   int    *rw_nuPDGunosc;
   int    *rw_nuPDG;
   int    *rw_run;
   bool    *rw_isFHC;
-  double *rw_vtx_x;
-  double *rw_vtx_y;
-  double *rw_vtx_z;
-  double dummy_y;
+  float *rw_vtx_x;
+  float *rw_vtx_y;
+  float *rw_vtx_z;
+  float dummy_y;
 
   float **rw_dirlep;
   int *mode;
@@ -95,13 +95,13 @@ struct dunemc_base {
   int **rw_ipnu;
 
 
-  double pot_s; // s is for scale                                             
-  double norm_s;//    
+  float pot_s; // s is for scale                                             
+  float norm_s;//    
 
-  double *beam_w;
-  double *flux_w; // not the same as beam systematics weight!                 
-  double *xsec_w;
-  double *energyscale_w;
+  float *beam_w;
+  float *flux_w; // not the same as beam systematics weight!                 
+  float *xsec_w;
+  float *energyscale_w;
   //float *relRPA_w;
 
 };

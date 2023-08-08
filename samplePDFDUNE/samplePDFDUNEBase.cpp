@@ -317,7 +317,7 @@ void samplePDFDUNEBase::setupWeightPointers() {
 	for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
 	  //DB Setting total weight pointers
 	  MCSamples[i].ntotal_weight_pointers[j] = 6;
-	  MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+	  MCSamples[i].total_weight_pointers[j] = new float*[MCSamples[i].ntotal_weight_pointers[j]];
 	  MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].pot_s);
 	  MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].norm_s);
 	  MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
@@ -430,44 +430,44 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
   // allocate memory for dunemc variables
-  duneobj->rw_cvnnumu = new double[duneobj->nEvents];
-  duneobj->rw_cvnnue = new double[duneobj->nEvents];
-  duneobj->rw_etru = new double[duneobj->nEvents];
-  duneobj->rw_erec = new double[duneobj->nEvents];
-  duneobj->rw_erec_shifted = new double[duneobj->nEvents];
-  duneobj->rw_erec_had = new double[duneobj->nEvents];
-  duneobj->rw_erec_lep = new double[duneobj->nEvents];
+  duneobj->rw_cvnnumu = new float[duneobj->nEvents];
+  duneobj->rw_cvnnue = new float[duneobj->nEvents];
+  duneobj->rw_etru = new float[duneobj->nEvents];
+  duneobj->rw_erec = new float[duneobj->nEvents];
+  duneobj->rw_erec_shifted = new float[duneobj->nEvents];
+  duneobj->rw_erec_had = new float[duneobj->nEvents];
+  duneobj->rw_erec_lep = new float[duneobj->nEvents];
 
-  duneobj->rw_eRecoP = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPip = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPim = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPi0 = new double[duneobj->nEvents];
-  duneobj->rw_eRecoN = new double[duneobj->nEvents];
+  duneobj->rw_eRecoP = new float[duneobj->nEvents];
+  duneobj->rw_eRecoPip = new float[duneobj->nEvents];
+  duneobj->rw_eRecoPim = new float[duneobj->nEvents];
+  duneobj->rw_eRecoPi0 = new float[duneobj->nEvents];
+  duneobj->rw_eRecoN = new float[duneobj->nEvents];
 
-  duneobj->rw_LepE = new double[duneobj->nEvents];
-  duneobj->rw_eP = new double[duneobj->nEvents];
-  duneobj->rw_ePip = new double[duneobj->nEvents];
-  duneobj->rw_ePim = new double[duneobj->nEvents];
-  duneobj->rw_ePi0 = new double[duneobj->nEvents];
-  duneobj->rw_eN = new double[duneobj->nEvents];
+  duneobj->rw_LepE = new float[duneobj->nEvents];
+  duneobj->rw_eP = new float[duneobj->nEvents];
+  duneobj->rw_ePip = new float[duneobj->nEvents];
+  duneobj->rw_ePim = new float[duneobj->nEvents];
+  duneobj->rw_ePi0 = new float[duneobj->nEvents];
+  duneobj->rw_eN = new float[duneobj->nEvents];
 
-  duneobj->rw_theta = new double[duneobj->nEvents];
-  duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->xsec_w = new double[duneobj->nEvents];
+  duneobj->rw_theta = new float[duneobj->nEvents];
+  duneobj->flux_w = new float[duneobj->nEvents];
+  duneobj->xsec_w = new float[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
-  duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
-  duneobj->rw_vtx_x = new double[duneobj->nEvents];
-  duneobj->rw_vtx_y = new double[duneobj->nEvents];
-  duneobj->rw_vtx_z = new double[duneobj->nEvents];
+  duneobj->rw_berpaacvwgt = new float[duneobj->nEvents]; 
+  duneobj->rw_vtx_x = new float[duneobj->nEvents];
+  duneobj->rw_vtx_y = new float[duneobj->nEvents];
+  duneobj->rw_vtx_z = new float[duneobj->nEvents];
 
-  duneobj->energyscale_w = new double[duneobj->nEvents];
+  duneobj->energyscale_w = new float[duneobj->nEvents];
   duneobj->mode = new int[duneobj->nEvents];
-  duneobj->rw_lower_erec_1d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_1d = new double[duneobj->nEvents]; //upper erec bound for bin
-  duneobj->rw_lower_erec_2d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_2d = new double[duneobj->nEvents]; //upper erec bound for bin
+  duneobj->rw_lower_erec_1d = new float[duneobj->nEvents]; //lower erec bound for bin
+  duneobj->rw_upper_erec_1d = new float[duneobj->nEvents]; //upper erec bound for bin
+  duneobj->rw_lower_erec_2d = new float[duneobj->nEvents]; //lower erec bound for bin
+  duneobj->rw_upper_erec_2d = new float[duneobj->nEvents]; //upper erec bound for bin
 
   //These spline bins get filled in fillSplineBins
   duneobj->enu_s_bin = new unsigned int[duneobj->nEvents];
@@ -484,43 +484,43 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
     {
       _data->GetEntry(i);
-      duneobj->rw_cvnnumu[i] = _cvnnumu; 
-      duneobj->rw_cvnnue[i] = _cvnnue;
+      duneobj->rw_cvnnumu[i] = (float)_cvnnumu; 
+      duneobj->rw_cvnnue[i] = (float)_cvnnue;
       if (iselike) {
-	    duneobj->rw_erec[i] = _erec_nue;
-	  duneobj->rw_erec_shifted[i] = _erec_nue; 
-	    duneobj->rw_erec_had[i] = _erec_had_nue;
-	    duneobj->rw_erec_lep[i] = _erec_lep_nue;
+	    duneobj->rw_erec[i] = (float)_erec_nue;
+	  duneobj->rw_erec_shifted[i] = (float)_erec_nue; 
+	    duneobj->rw_erec_had[i] = (float)_erec_had_nue;
+	    duneobj->rw_erec_lep[i] = (float)_erec_lep_nue;
 	  }
       else {
-	    duneobj->rw_erec[i] = _erec; 
-	    duneobj->rw_erec_shifted[i] = _erec; 
-	    duneobj->rw_erec_had[i] = _erec_had; 
-	    duneobj->rw_erec_lep[i] = _erec_lep; 
+	    duneobj->rw_erec[i] = (float)_erec; 
+	    duneobj->rw_erec_shifted[i] = (float)_erec; 
+	    duneobj->rw_erec_had[i] = (float)_erec_had; 
+	    duneobj->rw_erec_lep[i] = (float)_erec_lep; 
       }
 
-	  duneobj->rw_eRecoP[i] = _eRecoP; 
-	  duneobj->rw_eRecoPip[i] = _eRecoPip; 
-	  duneobj->rw_eRecoPim[i] = _eRecoPim; 
-	  duneobj->rw_eRecoPi0[i] = _eRecoPi0; 
-	  duneobj->rw_eRecoN[i] = _eRecoN; 
+	  duneobj->rw_eRecoP[i] = (float)_eRecoP; 
+	  duneobj->rw_eRecoPip[i] = (float)_eRecoPip; 
+	  duneobj->rw_eRecoPim[i] = (float)_eRecoPim; 
+	  duneobj->rw_eRecoPi0[i] = (float)_eRecoPi0; 
+	  duneobj->rw_eRecoN[i] = (float)_eRecoN; 
 
-	  duneobj->rw_LepE[i] = _LepE; 
-	  duneobj->rw_eP[i] = _eP; 
-	  duneobj->rw_ePip[i] = _ePip; 
-	  duneobj->rw_ePim[i] = _ePim; 
-	  duneobj->rw_ePi0[i] = _ePi0; 
-	  duneobj->rw_eN[i] = _eN; 
+	  duneobj->rw_LepE[i] = (float)_LepE; 
+	  duneobj->rw_eP[i] = (float)_eP; 
+	  duneobj->rw_ePip[i] = (float)_ePip; 
+	  duneobj->rw_ePim[i] = (float)_ePim; 
+	  duneobj->rw_ePi0[i] = (float)_ePi0; 
+	  duneobj->rw_eN[i] = (float)_eN; 
 
-      duneobj->rw_etru[i] = _ev;
-      duneobj->rw_theta[i] = _LepNuAngle;
+      duneobj->rw_etru[i] = (float)_ev;
+      duneobj->rw_theta[i] = (float)_LepNuAngle;
       duneobj->rw_isCC[i] = _isCC;
       duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
       duneobj->rw_nuPDG[i] = _nuPDG;
-      duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
-      duneobj->rw_vtx_x[i] = _vtx_x;
-      duneobj->rw_vtx_y[i] = _vtx_y;
-      duneobj->rw_vtx_z[i] = _vtx_z;
+      duneobj->rw_berpaacvwgt[i] = (float)_BeRPA_cvwgt;
+      duneobj->rw_vtx_x[i] = (float)_vtx_x;
+      duneobj->rw_vtx_y[i] = (float)_vtx_y;
+      duneobj->rw_vtx_z[i] = (float)_vtx_z;
 
 	  //Assume everything is on Argon for now....
 	  duneobj->Target[i] = 40;
@@ -577,37 +577,36 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
-  fdobj->x_var = new double*[fdobj->nEvents];
-  fdobj->y_var = new double*[fdobj->nEvents];
+  fdobj->x_var = new float*[fdobj->nEvents];
+  fdobj->y_var = new float*[fdobj->nEvents];
   fdobj->enu_s_bin = new unsigned int[fdobj->nEvents];
   fdobj->xvar_s_bin = new unsigned int[fdobj->nEvents];
   fdobj->yvar_s_bin = new unsigned int[fdobj->nEvents];
-  fdobj->rw_etru = new double*[fdobj->nEvents];
+  fdobj->rw_etru = new float*[fdobj->nEvents];
   fdobj->XBin = new int[fdobj->nEvents];
   fdobj->YBin = new int[fdobj->nEvents];    
   fdobj->NomXBin = new int[fdobj->nEvents];
   fdobj->NomYBin = new int[fdobj->nEvents];
   fdobj->XBin = new int [fdobj->nEvents];
   fdobj->YBin = new int [fdobj->nEvents];;	 
-  fdobj->rw_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_lower_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_upper_xbinedge = new double [fdobj->nEvents];
+  fdobj->rw_lower_xbinedge = new float [fdobj->nEvents];
+  fdobj->rw_lower_lower_xbinedge = new float [fdobj->nEvents];
+  fdobj->rw_upper_xbinedge = new float [fdobj->nEvents];
+  fdobj->rw_upper_upper_xbinedge = new float [fdobj->nEvents];
   fdobj->mode = new int*[fdobj->nEvents];
   fdobj->nxsec_spline_pointers = new int[fdobj->nEvents]; 
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
+  fdobj->xsec_spline_pointers = new const float**[fdobj->nEvents];
   fdobj->nxsec_norm_pointers = new int[fdobj->nEvents];
   fdobj->xsec_norm_pointers = new const double**[fdobj->nEvents];
   fdobj->xsec_norms_bins = new std::list< int >[fdobj->nEvents];
-  fdobj->xsec_w = new double[fdobj->nEvents];
-  fdobj->flux_w = new double[fdobj->nEvents];
-  fdobj->osc_w = new double[fdobj->nEvents];
+  fdobj->xsec_w = new float[fdobj->nEvents];
+  fdobj->flux_w = new float[fdobj->nEvents];
+  fdobj->osc_w = new float[fdobj->nEvents];
   fdobj->isNC = new bool[fdobj->nEvents];
-  fdobj->rw_etru = new double*[fdobj->nEvents];
   fdobj->nxsec_spline_pointers = new int[fdobj->nEvents];
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
+  fdobj->xsec_spline_pointers = new const float**[fdobj->nEvents];
   fdobj->ntotal_weight_pointers = new int[fdobj->nEvents];
-  fdobj->total_weight_pointers = new double**[fdobj->nEvents];
+  fdobj->total_weight_pointers = new float**[fdobj->nEvents];
   fdobj->Target = new int*[fdobj->nEvents];
 
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
