@@ -24,9 +24,9 @@ int main(int argc, char **argv)
   #endif
 
   #ifdef CPU_ONLY
-    std::cout << "GPU OSC CALC IS ON" << std::endl;
-  #else
     std::cout << "ONLY CPU OSC CALC" << std::endl;
+  #else
+    std::cout << "GPU OSC CALC IS ON" << std::endl;
   #endif
 
   // Read config
@@ -269,6 +269,8 @@ int main(int argc, char **argv)
     if(parstarts.find("xsec")!=parstarts.end()) {
       xsec->setParameters(parstarts["xsec"]);
       xsec->acceptStep();
+      osc->setParameters(oscparstarts);
+      osc->acceptStep();
     }
     else {xsec->setParameters();}
   }
