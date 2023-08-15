@@ -269,6 +269,8 @@ int main(int argc, char **argv)
     if(parstarts.find("xsec")!=parstarts.end()) {
       xsec->setParameters(parstarts["xsec"]);
       xsec->acceptStep();
+      osc->setParameters(oscparstarts);
+      osc->acceptStep();
     }
     else {xsec->setParameters();}
   }
