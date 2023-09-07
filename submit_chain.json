@@ -1,0 +1,11 @@
+{
+    "--group": "dune",
+    "-N": "50",
+    "--expected-lifetime": "30h",
+    "--memory": "4000",
+    "--timeout": "30h",
+    "--tar_file_name": "dropbox:///${CWD}/../MaCh3_DUNE.tar.gz",
+    "--OS": "SL7",
+    "file://${CWD}/chain_script.sh": []
+  }
+  

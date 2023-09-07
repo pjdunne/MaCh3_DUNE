@@ -10,9 +10,16 @@ General:
     OscCovName: "osc_cov"
   Output:
     FileName: "TestEventRates.root"
-    OUTPUTNAME: "output/TestLLH.root"
+    OUTPUTNAME: "TestLLH.root"
+    ODIR: "output"
   LLH:
-    nbins: 50
+    nbins: 80
+    parId1: 0
+    parStart1: 0.4
+    parStop1: 0.7
+    parId2: 5
+    parStart2: -3.14159
+    parStop2: 3.14159
   ProcessMCMC: No
   Seed: 0
   Debug: No

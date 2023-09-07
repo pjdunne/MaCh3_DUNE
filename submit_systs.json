@@ -1,0 +1,13 @@
+{
+  "--group": "dune",
+  "-N": "56",
+  "--expected-lifetime": "1h",
+  "--memory": "12000",
+  "--timeout": "1h",
+  "--tar_file_name": "dropbox:///${CWD}/../MaCh3_DUNE.tar.gz",
+  "--OS": "SL7",
+  "-f": [
+    "dropbox:///${CWD}/jobs_systs.txt"
+  ],
+  "file://${CWD}/job_script_systs.sh": []
+}

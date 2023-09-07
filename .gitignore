@@ -1,0 +1,5 @@
+build/
+*.root
+*.tbz2
+*.tgz
+logs/

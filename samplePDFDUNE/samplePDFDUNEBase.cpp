@@ -133,7 +133,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   }
 
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    setupFDMC(&dunemcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]], (splineprefix+spline_files[iSample]+splinesuffix).c_str());
+    setupFDMC(&dunemcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]]);
   }
 
   std::cout << "################" << std::endl;
@@ -148,7 +148,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 
   std::cout << "Now setting up Splines" << std::endl;
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-	setupSplines(&MCSamples[sample_vecno[iSample]] , (splineprefix+spline_files[iSample]+splinesuffix).c_str(), MCSamples[iSample].nutype, MCSamples[iSample].signal);
+	setupSplines(&MCSamples[sample_vecno[iSample]] , (splineprefix+spline_files[iSample]+splinesuffix).c_str(), MCSamples[iSample].nutype);
   }
 
   std::cout << "################" << std::endl;
@@ -284,8 +284,11 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
     _data->SetBranchStatus("NuMomY", 1);
     _data->SetBranchAddress("NuMomY", &_NuMomY);
     _data->SetBranchAddress("NuMomZ", &_NuMomZ);
+    _data->SetBranchStatus("LepMomX", 1);
     _data->SetBranchAddress("LepMomX", &_LepMomX);
+    _data->SetBranchStatus("LepMomY", 1);
     _data->SetBranchAddress("LepMomY", &_LepMomY);
+    _data->SetBranchStatus("LepMomZ", 1);
     _data->SetBranchAddress("LepMomZ", &_LepMomZ);
     _data->SetBranchStatus("cvnnumu",1);
     _data->SetBranchAddress("cvnnumu", &_cvnnumu);
@@ -399,7 +402,8 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
       if ( i == 1 ) {std::cout << "Etrue = " << duneobj->rw_etru[i] << std::endl;}
       duneobj->rw_cvnnumu[i] = _cvnnumu; 
       duneobj->rw_cvnnue[i] = _cvnnue;
-      duneobj->rw_theta[i] = _LepNuAngle;
+      // duneobj->rw_theta[i] = _LepNuAngle;
+      duneobj->rw_theta[i] = _LepMomY/sqrt(pow(_LepMomZ, 2) + pow(_LepMomY, 2) + pow(_LepMomX, 2));
       duneobj->rw_Q2[i] = _Q2;
       duneobj->rw_isCC[i] = _isCC;
       duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
@@ -465,7 +469,7 @@ double samplePDFDUNEBase::ReturnKinematicParameter(std::string KinematicParamete
   return KinematicValue;
 }
 
-void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile) 
+void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) 
 {
 
   fdobj->nEvents = duneobj->nEvents;
@@ -565,7 +569,7 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
   return;
 }
 
-void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype, int signal) {
+void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype) {
 
   int nevents = fdobj->nEvents;
   std::cout << "##################" << std::endl;

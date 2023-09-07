@@ -99,12 +99,12 @@ public:
 
   void printPosteriors();
 
-  void setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype, int signal);
+  void setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype);
 
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
   void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
-  void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile);
+  void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj);
 
   void setupWeightPointers();
 

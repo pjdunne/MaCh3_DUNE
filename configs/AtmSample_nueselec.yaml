@@ -25,7 +25,7 @@ SampleName: "nueselec"
 #   - KinematicStr: "TrueZPos"
 #     Bounds: [ 50.0, 1244.0 ]
 Binning:
-  BinningOpt: 1
+  BinningOpt: 2
   XVarBins: [0., 0.25, 0.5, 0.75, 1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 4.25, 4.5, 4.75, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]
   YVarBins: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
@@ -35,10 +35,13 @@ SampleBools:
 InputFiles:
   mtupleprefix: "inputs/ATM_CAF_files/hd_AV_"
   mtuplesuffix: "_nueselec.root"
-  splineprefix: "inputs/DUNE_spline_files/FD_FHC_ger_"
+  # splineprefix: "inputs/ATM_spline_files/FD_FHC_ger_"
+  splineprefix: "inputs/ATM_spline_files_test/FD_FHC_ger_"
+  # splineprefix: "inputs/DUNE_spline_files/FD_FHC_ger_"
   splinesuffix: "_nueselec_splines.root"
 SampleCuts:
   up_bnd: 30.
+# DetID: 72
 DetID: 24
 # NSubSamples: 1
 # SubSamples:

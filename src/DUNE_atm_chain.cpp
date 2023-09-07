@@ -117,6 +117,7 @@ int main(int argc, char * argv[]) {
 
   // Use prior for 12 parameters only
   //osc->setEvalLikelihood(0,false);
+  osc->setFlipDeltaM23(true);
   osc->setEvalLikelihood(1,false);
   osc->setEvalLikelihood(2,false);
   //osc->setEvalLikelihood(3,false);
@@ -241,49 +242,78 @@ int main(int argc, char * argv[]) {
   //TH1D *hScanSam = new TH1D((std::string("sam_")+ name).c_str(), (name+"_sam").c_str(), n_points, lower, upper);
   //hScanSam->SetTitle(std::string(std::string("2LLH_sam, ") + name + ";" + name + "; -2(ln L_{sample})").c_str());
 
-  //TH1D *hScan = new TH1D((std::string("full_") + name).c_str(), (name+"_full").c_str(), n_points, lower, upper);
-  //hScan->SetTitle(std::string(std::string("2LLH_full, ") + name + ";" + name + "; -2(ln L_{sample} + ln L_{flux}").c_str());
+//   TH1D *hScan = new TH1D((std::string("full_") + name).c_str(), (name+"_full").c_str(), n_points, lower, upper);
+//   hScan->SetTitle(std::string(std::string("2LLH_full, ") + name + ";" + name + "; -2(ln L_{sample} + ln L_{flux}").c_str());
   
-  int nsteps = fitMan->raw()["General"]["LLH"]["nbins"].as<int>();
-  int parId1 = fitMan->raw()["General"]["LLH"]["parId1"].as<int>();
-  int parId2 = fitMan->raw()["General"]["LLH"]["parId2"].as<int>();
-  double parStart1 = fitMan->raw()["General"]["LLH"]["parStart1"].as<double>();
-  double parStop1 = fitMan->raw()["General"]["LLH"]["parStop1"].as<double>();
-  double parStart2 = fitMan->raw()["General"]["LLH"]["parStart2"].as<double>();
-  double parStop2 = fitMan->raw()["General"]["LLH"]["parStop2"].as<double>();
+//   int nsteps = fitMan->raw()["General"]["LLH"]["nbins"].as<int>();
+//   int parId1 = fitMan->raw()["General"]["LLH"]["parId1"].as<int>();
+//   int parId2 = fitMan->raw()["General"]["LLH"]["parId2"].as<int>();
+//   double parStart1 = fitMan->raw()["General"]["LLH"]["parStart1"].as<double>();
+//   double parStop1 = fitMan->raw()["General"]["LLH"]["parStop1"].as<double>();
+//   double parStart2 = fitMan->raw()["General"]["LLH"]["parStart2"].as<double>();
+//   double parStop2 = fitMan->raw()["General"]["LLH"]["parStop2"].as<double>();
 
-  TH2D *hScan = new TH2D("dCP Th23 LLH", "dCP Th23 LLH", nsteps + 1, parStart1, parStop1, nsteps + 1, parStart2, parStop2);
+//   TH2D *hScan = new TH2D("dCP Th23 LLH", "dCP Th23 LLH", nsteps + 1, parStart1, parStop1, nsteps + 1, parStart2, parStop2);
   
-  oscpars[parId1] = parStart1;
+//   oscpars[parId1] = parStart1;
 
-  double dpar1 = (parStop1 - parStart1)/nsteps;
-  double dpar2 = (parStop2 - parStart2)/nsteps;
+//   double dpar1 = (parStop1 - parStart1)/nsteps;
+//   double dpar2 = (parStop2 - parStart2)/nsteps;
   
-  // Scan over the parameter space
-  for (int j = 0; j < nsteps + 1; j++) {
-    oscpars[parId2] = parStart2;
-    for (int k = 0; k < nsteps + 1; k++) {
-      double samplellh = 0;
-      osc->setParameters(oscpars);
-      // Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
-      for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-        pdfs[ipdf] -> reweight(osc -> getPropPars());
-        // std::string name = pdfs[ipdf]->GetSampleName() + "_" + std::to_string(oscpars[5]) + "dcp_" + std::to_string(oscpars[1]) + "th23"; 
-        // TH1D *h = (TH1D*)pdfs[ipdf]->get1DHist()->Clone(name.c_str());
-        samplellh += pdfs[ipdf]->GetLikelihood();
-        // Outfile -> cd();
-        // h->Write();
-      }
-      int gbin = hScan->GetBin(j+1, k+1);
-      std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh << "   [" << (100*(j*(nsteps + 1) + k))/((nsteps + 1)*(nsteps + 1)) << "%]" << std::endl;
-      hScan->SetBinContent(gbin, 2*samplellh);
-      oscpars[parId2] += dpar2;
-    }
-    oscpars[parId1] += dpar1;
-  }
+//   // Scan over the parameter space
+//   for (int j = 0; j < nsteps + 1; j++) {
+//     oscpars[parId2] = parStart2;
+//     for (int k = 0; k < nsteps + 1; k++) {
+//       double samplellh = 0;
+//       osc->setParameters(oscpars);
+//       // Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
+//       for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
+//         pdfs[ipdf] -> reweight(osc -> getPropPars());
+//         // std::string name = pdfs[ipdf]->GetSampleName() + "_" + std::to_string(oscpars[5]) + "dcp_" + std::to_string(oscpars[1]) + "th23"; 
+//         // TH1D *h = (TH1D*)pdfs[ipdf]->get1DHist()->Clone(name.c_str());
+//         samplellh += pdfs[ipdf]->GetLikelihood();
+//         // Outfile -> cd();
+//         // h->Write();
+//       }
+//       int gbin = hScan->GetBin(j+1, k+1);
+//       std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh << "   [" << (100*(j*(nsteps + 1) + k))/((nsteps + 1)*(nsteps + 1)) << "%]" << std::endl;
+//       hScan->SetBinContent(gbin, 2*samplellh);
+//       oscpars[parId2] += dpar2;
+//     }
+//     oscpars[parId1] += dpar1;
+//   }
+
+    //###########################################################################################################
+  // MCMC
+
+  mcmc *markovChain = new mcmc(fitMan);
+
+  //numu_fds->Write();
+
+  // set up
+  int NSteps = fitMan->raw()["General"]["NSTEPS"].as<int>(); 
+  markovChain->setChainLength(NSteps);
+  markovChain->addOscHandler(osc, osc);
+
+  // add samples
+  markovChain->addSamplePDF(numu_pdf);
+  markovChain->addSamplePDF(nue_pdf);
+
+  //start chain from random position
+  xsec->throwParameters();
+  osc->throwParameters();
+
+  // add systematic objects
+//   if (!statsonly) {
+//     markovChain->addSystObj(xsec);
+//   }
+//   else {std::cout << "STATS ONLY!" << std::endl;}
+  
+  // run!
+  markovChain->runMCMC();
  
   Outfile -> cd();
-  hScan->Write();
+//   hScan->Write();
   numu_asimov->Write();
   nue_asimov->Write();
   numu_asimov_2d->Write();
