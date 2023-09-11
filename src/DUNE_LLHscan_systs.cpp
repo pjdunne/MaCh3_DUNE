@@ -13,6 +13,7 @@
 #include <TLegend.h>
 #include <TColor.h>
 #include <TMath.h>
+#include <TGraph.h>
 
 #include "samplePDFDUNE/samplePDFDUNEBase.h"
 
@@ -232,12 +233,15 @@ int main(int argc, char * argv[]) {
 
   std::string histname = "xsec_" + std::to_string(i) + "_llhscan";
   std::string histtitle = "xsec_" + std::to_string(i);
+
+  TGraph *gScan = new TGraph(n_points);
+  gScan->SetName(histname.c_str());
+  gScan->SetTitle(histtitle.c_str());
   
-  TH1D *hScan = new TH1D(histname.c_str(), histtitle.c_str(), 40, lowerb, upperb);
   xsecpar[i] = xsec->getNominal(i)-3*sqrt((*xsec->getCovMatrix())(i,i));
 
-  //double dsigma = (2*3)/(n_points-1)
-  double dsigma = 0.07594936708;
+  double dsigma = (2.*3.)/(n_points-1);
+  // double dsigma = 0.07594936708;
   double totalllh = 0;
   double samplellh = 0;
   double penaltyllh = 0;
@@ -246,20 +250,21 @@ int main(int argc, char * argv[]) {
     xsec->setParameters(xsecpar);
     for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++) {
       pdfs[ipdf] -> reweight(osc -> getPropPars());
-  std::cout << "Sample " << ipdf << " has sample llh " << pdfs[ipdf]->GetLikelihood() << " for variation " << j <<  std::endl; 
-      samplellh += pdfs[ipdf]->GetLikelihood();
+      double llh = pdfs[ipdf]->GetLikelihood();
+  std::cout << "Sample " << ipdf << " has sample llh " << llh << " for variation " << j <<  std::endl; 
+      samplellh += llh;
     }
     penaltyllh += (xsec->GetLikelihood());
     //std::cout << "xsec par = " << i << " || xsec par value = " << xsecpar[i] << " || sample llh = " << samplellh << " || penalty llh  = " <<  penaltyllh << std::endl;
-  totalllh = samplellh ;//+ penaltyllh;
-    hScan->Fill(xsecpar[i], 2*totalllh);
+    totalllh = samplellh ;//+ penaltyllh;
+    gScan->SetPoint(j, xsecpar[i], 2*totalllh);
     samplellh = 0;
     penaltyllh = 0;
     totalllh = 0;
     xsecpar[i] += dsigma*sqrt((*xsec->getCovMatrix())(i,i));
   }
   Outfile->cd();
-  hScan->Write();
+  gScan->Write();
   std::cout << "Finished xsec param " << i << std::endl;
   // }
   return 0;
