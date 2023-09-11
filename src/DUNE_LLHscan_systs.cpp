@@ -234,9 +234,23 @@ int main(int argc, char * argv[]) {
   std::string histname = "xsec_" + std::to_string(i) + "_llhscan";
   std::string histtitle = "xsec_" + std::to_string(i);
 
-  TGraph *gScan = new TGraph(n_points);
-  gScan->SetName(histname.c_str());
-  gScan->SetTitle(histtitle.c_str());
+  TGraph *gScan_numu = new TGraph(n_points);
+  TGraph *gScan_nue = new TGraph(n_points);
+  TGraph *gScan_penalty = new TGraph(n_points);
+
+  std::string gname_numu = histname + "_numu";
+  gScan_numu->SetName(gname_numu.c_str());
+  gScan_numu->SetTitle(histtitle.c_str());
+
+  std::string gname_nue = histname + "_nue";
+  gScan_nue->SetName(gname_nue.c_str());
+  gScan_nue->SetTitle(histtitle.c_str());
+
+  std::string gname_penalty = histname + "_penalty";
+  gScan_penalty->SetName(gname_penalty.c_str());
+  gScan_penalty->SetTitle(histtitle.c_str());
+
+  std::vector<TGraph*> gScans = {gScan_numu, gScan_nue};
   
   xsecpar[i] = xsec->getNominal(i)-3*sqrt((*xsec->getCovMatrix())(i,i));
 
@@ -253,18 +267,23 @@ int main(int argc, char * argv[]) {
       double llh = pdfs[ipdf]->GetLikelihood();
   std::cout << "Sample " << ipdf << " has sample llh " << llh << " for variation " << j <<  std::endl; 
       samplellh += llh;
+
+      gScans[ipdf]->SetPoint(j, xsecpar[i], 2*llh);
     }
     penaltyllh += (xsec->GetLikelihood());
+    gScan_penalty->SetPoint(j, xsecpar[i], 2*xsec->GetLikelihood());
     //std::cout << "xsec par = " << i << " || xsec par value = " << xsecpar[i] << " || sample llh = " << samplellh << " || penalty llh  = " <<  penaltyllh << std::endl;
     totalllh = samplellh ;//+ penaltyllh;
-    gScan->SetPoint(j, xsecpar[i], 2*totalllh);
+    
     samplellh = 0;
     penaltyllh = 0;
     totalllh = 0;
     xsecpar[i] += dsigma*sqrt((*xsec->getCovMatrix())(i,i));
   }
   Outfile->cd();
-  gScan->Write();
+  gScan_numu->Write();
+  gScan_nue->Write();
+  gScan_penalty->Write();
   std::cout << "Finished xsec param " << i << std::endl;
   // }
   return 0;
