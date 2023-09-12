@@ -297,8 +297,8 @@ int main(int argc, char **argv)
 
   if(!fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
     //start chain from random position unless starting from a previous chain
-    xsec->throwParameters();
-    osc->throwParameters();
+    xsec->proposeStep();
+    osc->proposeStep();
   }
 
   // add systematic objects
