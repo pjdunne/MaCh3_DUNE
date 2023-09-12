@@ -171,97 +171,97 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 
 	if (name == "TotalEScaleFD") {
 	  tot_escale_fd_pos = *it;
-	  FDDetectorSystPointers[tot_escale_fd_pos] = xsec_cov->retPointer(tot_escale_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(tot_escale_fd_pos);
 	}
 
 	else if (name == "TotalEScaleSqrtFD") {
 	  tot_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[tot_escale_sqrt_fd_pos] = xsec_cov->retPointer(tot_escale_sqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(tot_escale_sqrt_fd_pos);
 	}
 
 	else if (name == "TotalEScaleInvSqrtFD") {
 	  tot_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[tot_escale_invsqrt_fd_pos] = xsec_cov->retPointer(tot_escale_invsqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(tot_escale_invsqrt_fd_pos);
 	}
 
 	else if (name == "HadEScaleFD") {
 	  had_escale_fd_pos = *it;
-	  FDDetectorSystPointers[had_escale_fd_pos] = xsec_cov->retPointer(had_escale_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(had_escale_fd_pos);
 	}
 
 	else if (name == "HadEScaleSqrtFD") {
 	  had_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[had_escale_sqrt_fd_pos] = xsec_cov->retPointer(had_escale_sqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(had_escale_sqrt_fd_pos);
 	}
 
 	else if (name == "HadEScaleInvSqrtFD") {
 	  had_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[had_escale_invsqrt_fd_pos] = xsec_cov->retPointer(had_escale_invsqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(had_escale_invsqrt_fd_pos);
 	}
 
 	else if (name == "MuEScaleFD") {
 	  mu_escale_fd_pos = *it;
-	  FDDetectorSystPointers[mu_escale_fd_pos] = xsec_cov->retPointer(mu_escale_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(mu_escale_fd_pos);
 	}
 
 	else if (name == "MuEScaleSqrtFD") {
 	  mu_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[mu_escale_sqrt_fd_pos] = xsec_cov->retPointer(mu_escale_sqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(mu_escale_sqrt_fd_pos);
 	}
 
 	else if (name == "MuEScaleInvSqrtFD") {
 	  mu_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[mu_escale_invsqrt_fd_pos] = xsec_cov->retPointer(mu_escale_invsqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(mu_escale_invsqrt_fd_pos);
 	}
 
 	else if (name == "NEScaleFD") {
 	  n_escale_fd_pos = *it;
-	  FDDetectorSystPointers[n_escale_fd_pos] = xsec_cov->retPointer(n_escale_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(n_escale_fd_pos);
 	}
 
 	else if (name == "NEScaleSqrtFD") {
 	  n_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[n_escale_sqrt_fd_pos] = xsec_cov->retPointer(n_escale_sqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(n_escale_sqrt_fd_pos);
 	}
 
 	else if (name == "NEScaleInvSqrtFD") {
 	  n_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[n_escale_invsqrt_fd_pos] = xsec_cov->retPointer(n_escale_invsqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(n_escale_invsqrt_fd_pos);
 	}
 
 	else if (name == "EMEScaleFD") {
 	  em_escale_fd_pos = *it;
-	  FDDetectorSystPointers[em_escale_fd_pos] = xsec_cov->retPointer(em_escale_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_escale_fd_pos);
 	}
 
 	else if (name == "EMEScaleSqrtFD") {
 	  em_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[em_escale_sqrt_fd_pos] = xsec_cov->retPointer(em_escale_sqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_escale_sqrt_fd_pos);
 	}
 
 	else if (name == "EMEScaleInvSqrtFD") {
 	  em_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[em_escale_invsqrt_fd_pos] = xsec_cov->retPointer(em_escale_invsqrt_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_escale_invsqrt_fd_pos);
 	}
 
 	else if (name == "HadResFD") {
 	  had_res_fd_pos = *it;
-	  FDDetectorSystPointers[had_res_fd_pos] = xsec_cov->retPointer(had_res_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(had_res_fd_pos);
 	}
 
 	else if (name == "MuResFD") {
 	  mu_res_fd_pos = *it;
-	  FDDetectorSystPointers[mu_res_fd_pos] = xsec_cov->retPointer(mu_res_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(mu_res_fd_pos);
 	}
 
 	else if (name == "NResFD") {
 	  n_res_fd_pos = *it;
-	  FDDetectorSystPointers[n_res_fd_pos] = xsec_cov->retPointer(n_res_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(n_res_fd_pos);
 	}
 
 	else if (name == "EMResFD") {
 	  em_res_fd_pos = *it;
-	  FDDetectorSystPointers[em_res_fd_pos] = xsec_cov->retPointer(em_res_fd_pos);
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_res_fd_pos);
 	}
 
 	else { 
@@ -488,7 +488,7 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
       duneobj->rw_cvnnue[i] = (float)_cvnnue;
       if (iselike) {
 	    duneobj->rw_erec[i] = (float)_erec_nue;
-	  duneobj->rw_erec_shifted[i] = (float)_erec_nue; 
+	    duneobj->rw_erec_shifted[i] = (float)_erec_nue; 
 	    duneobj->rw_erec_had[i] = (float)_erec_had_nue;
 	    duneobj->rw_erec_lep[i] = (float)_erec_lep_nue;
 	  }
@@ -696,62 +696,62 @@ void samplePDFDUNEBase::applyShifts(int iSample, int iEvent)
   // reset erec back to original value
   dunemcSamples[iSample].rw_erec_shifted[iEvent] = dunemcSamples[iSample].rw_erec[iEvent];
 
-  //Total Energy Scale FD 
-  TotalEScaleFD(FDDetectorSystPointers[tot_escale_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_had[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  //Calculate values needed
+  float sqrtErecHad =  sqrt(dunemcSamples[iSample].rw_erec_had[iEvent]);
+  float sqrtErecLep =  sqrt(dunemcSamples[iSample].rw_erec_lep[iEvent]);
+  float sqrteRecoPi0 = sqrt(dunemcSamples[iSample].rw_eRecoPi0[iEvent]);
+  float sqrteRecoN = sqrt(dunemcSamples[iSample].rw_eRecoN[iEvent]);
+  float sumEhad = dunemcSamples[iSample].rw_eRecoP[iEvent] + dunemcSamples[iSample].rw_eRecoPip[iEvent] + dunemcSamples[iSample].rw_eRecoPim[iEvent];
+  float sqrtSumEhad = sqrt(sumEhad);
 
-  //Total Energy Scale Sqrt FD
-  TotalEScaleSqrtFD(FDDetectorSystPointers[tot_escale_sqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_had[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  float invSqrtErecHad =  1/(sqrtErecHad+0.1);
+  float invSqrtErecLep =  1/(sqrtErecLep+0.1);
+  float invSqrteRecoPi0 =  1/(sqrteRecoPi0+0.1);
+  float invSqrteRecoN =  1/(sqrteRecoN+0.1);
+  float invSqrtSumEhad =  1/(sqrtSumEhad+0.1);
 
-  //Total Energy Scale Inverse Sqrt FD
-  TotalEScaleInvSqrtFD(FDDetectorSystPointers[tot_escale_invsqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_had[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  bool CCnumu {dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==14) && dunemcSamples[iSample].nutype==2};
+  bool CCnue {dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==12) && dunemcSamples[iSample].nutype==1};
+  bool NotCCnumu {!(dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==14)) && dunemcSamples[iSample].nutype==2};
 
-  //Charged Hadron Energy Scale FD 
-  HadEScaleFD(FDDetectorSystPointers[had_escale_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoP[iEvent], dunemcSamples[iSample].rw_eRecoPip[iEvent], dunemcSamples[iSample].rw_eRecoPim[iEvent]);
 
-  //Charged Hadron Energy Scale Sqrt FD 
-  HadEScaleSqrtFD(FDDetectorSystPointers[had_escale_sqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoP[iEvent], dunemcSamples[iSample].rw_eRecoPip[iEvent], dunemcSamples[iSample].rw_eRecoPim[iEvent]);
+  TotalEScaleFD(FDDetectorSystPointers[0], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_had[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], NotCCnumu);
 
-  //Charged Hadron Energy Scale Inverse Sqrt FD 
-  HadEScaleInvSqrtFD(FDDetectorSystPointers[had_escale_invsqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoP[iEvent], dunemcSamples[iSample].rw_eRecoPip[iEvent], dunemcSamples[iSample].rw_eRecoPim[iEvent]);
+  TotalEScaleSqrtFD(FDDetectorSystPointers[1], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_had[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], sqrtErecHad, sqrtErecLep, NotCCnumu);
 
-  //Muon Energy Scale FD 
-  MuEScaleFD(FDDetectorSystPointers[mu_escale_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  TotalEScaleInvSqrtFD(FDDetectorSystPointers[2], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_had[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], invSqrtErecHad, invSqrtErecLep, NotCCnumu);
 
-  //Muon Energy Scale Sqrt FD 
-  MuEScaleSqrtFD(FDDetectorSystPointers[mu_escale_sqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  HadEScaleFD(FDDetectorSystPointers[3], &dunemcSamples[iSample].rw_erec_shifted[iEvent], sumEhad);
 
-  //Muon Energy Scale Inverse Sqrt FD 
-  MuEScaleInvSqrtFD(FDDetectorSystPointers[mu_escale_invsqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  HadEScaleSqrtFD(FDDetectorSystPointers[4], &dunemcSamples[iSample].rw_erec_shifted[iEvent], sumEhad, sqrtSumEhad);
 
-  //Neutron Energy Scale FD 
-  NEScaleFD(FDDetectorSystPointers[n_escale_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoN[iEvent]);
+  HadEScaleInvSqrtFD(FDDetectorSystPointers[5], &dunemcSamples[iSample].rw_erec_shifted[iEvent], sumEhad, invSqrtSumEhad);
 
-  //Neutron Energy Scale Sqrt FD 
-  NEScaleSqrtFD(FDDetectorSystPointers[n_escale_sqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoN[iEvent]);
+  MuEScaleFD(FDDetectorSystPointers[6], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], CCnumu);
 
-  //Neutron Energy Scale Inverse Sqrt FD 
-  NEScaleInvSqrtFD(FDDetectorSystPointers[n_escale_invsqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoN[iEvent]);
+  MuEScaleSqrtFD(FDDetectorSystPointers[7], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], sqrtErecLep, CCnumu);
 
-  //Electromagentic Shower Energy Scale FD 
-  EMEScaleFD(FDDetectorSystPointers[em_escale_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  MuEScaleInvSqrtFD(FDDetectorSystPointers[8], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], invSqrtErecLep, CCnumu);
 
-  //Electromagentic Shower Energy Scale Sqrt FD 
-  EMEScaleSqrtFD(FDDetectorSystPointers[em_escale_sqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  NEScaleFD(FDDetectorSystPointers[9], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoN[iEvent]);
 
-  //Electromagentic Shower Energy Scale Inverse Sqrt FD 
-  EMEScaleInvSqrtFD(FDDetectorSystPointers[em_escale_invsqrt_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  NEScaleSqrtFD(FDDetectorSystPointers[10], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoN[iEvent], sqrteRecoN);
 
-  //Charged Hadron Resolution FD 
-  HadResFD(FDDetectorSystPointers[had_res_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoP[iEvent], dunemcSamples[iSample].rw_eRecoPip[iEvent], dunemcSamples[iSample].rw_eRecoPim[iEvent], dunemcSamples[iSample].rw_eP[iEvent], dunemcSamples[iSample].rw_ePip[iEvent], dunemcSamples[iSample].rw_ePim[iEvent]);
+  NEScaleInvSqrtFD(FDDetectorSystPointers[11], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoN[iEvent], invSqrteRecoN);
 
-  //Muon Resolution FD 
-  MuResFD(FDDetectorSystPointers[mu_res_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_LepE[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  EMEScaleFD(FDDetectorSystPointers[12], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], CCnue);
 
-  //Neutron Resolution FD 
-  NResFD(FDDetectorSystPointers[n_res_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoN[iEvent], dunemcSamples[iSample].rw_eN[iEvent]);
+  EMEScaleSqrtFD(FDDetectorSystPointers[13], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], sqrtErecLep, sqrteRecoPi0, CCnue);
 
-  //Electromagentic Shower Resolution FD 
-  EMResFD(FDDetectorSystPointers[em_res_fd_pos], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_ePi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_LepE[iEvent], dunemcSamples[iSample].rw_isCC[iEvent], dunemcSamples[iSample].rw_nuPDG[iEvent], dunemcSamples[iSample].nutype);
+  EMEScaleInvSqrtFD(FDDetectorSystPointers[14], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], invSqrtErecLep, invSqrteRecoPi0, CCnue);
+
+  HadResFD(FDDetectorSystPointers[15], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoP[iEvent], dunemcSamples[iSample].rw_eRecoPip[iEvent], dunemcSamples[iSample].rw_eRecoPim[iEvent], dunemcSamples[iSample].rw_eP[iEvent], dunemcSamples[iSample].rw_ePip[iEvent], dunemcSamples[iSample].rw_ePim[iEvent]);
+
+  MuResFD(FDDetectorSystPointers[16], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_LepE[iEvent], CCnumu);
+
+  NResFD(FDDetectorSystPointers[17], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoN[iEvent], dunemcSamples[iSample].rw_eN[iEvent]);
+
+  EMResFD(FDDetectorSystPointers[18], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_ePi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_LepE[iEvent], CCnue);
 
 }
 

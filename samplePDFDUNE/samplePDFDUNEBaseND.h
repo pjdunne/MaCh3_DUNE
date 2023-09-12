@@ -50,12 +50,29 @@ struct dunendmc_base {
 
   // histo pdf bins
   float *rw_erec;
+  float *rw_erec_shifted;
+  float *rw_erec_had;
+  float *rw_erec_lep;
+  float *rw_yrec;
+
+  float *rw_eRecoP;
+  float *rw_eRecoPip;
+  float *rw_eRecoPim;
+  float *rw_eRecoPi0;
+  float *rw_eRecoN;
+
+  float *rw_LepE;
+  float *rw_eP;
+  float *rw_ePip;
+  float *rw_ePim;
+  float *rw_ePi0;
+  float *rw_eN;
+
   float *rw_etru;
-  float *rw_elep_reco;
   float *rw_mom;
   float *rw_theta;
   float *rw_Q2;
-  float *rw_yrec;
+
   float *rw_pdf_bin_1d; //global bin in the PDF so we can do a faster fill1Dhist 
   float *rw_lower_erec_1d; // lower to check if Eb has moved the erec bin
   float *rw_upper_erec_1d; // upper to check if Eb has moved the erec bin
@@ -133,6 +150,8 @@ public:
   int getNMCSamples();
   int getNEventsInSample(int sample);
 
+  //Apply shifts from functional parameters
+  void applyShifts(int iSample, int iEvent);
 
   // dunendmc
   std::vector<struct dunendmc_base> dunendmcSamples;
@@ -150,11 +169,24 @@ public:
   // dunendmc Variables
   double _ev;
   double _erec;
-  double _erec_nue;
-  double _elep_reco;
-  double _LepNuAngle;
+  double _erec_lep;
+  double _erec_had;
   int _reco_numu;
   int _reco_nue;
+
+  double _eRecoP;
+  double _eRecoPip;
+  double _eRecoPim;
+  double _eRecoPi0;
+  double _eRecoN;
+
+  double _LepNuAngle;
+  double _LepE;
+  double _eP;
+  double _ePip;
+  double _ePim;
+  double _ePi0;
+  double _eN;
   double _BeRPA_cvwgt;
   int _isCC;
   int _nuPDGunosc;
@@ -204,15 +236,39 @@ public:
   // Using the smarter xsec covariance matrix reader?
   bool DoItSmart;
 
+  //Positions of ND Detector systematics
+  double tot_escale_nd_pos;
+  double tot_escale_sqrt_nd_pos;
+  double tot_escale_invsqrt_nd_pos;
+  double had_escale_nd_pos;
+  double had_escale_sqrt_nd_pos;
+  double had_escale_invsqrt_nd_pos;
+  double mu_escale_nd_pos;
+  double mu_escale_sqrt_nd_pos;
+  double mu_escale_invsqrt_nd_pos;
+  double n_escale_nd_pos;
+  double n_escale_sqrt_nd_pos;
+  double n_escale_invsqrt_nd_pos;
+  double em_escale_nd_pos;
+  double em_escale_sqrt_nd_pos;
+  double em_escale_invsqrt_nd_pos;
+  double had_res_nd_pos;
+  double mu_res_nd_pos;
+  double n_res_nd_pos;
+  double em_res_nd_pos;
+
+  std::vector<const double*> NDDetectorSystPointers;
+  int nNDDetectorSystPointers;
+
   // Parameters used in the DoItSmart xsec setup
   // The old version hard-codes these instead
   std::vector<int> normParsModes;
   std::vector< std::vector<int> > normParsTarget;
   std::vector< std::vector<int> > normParsPDG;
   std::vector<int> normParsIndex;
-  int nFuncParams;
-  std::vector<int> funcParsIndex;
-  std::vector<std::string> funcParsNames;
+  //int nFuncParams;
+  //std::vector<int> funcParsIndex;
+  //std::vector<std::string> funcParsNames;
   // spline params (don't technically need, just included for print-screen sanity check purposes)
   int nSplineParams;
   std::vector<int> splineParsIndex;
