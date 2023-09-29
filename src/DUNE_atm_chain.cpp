@@ -291,7 +291,7 @@ int main(int argc, char * argv[]) {
   //numu_fds->Write();
 
   // set up
-  int NSteps = fitMan->raw()["General"]["NSTEPS"].as<int>(); 
+  int NSteps = fitMan->raw()["MCMC"]["NSTEPS"].as<int>(); 
   markovChain->setChainLength(NSteps);
   markovChain->addOscHandler(osc, osc);
 

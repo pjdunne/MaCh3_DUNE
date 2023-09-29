@@ -268,11 +268,11 @@ int main(int argc, char * argv[]) {
       // Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
       for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
         pdfs[ipdf] -> reweight(osc -> getPropPars());
-        // std::string name = pdfs[ipdf]->GetSampleName() + "_" + std::to_string(oscpars[5]) + "dcp_" + std::to_string(oscpars[1]) + "th23"; 
-        // TH1D *h = (TH1D*)pdfs[ipdf]->get1DHist()->Clone(name.c_str());
+        std::string name = pdfs[ipdf]->GetSampleName() + "_" + std::to_string(oscpars[5]) + "dcp_" + std::to_string(oscpars[1]) + "th23"; 
+        TH1D *h = (TH1D*)pdfs[ipdf]->get1DHist()->Clone(name.c_str());
         samplellh += pdfs[ipdf]->GetLikelihood();
-        // Outfile -> cd();
-        // h->Write();
+        Outfile -> cd();
+        h->Write();
       }
       int gbin = hScan->GetBin(j+1, k+1);
       std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh << "   [" << (100*(j*(nsteps + 1) + k))/((nsteps + 1)*(nsteps + 1)) << "%]" << std::endl;

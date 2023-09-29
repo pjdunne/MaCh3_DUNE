@@ -1,20 +1,25 @@
 General:
-    OscillatorConfigName: "configs/OscillatorObj.yaml"
-    POT: 1.3628319e+23
-    Systematics:
-      XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.root"
-      XsecCovName: "xsec_cov"
-      XsecStepScale: 0.1
-      XsecAtGen: false 
-      OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
-      OscCovName: "osc_cov"
-    Output:
-      FileName: "AtmChain.root"
-      OUTPUTNAME: "TestLLH.root"
-      ODIR: "output"
-    ProcessMCMC: No
-    Seed: 0
-    Debug: No
-    NSTEPS: 100000
-    AutoSave: 1000
+  OscillatorConfigName: "configs/OscillatorObj.yaml"
+  POT: 1.3628319e+23
+  Systematics:
+    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.root"
+    XsecCovName: "xsec_cov"
+    XsecStepScale: 0.1
+    XsecAtGen: false 
+    OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
+    OscCovName: "osc_cov"
+  Output:
+    FileName: "AtmChain.root"
+    OUTPUTNAME: "TestLLH.root"
+    ODIR: "output"
+
+MCMC:
+  NSTEPS: 20
+  StartFromPos: false
+  PosFileName: 
+  StatOnly: true
+  ProcessMCMC: No
+  Seed: 0
+  AutoSave: 500
+  Debug: Yes
   

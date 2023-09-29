@@ -265,6 +265,12 @@ int main(int argc, char * argv[]) {
     for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++) {
       pdfs[ipdf] -> reweight(osc -> getPropPars());
       double llh = pdfs[ipdf]->GetLikelihood();
+
+      std::string name = pdfs[ipdf]->GetSampleName() + "_" + std::to_string(xsecpar[i]); 
+      TH1D *h = (TH1D*)pdfs[ipdf]->get1DHist()->Clone(name.c_str());
+      samplellh += llh;
+      Outfile -> cd();
+      h->Write();
   std::cout << "Sample " << ipdf << " has sample llh " << llh << " for variation " << j <<  std::endl; 
       samplellh += llh;
 
