@@ -418,7 +418,7 @@ void samplePDFDUNEBaseND::setupDUNEMC(const char *sampleFile, dunendmc_base *dun
   //duneobj->pot_s = pot/norm->GetBinContent(2);
   std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
   std::cout<< "norm_s = " << duneobj->norm_s << std::endl;
-  duneobj->nEvents = _data->GetEntries()/1000;
+  duneobj->nEvents = _data->GetEntries();
   duneobj->nutype = nutype;
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
