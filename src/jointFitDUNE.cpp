@@ -266,11 +266,11 @@ int main(int argc, char **argv)
   //
   
   if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+    osc->setParameters(oscparstarts);
+    osc->acceptStep();
     if(parstarts.find("xsec")!=parstarts.end()) {
       xsec->setParameters(parstarts["xsec"]);
       xsec->acceptStep();
-      osc->setParameters(oscparstarts);
-      osc->acceptStep();
     }
     else {xsec->setParameters();}
   }
@@ -286,7 +286,7 @@ int main(int argc, char **argv)
   // set up
   int NSteps = fitMan->raw()["MCMC"]["NSTEPS"].as<int>(); 
   markovChain->setChainLength(NSteps);
-  markovChain->addOscHandler(osc, osc);
+  markovChain->addOscHandler(osc);
   if(lastStep > 0) markovChain->setInitialStepNumber(lastStep+1);
 
   // add samples
@@ -297,8 +297,8 @@ int main(int argc, char **argv)
 
   if(!fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
     //start chain from random position unless starting from a previous chain
-    xsec->throwParameters();
-    osc->throwParameters();
+    xsec->proposeStep();
+    osc->proposeStep();
   }
 
   // add systematic objects
