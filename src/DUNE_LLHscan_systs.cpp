@@ -77,9 +77,9 @@ int main(int argc, char * argv[]) {
   gStyle -> SetPalette(1);
 
   // make file to save plots
-  std::string odir = fitMan->raw()["General"]["Output"]["ODIR"].as<std::string>();
-  std::string ofilename = fitMan->raw()["General"]["Output"]["OUTPUTNAME"].as<std::string>();
-  TFile *Outfile = new TFile((odir + "/" + ofilename).c_str(),"RECREATE");
+  // std::string odir = fitMan->raw()["General"]["Output"]["ODIR"].as<std::string>();
+  std::string ofilename = fitMan->raw()["General"]["Output"]["FileName"].as<std::string>();
+  TFile *Outfile = new TFile(ofilename.c_str(),"RECREATE");
 
 
   covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str()) ;

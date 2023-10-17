@@ -76,9 +76,6 @@ int main(int argc, char * argv[]) {
   gStyle -> SetPalette(1);
 
   // make file to save plots
-  std::string odir = fitMan->raw()["General"]["Output"]["ODIR"].as<std::string>();
-  std::string ofilename = fitMan->raw()["General"]["Output"]["OUTPUTNAME"].as<std::string>();
-  TFile *Outfile = new TFile((odir + "/" + ofilename).c_str(),"RECREATE");
 
 
   covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str()) ;
@@ -198,6 +195,83 @@ int main(int argc, char * argv[]) {
   //   pdfs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
   // }
 
+  //###########################################################################################################
+  // Set covariance objects equal to output of previous chain
+  
+  std::vector<double> oscparstarts;
+  std::map<TString,std::vector<double> > parstarts;
+  int lastStep = 0;
+
+ 
+
+  if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {//Start from values at the end of an already run chain
+    //Read in paramter names and values from file
+    std::cout << "MCMC getting starting position from " << fitMan->raw()["MCMC"]["PosFileName"].as<std::string>() << std::endl;
+    TFile *infile = new TFile(fitMan->raw()["MCMC"]["PosFileName"].as<std::string>().c_str(), "READ");
+    TTree *posts = (TTree*)infile->Get("posteriors");
+    TObjArray* brlis = (TObjArray*)posts->GetListOfBranches();
+    int nbr = brlis->GetEntries();
+    TString branch_names[nbr];
+    double branch_vals[nbr];
+    int step_val;
+    for (int i = 0; i < nbr; ++i) {
+      TBranch *br = (TBranch*)brlis->At(i);
+      TString bname = br->GetName();
+      branch_names[i] = bname;
+      if(branch_names[i] == "step") {
+        posts->SetBranchAddress("step",&step_val);
+        continue;
+      }
+      std::cout << " * Loading " << bname << std::endl;
+      posts->SetBranchAddress(branch_names[i], &branch_vals[i]);
+    }
+    posts->GetEntry(posts->GetEntries()-1);
+    std::map<TString,double> init_pars;
+    for (int i = 0; i < nbr; ++i) {
+      init_pars.insert( std::pair<TString, double>(branch_names[i], branch_vals[i]));
+    }
+    infile->Close();
+    delete infile;
+    
+    //Make vectors of parameter value for each covariance
+    std::vector<TString> covtypes;
+    covtypes.push_back("xsec");
+ 
+    for(unsigned icov=0;icov<covtypes.size();icov++){
+      std::vector<double> covparstarts;
+      std::map<TString, double>::const_iterator it;
+      int iPar=0;
+      while(it != init_pars.end()){
+  	it = init_pars.find(covtypes[icov]+"_"+TString::Format("%d",iPar));
+  	if (it != init_pars.end()) {
+  	  covparstarts.push_back(it->second);
+  	}
+  	iPar++;
+      }
+      if(covparstarts.size()!=0) parstarts.insert(std::pair<TString,std::vector<double> >(covtypes[icov],covparstarts));
+      else std::cout<<"Did not find any parameters in posterior tree for: "<<covtypes[icov]<<std::endl<<"assuming previous chain didn't use them"<<std::endl;
+    }
+
+    std::map<TString, double>::const_iterator itt;
+
+    // set the oscillation parameters
+    itt = init_pars.find("sin2th_12");
+    oscparstarts.push_back(itt->second);
+    itt = init_pars.find("sin2th_23");
+    oscparstarts.push_back(itt->second);
+    itt = init_pars.find("sin2th_13");
+    oscparstarts.push_back(itt->second);
+    itt = init_pars.find("delm2_12");
+    oscparstarts.push_back(itt->second);
+    itt = init_pars.find("delm2_23");
+    oscparstarts.push_back(itt->second);
+    itt = init_pars.find("delta_cp");
+    oscparstarts.push_back(itt->second);
+
+    lastStep = step_val;
+
+  }
+
   // Set to nominal pars
   vector<double> xsecpar = xsec->getNominalArray();  
   xsec->setParameters(xsecpar);
@@ -294,6 +368,7 @@ int main(int argc, char * argv[]) {
   int NSteps = fitMan->raw()["MCMC"]["NSTEPS"].as<int>(); 
   markovChain->setChainLength(NSteps);
   markovChain->addOscHandler(osc, osc);
+  if(lastStep > 0) markovChain->setInitialStepNumber(lastStep+1);
 
   // add samples
   markovChain->addSamplePDF(numu_pdf);
@@ -304,22 +379,14 @@ int main(int argc, char * argv[]) {
   osc->throwParameters();
 
   // add systematic objects
-//   if (!statsonly) {
-//     markovChain->addSystObj(xsec);
-//   }
-//   else {std::cout << "STATS ONLY!" << std::endl;}
+  bool statsonly = fitMan->raw()["MCMC"]["StatOnly"].as<bool>(); 
+  if (!statsonly) {
+    markovChain->addSystObj(xsec);
+  }
+  else {std::cout << "STATS ONLY!" << std::endl;}
   
   // run!
   markovChain->runMCMC();
- 
-  Outfile -> cd();
-//   hScan->Write();
-  numu_asimov->Write();
-  nue_asimov->Write();
-  numu_asimov_2d->Write();
-  nue_asimov_2d->Write();
-  Outfile->Write();
-  Outfile->Close();
 
   return 0;
  }
