@@ -15,7 +15,7 @@ General:
 MCMC:
   NSTEPS: 20
   StartFromPos: true
-  PosFileName: /dune/app/users/pgranger/MaCh3_ana/MaCh3_DUNE/AtmChain.root
+  PosFileName: /dune/app/users/pgranger/MaCh3_ana/MaCh3_DUNE/AtmChain_1.root
   StatOnly: false
   ProcessMCMC: No
   Seed: 0

@@ -3,3 +3,4 @@ build/
 *.tbz2
 *.tgz
 logs/
+jupyter_env
