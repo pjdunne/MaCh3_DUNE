@@ -36,14 +36,14 @@ InputFiles:
   mtupleprefix: "inputs/ATM_CAF_files/hd_AV_"
   mtuplesuffix: "_numuselec.root"
   # splineprefix: "inputs/ATM_spline_files/FD_FHC_ger_"
-  splineprefix: "inputs/ATM_spline_files_test/FD_FHC_ger_"
+  splineprefix: "inputs/ATM_spline_files_test/hd_AV_"
   # splineprefix: "inputs/DUNE_spline_files/FD_FHC_ger_"
   splinesuffix: "_numuselec_splines.root"
 SampleCuts:
   up_bnd: 30.
 # DetID: 72
 DetID: 24
-NSubSamples: 6
+NSubSamples: 4
 SubSamples:
   - name: "numu_x_numu"
     mtuplefile: "numu_x_numu"
@@ -53,21 +53,37 @@ SubSamples:
     oscnutype: 14
     signal: true
 
-  - name: "numu_x_nue"
-    mtuplefile: "numu_x_nue"
-    splinefile: "numu_x_nue"
+  - name: "numubar_x_numubar"
+    mtuplefile: "numubar_x_numubar"
+    splinefile: "numubar_x_numubar"
     samplevecno: 1
-    nutype: 14
-    oscnutype: 12
-    signal: false
+    nutype: -14
+    oscnutype: -14
+    signal: true
 
-  - name: "numu_x_nutau"
-    mtuplefile: "numu_x_nutau"
-    splinefile: "numu_x_nutau"
+  - name: "nuebar_x_numubar"
+    mtuplefile: "nuebar_x_numubar"
+    splinefile: "nuebar_x_numubar"
     samplevecno: 2
-    nutype: 14
-    oscnutype: 16
-    signal: false
+    nutype: -12
+    oscnutype: -14
+    signal: true
+
+  # - name: "numu_x_nue"
+  #   mtuplefile: "numu_x_nue"
+  #   splinefile: "numu_x_nue"
+  #   samplevecno: 1
+  #   nutype: 14
+  #   oscnutype: 12
+  #   signal: false
+
+  # - name: "numu_x_nutau"
+  #   mtuplefile: "numu_x_nutau"
+  #   splinefile: "numu_x_nutau"
+  #   samplevecno: 2
+  #   nutype: 14
+  #   oscnutype: 16
+  #   signal: false
 
   - name: "nue_x_numu"
     mtuplefile: "nue_x_numu"
@@ -77,18 +93,18 @@ SubSamples:
     oscnutype: 14
     signal: true
 
-  - name: "nue_x_nue"
-    mtuplefile: "nue_x_nue"
-    splinefile: "nue_x_nue"
-    samplevecno: 4
-    nutype: 12
-    oscnutype: 12
-    signal: false
+  # - name: "nue_x_nue"
+  #   mtuplefile: "nue_x_nue"
+  #   splinefile: "nue_x_nue"
+  #   samplevecno: 4
+  #   nutype: 12
+  #   oscnutype: 12
+  #   signal: false
 
-  - name: "nue_x_nutau"
-    mtuplefile: "nue_x_nutau"
-    splinefile: "nue_x_nutau"
-    samplevecno: 5
-    nutype: 12
-    oscnutype: 16
-    signal: false
+  # - name: "nue_x_nutau"
+  #   mtuplefile: "nue_x_nutau"
+  #   splinefile: "nue_x_nutau"
+  #   samplevecno: 5
+  #   nutype: 12
+  #   oscnutype: 16
+  #   signal: false
