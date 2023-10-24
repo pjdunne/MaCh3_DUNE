@@ -120,7 +120,6 @@ int main(int argc, char * argv[]) {
   //osc->setEvalLikelihood(3,false);
   osc->setEvalLikelihood(4,false);
   osc->setEvalLikelihood(5,false);
-  // This line gives a crash and stack trace...
   osc->setParameters(oscpars);
   osc->acceptStep();
   //osc->setStepScale(fitMan->getOscStepScale());
@@ -298,64 +297,26 @@ int main(int argc, char * argv[]) {
 
   numu_pdf->addData(numu_asimov_2d); 
   nue_pdf->addData(nue_asimov_2d); 
-  // numubar_pdf->addData(numubar_asimov);  
-  // nuebar_pdf->addData(nuebar_asimov); 
-  
-  
-  // TCanvas *sys_canv = new TCanvas("sys_canv","",1200,600);
-  
-  // Save pars before modifying
-  std::vector<double> tpar = xsecpar;
 
-  int n_points = 50;
-  double lower = -2.0;
-  double upper = 2.0;
-  //TH1D *hScanFlux = new TH1D((std::string("flux_") + name).c_str(), (name+"_flux").c_str(), n_points, lower, upper);
-  //hScanFlux->SetTitle(std::string(std::string("2LLH_flux, ") + name + ";" + name + "; -2(ln L_{flux})").c_str());
+    //###########################################################################################################
 
-  //TH1D *hScanSam = new TH1D((std::string("sam_")+ name).c_str(), (name+"_sam").c_str(), n_points, lower, upper);
-  //hScanSam->SetTitle(std::string(std::string("2LLH_sam, ") + name + ";" + name + "; -2(ln L_{sample})").c_str());
+  // Back to actual nominal for fit
+  // If starting from end values of a previous chain set everything to the values from there
+  // and do acceptStep() to update fParCurr with these values
+  //
+  if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+    osc->setParameters(oscparstarts);
+    osc->acceptStep();
+    if(parstarts.find("xsec")!=parstarts.end()) {
+      xsec->setParameters(parstarts["xsec"]);
+      xsec->acceptStep();
+    }
+    else {xsec->setParameters();}
+  }
+  else {
+    xsec->setParameters();
+  }
 
-//   TH1D *hScan = new TH1D((std::string("full_") + name).c_str(), (name+"_full").c_str(), n_points, lower, upper);
-//   hScan->SetTitle(std::string(std::string("2LLH_full, ") + name + ";" + name + "; -2(ln L_{sample} + ln L_{flux}").c_str());
-  
-//   int nsteps = fitMan->raw()["General"]["LLH"]["nbins"].as<int>();
-//   int parId1 = fitMan->raw()["General"]["LLH"]["parId1"].as<int>();
-//   int parId2 = fitMan->raw()["General"]["LLH"]["parId2"].as<int>();
-//   double parStart1 = fitMan->raw()["General"]["LLH"]["parStart1"].as<double>();
-//   double parStop1 = fitMan->raw()["General"]["LLH"]["parStop1"].as<double>();
-//   double parStart2 = fitMan->raw()["General"]["LLH"]["parStart2"].as<double>();
-//   double parStop2 = fitMan->raw()["General"]["LLH"]["parStop2"].as<double>();
-
-//   TH2D *hScan = new TH2D("dCP Th23 LLH", "dCP Th23 LLH", nsteps + 1, parStart1, parStop1, nsteps + 1, parStart2, parStop2);
-  
-//   oscpars[parId1] = parStart1;
-
-//   double dpar1 = (parStop1 - parStart1)/nsteps;
-//   double dpar2 = (parStop2 - parStart2)/nsteps;
-  
-//   // Scan over the parameter space
-//   for (int j = 0; j < nsteps + 1; j++) {
-//     oscpars[parId2] = parStart2;
-//     for (int k = 0; k < nsteps + 1; k++) {
-//       double samplellh = 0;
-//       osc->setParameters(oscpars);
-//       // Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
-//       for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-//         pdfs[ipdf] -> reweight(osc -> getPropPars());
-//         // std::string name = pdfs[ipdf]->GetSampleName() + "_" + std::to_string(oscpars[5]) + "dcp_" + std::to_string(oscpars[1]) + "th23"; 
-//         // TH1D *h = (TH1D*)pdfs[ipdf]->get1DHist()->Clone(name.c_str());
-//         samplellh += pdfs[ipdf]->GetLikelihood();
-//         // Outfile -> cd();
-//         // h->Write();
-//       }
-//       int gbin = hScan->GetBin(j+1, k+1);
-//       std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh << "   [" << (100*(j*(nsteps + 1) + k))/((nsteps + 1)*(nsteps + 1)) << "%]" << std::endl;
-//       hScan->SetBinContent(gbin, 2*samplellh);
-//       oscpars[parId2] += dpar2;
-//     }
-//     oscpars[parId1] += dpar1;
-//   }
 
     //###########################################################################################################
   // MCMC
@@ -367,7 +328,7 @@ int main(int argc, char * argv[]) {
   // set up
   int NSteps = fitMan->raw()["MCMC"]["NSTEPS"].as<int>(); 
   markovChain->setChainLength(NSteps);
-  markovChain->addOscHandler(osc, osc);
+  markovChain->addOscHandler(osc);
   if(lastStep > 0) markovChain->setInitialStepNumber(lastStep+1);
 
   // add samples
