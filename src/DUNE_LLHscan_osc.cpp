@@ -76,9 +76,9 @@ int main(int argc, char * argv[]) {
   gStyle -> SetPalette(1);
 
   // make file to save plots
-  std::string odir = fitMan->raw()["General"]["Output"]["ODIR"].as<std::string>();
-  std::string ofilename = fitMan->raw()["General"]["Output"]["OUTPUTNAME"].as<std::string>();
-  TFile *Outfile = new TFile((odir + "/" + ofilename).c_str(),"RECREATE");
+  // std::string odir = fitMan->raw()["General"]["Output"]["ODIR"].as<std::string>();
+  std::string ofilename = fitMan->raw()["General"]["Output"]["FileName"].as<std::string>();
+  TFile *Outfile = new TFile(ofilename.c_str(),"RECREATE");
 
 
   covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str()) ;
@@ -252,35 +252,27 @@ int main(int argc, char * argv[]) {
   double parStart2 = fitMan->raw()["General"]["LLH"]["parStart2"].as<double>();
   double parStop2 = fitMan->raw()["General"]["LLH"]["parStop2"].as<double>();
 
-  TH2D *hScan = new TH2D("dCP Th23 LLH", "dCP Th23 LLH", nsteps + 1, parStart1, parStop1, nsteps + 1, parStart2, parStop2);
+  // TH2D *hScan = new TH2D("dCP Th23 LLH", "dCP Th23 LLH", nsteps + 1, parStart1, parStop1, nsteps + 1, parStart2, parStop2);
+  TH1D *hScan = new TH1D("dCP Th23 LLH", "dCP Th23 LLH", nsteps + 1, parStart1, parStop1);
   
   oscpars[parId1] = parStart1;
 
   double dpar1 = (parStop1 - parStart1)/nsteps;
-  double dpar2 = (parStop2 - parStart2)/nsteps;
   
   // Scan over the parameter space
-  for (int j = 0; j < nsteps + 1; j++) {
-    oscpars[parId2] = parStart2;
-    for (int k = 0; k < nsteps + 1; k++) {
-      double samplellh = 0;
-      osc->setParameters(oscpars);
-      // Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
-      for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-        pdfs[ipdf] -> reweight(osc -> getPropPars());
-        std::string name = pdfs[ipdf]->GetSampleName() + "_" + std::to_string(oscpars[5]) + "dcp_" + std::to_string(oscpars[1]) + "th23"; 
-        TH1D *h = (TH1D*)pdfs[ipdf]->get1DHist()->Clone(name.c_str());
-        samplellh += pdfs[ipdf]->GetLikelihood();
-        Outfile -> cd();
-        h->Write();
-      }
-      int gbin = hScan->GetBin(j+1, k+1);
-      std::cout << "for th23 =  " << oscpars[1] << " | dCP = " << oscpars[5] << " | LogL = " << 2*samplellh << "   [" << (100*(j*(nsteps + 1) + k))/((nsteps + 1)*(nsteps + 1)) << "%]" << std::endl;
-      hScan->SetBinContent(gbin, 2*samplellh);
-      oscpars[parId2] += dpar2;
+  for (int k = 0; k < nsteps + 1; k++) {
+    double samplellh = 0;
+    osc->setParameters(oscpars);
+    for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
+      pdfs[ipdf] -> reweight(osc -> getPropPars());
+      samplellh += pdfs[ipdf]->GetLikelihood();
     }
+    int gbin = hScan->GetBin(k+1);
+    std::cout << "for par1 =  " << oscpars[parId1]  << " | LogL = " << 2*samplellh << "   [" << (100*(k))/((nsteps + 1)) << "%]" << std::endl;
+    hScan->SetBinContent(gbin, 2*samplellh);
     oscpars[parId1] += dpar1;
   }
+    
  
   Outfile -> cd();
   hScan->Write();
