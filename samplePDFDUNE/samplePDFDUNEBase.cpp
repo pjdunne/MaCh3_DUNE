@@ -35,7 +35,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   applyBetaDiag=false;
 
   //doubled_angle =true ;
-  useNonDoubledAngles(true);
+  UseNonDoubledAngles(true);
   if (doubled_angle) std::cout << "- Using non doubled angles for oscillation parameters" << std::endl;
 
   osc_binned = false;
@@ -144,7 +144,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   // and the old funcitonality is kepy
   // this calls this function in the core code
   // this needs to come after setupFDMC as otherwise MCSamples.splinefile will be NULL
-  setXsecCov(xsec_cov); 
+  SetXsecCov(xsec_cov); 
 
   std::cout << "Now setting up Splines" << std::endl;
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
@@ -155,7 +155,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   std::cout << "Setup FD splines   " << std::endl;
   std::cout << "################" << std::endl;
 
-  setupWeightPointers();
+  SetupWeightPointers();
 
   fillSplineBins();
 
@@ -187,7 +187,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 }
 
 
-void samplePDFDUNEBase::setupWeightPointers() {
+void samplePDFDUNEBase::SetupWeightPointers() {
   
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
 	for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
@@ -469,6 +469,30 @@ double samplePDFDUNEBase::ReturnKinematicParameter(std::string KinematicParamete
   return KinematicValue;
 }
 
+double samplePDFDUNEBase::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent){
+  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
+  double KinematicValue = -999;
+
+  switch(KinPar){
+   case kTrueNeutrinoEnergy:
+	 KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
+	 break;
+   case kTrueXPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
+	   break;
+   case kTrueYPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
+	   break;
+   case kTrueZPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
+	   break;
+   default:
+	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
+	 throw;
+ }
+  return KinematicValue;
+}
+
 void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) 
 {
 
@@ -478,9 +502,9 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj)
   fdobj->signal = duneobj->signal;
   fdobj->x_var = new double*[fdobj->nEvents];
   fdobj->y_var = new double*[fdobj->nEvents];
-  fdobj->enu_s_bin = new unsigned int[fdobj->nEvents];
-  fdobj->xvar_s_bin = new unsigned int[fdobj->nEvents];
-  fdobj->yvar_s_bin = new unsigned int[fdobj->nEvents];
+  // fdobj->enu_s_bin = new unsigned int[fdobj->nEvents];
+  // fdobj->xvar_s_bin = new unsigned int[fdobj->nEvents];
+  // fdobj->yvar_s_bin = new unsigned int[fdobj->nEvents];
   fdobj->rw_etru = new double*[fdobj->nEvents];
   fdobj->XBin = new int[fdobj->nEvents];
   fdobj->YBin = new int[fdobj->nEvents];    
@@ -579,14 +603,14 @@ void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, i
   switch (BinningOpt){
 	case 0:
 	case 1:
-	  fdobj->splineFile = new splinesDUNE((char*)splineFile, nutype, nevents, fdobj->SampleDetID, xsecCov);
+	  fdobj->splineFile = new splinesDUNE(XsecCov);
 	  if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)){
 		std::cerr << "problem setting up splines in erec" << std::endl;
 	  }
 	  break;
 	case 2:
 	  std::cout << "Creating splineDUNEBase" << std::endl;
-	  fdobj->splineFile = new splinesDUNE((char*)splineFile, nutype, nevents, (double)BinningOpt, SampleDetID, xsecCov);
+	  fdobj->splineFile = new splinesDUNE(XsecCov);
 	  if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)) {
 		std::cerr << "problem setting up splines in erec" << std::endl;
 	  } 
@@ -596,8 +620,8 @@ void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, i
   }
 
   // ETA - Moved SetupSplineInfoArrays to be here
-  fdobj->splineFile->SetupSplineInfoArray(xsecCov);
-  fdobj->splineFile->SetSplineInfoArrays();
+  // fdobj->splineFile->SetupSplineInfoArray(xsecCov);
+  // fdobj->splineFile->SetSplineInfoArrays();
 
   return;
 }

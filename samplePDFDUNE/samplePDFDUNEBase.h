@@ -106,7 +106,7 @@ public:
   void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
   void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj);
 
-  void setupWeightPointers();
+  void SetupWeightPointers() override;
 
   // oscillation: Prob3++ 
   TH1D *modes;
@@ -119,7 +119,8 @@ public:
   double CalcXsecWeightFunc(int iSample, int iEvent);
   //double CalcFuncSystWeight(int iSample, int iEvent);
   //double ReturnKinematicParameter (KinematicTypes Var, int i, int j);
-  double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent);
+  double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent) override;
+  double ReturnKinematicParameter (double KinematicVariable, int iSample, int iEvent) override;
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
 
 

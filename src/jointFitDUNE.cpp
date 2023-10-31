@@ -122,7 +122,7 @@ int main(int argc, char **argv)
   pdfs.push_back(nuebar_pdf);
 
   for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-    pdfs[ipdf]->useNonDoubledAngles(true);
+    pdfs[ipdf]->UseNonDoubledAngles(true);
     pdfs[ipdf] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
   }
   
