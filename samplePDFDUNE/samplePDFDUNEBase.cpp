@@ -144,6 +144,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   // and the old funcitonality is kepy
   // this calls this function in the core code
   // this needs to come after setupFDMC as otherwise MCSamples.splinefile will be NULL
+  std::cout << "xsec_cov is: " << xsec_cov << std::endl;
   SetXsecCov(xsec_cov); 
 
   std::cout << "Now setting up Splines" << std::endl;
@@ -611,6 +612,7 @@ void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, i
 	case 2:
 	  std::cout << "Creating splineDUNEBase" << std::endl;
 	  fdobj->splineFile = new splinesDUNE(XsecCov);
+    std::cout << "splineFile is -> " << fdobj->splineFile << std::endl;
 	  if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)) {
 		std::cerr << "problem setting up splines in erec" << std::endl;
 	  } 

@@ -4,3 +4,4 @@ build/
 *.tgz
 logs/
 jupyter_env
+.history

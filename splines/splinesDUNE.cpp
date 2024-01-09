@@ -171,6 +171,7 @@ std::vector< std::vector<int> > splinesDUNE::GetEventSplines(std::string SampleN
   std::vector<std::vector<int>> ReturnVec;
   int SampleIndex = -1;
   for (unsigned int iSample = 0; iSample < SampleNames.size(); iSample++) {
+    std::cout << "Available sample -> " << SampleNames[iSample] << std::endl;
     if (SampleName == SampleNames[iSample]) {
       SampleIndex = iSample;
     }

@@ -78,7 +78,8 @@ int main(int argc, char * argv[]) {
   // make file to save plots
 
 
-  covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str()) ;
+  // covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str()) ;
+  covarianceXsec *xsec = new covarianceXsec(XsecMatrixFile.c_str()) ;
 
 
   //std::cout << "---------- Printing off nominal parameter values ----------" << std::endl;

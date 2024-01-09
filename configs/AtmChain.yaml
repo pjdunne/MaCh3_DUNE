@@ -3,7 +3,8 @@ General:
   POT: 1.3628319e+23
   Systematics:
     # XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.root"
-    XsecCovFile: "inputs/xsec_atm_new_tune.root"
+    # XsecCovFile: "inputs/xsec_atm_new_tune.root"
+    XsecCovFile: "test.yaml"
     XsecCovName: "xsec_cov"
     XsecStepScale: 0.1
     XsecAtGen: false 
