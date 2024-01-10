@@ -10,14 +10,16 @@ General:
     XsecAtGen: false 
     OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
     OscCovName: "osc_cov"
-  OutputFile: "AtmChain_2.root"
-  Debug: Yes
+  Output:
+    FileName: "AtmChain_2.root"
   MCMC:
     AutoSave: 500
     NSteps: 20
-    StartFromPos: true
+    StartFromPos: false
     PosFileName: /dune/app/users/pgranger/MaCh3_ana/MaCh3_DUNE/AtmChain_1.root
     StatOnly: false
     ProcessMCMC: No
-    Seed: 0
+  Debug: Yes
+  Seed: 0
+
   

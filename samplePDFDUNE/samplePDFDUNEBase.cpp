@@ -147,10 +147,36 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   std::cout << "xsec_cov is: " << xsec_cov << std::endl;
   SetXsecCov(xsec_cov); 
 
+  std::vector<std::string> spline_filepaths;
+
   std::cout << "Now setting up Splines" << std::endl;
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
 	setupSplines(&MCSamples[sample_vecno[iSample]] , (splineprefix+spline_files[iSample]+splinesuffix).c_str(), MCSamples[iSample].nutype);
+  spline_filepaths.push_back(splineprefix+spline_files[iSample]+splinesuffix);
   }
+
+  splineFile = new splinesDUNE(xsec_cov);
+
+  //////////////////////////////////
+  // Now add samples to spline monolith
+  //////////////////////////////////
+
+  //ETA - do we need to do this here?
+  //Can't we have one splineFile object for all samples as Dan does in atmospherics fit?
+  //Then just add spline files to monolith?
+  std::cout<<"Adding samples to spline monolith"<<std::endl;
+  std::cout << "samplename is " << samplename << std::endl;
+  std::cout << "BinningOpt is " << BinningOpt << std::endl;
+  std::cout << "SampleDetID is " << SampleDetID << std::endl;
+  std::cout << "spline_filepaths is of size " << spline_filepaths.size() << std::endl;
+
+  splineFile->AddSample(samplename, BinningOpt, SampleDetID, spline_filepaths);
+
+  // Print statements for debugging
+  splineFile->PrintArrayDimension();
+  splineFile->CountNumberOfLoadedSplines(false, 1);
+  splineFile->TransferToMonolith();
+  std::cout << "--------------------------------" <<std::endl;
 
   std::cout << "################" << std::endl;
   std::cout << "Setup FD splines   " << std::endl;

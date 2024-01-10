@@ -138,7 +138,7 @@ int main(int argc, char * argv[]) {
   
   std::vector<samplePDFDUNEBase*> pdfs;
   samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", xsec);
-  samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_nueselec.yaml", xsec);
+  // samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_nueselec.yaml", xsec);
   // samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
   // samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
   // samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
@@ -150,10 +150,10 @@ int main(int argc, char * argv[]) {
   // throw;
 
   numu_pdf->SetOscillator(Oscill);
-  nue_pdf->SetOscillator(Oscill);
+  // nue_pdf->SetOscillator(Oscill);
 
   pdfs.push_back(numu_pdf);
-  pdfs.push_back(nue_pdf);
+  // pdfs.push_back(nue_pdf);
   // pdfs.push_back(numubar_pdf);
   // pdfs.push_back(nue_pdf);
   // pdfs.push_back(nuebar_pdf);
@@ -204,7 +204,7 @@ int main(int argc, char * argv[]) {
 
  
 
-  if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {//Start from values at the end of an already run chain
+  if(fitMan->raw()["General"]["MCMC"]["StartFromPos"].as<bool>()) {//Start from values at the end of an already run chain
     //Read in paramter names and values from file
     std::cout << "MCMC getting starting position from " << fitMan->raw()["MCMC"]["PosFileName"].as<std::string>() << std::endl;
     TFile *infile = new TFile(fitMan->raw()["MCMC"]["PosFileName"].as<std::string>().c_str(), "READ");
@@ -279,11 +279,11 @@ int main(int argc, char * argv[]) {
 
   numu_pdf->reweight(osc->getPropPars());
   TH1D *numu_asimov = (TH1D*)numu_pdf->get1DHist()->Clone("numu_asimov");
-  nue_pdf->reweight(osc->getPropPars());
-  TH1D *nue_asimov = (TH1D*)nue_pdf->get1DHist()->Clone("nue_asimov");
+  // nue_pdf->reweight(osc->getPropPars());
+  // TH1D *nue_asimov = (TH1D*)nue_pdf->get1DHist()->Clone("nue_asimov");
 
   TH2D *numu_asimov_2d = (TH2D*)numu_pdf->get2DHist()->Clone("numu_asimov_2d");
-  TH2D *nue_asimov_2d = (TH2D*)nue_pdf->get2DHist()->Clone("nue_asimov_2d");
+  // TH2D *nue_asimov_2d = (TH2D*)nue_pdf->get2DHist()->Clone("nue_asimov_2d");
   // numubar_pdf->reweight(osc->getPropPars());
   // TH1D *numubar_asimov = (TH1D*)numubar_pdf->get1DHist()->Clone("numubar_asimov");
   // nuebar_pdf->reweight(osc->getPropPars());
@@ -292,12 +292,12 @@ int main(int argc, char * argv[]) {
   // Print event rates to check
   std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;
   std::cout << "FHC 1Rmu:   " << numu_asimov->Integral() << std::endl;
-  std::cout << "FHC 1Re:    " << nue_asimov->Integral() << std::endl;
+  // std::cout << "FHC 1Re:    " << nue_asimov->Integral() << std::endl;
   // std::cout << "RHC 1Rmu:   " << numubar_asimov->Integral() << std::endl;
   // std::cout << "RHC 1Re:    " << nuebar_asimov->Integral() << std::endl;
 
   numu_pdf->addData(numu_asimov_2d); 
-  nue_pdf->addData(nue_asimov_2d); 
+  // nue_pdf->addData(nue_asimov_2d); 
 
     //###########################################################################################################
 
@@ -305,7 +305,7 @@ int main(int argc, char * argv[]) {
   // If starting from end values of a previous chain set everything to the values from there
   // and do acceptStep() to update fParCurr with these values
   //
-  if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+  if(fitMan->raw()["General"]["MCMC"]["StartFromPos"].as<bool>()) {
     osc->setParameters(oscparstarts);
     osc->acceptStep();
     if(parstarts.find("xsec")!=parstarts.end()) {
@@ -327,21 +327,21 @@ int main(int argc, char * argv[]) {
   //numu_fds->Write();
 
   // set up
-  int NSteps = fitMan->raw()["MCMC"]["NSTEPS"].as<int>(); 
+  int NSteps = fitMan->raw()["General"]["MCMC"]["NSteps"].as<int>(); 
   markovChain->setChainLength(NSteps);
   markovChain->addOscHandler(osc);
   if(lastStep > 0) markovChain->setInitialStepNumber(lastStep+1);
 
   // add samples
   markovChain->addSamplePDF(numu_pdf);
-  markovChain->addSamplePDF(nue_pdf);
+  // markovChain->addSamplePDF(nue_pdf);
 
   //start chain from random position
   xsec->throwParameters();
   osc->throwParameters();
 
   // add systematic objects
-  bool statsonly = fitMan->raw()["MCMC"]["StatOnly"].as<bool>(); 
+  bool statsonly = fitMan->raw()["General"]["MCMC"]["StatOnly"].as<bool>(); 
   if (!statsonly) {
     markovChain->addSystObj(xsec);
   }

@@ -41,6 +41,10 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
 	//i.e. we always assume that the splines are just store in  single TDirectory and they're all in there as single objects
     TIter Next(File->GetListOfKeys());
     TKey *Key;
+
+    std::set<std::string> unique_spline_names;
+    int nb_splines = 0;
+
     while ((Key = (TKey *)Next()))
     {
       TClass *Class = gROOT->GetClass(Key->GetClassName());
@@ -49,6 +53,13 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
       if (!Class->InheritsFrom("TSpline3")){continue;}
 
       char *SplineName = (char *)Key->GetName();
+      nb_splines += 1;
+      if(unique_spline_names.count(std::string(SplineName)) > 0){
+        if (std::string(SplineName).find("unknown") == std::string::npos)
+          std::cout << "Repeated entry for spline named: " << std::string(SplineName) << std::endl;
+        continue;
+      }
+      unique_spline_names.insert(std::string(SplineName));
 
       char *Syst;
       char *Mode;
@@ -158,9 +169,9 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
       }
     }//End of loop over all TKeys in file
     //ETA - I have no idea why but this breaks in ROOT 6.24 :/
-	delete File;
+      std::cout << "Got " << nb_splines << " total splines with " << unique_spline_names.size() << " unique names." << std::endl;
+	// delete File;
   } //End of oscillation channel loop
-
   return;
 }
 

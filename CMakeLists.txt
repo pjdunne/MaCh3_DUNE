@@ -14,6 +14,12 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
+if(NOT DEFINED CMAKE_BUILD_TYPE OR 
+    "${CMAKE_BUILD_TYPE}x" STREQUAL "x")
+  set(CMAKE_BUILD_TYPE Debug) #TODO: Change to release when OK
+endif()
+
+
 # Changes default install path to be a subdirectory of the build dir.
 # Can set build dir at configure time with -DCMAKE_INSTALL_PREFIX=/install/path
 if(CMAKE_INSTALL_PREFIX STREQUAL "" OR CMAKE_INSTALL_PREFIX STREQUAL
@@ -40,7 +46,7 @@ CPMFindPackage(
 )
 
 #Compile and link options (Should be in experiment project but copied in case CORE is built alone) 
-add_compile_options(-g -O3 -Wextra -fopenmp)
+add_compile_options(-fopenmp)
 add_link_options(-fopenmp)
 
 
