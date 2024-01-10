@@ -51,8 +51,10 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
 
 	  //Skip the TGraphs also in the spline files
       if (!Class->InheritsFrom("TSpline3")){continue;}
+      const char* keyName = Key->GetName();
+      char* SplineName = new char[strlen(keyName) + 1];
+      strcpy(SplineName, keyName);
 
-      char *SplineName = (char *)Key->GetName();
       nb_splines += 1;
       if(unique_spline_names.count(std::string(SplineName)) > 0){
         if (std::string(SplineName).find("unknown") == std::string::npos)
@@ -170,7 +172,7 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
     }//End of loop over all TKeys in file
     //ETA - I have no idea why but this breaks in ROOT 6.24 :/
       std::cout << "Got " << nb_splines << " total splines with " << unique_spline_names.size() << " unique names." << std::endl;
-	// delete File;
+	delete File;
   } //End of oscillation channel loop
   return;
 }
