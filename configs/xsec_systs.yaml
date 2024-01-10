@@ -1,0 +1,1145 @@
+Systematics:
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: ZExpA1CCQE
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      FDSplineName: zexpa1ccqe
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: ZExpA2CCQE
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      FDSplineName: zexpa2ccqe
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: ZExpA3CCQE
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      FDSplineName: zexpa3ccqe
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: ZExpA4CCQE
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      FDSplineName: zexpa4ccqe
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: MaCCRES
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 3
+      FDSplineName: mares
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: MvCCRES
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 3
+      FDSplineName: mvres
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: MaNCRES
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 16
+      FDSplineName: mancres
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: MvNCRES
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 16
+      FDSplineName: mvncres
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: AhtBY
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      - 15
+      FDSplineName: ahtby
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: BhtBY
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      - 15
+      FDSplineName: bhtby
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: CV1uBY
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      - 15
+      FDSplineName: cv1uby
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: CV2uBY
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      - 15
+      FDSplineName: cv2uby
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: FrCEx_pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      - 3
+      - 15
+      - 16
+      FDSplineName: frcexpi
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: FrInel_pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      - 3
+      - 15
+      - 16
+      FDSplineName: frinelpi
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: FrAbs_pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      - 3
+      - 15
+      - 16
+      FDSplineName: frabspi
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: FrPiProd_pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      - 3
+      - 15
+      - 16
+      FDSplineName: frpiprodpi
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: FrCEx_N
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      - 2
+      - 3
+      - 14
+      - 15
+      - 16
+      FDSplineName: frcexn
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: FrInel_N
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      - 2
+      - 3
+      - 14
+      - 15
+      - 16
+      FDSplineName: frineln
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: FrAbs_N
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      - 2
+      - 3
+      - 14
+      - 15
+      - 16
+      FDSplineName: frabsn
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: FrPiProd_N
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      - 2
+      - 3
+      - 14
+      - 15
+      - 16
+      FDSplineName: frpiprodn
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: E2p2h_A_nu
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 9
+      - 22
+      FDSplineName: e2anu
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: E2p2h_B_nu
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 9
+      - 22
+      FDSplineName: e2bnu
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: E2p2h_A_nubar
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 9
+      - 22
+      FDSplineName: e2anubar
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: E2p2h_B_nubar
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 9
+      - 22
+      FDSplineName: e2bnubar
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: C12ToAr40_2p2hScaling_nu
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 9
+      - 22
+      FDSplineName: c12nu
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: C12ToAr40_2p2hScaling_nubar
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 9
+      - 22
+      FDSplineName: c12nubar
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_n_CC_2pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nuncc2
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_n_CC_3pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nuncc3
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_p_CC_2pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nupcc2
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_p_CC_3pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nupcc3
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 0.02
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_np_CC_1pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: -1.14
+      PreFitValue: -1.14
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nunpcc1
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_n_NC_1pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nunnc1
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_n_NC_2pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nunnc2
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_n_NC_3pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nunnc3
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_p_NC_1pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nupnc1
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_p_NC_2pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nupnc2
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nu_p_NC_3pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nupnc3
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_n_CC_1pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nubarncc1
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_n_CC_2pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nubarncc2
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_n_CC_3pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nubarncc3
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_p_CC_1pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nubarpcc1
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_p_CC_2pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nubarpcc2
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_p_CC_3pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 2
+      FDSplineName: nubarpcc3
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_n_NC_1pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nubarnnc1
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_n_NC_2pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nubarnnc2
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_n_NC_3pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nubarnnc3
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_p_NC_1pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nubarpnc1
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_p_NC_2pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nubarpnc2
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: NR_nubar_p_NC_3pi
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 15
+      FDSplineName: nubarpnc3
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: BeRPA_A
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      FDSplineName: berpaa
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: BeRPA_B
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      FDSplineName: berpab
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: BeRPA_D
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 0.0
+      PreFitValue: 0.0
+    SplineInformation:
+      FDMode:
+      - 0
+      FDSplineName: berpad
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: nuenuebar_xsec_ratio
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    SplineInformation:
+      FDMode:
+      - 0
+      - 9
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 8
+      - 10
+      - 11
+      - 12
+      - 13
+      FDSplineName: nuexsec
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
+- Systematic:
+    DetID: 25
+    Error: 1.0
+    FlatPrior: false
+    Names:
+      ParameterName: nuemumu_xsec_ratio
+    ParameterBounds:
+    - -9999.0
+    - 9999.0
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    SplineInformation:
+      FDMode:
+      - 0
+      - 9
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 8
+      - 10
+      - 11
+      - 12
+      - 13
+      FDSplineName: nuemuxsec
+      NDSplineName: MAQEGraph
+    StepScale:
+      MCMC: 2.0
+    Type: Spline
