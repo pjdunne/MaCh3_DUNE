@@ -3,8 +3,9 @@ General:
   POT: 1.3628319e+23
   Systematics:
     # XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.root"
-    XsecCovFile: "inputs/xsec_atm_new_tune.root"
-    XsecCovName: "xsec_cov"
+    # XsecCovFile: "inputs/xsec_atm_new_tune.root"
+    # XsecCovName: "xsec_cov"
+    XsecCovFile: "test.yaml"
     XsecStepScale: 0.1
     XsecAtGen: false 
     OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
@@ -12,7 +13,7 @@ General:
   Output:
     FileName: "TestEventRates.root"
   LLH:
-    nbins: 50
+    nbins: 5
     parId1: 0
     parStart1: 0.3
     parStop1: 0.33

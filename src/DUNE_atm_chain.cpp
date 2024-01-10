@@ -138,7 +138,7 @@ int main(int argc, char * argv[]) {
   
   std::vector<samplePDFDUNEBase*> pdfs;
   samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", xsec);
-  // samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_nueselec.yaml", xsec);
+  samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_nueselec.yaml", xsec);
   // samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
   // samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
   // samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
@@ -150,10 +150,10 @@ int main(int argc, char * argv[]) {
   // throw;
 
   numu_pdf->SetOscillator(Oscill);
-  // nue_pdf->SetOscillator(Oscill);
+  nue_pdf->SetOscillator(Oscill);
 
   pdfs.push_back(numu_pdf);
-  // pdfs.push_back(nue_pdf);
+  pdfs.push_back(nue_pdf);
   // pdfs.push_back(numubar_pdf);
   // pdfs.push_back(nue_pdf);
   // pdfs.push_back(nuebar_pdf);
@@ -279,11 +279,11 @@ int main(int argc, char * argv[]) {
 
   numu_pdf->reweight(osc->getPropPars());
   TH1D *numu_asimov = (TH1D*)numu_pdf->get1DHist()->Clone("numu_asimov");
-  // nue_pdf->reweight(osc->getPropPars());
-  // TH1D *nue_asimov = (TH1D*)nue_pdf->get1DHist()->Clone("nue_asimov");
+  nue_pdf->reweight(osc->getPropPars());
+  TH1D *nue_asimov = (TH1D*)nue_pdf->get1DHist()->Clone("nue_asimov");
 
   TH2D *numu_asimov_2d = (TH2D*)numu_pdf->get2DHist()->Clone("numu_asimov_2d");
-  // TH2D *nue_asimov_2d = (TH2D*)nue_pdf->get2DHist()->Clone("nue_asimov_2d");
+  TH2D *nue_asimov_2d = (TH2D*)nue_pdf->get2DHist()->Clone("nue_asimov_2d");
   // numubar_pdf->reweight(osc->getPropPars());
   // TH1D *numubar_asimov = (TH1D*)numubar_pdf->get1DHist()->Clone("numubar_asimov");
   // nuebar_pdf->reweight(osc->getPropPars());
@@ -297,7 +297,7 @@ int main(int argc, char * argv[]) {
   // std::cout << "RHC 1Re:    " << nuebar_asimov->Integral() << std::endl;
 
   numu_pdf->addData(numu_asimov_2d); 
-  // nue_pdf->addData(nue_asimov_2d); 
+  nue_pdf->addData(nue_asimov_2d); 
 
     //###########################################################################################################
 
@@ -334,7 +334,7 @@ int main(int argc, char * argv[]) {
 
   // add samples
   markovChain->addSamplePDF(numu_pdf);
-  // markovChain->addSamplePDF(nue_pdf);
+  markovChain->addSamplePDF(nue_pdf);
 
   //start chain from random position
   xsec->throwParameters();

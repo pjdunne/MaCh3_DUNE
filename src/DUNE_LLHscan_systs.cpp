@@ -63,7 +63,7 @@ int main(int argc, char * argv[]) {
 
 
   std::string  XsecMatrixFile = fitMan->raw()["General"]["Systematics"]["XsecCovFile"].as<std::string>(); 
-  std::string  XsecMatrixName = fitMan->raw()["General"]["Systematics"]["XsecCovName"].as<std::string>();
+  // std::string  XsecMatrixName = fitMan->raw()["General"]["Systematics"]["XsecCovName"].as<std::string>();
   std::string  OscMatrixFile = fitMan->raw()["General"]["Systematics"]["OscCovFile"].as<std::string>(); 
   std::string  OscMatrixName = fitMan->raw()["General"]["Systematics"]["OscCovName"].as<std::string>();
  
@@ -82,7 +82,7 @@ int main(int argc, char * argv[]) {
   TFile *Outfile = new TFile(ofilename.c_str(),"RECREATE");
 
 
-  covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str()) ;
+  covarianceXsec *xsec = new covarianceXsec(XsecMatrixFile.c_str()) ;
 
 
   //std::cout << "---------- Printing off nominal parameter values ----------" << std::endl;

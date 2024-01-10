@@ -182,6 +182,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   std::cout << "Setup FD splines   " << std::endl;
   std::cout << "################" << std::endl;
 
+  SetupNormParameters();
   SetupWeightPointers();
 
   fillSplineBins();
