@@ -206,8 +206,8 @@ int main(int argc, char * argv[]) {
 
   if(fitMan->raw()["General"]["MCMC"]["StartFromPos"].as<bool>()) {//Start from values at the end of an already run chain
     //Read in paramter names and values from file
-    std::cout << "MCMC getting starting position from " << fitMan->raw()["MCMC"]["PosFileName"].as<std::string>() << std::endl;
-    TFile *infile = new TFile(fitMan->raw()["MCMC"]["PosFileName"].as<std::string>().c_str(), "READ");
+    std::cout << "MCMC getting starting position from " << fitMan->raw()["General"]["MCMC"]["PosFileName"].as<std::string>() << std::endl;
+    TFile *infile = new TFile(fitMan->raw()["General"]["MCMC"]["PosFileName"].as<std::string>().c_str(), "READ");
     TTree *posts = (TTree*)infile->Get("posteriors");
     TObjArray* brlis = (TObjArray*)posts->GetListOfBranches();
     int nbr = brlis->GetEntries();
@@ -299,6 +299,8 @@ int main(int argc, char * argv[]) {
   numu_pdf->addData(numu_asimov_2d); 
   nue_pdf->addData(nue_asimov_2d); 
 
+  bool statsonly = fitMan->raw()["General"]["MCMC"]["StatOnly"].as<bool>(); 
+
     //###########################################################################################################
 
   // Back to actual nominal for fit
@@ -312,10 +314,12 @@ int main(int argc, char * argv[]) {
       xsec->setParameters(parstarts["xsec"]);
       xsec->acceptStep();
     }
-    else {xsec->setParameters();}
+    // else {xsec->setParameters();}
   }
   else {
-    xsec->setParameters();
+    if(!statsonly)
+    	xsec->throwParameters();
+    osc->throwParameters();
   }
 
 
@@ -336,12 +340,11 @@ int main(int argc, char * argv[]) {
   markovChain->addSamplePDF(numu_pdf);
   markovChain->addSamplePDF(nue_pdf);
 
-  //start chain from random position
-  xsec->throwParameters();
-  osc->throwParameters();
+  // //start chain from random position
+  // xsec->throwParameters();
+  // osc->throwParameters();
 
   // add systematic objects
-  bool statsonly = fitMan->raw()["General"]["MCMC"]["StatOnly"].as<bool>(); 
   if (!statsonly) {
     markovChain->addSystObj(xsec);
   }
