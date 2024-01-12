@@ -42,7 +42,7 @@ include(CPM)
 CPMFindPackage(
     NAME MaCh3
     GIT_TAG "atmospherics"
-    GITHUB_REPOSITORY pgranger23/MaCh3
+    GITHUB_REPOSITORY mach3-software/MaCh3
 )
 
 #Compile and link options (Should be in experiment project but copied in case CORE is built alone) 
