@@ -291,6 +291,7 @@ int main(int argc, char * argv[]) {
   gScan_nue->Write();
   gScan_penalty->Write();
   std::cout << "Finished xsec param " << i << std::endl;
+  Outfile->Close();
   // }
   return 0;
 }

@@ -1143,3 +1143,571 @@ Systematics:
     StepScale:
       MCMC: 2.0
     Type: Spline
+
+    # GeneratedFlavourSelection:
+#   - 12
+#   - -12
+
+#Flux systematics
+- Systematic:
+    DetID: 24
+    Error: 0.25
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 0.0
+      - 1.0
+    Names:
+      ParameterName: flux_norm_below_1GeV
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.15
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 1.0
+      - 999
+    Names:
+      ParameterName: flux_norm_above_1GeV
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#nunubar <1GeV
+- Systematic:
+    DetID: 24
+    Error: 0.03
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 0
+      - 1.0
+    Names:
+      ParameterName: flux_ratio_nunubar_below_1GeV_numerator
+    Correlations:
+      flux_ratio_nunubar_below_1GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - 12
+      - 14
+      - 16
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.03
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 0
+      - 1.0
+    Names:
+      ParameterName: flux_ratio_nunubar_below_1GeV_denominator
+    Correlations:
+      flux_ratio_nunubar_below_1GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - -12
+      - -14
+      - -16
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#nunubar [1GeV, 10GeV]
+- Systematic:
+    DetID: 24
+    Error: 0.03
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 1.0
+      - 10.0
+    Names:
+      ParameterName: flux_ratio_nunubar_between_1GeV_10GeV_numerator
+    Correlations:
+      flux_ratio_nunubar_between_1GeV_10GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - 12
+      - 14
+      - 16
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.03
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 1.0
+      - 10.
+    Names:
+      ParameterName: flux_ratio_nunubar_between_1GeV_10GeV_denominator
+    Correlations:
+      flux_ratio_nunubar_between_1GeV_10GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - -12
+      - -14
+      - -16
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#nunubar >10GeV
+- Systematic:
+    DetID: 24
+    Error: 0.03
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 10.
+      - 999.
+    Names:
+      ParameterName: flux_ratio_nunubar_above_10GeV_numerator
+    Correlations:
+      flux_ratio_nunubar_above_10GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - 12
+      - 14
+      - 16
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.03
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 10.
+      - 999.
+    Names:
+      ParameterName: flux_ratio_nunubar_above_10GeV_denominator
+    Correlations:
+      flux_ratio_nunubar_above_10GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - -12
+      - -14
+      - -16
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#nuebarnue <1GeV
+- Systematic:
+    DetID: 24
+    Error: 0.05
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 0
+      - 1.0
+    Names:
+      ParameterName: flux_ratio_nuebarnue_below_1GeV_numerator
+    Correlations:
+      flux_ratio_nuebarnue_below_1GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - -12
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.05
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 0
+      - 1.0
+    Names:
+      ParameterName: flux_ratio_nuebarnue_below_1GeV_denominator
+    Correlations:
+      flux_ratio_nuebarnue_below_1GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - 12
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#nuebarnue [1GeV, 10GeV]
+- Systematic:
+    DetID: 24
+    Error: 0.05
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 1.0
+      - 10.0
+    Names:
+      ParameterName: flux_ratio_nuebarnue_between_1GeV_10GeV_numerator
+    Correlations:
+      flux_ratio_nuebarnue_between_1GeV_10GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - -12
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.05
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 1.0
+      - 10.
+    Names:
+      ParameterName: flux_ratio_nuebarnue_between_1GeV_10GeV_denominator
+    Correlations:
+      flux_ratio_nuebarnue_between_1GeV_10GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - 12
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#nuebarnue >10GeV
+- Systematic:
+    DetID: 24
+    Error: 0.08
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 10.
+      - 999.
+    Names:
+      ParameterName: flux_ratio_nuebarnue_above_10GeV_numerator
+    Correlations:
+      flux_ratio_nuebarnue_above_10GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - -12
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.03
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 10.
+      - 999.
+    Names:
+      ParameterName: flux_ratio_nuebarnue_above_10GeV_denominator
+    Correlations:
+      flux_ratio_nuebarnue_above_10GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - 12
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#numubarnumu <1GeV
+- Systematic:
+    DetID: 24
+    Error: 0.02
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 0
+      - 1.0
+    Names:
+      ParameterName: flux_ratio_numubarnumu_below_1GeV_numerator
+    Correlations:
+      flux_ratio_numubarnumu_below_1GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - -14
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.02
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 0
+      - 1.0
+    Names:
+      ParameterName: flux_ratio_numubarnumu_below_1GeV_denominator
+    Correlations:
+      flux_ratio_numubarnumu_below_1GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - 14
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#numubarnumu [1GeV, 10GeV]
+- Systematic:
+    DetID: 24
+    Error: 0.06
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 1.0
+      - 10.0
+    Names:
+      ParameterName: flux_ratio_numubarnumu_between_1GeV_10GeV_numerator
+    Correlations:
+      flux_ratio_numubarnumu_between_1GeV_10GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - -14
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.06
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 1.0
+      - 10.
+    Names:
+      ParameterName: flux_ratio_numubarnumu_between_1GeV_10GeV_denominator
+    Correlations:
+      flux_ratio_numubarnumu_between_1GeV_10GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - 14
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#numubarnumu >10GeV
+- Systematic:
+    DetID: 24
+    Error: 0.06
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 10.
+      - 999.
+    Names:
+      ParameterName: flux_ratio_numubarnumu_above_10GeV_numerator
+    Correlations:
+      flux_ratio_numubarnumu_above_10GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - -14
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.06
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 10.
+      - 999.
+    Names:
+      ParameterName: flux_ratio_numubarnumu_above_10GeV_denominator
+    Correlations:
+      flux_ratio_numubarnumu_above_10GeV_numerator: -1
+    GeneratedFlavourSelection:
+      - 14
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+  #numubarnumu >10GeV
+- Systematic:
+    DetID: 24
+    Error: 0.06
+    FlatPrior: false
+    KinematicCuts:
+    - TrueNeutrinoEnergy:
+      - 10.
+      - 999.
+    Names:
+      ParameterName: flux_ratio_numubarnumu_above_10GeV_numerator
+    Correlations:
+      flux_ratio_numubarnumu_above_10GeV_denominator: -1
+    GeneratedFlavourSelection:
+      - -14
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+#UP/DOWN ratio
+- Systematic:
+    DetID: 24
+    Error: 0.01
+    FlatPrior: false
+    KinematicCuts:
+    - TrueCosZ:
+      - -1
+      - 0
+    Names:
+      ParameterName: flux_ratio_updown_numerator
+    Correlations:
+      flux_ratio_updown_denominator: -1
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
+
+- Systematic:
+    DetID: 24
+    Error: 0.01
+    FlatPrior: false
+    KinematicCuts:
+    - TrueCosZ:
+      - 0
+      - 1
+    Names:
+      ParameterName: flux_ratio_updown_denominator
+    Correlations:
+      flux_ratio_updown_numerator: -1
+    ParameterBounds:
+    - 0
+    - 10
+    ParameterValues:
+      Generated: 1.0
+      PreFitValue: 1.0
+    StepScale:
+      MCMC: 0.1
+    Type: Norm
