@@ -70,6 +70,7 @@ enum KinematicTypes {
   kTrueXPos = 6,
   kTrueYPos = 7,
   kTrueZPos = 8,
+  kTrueCosZ = 9,
   kNKinematicParams
 };
 
@@ -82,6 +83,7 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
   if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
   if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
+  if (KinematicParameterStr.find("TrueCosZ") != std::string::npos) {return kTrueCosZ;}
 
   return kNKinematicParams; 
 }

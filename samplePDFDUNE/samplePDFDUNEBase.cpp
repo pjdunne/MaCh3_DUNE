@@ -489,8 +489,11 @@ double samplePDFDUNEBase::ReturnKinematicParameter(std::string KinematicParamete
    case kTrueZPos:
 	 KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
 	   break;
+   case kTrueCosZ:
+   KinematicValue = dunemcSamples[iSample].rw_truecz[iEvent];
+     break;
    default:
-	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
+	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type '" << KinematicParameter << "'" << std::endl;
 	 throw;
  }
 
@@ -514,6 +517,9 @@ double samplePDFDUNEBase::ReturnKinematicParameter(double KinematicVariable, int
    case kTrueZPos:
 	 KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
 	   break;
+   case kTrueCosZ:
+   KinematicValue = dunemcSamples[iSample].rw_truecz[iEvent];
+     break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
 	 throw;
