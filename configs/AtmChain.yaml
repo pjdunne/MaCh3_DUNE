@@ -14,7 +14,7 @@ General:
     FileName: "AtmChain_2.root"
   MCMC:
     AutoSave: 500
-    NSteps: 2000
+    NSteps: 50
     StartFromPos: false
     PosFileName: /dune/app/users/pgranger/MaCh3_ana/MaCh3_DUNE/AtmChain_1.root
     StatOnly: false
