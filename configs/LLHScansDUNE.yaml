@@ -16,6 +16,6 @@ General:
     OscCovName: "osc_cov"
     OscStepScale: 0.045
   Output:
-    FileName: "TestSigmaVariations.root"
-SigmaVariations:
-  EvalXsec: true
+    FileName: "TestLLHScans.root"
+LLHScans:
+  ParPoints: 100

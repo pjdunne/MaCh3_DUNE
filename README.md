@@ -41,7 +41,7 @@ $ cd build
 Optional flags are described briefly below, options are shown grouped by square brackets and delimited by vertical lines. Default is on the left.
 
 ~~~~~~~~~~~~~~
-$ cmake .. -DCPU_ONLY=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples -DCPM_MaCh3_SOURCE=/path/to/MaCh3_core
+$ cmake .. -DCPU_ONLY=[OFF|ON] -DUSE_PROB3=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples -DCPM_MaCh3_SOURCE=/path/to/MaCh3_core
 $ make
 ~~~~~~~~~~~~~~
 
@@ -78,16 +78,18 @@ dm2_12 = 2.509E-3 eV^2
 dCP = -1.601 radians
 
 ~~~~~~~~~~~~~~~~
-Integrals of nominal hists: 
+Integrals of nominal hists:
+
 FHC_numu unosc:      25941.57467
-FHC_numu   osc:      7979.64829
-
-FHC_nue unosc:      391.59946
-FHC_nue   osc:      1702.14708
-
+FHC_numu   osc:      7977.36421
+ 
+FHC_nue unosc:      390.85150
+FHC_nue   osc:      1698.28079
+ 
 RHC_numu unosc:      12492.61743
-RHC_numu   osc:      4219.10087
-
-RHC_nue unosc:      208.80159
-RHC_nue   osc:      447.97657
+RHC_numu   osc:      4217.78765
+ 
+RHC_nue unosc:      208.31873
+RHC_nue   osc:      447.09673
 ~~~~~~~~~~~~~~~~
+

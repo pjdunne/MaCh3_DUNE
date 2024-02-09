@@ -19,14 +19,14 @@ import sys
 # which then gets cut on
 
 if len(sys.argv) != 3:
-  print "Sorry, I need two arguments"
-  print "./makeXSecMatrix.py input.xml output.root"
+  print("Sorry, I need two arguments")
+  print("./makeXSecMatrix.py input.xml output.root")
   sys.exit()
 
 tree = ET.parse(sys.argv[1])
 fromxml = tree.getroot()
 
-maxelements=200
+maxelements=300
 nummodes=12
 
 
@@ -136,7 +136,7 @@ for child in fromxml:
     if(type=="spline"):
         xsec_param_id[nelem][0]=int(child.attrib['splineind'])
         # Get the SK spline file name attribute
-        print xsec_param_id[nelem][1]
+        print(xsec_param_id[nelem][1])
 
         if 'fd_spline_name' in child.attrib:
           fd_spline_name = ROOT.TObjString(child.attrib['fd_spline_name'])
@@ -144,7 +144,7 @@ for child in fromxml:
           fd_spline_name=ROOT.TObjString("")
         xsec_fd_spline_names.AddAtAndExpand(fd_spline_name, nelem)
         if "_" in str(fd_spline_name):
-          print "ERROR : ", fd_spline_name, " contains _ (this is a problem for MaCh3!)"
+          print("ERROR : ", fd_spline_name, " contains _ (this is a problem for MaCh3!)")
           sys.exit()
 
 
@@ -183,19 +183,19 @@ for child in fromxml:
     elif(type=="function"):
         xsec_param_id[nelem][0]=-2
     else:
-        print "Wrong parameter type!"
+        print("Wrong parameter type!")
         quit()
 
     # Find the mode which this parameter might apply to
     normmodes = child.findall('mode')
     if(len(normmodes)==0 and type=="norm"):
-        print "Found no mode list for ",name," filling with blank which means apply to all"
+        print("Found no mode list for ",name," filling with blank which means apply to all")
         dummyvec = ROOT.TVectorD(0)
         xsec_norm_modes.AddAtAndExpand(dummyvec,nelem)
     else:
       for mode in normmodes:
         if mode.text == None or mode.tail == None:
-          print "Found empty mode list for",name," filling with blank which means apply to all"
+          print("Found empty mode list for",name," filling with blank which means apply to all")
           mode.text= ""
         # Split multiple entries up
         modelist = mode.text.split()
@@ -208,13 +208,13 @@ for child in fromxml:
     # Find the target element
     normelements = child.findall('element')
     if(len(normelements)==0 and type=="norm"):
-        print "Found no target list for ",name," filling with blank which means apply to all"
+        print("Found no target list for ",name," filling with blank which means apply to all")
         dummyvec = ROOT.TVectorD(0)
         xsec_norm_elements.AddAtAndExpand(dummyvec,nelem)
     else:
       for elem in normelements:
         if  elem.text == None or elem.tail == None:
-          print "Found empty target list for ",name," filling with blank which means apply to all"
+          print("Found empty target list for ",name," filling with blank which means apply to all")
           elem.text = ""
         elemlist = elem.text.split()
         elemvec = ROOT.TVectorD(len(elemlist))
@@ -225,13 +225,13 @@ for child in fromxml:
     # Find the mode which this parameter might apply to
     horncurrents = child.findall('horncurrent')
     if(len(horncurrents)==0 and type=="norm"):
-        print "Found no horn current list for ",name," filling with blank which means apply to all"
+        print("Found no horn current list for ",name," filling with blank which means apply to all")
         dummyvec = ROOT.TVectorD(0)
         xsec_norm_horncurrents.AddAtAndExpand(dummyvec,nelem)
     else:
       for horncurrent in horncurrents:
         if horncurrent.text == None or horncurrent.tail == None:
-          print "Found empty horncurrent list for",name," filling with blank which means apply to all"
+          print("Found empty horncurrent list for",name," filling with blank which means apply to all")
           horncurrent.text= ""
         # Split multiple entries up
         horncurrentlist = horncurrent.text.split()
@@ -244,13 +244,13 @@ for child in fromxml:
     # Find the neutrino type
     normpdg = child.findall('nupdg')
     if(len(normpdg)==0 and type=="norm"):
-        print "Found no nupdg list for ",name," filling with blank which means apply to all"
+        print("Found no nupdg list for ",name," filling with blank which means apply to all")
         dummyvec = ROOT.TVectorD(0)
         xsec_norm_nupdg.AddAtAndExpand(dummyvec,nelem)
     else:
       for pdg in normpdg:
         if pdg.text == None or pdg.tail == None:
-          print "Found empty nupdg list for ",name," filling with blank which means apply to all"
+          print("Found empty nupdg list for ",name," filling with blank which means apply to all")
           pdg.text = ""
         pdglist = pdg.text.split()
         pdgvec = ROOT.TVectorD(len(pdglist))
@@ -260,13 +260,13 @@ for child in fromxml:
 
     normprodpdg = child.findall('prod_nupdg')
     if(len(normprodpdg)==0 and type=="norm"):
-        print "Found no prod_nupdg list for ",name," filling with blank which means apply to all"
+        print("Found no prod_nupdg list for ",name," filling with blank which means apply to all")
         dummyvec = ROOT.TVectorD(0)
         xsec_norm_prod_nupdg.AddAtAndExpand(dummyvec,nelem)
     else:
       for prodpdg in normprodpdg:
         if prodpdg.text == None or prodpdg.tail == None:
-          print "Found empty prod_nupdg list for ",name," filling with blank which means apply to all"
+          print("Found empty prod_nupdg list for ",name," filling with blank which means apply to all")
           prodpdg.text = ""
         prodpdglist = prodpdg.text.split()
         prodpdgvec = ROOT.TVectorD(len(prodpdglist))
@@ -278,22 +278,22 @@ for child in fromxml:
     kin_cuts = child.findall('kinematic_cut')
     if(len(kin_cuts)!=0 and type=="norm"):
 	  #print "Didn't find any kinematic_cuts"  
-      print "FOUND kinematic cut"
+      print("FOUND kinematic cut")
       for var in kin_cuts:
         xsec_norm_kinematic_type.AddLast(ROOT.TObjString(var.attrib['var']))
         bnds_list = var.text.split()
         if(len(bnds_list) !=2):
-          print "ERROR: there should only be two bounds for a kinamatic cut; the upper and lower" 
+          print("ERROR: there should only be two bounds for a kinamatic cut; the upper and lower") 
           sys.exit()
         else:
           xsec_norm_kinematic_lb[nelem] = float(bnds_list[0])
-          print "Found lower bound of ", xsec_norm_kinematic_lb[nelem], " and put it in element ", nelem
+          print("Found lower bound of ", xsec_norm_kinematic_lb[nelem], " and put it in element ", nelem)
           xsec_norm_kinematic_ub[nelem] = float(bnds_list[1])
-          print "Found upper bound of ", xsec_norm_kinematic_ub[nelem]
+          print("Found upper bound of ", xsec_norm_kinematic_ub[nelem])
 
-          print "Name of kinematic var is ",var.attrib['var']
+          print("Name of kinematic var is ",var.attrib['var'])
     elif(type=="norm"):
-      print "NO KINEMATIC CUT FOUND!!"
+      print("NO KINEMATIC CUT FOUND!!")
       xsec_norm_kinematic_type.AddLast(ROOT.TObjString(""))
 
 
@@ -324,16 +324,16 @@ for i in range(nelem):
         index = corr_names.index(item)
         corr1 = corr_dicts[i][item]
         corr2 = 0;
-        if (str(corr_names[i]) in corr_dicts[index].keys()):
+        if (str(corr_names[i]) in list(corr_dicts[index].keys())):
             corr2 = corr_dicts[index][str(corr_names[i])]
-        if (corr1 == corr2):
-            xsec_cov[i][index] = xsec_cov[index][i] = corr1 * xsec_error[i] * xsec_error[index]
+        if (round(corr1, 12) == round(corr2, 12)):
+            xsec_cov[i][index] = xsec_cov[index][i] = round(corr1, 12) * xsec_error[i] * xsec_error[index]
         elif (corr2==0):
-            print "Warning: no reciprocal correlation between "+str(item)+" and "+str(corr_names[i])+" proceeding with non-reciprocal"
+            print("Warning: no reciprocal correlation between "+str(item)+" and "+str(corr_names[i])+" proceeding with non-reciprocal")
             xsec_cov[i][index]=xsec_cov[index][i] = corr1 * xsec_error[i] * xsec_error[index]
         else:
-            print "Correlations between "+str(item)+" and "+str(corr_names[i])+" don't match. Quitting!"
-            print "corr 1 = ", corr1, "corr 2 = ", corr2
+            print("Correlations between "+str(item)+" and "+str(corr_names[i])+" don't match. Quitting!")
+            print("corr 1 = ", corr1, "corr 2 = ", corr2)
             quit()
         
 

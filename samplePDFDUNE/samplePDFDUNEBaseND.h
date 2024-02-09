@@ -1,5 +1,5 @@
-#ifndef _samplePDFDUNEBase_h_
-#define _samplePDFDUNEBase_h_
+#ifndef _samplePDFDUNEBaseND_h_
+#define _samplePDFDUNEBaseND_h_
 
 #include <iostream>
 #include <TTree.h>
@@ -21,7 +21,7 @@
 
 
 //constructors are same for all three so put in here
-struct dunemc_base {
+struct dunendmc_base {
 
   int nutype;            
   int oscnutype;    
@@ -32,6 +32,7 @@ struct dunemc_base {
   // spline bins                                                              
   unsigned int *enu_s_bin;
   unsigned int *erec_s_bin;
+  unsigned int *yrec_s_bin;
 
   // flux bin
   int *flux_bin;
@@ -49,35 +50,20 @@ struct dunemc_base {
 
   // histo pdf bins
   double *rw_erec;
-  double *rw_erec_shifted;
-  double *rw_erec_had;
-  double *rw_erec_lep;
-  
-  double *rw_eRecoP;
-  double *rw_eRecoPip;
-  double *rw_eRecoPim;
-  double *rw_eRecoPi0;
-  double *rw_eRecoN;
-
-  double *rw_LepE;
-  double *rw_eP;
-  double *rw_ePip;
-  double *rw_ePim;
-  double *rw_ePi0;
-  double *rw_eN;
-
   double *rw_etru;
+  double *rw_elep_reco;
   double *rw_mom;
   double *rw_theta;
   double *rw_Q2;
+  double *rw_yrec;
   double *rw_pdf_bin_1d; //global bin in the PDF so we can do a faster fill1Dhist 
   double *rw_lower_erec_1d; // lower to check if Eb has moved the erec bin
   double *rw_upper_erec_1d; // upper to check if Eb has moved the erec bin
   double *rw_pdf_bin_2d; //global bin in the PDF so we can do a faster fill2Dhist 
   double *rw_lower_erec_2d; // lower to check if Eb has moved the erec bin
   double *rw_upper_erec_2d; // upper to check if Eb has moved the erec bin
-  double *rw_cvnnumu;
-  double *rw_cvnnue;
+  int *rw_reco_nue;
+  int *rw_reco_numu;
   double *rw_berpaacvwgt;
   int    *rw_isCC;
   int    *rw_nuPDGunosc;
@@ -88,6 +74,8 @@ struct dunemc_base {
   double *rw_vtx_y;
   double *rw_vtx_z;
   double dummy_y;
+
+  double *reco_numu;
 
   float **rw_dirlep;
   int *mode;
@@ -106,11 +94,11 @@ struct dunemc_base {
 
 };
 
-class samplePDFDUNEBase : virtual public samplePDFFDBase
+class samplePDFDUNEBaseND : virtual public samplePDFFDBase
 {
 public:
-  samplePDFDUNEBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
-  ~samplePDFDUNEBase();
+  samplePDFDUNEBaseND(double pot, std::string mc_version, covarianceXsec* xsec_cov);
+  ~samplePDFDUNEBaseND();
 
   void printPosteriors();
 
@@ -118,8 +106,8 @@ public:
 
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
-  void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
-  void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile);
+  void setupDUNEMC(const char *sampleInputFile, dunendmc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
+  void setupFDMC(dunendmc_base *duneobj, fdmc_base *fdobj, const char *splineFile);
 
   void setupWeightPointers();
 
@@ -145,12 +133,9 @@ public:
   int getNMCSamples();
   int getNEventsInSample(int sample);
 
-  //Apply shifts from functional parameters
-  void applyShifts(int iSample, int iEvent);
 
-
-  // dunemc
-  std::vector<struct dunemc_base> dunemcSamples;
+  // dunendmc
+  std::vector<struct dunendmc_base> dunendmcSamples;
 
 
   TFile *_sampleFile;
@@ -162,51 +147,24 @@ public:
   double _wgtosc;
   int _ipnu;
 
-  // DUNEMC Variables
-
-  //Reco Variables
+  // dunendmc Variables
+  double _ev;
   double _erec;
   double _erec_nue;
-  double _erec_had;
-  double _erec_had_nue;
-  double _erec_lep;
-  double _erec_lep_nue;
-
-  double _eRecoP;
-  double _eRecoPip;
-  double _eRecoPim;
-  double _eRecoPi0;
-  double _eRecoN;
-
-  double _cvnnumu;
-  double _cvnnue;
-  double _vtx_x;
-  double _vtx_y;
-  double _vtx_z;
-
-  //Truth Variables
-  double _ev;
-  double _LepE;
-  double _eP;
-  double _ePip;
-  double _ePim;
-  double _ePi0;
-  double _eN;
-  double _NuMomX;
-  double _NuMomY;
-  double _NuMomZ;
-  double _LepMomX;
-  double _LepMomY;
-  double _LepMomZ;
+  double _elep_reco;
   double _LepNuAngle;
+  int _reco_numu;
+  int _reco_nue;
   double _BeRPA_cvwgt;
-  double _maccres_cvwgt;
-  double _nunpcc1_cvwgt;
   int _isCC;
   int _nuPDGunosc;
   int _nuPDG;
   int _run;
+  int _isND;
   int _isFHC;
+  double _vtx_x;
+  double _vtx_y;
+  double _vtx_z;
   double _LepTheta;
   double _Q2;
 
@@ -217,6 +175,7 @@ public:
   
   // configuration 
   bool iselike;
+  bool isND;
   bool iscc1pi;
 
   // Note: the following 4 variables shouldn't be used any more! (From 14/1/2015 - KD). Just kept in for backwards compatibility in compiling, but they have no effect.
@@ -245,40 +204,15 @@ public:
   // Using the smarter xsec covariance matrix reader?
   bool DoItSmart;
 
-  //Positions of FD Detector systematics
-  double tot_escale_fd_pos;
-  double tot_escale_sqrt_fd_pos;
-  double tot_escale_invsqrt_fd_pos;
-  double had_escale_fd_pos;
-  double had_escale_sqrt_fd_pos;
-  double had_escale_invsqrt_fd_pos;
-  double mu_escale_fd_pos;
-  double mu_escale_sqrt_fd_pos;
-  double mu_escale_invsqrt_fd_pos;
-  double n_escale_fd_pos;
-  double n_escale_sqrt_fd_pos;
-  double n_escale_invsqrt_fd_pos;
-  double em_escale_fd_pos;
-  double em_escale_sqrt_fd_pos;
-  double em_escale_invsqrt_fd_pos;
-  double had_res_fd_pos;
-  double mu_res_fd_pos;
-  double n_res_fd_pos;
-  double em_res_fd_pos;
-
-
-  std::vector<const double*> FDDetectorSystPointers;
-  int nFDDetectorSystPointers;
-
   // Parameters used in the DoItSmart xsec setup
   // The old version hard-codes these instead
   std::vector<int> normParsModes;
   std::vector< std::vector<int> > normParsTarget;
   std::vector< std::vector<int> > normParsPDG;
   std::vector<int> normParsIndex;
-  //int nFuncParams;
-  //std::vector<int> funcParsIndex;
-  //std::vector<std::string> funcParsNames;
+  int nFuncParams;
+  std::vector<int> funcParsIndex;
+  std::vector<std::string> funcParsNames;
   // spline params (don't technically need, just included for print-screen sanity check purposes)
   int nSplineParams;
   std::vector<int> splineParsIndex;
@@ -286,7 +220,7 @@ public:
 
 
  private:
-  void calcXsecNormsBins(dunemc_base* dunemc);
+  void calcXsecNormsBins(dunendmc_base* dunendmc);
   //void calcHistoBins();
   //TH1D *_hPDF1Dtest;
 };

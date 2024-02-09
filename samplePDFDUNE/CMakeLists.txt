@@ -1,8 +1,10 @@
 set(SamplePDFDUNE_implementation_files 
-	samplePDFDUNEBase.cpp) 
+	samplePDFDUNEBase.cpp
+	samplePDFDUNEBaseND.cpp) 
 
 set(SamplePDFDUNE_header_files 
-	samplePDFDUNEBase.h)
+	samplePDFDUNEBase.h
+	samplePDFDUNEBaseND.h)
 
 add_library(SamplePDFDUNE SHARED ${SamplePDFDUNE_implementation_files})
 target_include_directories(SamplePDFDUNE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)

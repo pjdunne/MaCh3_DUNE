@@ -13,6 +13,7 @@
 #include <TMath.h>
 
 #include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBaseND.h"
 #include "manager/manager.h"
 
 
@@ -59,7 +60,9 @@ int main(int argc, char * argv[]) {
   std::string  XsecMatrixName = fitMan->raw()["General"]["Systematics"]["XsecCovName"].as<std::string>();
   std::string  OscMatrixFile = fitMan->raw()["General"]["Systematics"]["OscCovFile"].as<std::string>(); 
   std::string  OscMatrixName = fitMan->raw()["General"]["Systematics"]["OscCovName"].as<std::string>(); 
-  double POT = fitMan->raw()["General"]["POT"].as<double>(); 
+
+  double FDPOT = fitMan->raw()["General"]["FDPOT"].as<double>(); 
+  double NDPOT = fitMan->raw()["General"]["NDPOT"].as<double>(); 
 
   // Asimov fit
   bool asimovfit = false;//fitMan->GetAsimovFitFlag();
@@ -70,7 +73,8 @@ int main(int argc, char * argv[]) {
   gStyle -> SetPalette(1);
 
   // make file to save plots
-  TFile *Outfile = new TFile(fitMan->raw()["General"]["Output"]["FileName"].as<std::string>().c_str() , "RECREATE");
+  std::string OutfileName = fitMan->raw()["General"]["Output"]["FileName"].as<std::string>(); 
+  TFile *Outfile = new TFile(OutfileName.c_str() , "RECREATE");
 
   //initialise xsec
   covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str());
@@ -85,12 +89,7 @@ int main(int argc, char * argv[]) {
 
   covarianceOsc *osc = new covarianceOsc(OscMatrixName.c_str(), OscMatrixFile.c_str());
 
-  // oscpars from manager in order:
-  // sin2th_12, sin2th_23, sin2th_13, delm2_12, delm2_23, delta_cp
-  //std::vector<double> oscpars =fitMan->getOscParameters();   
-  std::vector<double> oscpars{0.307,0.528,0.0218,7.53e-5, 2.509e-3,-1.601}; // Asimov A
-  //std::vector<double> oscpars{0.3097,0.580,0.02241,7.39e-5, 2.4511e-3, 3.752}; // NuFit
-  //OSCPARAM = [0.3097,0.580,0.02241,7.39e-5,2.4511e-3, 3.752]
+  std::vector<double> oscpars = fitMan->raw()["General"]["OscParams"].as<std::vector<double>>();
 
   std::cout<<"Using these oscillation parameters: ";
   for(unsigned ipar=0;ipar<oscpars.size();ipar++) std::cout<<" "<<oscpars.at(ipar);
@@ -111,13 +110,31 @@ int main(int argc, char * argv[]) {
   osc->setParameters(oscpars);
   osc->acceptStep();
 
-  std::vector<samplePDFDUNEBase*> SamplePDFs;
+  bool addFD = fitMan->raw()["General"]["IncludeFD"].as<bool>();
+  bool addND = fitMan->raw()["General"]["IncludeND"].as<bool>();
 
-  // Set some sample....
-  samplePDFDUNEBase * numu_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
-  SamplePDFs.push_back(numu_pdf);
-  //samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
-  //SamplePDFs.push_back(nue_pdf);
+  if (!addFD && !addND) {std::cerr << "[ERROR:] You've chosen NOT to include FD or ND samples in the config file... you need to add something!" << std::endl; throw;}
+
+
+  std::vector<samplePDFFDBase*> SamplePDFs;
+  
+  if(addFD) { 
+    samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+    SamplePDFs.push_back(numu_pdf);
+    samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+    SamplePDFs.push_back(nue_pdf);
+    samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+    SamplePDFs.push_back(numubar_pdf);
+    samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+    SamplePDFs.push_back(nuebar_pdf);
+  }
+ 
+  if(addND) {
+    samplePDFDUNEBaseND * FHC_numuCCND_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_FHC_CCnumuselec.yaml", xsec);
+    SamplePDFs.push_back(FHC_numuCCND_pdf);
+    samplePDFDUNEBaseND * RHC_numuCCND_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_RHC_CCnumuselec.yaml", xsec);
+    SamplePDFs.push_back(RHC_numuCCND_pdf);
+  }
 
   // Oscillated
   osc -> setParameters(oscpars);
@@ -156,17 +173,22 @@ int main(int argc, char * argv[]) {
   }
 
   xsec->setParameters(XsecParVals);
-  //xsec->setStepScale(fitMan->getXsecStepScale());
-  xsec->setStepScale(0.01);
+  xsec->setStepScale(fitMan->raw()["General"]["Systematics"]["XsecStepScale"].as<double>());
 
 
   //Some place to store the histograms
   std::vector<TH1D*> oscillated_hists;
   std::vector<TH1D*> unoscillated_hists;
   std::vector<std::string> sample_names;
+  
+  TCanvas *canv = new TCanvas("nomcanv","", 0, 0, 700,900);
+  canv->Divide(1,2);
+  std::string OutPlotName = OutfileName.substr(0, OutfileName.length() - 5) + ".pdf";
+  canv->Print((OutPlotName+"[").c_str());
 
   for (unsigned sample_i = 0 ; sample_i < SamplePDFs.size() ; ++sample_i) {
-
+    
+	
 	std::string name = SamplePDFs[sample_i]->GetSampleName();
 	sample_names.push_back(name);
 	TString NameTString = TString(name.c_str());
@@ -174,43 +196,48 @@ int main(int argc, char * argv[]) {
 	osc -> setParameters(oscpars_un);
 	osc -> acceptStep();
 
+	SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
-	TH1D *numu_unosc = (TH1D*)SamplePDFs[sample_i] -> get1DHist() -> Clone(NameTString+"_unosc");
-	unoscillated_hists.push_back(numu_unosc);
+	TH1D *sample_unosc = (TH1D*)SamplePDFs[sample_i] -> get1DHist() -> Clone(NameTString+"_unosc");
+	unoscillated_hists.push_back(sample_unosc);
 
-	TCanvas *nomcanv = new TCanvas("nomcanv","",1200,600);
-	numu_unosc -> Draw("HIST");
-
-	std::string plotname = "Dummy_Hist" ;
-	saveCanvas(nomcanv, plotname,"_nominal_spectra") ;
+    canv->cd(1);
+	sample_unosc -> SetTitle(NameTString+"_unosc");
+	sample_unosc -> Draw("HIST");
+	canv->Update();
 
 	Outfile->cd();
-	numu_unosc->Write("numu_unosc");
+	sample_unosc->Write(NameTString+"_unosc");
 
 	osc->setParameters(oscpars);
 	osc->acceptStep();
-	// Oscillated
-	std::cout << "oscpars[0] = " << (osc -> getPropPars())[0] << std::endl
-	  << "oscpars[1] = " << (osc -> getPropPars())[1] << std::endl
-	  << "oscpars[2] = " << (osc -> getPropPars())[2] << std::endl
-	  << "oscpars[3] = " << (osc -> getPropPars())[3] << std::endl
-	  << "oscpars[4] = " << (osc -> getPropPars())[4] << std::endl
-	  << "oscpars[5] = " << (osc -> getPropPars())[5] << std::endl;
-
 
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
-	TH1D *numu_osc = (TH1D*)SamplePDFs[sample_i] -> get1DHist()->Clone(NameTString+"_osc");
-	oscillated_hists.push_back(numu_osc);
+	TH1D *sample_osc = (TH1D*)SamplePDFs[sample_i] -> get1DHist()->Clone(NameTString+"_osc");
+	oscillated_hists.push_back(sample_osc);
 
+	canv->cd(2);
+	sample_osc -> SetTitle(NameTString+"_osc");
+	sample_osc -> Draw("HIST");
+	canv->Update();
+
+	canv->Print(OutPlotName.c_str());
+
+	Outfile->cd();
+	sample_osc->Write(NameTString+"_osc");
   }
+
+  canv->Print((OutPlotName+"]").c_str());
 
   //Now print out some event rates, we'll make a nice latex table at some point 
+  std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
+  std::cout << "Integrals of nominal hists: " << std::endl;
   for (unsigned sample_i = 0; sample_i < SamplePDFs.size() ; ++sample_i) {
-	std::cout << "Integrals of nominal hists: " << std::endl;
+	std::cout << " " << std::endl;
 	std::cout << sample_names[sample_i].c_str() << " unosc:      " << unoscillated_hists[sample_i]-> Integral() << std::endl;
 	std::cout << sample_names[sample_i].c_str() << "   osc:      " << oscillated_hists[sample_i]-> Integral() << std::endl; 
-	std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
   }
+  std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
 
   return 0;
  }

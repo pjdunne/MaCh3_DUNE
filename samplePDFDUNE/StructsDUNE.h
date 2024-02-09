@@ -34,31 +34,6 @@
  // end MaCh3Utils namespace
 
 
- //CAFAna binned Oscillation 
-std::vector<double> get_default_CAFana_bins(){
-  // From CAFana - probability binning -
-  const int kNumTrueEnergyBins = 100;
-
-  // N+1 bin low edges
-  std::vector<double> edges(kNumTrueEnergyBins+1);
-
-  const double Emin = 0.5; // 500 MeV: there's really no events below there
-
-  // How many edges to generate. Allow room for 0-Emin bi            const double N = kNumTrueEnergyBins-1;
-  const double N = kNumTrueEnergyBins-1;
-  const double A = N*Emin;
-
-  edges[0] = 0;
-
-  for(int i = 1; i <= N; ++i){
-	edges[kNumTrueEnergyBins-i] = A/i;
-  }
-
-  edges[kNumTrueEnergyBins] = 120; // Replace the infinity that would be here
-  return edges;
-
-}
-
 enum KinematicTypes {
 
   kTrueNeutrinoEnergy = 0,
@@ -84,6 +59,259 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
 
   return kNKinematicParams; 
+}
+
+// ********************************
+// FD Detector Systematic Functions
+// ********************************
+
+// -------------------------------------------------------------------------
+// Global FD Energy Scale Systematics - Essentially Calibration Uncertainty
+// Don't shift muon energy since that isn't calculated calorimetrically
+// -------------------------------------------------------------------------
+
+
+// Total Energy Scale
+inline void TotalEScaleFD(const double * par, double * erec, double erecHad, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  (*erec) += (*par) * erecHad;
+
+  //if not true CC numu event AND reco nue event
+  if ( !( isCC==1 && abs(nuPDG) == 14 ) && nutype == 1 )
+  {
+    (*erec) += (*par) * erecLep;
+  }
+
+}
+
+// Total Energy Scale Sqrt
+inline void TotalEScaleSqrtFD(const double * par, double * erec, double erecHad, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  (*erec) += (*par) * pow(erecHad, 0.5) * erecHad ;
+
+  //if not true CC numu AND reco nue event
+  if ( !( isCC==1 && abs(nuPDG) == 14 ) && nutype == 1 )
+  {
+    (*erec) += (*par) * pow(erecLep, 0.5) * erecLep;
+  }
+
+}
+
+// Total Energy Scale Inverse Sqrt
+inline void TotalEScaleInvSqrtFD(const double * par, double * erec, double erecHad, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  (*erec) += (*par) * pow(erecHad+0.1, -0.5) * erecHad ;
+
+  //if not true CC numu AND reco nue event
+  if ( !( isCC==1 && abs(nuPDG) == 14 ) && nutype == 1 )
+  {
+    (*erec) += (*par) * pow(erecLep+0.1, -0.5) * erecLep;
+  }
+
+}
+
+// ---------------------------------------------------------------
+// Particle-Specific Uncertainties - Essentially Particle Response
+// ---------------------------------------------------------------
+
+
+// ---------------------------------------------------------------
+// CHARGED HADRONS
+// ---------------------------------------------------------------
+
+
+// Charged Hadron Energy Scale 
+inline void HadEScaleFD(const double * par, double * erec, double eRecoP, double eRecoPip, double eRecoPim ) {
+
+  // Protons + Positive Pions + Negative Pions
+  double sumE = eRecoP + eRecoPip + eRecoPim;
+  (*erec) += (*par) * sumE;
+  
+}
+
+// Charged Hadron Energy Scale Sqrt
+inline void HadEScaleSqrtFD(const double * par, double * erec, double eRecoP, double eRecoPip, double eRecoPim ) {
+
+  // Protons + Positive Pions + Negative Pions
+  double sumE = eRecoP + eRecoPip + eRecoPim;
+  (*erec) += (*par) * pow(sumE, 0.5) * sumE;
+  
+}
+
+// Charged Hadron Energy Scale Inv Sqrt
+inline void HadEScaleInvSqrtFD(const double * par, double * erec, double eRecoP, double eRecoPip, double eRecoPim ) {
+
+  // Protons + Positive Pions + Negative Pions
+  double sumE = eRecoP + eRecoPip + eRecoPim;
+  (*erec) += (*par) * pow(sumE+0.1, -0.5) * sumE;
+  
+}
+
+
+// ---------------------------------------------------------------
+// Muons
+// ---------------------------------------------------------------
+
+
+// Muon Energy Scale
+inline void MuEScaleFD(const double * par, double * erec, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  //if true CC numu AND reco numu event
+  if ( isCC==1 && abs(nuPDG) == 14 && nutype == 2 )
+  {
+    (*erec) += (*par) * erecLep;
+  }
+  
+}
+
+// Muon Energy Scale Sqrt
+inline void MuEScaleSqrtFD(const double * par, double * erec, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  //if true CC numu AND reco numu event
+  if ( isCC==1 && abs(nuPDG) == 14 && nutype == 2 )
+  {
+    (*erec) += (*par) * pow(erecLep, 0.5) * erecLep;
+  }
+  
+}
+
+// Muon Energy Scale Inverse Sqrt
+inline void MuEScaleInvSqrtFD(const double * par, double * erec, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  //if true CC numu AND reco numu event
+  if ( isCC==1 && abs(nuPDG) == 14 && nutype == 2 )
+  {
+    (*erec) += (*par) * pow(erecLep+0.1, -0.5) * erecLep;
+  }
+  
+}
+
+// ---------------------------------------------------------------
+// Neutrons
+// ---------------------------------------------------------------
+
+
+// Neutron Energy Scale
+inline void NEScaleFD(const double * par, double * erec, double eRecoN) {
+
+  (*erec) += (*par) * eRecoN;
+  
+}
+
+// Neutron Energy Scale Sqrt
+inline void NEScaleSqrtFD(const double * par, double * erec, double eRecoN) {
+
+  (*erec) += (*par) * pow(eRecoN, 0.5) * eRecoN;
+  
+}
+
+// Neutron Energy Scale Inverse Sqrt
+inline void NEScaleInvSqrtFD(const double * par, double * erec, double eRecoN) {
+
+  (*erec) += (*par) * pow(eRecoN+0.1, -0.5) * eRecoN;
+  
+}
+
+// ---------------------------------------------------------------
+// Electromagnetic Shower
+// ---------------------------------------------------------------
+
+
+// Electromagnetic Shower Energy Scale
+inline void EMEScaleFD(const double * par, double * erec, double eRecoPi0, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  (*erec) += (*par) * eRecoPi0;
+
+  //if true CC nue AND reco nue event
+  if ( isCC==1 && abs(nuPDG) == 12 && nutype == 1 )
+  {
+    (*erec) += (*par) * erecLep;
+  }
+ 
+}
+
+// Electromagnetic Shower Energy Scale Sqrt
+inline void EMEScaleSqrtFD(const double * par, double * erec, double eRecoPi0, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  (*erec) += (*par) * pow(eRecoPi0, 0.5) * eRecoPi0;
+
+  //if true CC nue AND reco nue event
+  if ( isCC==1 && abs(nuPDG) == 12 && nutype == 1 )
+  {
+    (*erec) += (*par) * pow(erecLep, 0.5) * erecLep;
+  }
+ 
+}
+
+// Electromagnetic Shower Energy Scale Inverse Sqrt
+inline void EMEScaleInvSqrtFD(const double * par, double * erec, double eRecoPi0, double erecLep, int isCC, int nuPDG, int nutype) {
+
+  (*erec) += (*par) * pow(eRecoPi0+0.1, -0.5) * eRecoPi0;
+
+  //if true CC nue AND reco nue event
+  if ( isCC==1 && abs(nuPDG) == 12 && nutype == 1 )
+  {
+    (*erec) += (*par) * pow(erecLep+0.1, -0.5) * erecLep;
+  }
+ 
+}
+
+// ---------------------------------------------------------------
+// Resolution Uncertainties
+// ---------------------------------------------------------------
+ 
+// ---------------------------------------------------------------
+// CHARGED HADRONS
+// ---------------------------------------------------------------
+inline void HadResFD(const double * par, double * erec, double eRecoP, double eRecoPip, double eRecoPim, double eP, double ePip, double ePim) {
+
+  // Reco Sum: Protons + Positive Pions + Negative Pions
+  double recoSum = eRecoP + eRecoPip + eRecoPim;
+
+  // True Sum: Protons + Positive Pions + Negative Pions
+  double trueSum = eP + ePip + ePim;
+
+  (*erec) += (*par) * (trueSum - recoSum);
+
+}
+
+// ---------------------------------------------------------------
+// Muons
+// ---------------------------------------------------------------
+inline void MuResFD(const double * par, double * erec, double erecLep, double LepE, int isCC, int nuPDG, int nutype) {
+
+  //if true CC numu AND reco numu event
+  if ( isCC==1 && abs(nuPDG) == 14 && nutype == 2 )
+  {
+    (*erec) += (*par) * (LepE - erecLep);
+  }
+
+}
+
+
+// ---------------------------------------------------------------
+// Neutron
+// ---------------------------------------------------------------
+inline void NResFD(const double * par, double * erec, double eRecoN, double eN) {
+
+  (*erec) += (*par) * (eN - eRecoN);
+  
+}
+
+// ---------------------------------------------------------------
+// Electromagnetic Shower
+// ---------------------------------------------------------------
+
+inline void EMResFD(const double * par, double * erec, double eRecoPi0, double ePi0, double erecLep, double LepE, int isCC, int nuPDG, int nutype) {
+
+  (*erec) += (*par) * (ePi0 - eRecoPi0);
+
+  //if true CC nue AND reco nue event
+  if ( isCC==1 && abs(nuPDG) == 12 && nutype == 1 )
+  {
+    (*erec) += (*par) * (LepE - erecLep);
+  }
+ 
 }
 
 
@@ -161,7 +389,7 @@ enum SIMB_Mode {
   // ***************************
 
   // Unknown
-  kUnknownInteraction      =   -1,
+  kUnknownInteraction        =   -1,
   // QE
   kQE                        =    0,
   // Resonant
@@ -194,6 +422,45 @@ enum SIMB_Mode {
   kSIMB_nModes
 };
 
+// ***************************
+// Struct to describe the GENIE interaction modes which are found inside the ND CAF files
+// Note: this modes can be found in https://github.com/GENIE-MC/Generator/blob/R-2_12_10/src/Interaction/ScatteringType.N
+enum GENIE_Mode {
+  // ***************************
+
+  // Unknown
+  gUnknownInteraction        =   -1,
+  // QE
+  gQE                        =    1,
+  // Single Kaon
+  gSingleKaon                =    2,
+  // DIS
+  gDIS                       =    3,
+  // RES
+  gRes                       =    4,
+  // Coherent
+  gCoh                       =    5,
+  // Diffractive
+  gDiffractive                =    6,
+  // Nu-e Elastic
+  gElectronScattering        =    7, 
+  // Inverse Muon Decay
+  gIMD                       =    8,
+  // Atmospheric Muon Nu Gamma
+  gAMNuGamma                 =    9,
+  // MEC aka 2p2h
+  gMEC                       =   10,
+  // Coherent Elastic
+  gCohElastic                =   11,
+  // Inverse Beta Decay
+  gInverseBetaDecay          =   12, 
+  // Glasgow Resonance
+  gGlashowResonance          =   13,
+  // Inverse Muon Decay Annihliation
+  gIMDAnnihilation           =   14,
+  // Just keep a counter of the number of modes
+  gGENIE_nModes
+};
 
 // **********************
 // Convert an input SIMB mode to the MaCh3 (GENIE) modes
@@ -250,11 +517,11 @@ inline int SIMBMode_ToMaCh3Mode(int SIMB_mode, int isCC) {
         break;
         // Glashow Resonance
       case kGlashowResonance:
-        ReturnMode = kMaCh3_CC_GlashowRES; // NC 1 gamma
+        ReturnMode = kMaCh3_CC_GlashowRES; // CC Glashow Reaonance in DUNE
         break;
         // IMD Annihilation
       case kIMDAnnihilation:
-        ReturnMode = kMaCh3_CC_IMDAnnihalation; // NC other in MaCh3
+        ReturnMode = kMaCh3_CC_IMDAnnihalation; // CC Inverse Muon Decay Annihalation in DUNE
         break;
       default:
         ReturnMode = kMaCh3_nModes; // Something else in MaCh3 (sand?)
@@ -312,11 +579,156 @@ inline int SIMBMode_ToMaCh3Mode(int SIMB_mode, int isCC) {
         break;
         // Glashow Resonance
       case kGlashowResonance:
-        ReturnMode = kMaCh3_NC_GlashowRES; // NC 1 gamma
+        ReturnMode = kMaCh3_NC_GlashowRES; 
         break;
         // IMD Annihilation
       case kIMDAnnihilation:
-        ReturnMode = kMaCh3_NC_IMDAnnihalation; // NC other in MaCh3
+        ReturnMode = kMaCh3_NC_IMDAnnihalation; 
+        break;
+      default:
+        ReturnMode = kMaCh3_nModes; // Something else in MaCh3 (sand?)
+        break;
+    }
+
+  }
+
+  return ReturnMode;
+};
+
+// **********************
+// Convert an input SIMB mode to the MaCh3 (GENIE) modes
+inline int GENIEMode_ToMaCh3Mode(int GENIE_mode, int isCC) {
+  // **********************
+
+  int ReturnMode = kMaCh3_nModes;
+  
+  if (isCC == 1) {
+    switch (GENIE_mode) {
+        //Unknown
+      case gUnknownInteraction:
+        ReturnMode = kMaCh3_nModes;
+      	    break;
+        //QE
+      case gQE:
+        ReturnMode = kMaCh3_CCQE; // CC QE in MaCh3 DUNE
+        break;
+        // DIS
+      case gDIS:
+        ReturnMode = kMaCh3_CC_DIS; //CC DIS in MaCh3 DUNE
+        break;
+        // RES
+      case gRes:
+        ReturnMode = kMaCh3_CC_RES; // CC RES in MaCh3 DUNE
+        break;
+        // Coherent
+      case gCoh:
+        ReturnMode = kMaCh3_CC_COH; // CC Coh in MaCh3 DUNE
+        break;
+        // Diffractive
+      case gDiffractive:
+        ReturnMode = kMaCh3_CC_Diffractive; // CC multi-pi in MaCh3
+        break;
+        // Nue Elastic
+      case gElectronScattering:
+        ReturnMode = kMaCh3_CC_Nue_EL; // CC Nue scattering in MaCh3 DUNE
+        break;
+        // Atmospheric Mu Gamma
+      case gAMNuGamma:
+        ReturnMode = kMaCh3_CC_AMnuGamma; // CC Am Nu Mu in MaCh3 DUNE
+        break;
+        // MEC
+      case gMEC:
+        ReturnMode = kMaCh3_CC_MEC; // CC MEC in MaCh3 DUNE
+        break;
+        // Coherent Elastic
+      case gCohElastic:
+        ReturnMode = kMaCh3_CC_COHEL; // CC Coherent Elastic in MaCh3 DUNE
+        break;
+        // Inverse Beta Decay
+      case gInverseBetaDecay:
+        ReturnMode = kMaCh3_CC_IBD; // CC Inverse Beta Decay in MaCh3 DUNE
+        break;
+        // Glashow Resonance
+      case gGlashowResonance:
+        ReturnMode = kMaCh3_CC_GlashowRES; // NC 1 gamma
+        break;
+        // IMD Annihilation
+      case gIMDAnnihilation:
+        ReturnMode = kMaCh3_CC_IMDAnnihalation; // NC other in MaCh3
+        break;
+      case gIMD:
+        ReturnMode = kMaCh3_CC_IMDAnnihalation; // Stick Inverse Muon Decay into above
+        break;
+      case gSingleKaon:
+        ReturnMode = kMaCh3_CC_IMDAnnihalation; // Stick Single Kaon into above
+        break;
+      default:
+        ReturnMode = kMaCh3_nModes; // Something else in MaCh3 (sand?)
+        break;
+    }
+
+  }
+
+
+  if (isCC == 0) {
+    switch (GENIE_mode) {
+        //Unknown
+      case kUnknownInteraction:
+        ReturnMode = kMaCh3_nModes;
+      	    break;
+        //QE
+      case gQE:
+        ReturnMode = kMaCh3_NCQE; // NC QE in MaCh3 DUNE
+        break;
+        // DIS
+      case gDIS:
+        ReturnMode = kMaCh3_NC_DIS; // NC DIS in MaCh3 DUNE
+        break;
+        // RES
+      case gRes:
+        ReturnMode = kMaCh3_NC_RES; // NC RES in MaCh3 DUNE
+        break;
+        // Coherent
+      case gCoh:
+        ReturnMode = kMaCh3_NC_COH; // NC Coh in MaCh3 DUNE
+        break;
+        // Diffractive
+      case gDiffractive:
+        ReturnMode = kMaCh3_NC_Diffractive; // CC multi-pi in MaCh3
+        break;
+        // Nue Elastic
+      case gElectronScattering:
+        ReturnMode = kMaCh3_NC_Nue_EL; // NC Nue scattering in MaCh3 DUNE
+        break;
+        // Atmospheric Mu Gamma
+      case gAMNuGamma:
+        ReturnMode = kMaCh3_NC_AMnuGamma; // NC Am Nu Mu in MaCh3 DUNE
+        break;
+        // MEC
+      case gMEC:
+        ReturnMode = kMaCh3_NC_MEC; // NC MEC in MaCh3 DUNE
+        break;
+        // Coherent Elastic
+      case gCohElastic:
+        ReturnMode = kMaCh3_NC_COHEL; // NC Coherent Elastic in MaCh3 DUNE
+        break;
+        // Inverse Beta Decay
+      case gInverseBetaDecay:
+        ReturnMode = kMaCh3_NC_IBD; // Inverse Beta Decay in MaCh3 DUNE
+        break;
+        // Glashow Resonance
+      case gGlashowResonance:
+        ReturnMode = kMaCh3_NC_GlashowRES;
+        break;
+        // IMD Annihilation
+      case gIMDAnnihilation:
+        ReturnMode = kMaCh3_NC_IMDAnnihalation;
+        break;
+      case gIMD:
+        ReturnMode = kMaCh3_NC_IMDAnnihalation; 
+        break;
+      case gSingleKaon:
+        ReturnMode = kMaCh3_NC_IMDAnnihalation; 
         break;
       default:
         ReturnMode = kMaCh3_nModes; // Something else in MaCh3 (sand?)
@@ -500,13 +912,11 @@ enum MaCh3_Spline_Modes {
 
 };
 
-
-int MaCh3Mode_to_SplineMode(int iMode){
+inline int MaCh3Mode_to_SplineMode(int iMode){
 
   //No grouping of modes in MaCh3
   return iMode;
 }
-
 
 // Helper function for calculating unbinned Integral of TH2Poly i.e including overflow
 double OverflowIntegral(TH2Poly*);

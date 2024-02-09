@@ -36,6 +36,7 @@ InputFiles:
   mtuplesuffix: "_numuselec.root"
   splineprefix: "inputs/DUNE_spline_files/FD_RHC_ger_"
   splinesuffix: "_numuselec_splines.root"
+DetID: 24
 NSubSamples: 12
 SubSamples:
   - name: "RHC_numu_x_numu"
@@ -79,7 +80,7 @@ SubSamples:
     samplevecno: 5
     nutype: -14
     oscnutype: -12 
-    signal: false
+    signal: true
   - name: "RHC_nue_x_numu"
     mtuplefile: "nue_x_numu"
     splinefile: "nue_x_numu"

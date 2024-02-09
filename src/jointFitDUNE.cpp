@@ -11,115 +11,50 @@
 #include <TStopwatch.h>
 
 #include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBaseND.h"
 #include "mcmc/mcmc.h"
-
-//#include "covariance/BANFF_to_xsec_mapping.h"
-
-  //CAFAna binned Oscillation 
-std::vector<double> get_default_CAFana_bins(){
-   // From CAFana - probability binning -
-   const int kNumTrueEnergyBins = 100; 
-   // N+1 bin low edges
-   std::vector<double> edges(kNumTrueEnergyBins+1);
-  
-   const double Emin = 0.5; // 500 MeV: there's really no events below there
-  
-   // How many edges to generate. Allow room for 0-Emin bi            const double N = kNumTrueEnergyBins-1;
-   const double N = kNumTrueEnergyBins-1;
-   const double A = N*Emin;
-  
-   edges[0] = 0;
-  
-   for(int i = 1; i <= N; ++i){
-     edges[kNumTrueEnergyBins-i] = A/i;
-   }
-  
-   edges[kNumTrueEnergyBins] = 120; // Replace the infinity that would be here
-   return edges;
-                                 
-}
-
 
 int main(int argc, char **argv)
 {
-  std::cout << "IM HERE" << std::endl;
+
+  #ifdef MULTITHREAD
+    std::cout << "MUTLI THREADING IS ON" << std::endl;
+  #else
+    std::cout << "MUTLI THREADING IS OFF" << std::endl;
+  #endif
+
+  #ifdef CPU_ONLY
+    std::cout << "ONLY CPU OSC CALC" << std::endl;
+  #else
+    std::cout << "GPU OSC CALC IS ON" << std::endl;
+  #endif
+
+  // Read config
   manager *fitMan = new manager(argv[1]);
-  std::cout << "Using POT: " << fitMan->GetPOT()  << "(nu mode), " << fitMan->GetNubarPOT() << "(anti-nu mode)" << std::endl;
 
-  // Fake data set
-  bool fakedata = fitMan->GetFakeDataFitFlag();
-  // Real data fit
-  bool datafit = fitMan->GetRealDataFitFlag();
-  // Toy fit
-  bool toyfit = fitMan->GetToyFitFlag();
-  // Asimov fit
-  bool asimovfit = fitMan->GetAsimovFitFlag();
-
-  // there's a check inside the manager class that does this; left here for demonstrative purposes
-  if (fitMan->GetGoodConfig() == false) {
-    std::cerr << "Didn't find a good config in input configuration" << std::endl;
-    throw;
-  }
-
-  // Do a stats-only fit?
-  // Note: only works with asimov fit (at the moment!)
-  bool statsonly = fitMan->GetStatOnly();
-  if (statsonly) {std::cout << "Doing a stats-only fit, ignoring ND280 data and using BANFF tuning" << std::endl;}
+  std::string  XsecMatrixFile = fitMan->raw()["General"]["Systematics"]["XsecCovFile"].as<std::string>(); 
+  std::string  XsecMatrixName = fitMan->raw()["General"]["Systematics"]["XsecCovName"].as<std::string>();
+  std::string  OscMatrixFile = fitMan->raw()["General"]["Systematics"]["OscCovFile"].as<std::string>(); 
+  std::string  OscMatrixName = fitMan->raw()["General"]["Systematics"]["OscCovName"].as<std::string>();
+  double FDPOT = fitMan->raw()["General"]["FDPOT"].as<double>(); 
+  double NDPOT = fitMan->raw()["General"]["NDPOT"].as<double>(); 
   
-
-  // Bool about whether or not to use the near detector
-  // If you're doing a stats-only fit or if you're using the BANFF matrix, you don't want to use
-  // the near detector. (In the case of a BANFF matrix fit, using the ND will do absolutely nothing.
-  // In the case of a stats-only fit it will add a constant value to the LLH, which won't affect
-  // the fit results. In both cases it takes about an hour to load the data/MC and set up the ND
-  // class, so that's just a massive waste of time and let's not do it).
-  
-  ///Let's ask the manager what are the file with covariance matrix
-  TString fluxCovMatrixFile  = fitMan -> GetFluxCovMatrix() ;
-  TString fluxCovMatrixName  = fitMan -> GetFluxCovName() ;
-  TString xsecCovMatrixFile  = fitMan -> GetXsecCovMatrix() ;
-  TString xsecCovMatrixName  = fitMan -> GetXsecCovName() ;
-
   //###########################################################################################################
   // Covariance Objects
 
-  //covarianceNDDet_2019Poly* det;
   covarianceXsec *xsec;
   covarianceOsc *osc;
 
-  xsec= new covarianceXsec(xsecCovMatrixName, xsecCovMatrixFile);
+  xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str());
 
 
   // Setting flat priors based on XSECPARAMFLAT list in configuration file 
-  std::vector<int> XsecFlatParams  = fitMan->GetXsecFlat();
-  if (XsecFlatParams.size() == 1 && XsecFlatParams.at(0) == -1) {
-    for (int j = 0; j < xsec->getSize(); j++) {
-      xsec->setEvalLikelihood(j, false);
-    }
-  } else {
-    for (unsigned j = 0; j < XsecFlatParams.size(); j++) {
-      xsec->setEvalLikelihood(XsecFlatParams.at(j), false);
-    }
-  }
 
+  bool statonly = fitMan->raw()["MCMC"]["StatOnly"].as<bool>();;
 
-  std::vector<double> oscpars;
-  // set up oscillation parameters (init params are in constructor)
-  if (fitMan->GetUseBeta()) // if using beta in nue/nuebar oscillation probability
-    {
-      std::cerr << "[ERROR]: Not setup for beta in 2020." << std::endl;
-      std::cerr << __FILE__ << ":" << __LINE__ << std::endl;
-      throw;
-      //osc = new covarianceOsc("osc_cov","inputs/oscillation_covariance_6par_nondouble_beta.root");
-    }
-  else // Default: normal oscillation covariance matrix (not including beta)
-    {
-      osc = new covarianceOsc("osc_cov","inputs/oscillation_covariance_6par_nondouble_PDG2019.root");
-    }
+  std::vector<double> oscpars = fitMan->raw()["General"]["OscParams"].as<std::vector<double>>();
 
-  // oscpars from manager in order:
-  // sin2th_12, sin2th_23, sin2th_13, delm2_12, delm2_23, delta_cp
-  oscpars=fitMan->GetOscParameters();
+  osc = new covarianceOsc(OscMatrixName.c_str(), OscMatrixFile.c_str());
 
   if (!(oscpars.size()==6 || oscpars.size()==7))
     {
@@ -128,24 +63,12 @@ int main(int argc, char **argv)
       exit(1);
     }
 
-  // Add beta (if set in config file)
-  if (fitMan->GetUseBeta() && oscpars.size()==6)
-    {
-      oscpars.push_back(1);
-      std::cout << "Using beta in nuebar appearance probability. Input value: beta = 1" << std::endl;
-    }
-
   std::cout<<"Using these oscillation parameters: ";
   for(unsigned ipar=0;ipar<oscpars.size();ipar++)
     std::cout<<" "<<oscpars.at(ipar);
   std::cout << std::endl;
 
   osc->setFlipDeltaM23(true);
-
-  // Ask config file whether to use reactor constraint
-  bool useRC =  fitMan -> GetRC() ;
-  std::cout << "use reactor prior is : " << useRC << std::endl ;
-  osc->useReactorPrior(useRC); // this is hard coded inside, and is bad
 
   // Use prior for 12 parameters only
   //osc->setEvalLikelihood(0,false);
@@ -159,43 +82,41 @@ int main(int argc, char **argv)
   osc->acceptStep();
 
 
-  xsec->setStepScale(fitMan->GetXsecStepScale());
-  osc->setStepScale(fitMan->GetOscStepScale());
+  xsec->setStepScale(fitMan->raw()["General"]["Systematics"]["XsecStepScale"].as<double>());
+  osc->setStepScale(fitMan->raw()["General"]["Systematics"]["OscStepScale"].as<double>());
 
-  //###########################################################################################################
-  // SK Samples
+  bool addFD = fitMan->raw()["General"]["IncludeFD"].as<bool>();
+  bool addND = fitMan->raw()["General"]["IncludeND"].as<bool>();
 
-  // Hardcoded binning_opt = 2 (erec-theta nue binning)
-  std::cout << "Fitting electorn rings in Erec-theta. " << std::endl ;
+  if (!addFD && !addND) {std::cerr << "[ERROR:] You've chosen NOT to include FD or ND samples in the config file... you need to add something!" << std::endl; throw;}
 
-  // make PDFs
-  bool domaqeh=true;
-  std::cout << "I AM CPU" << std::endl;
-  std::vector<samplePDFDUNEBase*> pdfs;
-  //!!add pdfs vector to make things easier
-  samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(fitMan->GetPOT(), "configs/SamplePDFDune_FHC_numuselec.cfg", xsec);
-  samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(fitMan->GetNubarPOT(), "configs/SamplePDFDune_RHC_numuselec.cfg", xsec);
-  samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(fitMan->GetPOT(), "configs/SamplePDFDune_FHC_nueselec.cfg", xsec);
-  samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(fitMan->GetNubarPOT(), "configs/SamplePDFDune_RHC_nueselec.cfg", xsec);
-  pdfs.push_back(numu_pdf);
-  pdfs.push_back(numubar_pdf);
-  pdfs.push_back(nue_pdf);
-  pdfs.push_back(nuebar_pdf);
-//#endif  
 
-  for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-    pdfs[ipdf]->setUseBeta(fitMan->GetUseBeta());   // Set whether to use beta in oscillation probability calculation
-    pdfs[ipdf]->setApplyBetaNue(fitMan->GetApplyBetaNue());   // Set option to apply beta to nue appearance probability instead of nuebar appearance probability
-    pdfs[ipdf]->setApplyBetaDiag(fitMan->GetApplyBetaDiag());        // Set option to apply (1/beta) to nue appearance probability and beta to nuebar appearance probability
-    pdfs[ipdf]->useNonDoubledAngles(true);
+  std::vector<samplePDFFDBase*> SamplePDFs;
+  
+  if(addFD) { 
+    samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+    SamplePDFs.push_back(numu_pdf);
+    samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+    SamplePDFs.push_back(nue_pdf);
+    samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+    SamplePDFs.push_back(numubar_pdf);
+    samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+    SamplePDFs.push_back(nuebar_pdf);
+  }
+ 
+  if(addND) {
+    samplePDFDUNEBaseND * numu_cc_nd_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_FHC_CCnumuselec.yaml", xsec);
+    SamplePDFs.push_back(numu_cc_nd_pdf);
+    samplePDFDUNEBaseND * numubar_cc_nd_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_RHC_CCnumuselec.yaml", xsec);
+    SamplePDFs.push_back(numubar_cc_nd_pdf);
   }
 
 
-  
-  // tell PDF where covariances are
-  //for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-    //pdfs[ipdf]->setXsecCov(xsec);
-  //}
+  for(unsigned sample_i=0; sample_i < SamplePDFs.size() ; ++sample_i) {
+    SamplePDFs[sample_i] -> useNonDoubledAngles(true);
+    SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
+  }
+
 
   //###########################################################################################################
   // Set covariance objects equal to output of previous chain
@@ -204,12 +125,12 @@ int main(int argc, char **argv)
   std::map<TString,std::vector<double> > parstarts;
   int lastStep = 0;
 
- /*
-
-  if(fitMan->GetStartFromPosterior()){//Start from values at the end of an already run chain
+ 
+  //Start from values at the end of an already run chain
+  if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
     //Read in paramter names and values from file
-    std::cout << "MCMC getting starting position from " << fitMan->GetPosteriorFiles() << std::endl;
-    TFile *infile = new TFile(fitMan->GetPosteriorFiles().c_str(), "READ");
+    std::cout << "MCMC getting starting position from " << fitMan->raw()["MCMC"]["PosFileName"].as<std::string>() << std::endl;
+    TFile *infile = new TFile(fitMan->raw()["MCMC"]["PosFileName"].as<std::string>().c_str(), "READ");
     TTree *posts = (TTree*)infile->Get("posteriors");
     TObjArray* brlis = (TObjArray*)posts->GetListOfBranches();
     int nbr = brlis->GetEntries();
@@ -237,12 +158,7 @@ int main(int argc, char **argv)
     
     //Make vectors of parameter value for each covariance
     std::vector<TString> covtypes;
-    else{
-      covtypes.push_back("xsec");
-      covtypes.push_back("b");
-      covtypes.push_back("ndd");
-    }
-    covtypes.push_back("skd_joint");
+    covtypes.push_back("xsec");
  
     for(unsigned icov=0;icov<covtypes.size();icov++){
       std::vector<double> covparstarts;
@@ -278,194 +194,86 @@ int main(int argc, char **argv)
     lastStep = step_val;
 
   }
-  */
+  
   // set to nominal
   xsec->setParameters();
 
   //###########################################################################################################
   // Apply reweight and find event rates
 
-  std::vector<double> CAFana_default_edges = get_default_CAFana_bins();
-  for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-    pdfs[ipdf]->useBinnedOscReweighting(true, CAFana_default_edges.size()-1, &CAFana_default_edges[0]);
-    pdfs[ipdf]->reweight(osc->getPropPars(), osc->getPropPars());     // Get nominal predictions
-  }
+  std::cout << "Nominal Oscillated Event rates: " << std::endl;
 
-  TH1D *numu_nominal = (TH1D*)numu_pdf->get1DHist()->Clone("numu_nominal");
-  TH1D *numubar_nominal = (TH1D*)numubar_pdf->get1DHist()->Clone("numubar_nominal");
-  TH1D *nue_nominal = (TH1D*)nue_pdf->get1DHist()->Clone("nue_nominal");
-  TH1D *nuebar_nominal = (TH1D*)nuebar_pdf->get1DHist()->Clone("nuebar_nominal");
+  for(unsigned sample_i=0; sample_i < SamplePDFs.size() ; ++sample_i) {
+    SamplePDFs[sample_i] -> reweight(osc->getPropPars()); // Get Nominal Predictions 
 
-  std::cout << "Nominal event rates: " << std::endl;
-  std::cout << "numu: " << numu_nominal->Integral() << std::endl;
-  std::cout << "numu-bar: " << numubar_nominal->Integral() << std::endl;
-  std::cout << "nue: " << nue_nominal->Integral() << std::endl;
-  std::cout << "nue-bar: " << nuebar_nominal->Integral() << std::endl;
+	std::string name = SamplePDFs[sample_i] -> GetSampleName();
+    TString NameTString = TString(name.c_str());
 
-  // Check what type of fit you are doing
-  std::vector<double> *numudat = 0;
-  std::vector<double> *numubardat = 0;
-  std::vector<std::vector<double> > *nuedat = 0;
-  std::vector<std::vector<double> > *nuebardat = 0;
+	if (SamplePDFs[sample_i] -> GetBinningOpt() == 1) {
+      TH1D *Nominal_1D = (TH1D*)SamplePDFs[sample_i]->get1DHist()->Clone(NameTString+"_nominal");
+      std::cout << name.c_str() << ": " << Nominal_1D->Integral() << std::endl;
+	}
+      
+	else if (SamplePDFs[sample_i] -> GetBinningOpt() == 2) {
+      TH2D *Nominal_2D = (TH2D*)SamplePDFs[sample_i]->get2DHist()->Clone(NameTString+"_nominal");
+      std::cout << name.c_str() << ": " << Nominal_2D->Integral() << std::endl;
+	}
 
-    
-  //###########################################################################################################
-  // Determine the type of fit we want to do
-
-  TH1D *numu_data;
-  TH1D *numubar_data;
-  TH1D *nue_data;
-  TH1D *nuebar_data;
-
-  if (toyfit && !datafit && !fakedata && !asimovfit) // Toy fit
-  {
-    std::cout << "Loading toy data from " << fitMan->GetToyFilename().c_str() << std::endl;
-    std::cout<< "Warning not implemented for CC1pi yet, just doing 4 sample!!"<<std::endl;
-
-    int n_seeds = 4;
-    std::cout << "- Using seed " << fitMan->GetSeed() << std::endl;
-    TRandom3 rnd_machine(fitMan->GetSeed());
-
-    // waste a few throws
-    for (int h = 0; h < 100; ++h)
-      double waste = rnd_machine.Rndm();
-
-    std::vector<int> seed_array;
-
-    for (int i = 0; i < n_seeds; ++i)
-    {
-      double rr = 1000000 * rnd_machine.Rndm();
-      seed_array.push_back(rr);
-      std::cout << "- Number " << i << " seed " << rr << std::endl;
-    }
-
-    // set the covariance objects to use nominal values thrown from the covariance matrix
-    xsec->throwNominal(false, seed_array[1]);
-    // if (useND280) {
-    //   det->throwNominal(false, seed_array[2]);
-    // }
-    std::cout << "- Toy number " << fitMan->GetNtoy() << " from file " << fitMan->GetToyFilename().c_str() << std::endl;
-    TFile *dat = new TFile(fitMan->GetToyFilename().c_str(), "READ");
-    TTree *dattree = (TTree*)dat->Get("toyMC_2015");
-
-    // Change this bit for new names
-    dattree->SetBranchAddress("sk_numu", &numudat);
-    dattree->SetBranchAddress("sk_nue", &nuedat);
-    dattree->SetBranchAddress("sk_numubar", &numubardat);
-    dattree->SetBranchAddress("sk_nuebar", &nuebardat);
-
-    dattree->GetEntry(fitMan->GetNtoy());
-
-    numu_pdf->addData(*numudat);
-    nue_pdf->addData(*nuedat);
-    numubar_pdf->addData(*numubardat);
-    nuebar_pdf->addData(*nuebardat);
-
-    
-    delete dattree;
-    delete dat; //dat->Close();
-  }
-  else if (fakedata && !datafit && !asimovfit) // Fake data
-  {
-    //Find out from Leila what to do about these files, maybe take straight from MC
-    std::cout << "Loading fake data set from " << fitMan->GetDataFilename() << std::endl;
-    TFile *f = new TFile(fitMan->GetDataFilename().c_str(), "OPEN");
-    numu_data = (TH1D*)f->Get("numu");
-    numu_data->SetDirectory(0);
-    numubar_data = (TH1D*)f->Get("numubar");
-    numubar_data->SetDirectory(0); // this keeps the TH1D alive after the file is closed
-    nue_data = (TH1D*)f->Get("nue");
-    nue_data->SetDirectory(0);
-    nuebar_data = (TH1D*)f->Get("nuebar");
-    nuebar_data->SetDirectory(0); // this keeps the TH1D alive after the file is closed
-
-    f->Close();
-
-    // SK
-    //check these behave nicely in 2D
-    numu_pdf->addData(numu_data);
-    nue_pdf->addData(nue_data);
-    numubar_pdf->addData(numubar_data);
-    nuebar_pdf->addData(nuebar_data);
+	else {
+	  std::cerr << "[ERROR:] Unknown binning option for sample, don't know whether to make 1D or 2D hist! : " << name.c_str() << " : " << SamplePDFs[sample_i] -> GetBinningOpt() << std::endl; throw;
+	}
 
   }
-  else if (asimovfit && !datafit) // Asimov fit
-  {
-
-    // -------------------------------------------------------------------- //
-    // APPLY BANFF TUNING TO ASIMOV INPUT (Don't apply as a prior for fit, just use for Asimov "data")
-    // Note: this is hardcoded for BANFF 2017b
-
-      std::cout << "-----------------------" << std::endl; 
-
-      // set nominal
-      xsec->setParameters();
 
 
-    numu_pdf->reweight(osc->getPropPars(), osc->getPropPars());
-    TH1D *numu_asimov = (TH1D*)numu_pdf->get1DHist()->Clone("numu_asimov");
-    nue_pdf->reweight(osc->getPropPars(), osc->getPropPars());
-    TH1D *nue_asimov = (TH1D*)nue_pdf->get1DHist()->Clone("nue_asimov");
-    numubar_pdf->reweight(osc->getPropPars(), osc->getPropPars());
-    TH1D *numubar_asimov = (TH1D*)numubar_pdf->get1DHist()->Clone("numubar_asimov");
-    nuebar_pdf->reweight(osc->getPropPars(), osc->getPropPars());
-    TH1D *nuebar_asimov = (TH1D*)nuebar_pdf->get1DHist()->Clone("nuebar_asimov");
+  std::cout << "-----------------------" << std::endl; 
 
-    // Print event rates to check
-    std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;
-    std::cout << "FHC 1Rmu:   " << numu_asimov->Integral() << std::endl;
-    std::cout << "FHC 1Re:    " << nue_asimov->Integral() << std::endl;
-    std::cout << "RHC 1Rmu:   " << numubar_asimov->Integral() << std::endl;
-    std::cout << "RHC 1Re:    " << nuebar_asimov->Integral() << std::endl;
+  // Set to Asimov values
+  // If wanting to do an Asimov fit to non-nominal values of xsec params set them here!
+  // e.g. xsecpar[i] = ....
 
-    numu_pdf->addData(numu_asimov); 
-    nue_pdf->addData(nue_asimov); 
-    numubar_pdf->addData(numubar_asimov);  
-    nuebar_pdf->addData(nuebar_asimov); 
+  xsec->setParameters();
 
-    
+
+  // Print Asimov event rates to check
+  std::cout << "-------- Event rates for Asimov Data  ------------" << std::endl;
+
+  for(unsigned sample_i=0; sample_i < SamplePDFs.size() ; ++sample_i) {
+    SamplePDFs[sample_i] -> reweight(osc->getPropPars()); // Get Nominal Predictions 
+
+	std::string name = SamplePDFs[sample_i] -> GetSampleName();
+    TString NameTString = TString(name.c_str());
+
+	if (SamplePDFs[sample_i] -> GetBinningOpt() == 1) {
+      TH1D *Asimov_1D = (TH1D*)SamplePDFs[sample_i]->get1DHist()->Clone(NameTString+"_asimov");
+      std::cout << name.c_str() << ": " << Asimov_1D->Integral() << std::endl;
+      SamplePDFs[sample_i] -> addData(Asimov_1D); 
+	}
+      
+	if (SamplePDFs[sample_i] -> GetBinningOpt() == 2) {
+      TH2D *Asimov_2D = (TH2D*)SamplePDFs[sample_i]->get2DHist()->Clone(NameTString+"_asimov");
+      std::cout << name.c_str() << ": " << Asimov_2D->Integral() << std::endl;
+      SamplePDFs[sample_i] -> addData(Asimov_2D); 
+	}
+
   }
-  else if (datafit)
-  {
-    std::cout << "Performing a real data fit from " << fitMan->GetDataFilename() << std::endl;
-
-    TFile *f = new TFile(fitMan->GetDataFilename().c_str(), "OPEN");
-    numu_data = (TH1D*)f->Get("numu");
-    numu_data->SetDirectory(0);
-    numubar_data = (TH1D*)f->Get("numubar");
-    numubar_data->SetDirectory(0); 
-    nue_data = (TH1D*)f->Get("nue_erecTheta");
-    nue_data->SetDirectory(0);
-    nuebar_data = (TH1D*)f->Get("nuebar_erecTheta");
-    nuebar_data->SetDirectory(0); 
-    delete f;
-
-    // SK
-    //check this behaves nicely with 2D
-    numu_pdf->addData(numu_data);
-    nue_pdf->addData(nue_data);
-    numubar_pdf->addData(numubar_data);
-    nuebar_pdf->addData(nuebar_data);
-
-    // ND (don't have lines with 'sample->addData(xxx)', and it will set the data as the data automatically)
-  }
-  else
-    std::cerr << "No valid option given for fit type" << std::endl;
-
 
   //###########################################################################################################
 
   // Back to actual nominal for fit
   // If starting from end values of a previous chain set everything to the values from there
   // and do acceptStep() to update fParCurr with these values
-  if(fitMan->GetStartFromPosterior()) {
+  //
+  
+  if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+    osc->setParameters(oscparstarts);
+    osc->acceptStep();
     if(parstarts.find("xsec")!=parstarts.end()) {
-	xsec->setParameters(parstarts["xsec"]);
-	xsec->acceptStep();
-      }
-      else xsec->setParameters();
+      xsec->setParameters(parstarts["xsec"]);
+      xsec->acceptStep();
+    }
+    else {xsec->setParameters();}
   }
-
   else {
     xsec->setParameters();
   }
@@ -473,34 +281,31 @@ int main(int argc, char **argv)
   //###########################################################################################################
   // MCMC
 
-  //mcmc *markovChain = new mcmc(fitMan->getOutputFilename(), true);
   mcmc *markovChain = new mcmc(fitMan);
 
-  //numu_fds->Write();
-
   // set up
-  markovChain->setChainLength(fitMan->GetNSteps());
-  markovChain->addOscHandler(osc, osc);
+  int NSteps = fitMan->raw()["MCMC"]["NSTEPS"].as<int>(); 
+  markovChain->setChainLength(NSteps);
+  markovChain->addOscHandler(osc);
   if(lastStep > 0) markovChain->setInitialStepNumber(lastStep+1);
 
   // add samples
-  // if (useND280) {
-  //   markovChain->addSamplePDF(sample);
-  // }
-  markovChain->addSamplePDF(numu_pdf);
-  markovChain->addSamplePDF(numubar_pdf);
-  markovChain->addSamplePDF(nue_pdf);
-  markovChain->addSamplePDF(nuebar_pdf);
 
-  //!!add cc1pi
+  for(unsigned sample_i=0; sample_i < SamplePDFs.size() ; ++sample_i) {
+    markovChain->addSamplePDF(SamplePDFs[sample_i]);
+  }
+
+  if(!fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+    //start chain from random position unless starting from a previous chain
+    xsec->proposeStep();
+    osc->proposeStep();
+  }
 
   // add systematic objects
-  if (!statsonly) {
+  if (!statonly) {
     markovChain->addSystObj(xsec);
-    // if (useND280) {
-    //   markovChain->addSystObj(det);
-    // }
   }
+  else {std::cout << "STAT ONLY!" << std::endl;}
   
   // run!
   markovChain->runMCMC();
