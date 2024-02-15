@@ -45,6 +45,10 @@ enum KinematicTypes {
   kTrueXPos = 6,
   kTrueYPos = 7,
   kTrueZPos = 8,
+  kCVNNumu = 9,
+  kCVNNue = 10,
+  kIsCC = 11,
+  kRecoQ = 12,
   kNKinematicParams
 };
 
@@ -57,27 +61,31 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
   if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
   if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
+  if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
+  if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
+  if (KinematicParameterStr.find("IsCC") != std::string::npos) {return kIsCC;}
+  if (KinematicParameterStr.find("RecoQ") != std::string::npos) {return kRecoQ;}
 
   return kNKinematicParams; 
 }
 
 // ********************************
-// FD Detector Systematic Functions
+// ND Detector Systematic Functions
 // ********************************
 
 // -------------------------------------------------------------------------
-// Global FD Energy Scale Systematics - Essentially Calibration Uncertainty
+// Global ND Energy Scale Systematics - Essentially Calibration Uncertainty
 // Don't shift muon energy since that isn't calculated calorimetrically
 // -------------------------------------------------------------------------
 
 
 // Total Energy Scale
-inline void TotalEScaleFD(const double * par, double * erec, double erecHad, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void TotalEScaleND(const double * par, double * erec, double erecHad, double erecLep, bool NotCCnumu) {
 
   (*erec) += (*par) * erecHad;
 
   //if not true CC numu event AND reco nue event
-  if ( !( isCC==1 && abs(nuPDG) == 14 ) && nutype == 1 )
+  if (NotCCnumu)
   {
     (*erec) += (*par) * erecLep;
   }
@@ -85,27 +93,27 @@ inline void TotalEScaleFD(const double * par, double * erec, double erecHad, dou
 }
 
 // Total Energy Scale Sqrt
-inline void TotalEScaleSqrtFD(const double * par, double * erec, double erecHad, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void TotalEScaleSqrtND(const double * par, double * erec, double erecHad, double erecLep, double sqrtErecHad, double sqrtErecLep, bool NotCCnumu) {
 
-  (*erec) += (*par) * pow(erecHad, 0.5) * erecHad ;
+  (*erec) += (*par) * sqrtErecHad * erecHad ;
 
   //if not true CC numu AND reco nue event
-  if ( !( isCC==1 && abs(nuPDG) == 14 ) && nutype == 1 )
+  if (NotCCnumu)
   {
-    (*erec) += (*par) * pow(erecLep, 0.5) * erecLep;
+    (*erec) += (*par) * sqrtErecLep * erecLep;
   }
 
 }
 
 // Total Energy Scale Inverse Sqrt
-inline void TotalEScaleInvSqrtFD(const double * par, double * erec, double erecHad, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void TotalEScaleInvSqrtND(const double * par, double * erec, double erecHad, double erecLep, double invSqrtErecHad, double invSqrtErecLep, bool NotCCnumu) {
 
-  (*erec) += (*par) * pow(erecHad+0.1, -0.5) * erecHad ;
+  (*erec) += (*par) * invSqrtErecHad * erecHad ;
 
   //if not true CC numu AND reco nue event
-  if ( !( isCC==1 && abs(nuPDG) == 14 ) && nutype == 1 )
+  if (NotCCnumu)
   {
-    (*erec) += (*par) * pow(erecLep+0.1, -0.5) * erecLep;
+    (*erec) += (*par) * invSqrtErecLep * erecLep;
   }
 
 }
@@ -121,29 +129,26 @@ inline void TotalEScaleInvSqrtFD(const double * par, double * erec, double erecH
 
 
 // Charged Hadron Energy Scale 
-inline void HadEScaleFD(const double * par, double * erec, double eRecoP, double eRecoPip, double eRecoPim ) {
+inline void HadEScaleND(const double * par, double * erec, double sumEhad) {
 
   // Protons + Positive Pions + Negative Pions
-  double sumE = eRecoP + eRecoPip + eRecoPim;
-  (*erec) += (*par) * sumE;
+  (*erec) += (*par) * sumEhad;
   
 }
 
 // Charged Hadron Energy Scale Sqrt
-inline void HadEScaleSqrtFD(const double * par, double * erec, double eRecoP, double eRecoPip, double eRecoPim ) {
+inline void HadEScaleSqrtND(const double * par, double * erec, double sumEhad, double sqrtSumEhad) {
 
   // Protons + Positive Pions + Negative Pions
-  double sumE = eRecoP + eRecoPip + eRecoPim;
-  (*erec) += (*par) * pow(sumE, 0.5) * sumE;
+  (*erec) += (*par) * sqrtSumEhad * sumEhad;
   
 }
 
 // Charged Hadron Energy Scale Inv Sqrt
-inline void HadEScaleInvSqrtFD(const double * par, double * erec, double eRecoP, double eRecoPip, double eRecoPim ) {
+inline void HadEScaleInvSqrtND(const double * par, double * erec, double sumEhad, double invSqrtSumEhad) {
 
   // Protons + Positive Pions + Negative Pions
-  double sumE = eRecoP + eRecoPip + eRecoPim;
-  (*erec) += (*par) * pow(sumE+0.1, -0.5) * sumE;
+  (*erec) += (*par) * invSqrtSumEhad * sumEhad;
   
 }
 
@@ -154,10 +159,10 @@ inline void HadEScaleInvSqrtFD(const double * par, double * erec, double eRecoP,
 
 
 // Muon Energy Scale
-inline void MuEScaleFD(const double * par, double * erec, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void MuEScaleND(const double * par, double * erec, double erecLep, bool CCnumu) {
 
   //if true CC numu AND reco numu event
-  if ( isCC==1 && abs(nuPDG) == 14 && nutype == 2 )
+  if (CCnumu)
   {
     (*erec) += (*par) * erecLep;
   }
@@ -165,23 +170,273 @@ inline void MuEScaleFD(const double * par, double * erec, double erecLep, int is
 }
 
 // Muon Energy Scale Sqrt
-inline void MuEScaleSqrtFD(const double * par, double * erec, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void MuEScaleSqrtND(const double * par, double * erec, double erecLep, double sqrtErecLep, bool CCnumu) {
 
   //if true CC numu AND reco numu event
-  if ( isCC==1 && abs(nuPDG) == 14 && nutype == 2 )
+  if (CCnumu)
   {
-    (*erec) += (*par) * pow(erecLep, 0.5) * erecLep;
+    (*erec) += (*par) * sqrtErecLep * erecLep;
   }
   
 }
 
 // Muon Energy Scale Inverse Sqrt
-inline void MuEScaleInvSqrtFD(const double * par, double * erec, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void MuEScaleInvSqrtND(const double * par, double * erec, double erecLep, double invSqrtErecLep, bool CCnumu) {
 
   //if true CC numu AND reco numu event
-  if ( isCC==1 && abs(nuPDG) == 14 && nutype == 2 )
+  if (CCnumu)
   {
-    (*erec) += (*par) * pow(erecLep+0.1, -0.5) * erecLep;
+    (*erec) += (*par) * invSqrtErecLep * erecLep;
+  }
+  
+}
+
+// ---------------------------------------------------------------
+// Neutrons
+// ---------------------------------------------------------------
+
+
+// Neutron Energy Scale
+inline void NEScaleND(const double * par, double * erec, double eRecoN) {
+
+  (*erec) += (*par) * eRecoN;
+  
+}
+
+// Neutron Energy Scale Sqrt
+inline void NEScaleSqrtND(const double * par, double * erec, double eRecoN, double sqrteRecoN) {
+
+  (*erec) += (*par) * sqrteRecoN * eRecoN;
+  
+}
+
+// Neutron Energy Scale Inverse Sqrt
+inline void NEScaleInvSqrtND(const double * par, double * erec, double eRecoN, double invSqrteRecoN) {
+
+  (*erec) += (*par) * invSqrteRecoN * eRecoN;
+  
+}
+
+// ---------------------------------------------------------------
+// Electromagnetic Shower
+// ---------------------------------------------------------------
+
+
+// Electromagnetic Shower Energy Scale
+inline void EMEScaleND(const double * par, double * erec, double eRecoPi0, double erecLep, bool CCnue) {
+
+  (*erec) += (*par) * eRecoPi0;
+
+  //if true CC nue AND reco nue event
+  if (CCnue)
+  {
+    (*erec) += (*par) * erecLep;
+  }
+ 
+}
+
+// Electromagnetic Shower Energy Scale Sqrt
+inline void EMEScaleSqrtND(const double * par, double * erec, double eRecoPi0, double erecLep, double sqrtErecLep, double sqrteRecoPi0, bool CCnue) {
+
+  (*erec) += (*par) * sqrteRecoPi0 * eRecoPi0;
+
+  //if true CC nue AND reco nue event
+  if (CCnue)
+  {
+    (*erec) += (*par) * sqrtErecLep * erecLep;
+  }
+ 
+}
+
+// Electromagnetic Shower Energy Scale Inverse Sqrt
+inline void EMEScaleInvSqrtND(const double * par, double * erec, double eRecoPi0, double erecLep, double invSqrtErecLep, double invSqrteRecoPi0, bool CCnue) {
+
+  (*erec) += (*par) * invSqrteRecoPi0 * eRecoPi0;
+
+  //if true CC nue AND reco nue event
+  if (CCnue)
+  {
+    (*erec) += (*par) * invSqrtErecLep * erecLep;
+  }
+ 
+}
+
+// ---------------------------------------------------------------
+// Resolution Uncertainties
+// ---------------------------------------------------------------
+ 
+// ---------------------------------------------------------------
+// CHARGED HADRONS
+// ---------------------------------------------------------------
+inline void HadResND(const double * par, double * erec, double eRecoP, double eRecoPip, double eRecoPim, double eP, double ePip, double ePim) {
+
+  // Reco Sum: Protons + Positive Pions + Negative Pions
+  double recoSum = eRecoP + eRecoPip + eRecoPim;
+
+  // True Sum: Protons + Positive Pions + Negative Pions
+  double trueSum = eP + ePip + ePim;
+
+  (*erec) += (*par) * (trueSum - recoSum);
+
+}
+
+// ---------------------------------------------------------------
+// Muons
+// ---------------------------------------------------------------
+inline void MuResND(const double * par, double * erec, double erecLep, double LepE, bool CCnumu) {
+
+  //if true CC numu AND reco numu event
+  if (CCnumu)
+  {
+    (*erec) += (*par) * (LepE - erecLep);
+  }
+
+}
+
+
+// ---------------------------------------------------------------
+// Neutron
+// ---------------------------------------------------------------
+inline void NResND(const double * par, double * erec, double eRecoN, double eN) {
+
+  (*erec) += (*par) * (eN - eRecoN);
+  
+}
+
+// ---------------------------------------------------------------
+// Electromagnetic Shower
+// ---------------------------------------------------------------
+
+inline void EMResND(const double * par, double * erec, double eRecoPi0, double ePi0, double erecLep, double LepE, bool CCnue) {
+
+  (*erec) += (*par) * (ePi0 - eRecoPi0);
+
+  //if true CC nue AND reco nue event
+  if (CCnue)
+  {
+    (*erec) += (*par) * (LepE - erecLep);
+  }
+ 
+}
+
+// ********************************
+// FD Detector Systematic Functions
+// ********************************
+
+// -------------------------------------------------------------------------
+// Global FD Energy Scale Systematics - Essentially Calibration Uncertainty
+// Don't shift muon energy since that isn't calculated calorimetrically
+// -------------------------------------------------------------------------
+
+
+// Total Energy Scale
+inline void TotalEScaleFD(const double * par, double * erec, double erecHad, double erecLep, bool NotCCnumu) {
+
+  (*erec) += (*par) * erecHad;
+
+  //if not true CC numu event AND reco nue event
+  if (NotCCnumu)
+  {
+    (*erec) += (*par) * erecLep;
+  }
+
+}
+
+// Total Energy Scale Sqrt
+inline void TotalEScaleSqrtFD(const double * par, double * erec, double erecHad, double erecLep, double sqrtErecHad, double sqrtErecLep, bool NotCCnumu) {
+
+  (*erec) += (*par) * sqrtErecHad * erecHad ;
+
+  //if not true CC numu AND reco nue event
+  if (NotCCnumu)
+  {
+    (*erec) += (*par) * sqrtErecLep * erecLep;
+  }
+
+}
+
+// Total Energy Scale Inverse Sqrt
+inline void TotalEScaleInvSqrtFD(const double * par, double * erec, double erecHad, double erecLep, double invSqrtErecHad, double invSqrtErecLep, bool NotCCnumu) {
+
+  (*erec) += (*par) * invSqrtErecHad * erecHad ;
+
+  //if not true CC numu AND reco nue event
+  if (NotCCnumu)
+  {
+    (*erec) += (*par) * invSqrtErecLep * erecLep;
+  }
+
+}
+
+// ---------------------------------------------------------------
+// Particle-Specific Uncertainties - Essentially Particle Response
+// ---------------------------------------------------------------
+
+
+// ---------------------------------------------------------------
+// CHARGED HADRONS
+// ---------------------------------------------------------------
+
+
+// Charged Hadron Energy Scale 
+inline void HadEScaleFD(const double * par, double * erec, double sumEhad) {
+
+  // Protons + Positive Pions + Negative Pions
+  (*erec) += (*par) * sumEhad;
+  
+}
+
+// Charged Hadron Energy Scale Sqrt
+inline void HadEScaleSqrtFD(const double * par, double * erec, double sumEhad, double sqrtSumEhad) {
+
+  // Protons + Positive Pions + Negative Pions
+  (*erec) += (*par) * sqrtSumEhad * sumEhad;
+  
+}
+
+// Charged Hadron Energy Scale Inv Sqrt
+inline void HadEScaleInvSqrtFD(const double * par, double * erec, double sumEhad, double invSqrtSumEhad) {
+
+  // Protons + Positive Pions + Negative Pions
+  (*erec) += (*par) * invSqrtSumEhad * sumEhad;
+  
+}
+
+
+// ---------------------------------------------------------------
+// Muons
+// ---------------------------------------------------------------
+
+
+// Muon Energy Scale
+inline void MuEScaleFD(const double * par, double * erec, double erecLep, bool CCnumu) {
+
+  //if true CC numu AND reco numu event
+  if (CCnumu)
+  {
+    (*erec) += (*par) * erecLep;
+  }
+  
+}
+
+// Muon Energy Scale Sqrt
+inline void MuEScaleSqrtFD(const double * par, double * erec, double erecLep, double sqrtErecLep, bool CCnumu) {
+
+  //if true CC numu AND reco numu event
+  if (CCnumu)
+  {
+    (*erec) += (*par) * sqrtErecLep * erecLep;
+  }
+  
+}
+
+// Muon Energy Scale Inverse Sqrt
+inline void MuEScaleInvSqrtFD(const double * par, double * erec, double erecLep, double invSqrtErecLep, bool CCnumu) {
+
+  //if true CC numu AND reco numu event
+  if (CCnumu)
+  {
+    (*erec) += (*par) * invSqrtErecLep * erecLep;
   }
   
 }
@@ -199,16 +454,16 @@ inline void NEScaleFD(const double * par, double * erec, double eRecoN) {
 }
 
 // Neutron Energy Scale Sqrt
-inline void NEScaleSqrtFD(const double * par, double * erec, double eRecoN) {
+inline void NEScaleSqrtFD(const double * par, double * erec, double eRecoN, double sqrteRecoN) {
 
-  (*erec) += (*par) * pow(eRecoN, 0.5) * eRecoN;
+  (*erec) += (*par) * sqrteRecoN * eRecoN;
   
 }
 
 // Neutron Energy Scale Inverse Sqrt
-inline void NEScaleInvSqrtFD(const double * par, double * erec, double eRecoN) {
+inline void NEScaleInvSqrtFD(const double * par, double * erec, double eRecoN, double invSqrteRecoN) {
 
-  (*erec) += (*par) * pow(eRecoN+0.1, -0.5) * eRecoN;
+  (*erec) += (*par) * invSqrteRecoN * eRecoN;
   
 }
 
@@ -218,12 +473,12 @@ inline void NEScaleInvSqrtFD(const double * par, double * erec, double eRecoN) {
 
 
 // Electromagnetic Shower Energy Scale
-inline void EMEScaleFD(const double * par, double * erec, double eRecoPi0, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void EMEScaleFD(const double * par, double * erec, double eRecoPi0, double erecLep, bool CCnue) {
 
   (*erec) += (*par) * eRecoPi0;
 
   //if true CC nue AND reco nue event
-  if ( isCC==1 && abs(nuPDG) == 12 && nutype == 1 )
+  if (CCnue)
   {
     (*erec) += (*par) * erecLep;
   }
@@ -231,27 +486,27 @@ inline void EMEScaleFD(const double * par, double * erec, double eRecoPi0, doubl
 }
 
 // Electromagnetic Shower Energy Scale Sqrt
-inline void EMEScaleSqrtFD(const double * par, double * erec, double eRecoPi0, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void EMEScaleSqrtFD(const double * par, double * erec, double eRecoPi0, double erecLep, double sqrtErecLep, double sqrteRecoPi0, bool CCnue) {
 
-  (*erec) += (*par) * pow(eRecoPi0, 0.5) * eRecoPi0;
+  (*erec) += (*par) * sqrteRecoPi0 * eRecoPi0;
 
   //if true CC nue AND reco nue event
-  if ( isCC==1 && abs(nuPDG) == 12 && nutype == 1 )
+  if (CCnue)
   {
-    (*erec) += (*par) * pow(erecLep, 0.5) * erecLep;
+    (*erec) += (*par) * sqrtErecLep * erecLep;
   }
  
 }
 
 // Electromagnetic Shower Energy Scale Inverse Sqrt
-inline void EMEScaleInvSqrtFD(const double * par, double * erec, double eRecoPi0, double erecLep, int isCC, int nuPDG, int nutype) {
+inline void EMEScaleInvSqrtFD(const double * par, double * erec, double eRecoPi0, double erecLep, double invSqrtErecLep, double invSqrteRecoPi0, bool CCnue) {
 
-  (*erec) += (*par) * pow(eRecoPi0+0.1, -0.5) * eRecoPi0;
+  (*erec) += (*par) * invSqrteRecoPi0 * eRecoPi0;
 
   //if true CC nue AND reco nue event
-  if ( isCC==1 && abs(nuPDG) == 12 && nutype == 1 )
+  if (CCnue)
   {
-    (*erec) += (*par) * pow(erecLep+0.1, -0.5) * erecLep;
+    (*erec) += (*par) * invSqrtErecLep * erecLep;
   }
  
 }
@@ -278,10 +533,10 @@ inline void HadResFD(const double * par, double * erec, double eRecoP, double eR
 // ---------------------------------------------------------------
 // Muons
 // ---------------------------------------------------------------
-inline void MuResFD(const double * par, double * erec, double erecLep, double LepE, int isCC, int nuPDG, int nutype) {
+inline void MuResFD(const double * par, double * erec, double erecLep, double LepE, bool CCnumu) {
 
   //if true CC numu AND reco numu event
-  if ( isCC==1 && abs(nuPDG) == 14 && nutype == 2 )
+  if (CCnumu)
   {
     (*erec) += (*par) * (LepE - erecLep);
   }
@@ -302,18 +557,35 @@ inline void NResFD(const double * par, double * erec, double eRecoN, double eN) 
 // Electromagnetic Shower
 // ---------------------------------------------------------------
 
-inline void EMResFD(const double * par, double * erec, double eRecoPi0, double ePi0, double erecLep, double LepE, int isCC, int nuPDG, int nutype) {
+inline void EMResFD(const double * par, double * erec, double eRecoPi0, double ePi0, double erecLep, double LepE, bool CCnue) {
 
   (*erec) += (*par) * (ePi0 - eRecoPi0);
 
   //if true CC nue AND reco nue event
-  if ( isCC==1 && abs(nuPDG) == 12 && nutype == 1 )
+  if (CCnue)
   {
     (*erec) += (*par) * (LepE - erecLep);
   }
  
 }
 
+// ---------------------------------------------------------------
+// FD Reconstruction Uncertainties - Shift on CVN Scores
+// ---------------------------------------------------------------
+
+//CVN Numu
+inline void CVNNumuFD(const double * par, double * cvnnumu) {
+
+  (*cvnnumu) += (*par);
+
+}
+
+//CVN Nue
+inline void CVNNueFD(const double * par, double * cvnnue) {
+
+  (*cvnnue) += (*par);
+
+}
 
 // ***************************
 // Struct to describe the GENIE interaction modes that will be used during the fit

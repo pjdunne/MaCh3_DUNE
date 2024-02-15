@@ -26,7 +26,7 @@ if len(sys.argv) != 3:
 tree = ET.parse(sys.argv[1])
 fromxml = tree.getroot()
 
-maxelements=300
+maxelements=320
 nummodes=12
 
 

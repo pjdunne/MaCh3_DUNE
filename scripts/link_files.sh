@@ -7,11 +7,14 @@
 MACH3DIR=`pwd`
 FILESDIR=/vols/dune/ljw20/
 
+#PATH to /cvmfs where files should live soon!
+#FILESDIR=/cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/
+
 if [ ! -d "$MACH3DIR/inputs/DUNE_CAF_files" ]
 then
   mkdir $MACH3DIR/inputs/DUNE_CAF_files
 fi
-ln -sf ${FILESDIR}/DUNE_2021_FD_CAFs/*root inputs/DUNE_CAF_files
+ln -sf ${FILESDIR}/DUNE_2023_FD_CAFs/*root inputs/DUNE_CAF_files
 
 
 
@@ -25,7 +28,7 @@ if [ ! -d "$MACH3DIR/inputs/DUNE_ND_CAF_files" ]
 then
   mkdir $MACH3DIR/inputs/DUNE_ND_CAF_files
 fi
-ln -sf ${FILESDIR}/DUNE_2023_ND_CAFs_FV_CCINC/*root inputs/DUNE_ND_CAF_files
+ln -sf ${FILESDIR}/DUNE_2023_ND_CAFs_FV_CCINC_Q/*root inputs/DUNE_ND_CAF_files
 
 
 
@@ -33,4 +36,4 @@ if [ ! -d "$MACH3DIR/inputs/DUNE_ND_spline_files" ]
 then
   mkdir $MACH3DIR/inputs/DUNE_ND_spline_files
 fi
-ln -sf ${FILESDIR}/DUNE_2023_ND_splines_temp_new/*root inputs/DUNE_ND_spline_files
+ln -sf ${FILESDIR}/DUNE_2023_ND_splines/*root inputs/DUNE_ND_spline_files
