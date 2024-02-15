@@ -9,8 +9,6 @@
 #export MACH3_DATA=/home/cwret/P6Data
 #export MACH3_MC=/home/cwret/P6MC
 
-export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/src:$PATH
-export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/_deps/mach3-build/yaml_test:$PATH
 #################################################################
 
 if [[ $HOSTNAME == *gpu.rl.ac.uk ]]; then
