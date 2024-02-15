@@ -7,7 +7,7 @@
 Dependencies
 
 - CMake (version > 3.8). 
-- MaCh3 Core tag: DUNECore2024 (To be used until the core version currently being developped gets integrated with MaCh3 DUNE
+- MaCh3 Core tag: DUNECore2024 (To be used until the core version currently being developped gets integrated with MaCh3 DUNE)
 - ROOT (currently tested on 6.18)
 
 Building:
