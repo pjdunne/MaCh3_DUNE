@@ -43,8 +43,7 @@ If you want to simultaneously develop both the MaCh3 core code and the MaCh3 DUN
 $ -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
 ~~~~~~~~~~~~~~
 
-this is overrule the CPMFindPackage command in the CMakeList.txt and will tell CPM to build that instead.
-As already described this is the default way to build for now. Eventually we won't need this and CPM will find the tag we give it in the CMakeList
+This will overrule the CPMFindPackage command in the CMakeList.txt and will tell CPM to build that instead.
 
 ###################################
 # Event Rates ######
@@ -77,7 +76,7 @@ We are also getting the inputs placed on CVMFS and will eventually live here:
 /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
 ~~~~~~~~~~~~~~
 
-Current (November 2022) event rates using DUNE TDR inputs are below. These are made using xsec systematics at their prior central value. Oscillation parameter values used here are:
+Current (Feburary 2024) FD event rates using DUNE FD TDR inputs are below (ND is still under-development). These are made using xsec systematics at their prior central value. Oscillation parameter values used here are:
 
 sin2th12 = 0.307
 
