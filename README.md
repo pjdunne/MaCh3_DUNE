@@ -7,7 +7,7 @@
 Dependencies
 
 - CMake (version > 3.8). 
-- MaCh3 Core tag: v1.0.1-alpha
+- MaCh3 Core tag: DUNECore2024 (To be used until the core version currently being developped gets integrated with MaCh3 DUNE
 - ROOT (currently tested on 6.18)
 
 Building:
@@ -16,17 +16,6 @@ Building:
 $ mkdir MaCh3_DUNE
 $ git clone git@github.com:DUNE/MaCh3_DUNE.git MaCh3_DUNE
 $ cd MaCh3_DUNE
-~~~~~~~~~~~~~~
-
-Currently need to first checkout a tag of the core code and set it up manually. When the repo is public CPM will do this for you but for now we'll do it this way.
-You can build core whereever, you'll just need to make sure that CPM_MACH3_SOURCE is set to it correctly later.
-
-~~~~~~~~~~~~~~
-$ mkdir MaCh3_core
-$ git clone git@github.com:mach3-software/MaCh3.git MaCh3_core
-$ cd MaCh3_core
-$ git checkout tags/v1.0.1-alpha
-$ cd ../
 ~~~~~~~~~~~~~~
 
 Now setup some dependencies and then actually build MaCh3_DUNE
@@ -41,7 +30,7 @@ $ cd build
 Optional flags are described briefly below, options are shown grouped by square brackets and delimited by vertical lines. Default is on the left.
 
 ~~~~~~~~~~~~~~
-$ cmake .. -DCPU_ONLY=[OFF|ON] -DUSE_PROB3=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples -DCPM_MaCh3_SOURCE=/path/to/MaCh3_core
+$ cmake .. -DCPU_ONLY=[OFF|ON] -DUSE_PROB3=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples
 $ make
 ~~~~~~~~~~~~~~
 
@@ -61,7 +50,32 @@ As already described this is the default way to build for now. Eventually we won
 # Event Rates ######
 ###################################
 
-Once you've got setup you'll then need to setup some symlinks to point to your MC and spline files. You can do this by modifying scripts/link_files.sh script. 
+Once you've got setup you'll then need to setup some symlinks to point to your MC and spline files. You can do this by modifying scripts/link_files.sh script. You'll need to change the FILESDIR variable to point to the relevant folder on your machine. The places these files currently live are listed here:
+
+Imperial College London lx:
+~~~~~~~~~~~~~~
+/vols/dune/ljw20/
+~~~~~~~~~~~~~~
+
+FNAL cluster:
+~~~~~~~~~~~~~~
+/dune/data/users/lwarsame
+~~~~~~~~~~~~~~
+
+ComputeCanada Cedar:
+~~~~~~~~~~~~~~
+/scratch/liban
+~~~~~~~~~~~~~~
+
+NERSC Perlmutter:
+~~~~~~~~~~~~~~
+/pscratch/sd/l/lwarsame
+~~~~~~~~~~~~~~
+
+We are also getting the inputs placed on CVMFS and will eventually live here:
+~~~~~~~~~~~~~~
+/cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
+~~~~~~~~~~~~~~
 
 Current (November 2022) event rates using DUNE TDR inputs are below. These are made using xsec systematics at their prior central value. Oscillation parameter values used here are:
 
