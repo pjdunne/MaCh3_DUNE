@@ -162,7 +162,7 @@ void samplePDFDUNEBaseND::init(double pot, std::string samplecfgfile, covariance
   n_res_nd_pos = -999;
   em_res_nd_pos = -999;
 
-
+  /*
   nNDDetectorSystPointers = funcParsIndex.size();
   std::cout << "nNDDetectorSystPointers = " << nNDDetectorSystPointers << std::endl;
   NDDetectorSystPointers = std::vector<const double*>(nNDDetectorSystPointers);
@@ -270,6 +270,7 @@ void samplePDFDUNEBaseND::init(double pot, std::string samplecfgfile, covariance
 	  throw;
 	}
   }
+*/
 
   std::cout << "Now setting up Splines" << std::endl;
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
@@ -358,6 +359,8 @@ void samplePDFDUNEBaseND::setupDUNEMC(const char *sampleFile, dunendmc_base *dun
   _data->SetBranchAddress("mode",&_mode);
   _data->SetBranchStatus("isCC", 1);
   _data->SetBranchAddress("isCC", &_isCC);
+  _data->SetBranchStatus("reco_q", 1);
+  _data->SetBranchAddress("reco_q", &_reco_q);
   _data->SetBranchStatus("nuPDGunosc", 1);
   _data->SetBranchAddress("nuPDGunosc", &_nuPDGunosc);
   _data->SetBranchStatus("nuPDG", 1);
@@ -410,7 +413,6 @@ void samplePDFDUNEBaseND::setupDUNEMC(const char *sampleFile, dunendmc_base *dun
     duneobj->norm_s = (1e21/1.905e21);
   }
 
-  //x10 since we're using 1/10 the MC
   duneobj->pot_s = (pot)/1e21;
 
   //LW - eventually add norm bins to CAFs
@@ -438,6 +440,7 @@ void samplePDFDUNEBaseND::setupDUNEMC(const char *sampleFile, dunendmc_base *dun
   duneobj->flux_w = new float[duneobj->nEvents];
   duneobj->xsec_w = new float[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
+  duneobj->rw_reco_q = new int[duneobj->nEvents];
   duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
   duneobj->rw_berpaacvwgt = new float[duneobj->nEvents]; 
@@ -486,6 +489,7 @@ void samplePDFDUNEBaseND::setupDUNEMC(const char *sampleFile, dunendmc_base *dun
       duneobj->rw_etru[i] = (float)_ev; // in GeV
       duneobj->rw_theta[i] = (float)_LepNuAngle;
       duneobj->rw_isCC[i] = _isCC;
+      duneobj->rw_reco_q[i] = _reco_q;
       duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
       duneobj->rw_nuPDG[i] = _nuPDG;
       duneobj->rw_berpaacvwgt[i] = (float)_BeRPA_cvwgt;
@@ -534,6 +538,12 @@ double samplePDFDUNEBaseND::ReturnKinematicParameter(std::string KinematicParame
    case kTrueNeutrinoEnergy:
 	 KinematicValue = dunendmcSamples[iSample].rw_etru[iEvent]; 
 	 break;
+   case kIsCC:
+	 KinematicValue = dunendmcSamples[iSample].rw_isCC[iEvent];
+	   break;
+   case kRecoQ:
+	 KinematicValue = dunendmcSamples[iSample].rw_reco_q[iEvent];
+	   break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
 	 throw;
@@ -549,6 +559,7 @@ void samplePDFDUNEBaseND::setupFDMC(dunendmc_base *duneobj, fdmc_base *fdobj, co
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
+  fdobj->SampleDetID = SampleDetID;
   fdobj->x_var = new float*[fdobj->nEvents];
   fdobj->y_var = new float*[fdobj->nEvents];
   fdobj->enu_s_bin = new unsigned int[fdobj->nEvents];
@@ -596,7 +607,6 @@ void samplePDFDUNEBaseND::setupFDMC(dunendmc_base *duneobj, fdmc_base *fdobj, co
 	fdobj->osc_w[iEvent] = 1.0;
 	fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
 	fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
-	fdobj->SampleDetID = SampleDetID;
 
 	//ETA - this is where the variables that you want to bin your samples in are defined
 	//If you want to bin in different variables this is where you put it for now
@@ -663,6 +673,7 @@ void samplePDFDUNEBaseND::setupSplines(fdmc_base *fdobj, const char *splineFile,
 void samplePDFDUNEBaseND::applyShifts(int iSample, int iEvent)
 {
   // reset erec back to original value
+  /*
   dunendmcSamples[iSample].rw_erec_shifted[iEvent] = dunendmcSamples[iSample].rw_erec[iEvent];
 
   //Calculate values needed
@@ -721,7 +732,125 @@ void samplePDFDUNEBaseND::applyShifts(int iSample, int iEvent)
   NResND(NDDetectorSystPointers[17], &dunendmcSamples[iSample].rw_erec_shifted[iEvent], dunendmcSamples[iSample].rw_eRecoN[iEvent], dunendmcSamples[iSample].rw_eN[iEvent]);
 
   EMResND(NDDetectorSystPointers[18], &dunendmcSamples[iSample].rw_erec_shifted[iEvent], dunendmcSamples[iSample].rw_eRecoPi0[iEvent], dunendmcSamples[iSample].rw_ePi0[iEvent], dunendmcSamples[iSample].rw_erec_lep[iEvent], dunendmcSamples[iSample].rw_LepE[iEvent], CCnue);
+*/
+}
 
+// Set the covariance matrix for this class
+void samplePDFDUNEBaseND::setNDCovMatrix(TMatrixDSym *cov) {
+  if (cov == NULL) {
+    std::cerr << "Could not find ND Detector covariance matrix you provided to setCovMatrix" << std::endl;
+    std::cerr << __FILE__ << ":" << __LINE__ << std::endl;
+    throw;
+  }
+
+  //Set cov
+  NDCovMatrix = cov;
+
+  int nXBins = XBinEdges.size()-1;
+  int nYBins = YBinEdges.size()-1;
+
+  int xBin;
+  int yBin;
+
+
+  int covSize = nXBins*nYBins;
+  
+  double FlatCV[covSize];
+  int iter = 0;
+
+  // 2D -> 1D Array
+  for (xBin = 0; xBin < nXBins; xBin++) 
+  {
+    for (yBin = 0; yBin < nYBins; yBin++) 
+    {
+        double CV = samplePDFFD_data[yBin][xBin];
+        FlatCV[iter] = CV;
+
+        if(CV>0) (*NDCovMatrix)(iter,iter) += 1/CV;
+
+	    iter++;
+	}
+  }
+
+  NDInvertCovMatrix = new double*[covSize]();
+  // Set the defaults to true
+  for(int i = 0; i < covSize; i++)
+  {
+    NDInvertCovMatrix[i] = new double[covSize]();
+    for (int j = 0; j < covSize; j++)
+    {
+        NDInvertCovMatrix[i][j] = 0.;
+    }
+  }
+
+  NDInvCovMatrix=(TMatrixDSym*)NDCovMatrix->Clone();
+  NDInvCovMatrix->Invert();
+
+ 
+  //Scale back to inverse absolute cov and use standard double
+  for (int i = 0; i < covSize; i++) {
+    for (int j = 0; j < covSize; ++j) {
+      const double f = FlatCV[i] * FlatCV[j];
+      if(f != 0) NDInvertCovMatrix[i][j] = (*NDInvCovMatrix)(i,j)/f;
+      else NDInvertCovMatrix[i][j] = 0.;
+	}
+  }
+
+}
+
+//New likelihood calculation for ND samples using detector covariance matrix
+
+double samplePDFDUNEBaseND::GetLikelihood()
+{
+  if (samplePDFFD_data == NULL) {
+      std::cerr << "data sample is empty!" << std::endl;
+      return -1;
+  }
+
+  int nXBins = XBinEdges.size()-1;
+  int nYBins = YBinEdges.size()-1;
+
+  int xBin;
+  int yBin;
+
+  int iter = 0;
+
+  int covSize = nXBins*nYBins;
+
+  double FlatData[covSize];
+  double FlatMCPred[covSize];
+
+  //2D -> 1D 
+  for (xBin = 0; xBin < nXBins; xBin++) 
+  {
+    for (yBin = 0; yBin < nYBins; yBin++) 
+    {
+        double MCPred = samplePDFFD_array[yBin][xBin];
+        FlatMCPred[iter] = MCPred;
+
+        double DataVal = samplePDFFD_data[yBin][xBin];
+        FlatData[iter] = DataVal;
+	    
+		iter++;
+    }
+  }
+
+
+  double negLogL = 0.;
+#ifdef MULTITHREAD
+#pragma omp parallel for reduction(+:negLogL)
+#endif
+
+  for (int i = 0; i < covSize; i++) {
+    for (int j = 0; j <= i; ++j) {
+        //KS: Since matrix is symetric we can calcaute non daigonal elements only once and multiply by 2, can bring up to factor speed decrease.   
+        int scale = 1;
+        if(i != j) scale = 2;
+        negLogL += scale * 0.5*(FlatData[i] - FlatMCPred[i])*(FlatData[j] - FlatMCPred[j])*NDInvertCovMatrix[i][j];
+      }
+  }
+
+  return negLogL;
 }
 
 //This is currently here just for show. We'll implement functional parameters soon!

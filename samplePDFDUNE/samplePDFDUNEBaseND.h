@@ -90,6 +90,7 @@ struct dunendmc_base {
   float *rw_vtx_x;
   float *rw_vtx_y;
   float *rw_vtx_z;
+  int *rw_reco_q;
   float dummy_y;
 
   float *reco_numu;
@@ -109,6 +110,7 @@ struct dunendmc_base {
   float *energyscale_w;
   //float *relRPA_w;
 
+
 };
 
 class samplePDFDUNEBaseND : virtual public samplePDFFDBase
@@ -121,6 +123,9 @@ public:
 
   void setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype, int signal);
 
+  double GetLikelihood();
+
+  void setNDCovMatrix(TMatrixDSym *cov);
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
   void setupDUNEMC(const char *sampleInputFile, dunendmc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
@@ -141,7 +146,6 @@ public:
   //double ReturnKinematicParameter (KinematicTypes Var, int i, int j);
   double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
-
 
   //Likelihood
   double getCovLikelihood();
@@ -199,6 +203,7 @@ public:
   double _vtx_z;
   double _LepTheta;
   double _Q2;
+  int _reco_q;
 
 
 
@@ -257,6 +262,18 @@ public:
   double n_res_nd_pos;
   double em_res_nd_pos;
 
+  // The ND detector covariance matrix
+  TMatrixDSym *NDCovMatrix;
+  
+  //Temp ND detector covariance with added stats error
+  TMatrixDSym *tempNDCovMatrix;
+
+  // The inverse ND detector covariance matrix
+  TMatrixDSym *NDInvCovMatrix;
+
+
+  double **NDInvertCovMatrix;
+
   std::vector<const double*> NDDetectorSystPointers;
   int nNDDetectorSystPointers;
 
@@ -273,7 +290,6 @@ public:
   int nSplineParams;
   std::vector<int> splineParsIndex;
   std::vector<std::string> splineParsNames;
-
 
  private:
   void calcXsecNormsBins(dunendmc_base* dunendmc);
