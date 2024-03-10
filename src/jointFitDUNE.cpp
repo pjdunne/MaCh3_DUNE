@@ -36,6 +36,7 @@ int main(int argc, char **argv)
   std::string  XsecMatrixName = fitMan->raw()["General"]["Systematics"]["XsecCovName"].as<std::string>();
   std::string  OscMatrixFile = fitMan->raw()["General"]["Systematics"]["OscCovFile"].as<std::string>(); 
   std::string  OscMatrixName = fitMan->raw()["General"]["Systematics"]["OscCovName"].as<std::string>();
+  std::string  NDMatrixFile = fitMan->raw()["General"]["Systematics"]["NDCovFile"].as<std::string>(); 
   double FDPOT = fitMan->raw()["General"]["FDPOT"].as<double>(); 
   double NDPOT = fitMan->raw()["General"]["NDPOT"].as<double>(); 
   
@@ -47,6 +48,10 @@ int main(int argc, char **argv)
 
   xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str());
 
+  TFile *NDCovFile = new TFile(NDMatrixFile.c_str(), "READ");
+ 
+  TMatrixDSym *ND_FHC_covMatrix = (TMatrixDSym*)(NDCovFile->Get("nd_fhc_frac_cov"));
+  TMatrixDSym *ND_RHC_covMatrix = (TMatrixDSym*)(NDCovFile->Get("nd_rhc_frac_cov"));
 
   // Setting flat priors based on XSECPARAMFLAT list in configuration file 
 
@@ -92,6 +97,7 @@ int main(int argc, char **argv)
 
 
   std::vector<samplePDFFDBase*> SamplePDFs;
+  std::vector<samplePDFDUNEBaseND*> NDSamplePDFs;
   
   if(addFD) { 
     samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
@@ -107,8 +113,10 @@ int main(int argc, char **argv)
   if(addND) {
     samplePDFDUNEBaseND * numu_cc_nd_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_FHC_CCnumuselec.yaml", xsec);
     SamplePDFs.push_back(numu_cc_nd_pdf);
+    NDSamplePDFs.push_back(numu_cc_nd_pdf);
     samplePDFDUNEBaseND * numubar_cc_nd_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_RHC_CCnumuselec.yaml", xsec);
     SamplePDFs.push_back(numubar_cc_nd_pdf);
+    NDSamplePDFs.push_back(numubar_cc_nd_pdf);
   }
 
 
@@ -177,7 +185,7 @@ int main(int argc, char **argv)
 
     std::map<TString, double>::const_iterator itt;
 
-    // set the oscillation parameters
+    /* set the oscillation parameters
     itt = init_pars.find("sin2th_12");
     oscparstarts.push_back(itt->second);
     itt = init_pars.find("sin2th_23");
@@ -189,7 +197,15 @@ int main(int argc, char **argv)
     itt = init_pars.find("delm2_23");
     oscparstarts.push_back(itt->second);
     itt = init_pars.find("delta_cp");
-    oscparstarts.push_back(itt->second);
+    oscparstarts.push_back(itt->second); */
+
+    // set the oscillation parameters
+    oscparstarts.push_back(branch_vals[295]);
+    oscparstarts.push_back(branch_vals[296]);
+    oscparstarts.push_back(branch_vals[297]);
+    oscparstarts.push_back(branch_vals[298]);
+    oscparstarts.push_back(branch_vals[299]);
+    oscparstarts.push_back(branch_vals[300]);
 
     lastStep = step_val;
 
@@ -258,6 +274,12 @@ int main(int argc, char **argv)
 
   }
 
+  // Set ND detector covariance matrix
+  if(addND) {
+    NDSamplePDFs[0] -> setNDCovMatrix(ND_FHC_covMatrix);
+    NDSamplePDFs[1] -> setNDCovMatrix(ND_RHC_covMatrix);
+  }
+
   //###########################################################################################################
 
   // Back to actual nominal for fit
@@ -266,11 +288,11 @@ int main(int argc, char **argv)
   //
   
   if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+    osc->setParameters(oscparstarts);
+    osc->acceptStep();
     if(parstarts.find("xsec")!=parstarts.end()) {
       xsec->setParameters(parstarts["xsec"]);
       xsec->acceptStep();
-      osc->setParameters(oscparstarts);
-      osc->acceptStep();
     }
     else {xsec->setParameters();}
   }
