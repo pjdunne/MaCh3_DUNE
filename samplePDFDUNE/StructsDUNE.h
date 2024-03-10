@@ -45,6 +45,10 @@ enum KinematicTypes {
   kTrueXPos = 6,
   kTrueYPos = 7,
   kTrueZPos = 8,
+  kCVNNumu = 9,
+  kCVNNue = 10,
+  kIsCC = 11,
+  kRecoQ = 12,
   kNKinematicParams
 };
 
@@ -57,6 +61,10 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
   if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
   if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
+  if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
+  if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
+  if (KinematicParameterStr.find("IsCC") != std::string::npos) {return kIsCC;}
+  if (KinematicParameterStr.find("RecoQ") != std::string::npos) {return kRecoQ;}
 
   return kNKinematicParams; 
 }
@@ -559,6 +567,24 @@ inline void EMResFD(const double * par, float * erec, float eRecoPi0, float ePi0
     (*erec) += (*par) * (LepE - erecLep);
   }
  
+}
+
+// ---------------------------------------------------------------
+// FD Reconstruction Uncertainties - Shift on CVN Scores
+// ---------------------------------------------------------------
+
+//CVN Numu
+inline void CVNNumuFD(const double * par, float * cvnnumu) {
+
+  (*cvnnumu) += (*par);
+
+}
+
+//CVN Nue
+inline void CVNNueFD(const double * par, float * cvnnue) {
+
+  (*cvnnue) += (*par);
+
 }
 
 // ***************************

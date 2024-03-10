@@ -161,6 +161,8 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   mu_res_fd_pos = -999;
   n_res_fd_pos = -999;
   em_res_fd_pos = -999;
+  cvn_numu_fd_pos = -999;
+  cvn_nue_fd_pos = -999;
 
   nFDDetectorSystPointers = funcParsIndex.size();
   FDDetectorSystPointers = std::vector<const double*>(nFDDetectorSystPointers);
@@ -262,6 +264,14 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 	else if (name == "EMResFD") {
 	  em_res_fd_pos = *it;
 	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_res_fd_pos);
+	}
+	else if (name == "CVNNumuFD") {
+	  cvn_numu_fd_pos = *it;
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(cvn_numu_fd_pos);
+	}
+	else if (name == "CVNNueFD") {
+	  cvn_nue_fd_pos = *it;
+	  FDDetectorSystPointers[func_it] = xsec_cov->retPointer(cvn_nue_fd_pos);
 	}
 
 	else { 
@@ -432,6 +442,8 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   // allocate memory for dunemc variables
   duneobj->rw_cvnnumu = new float[duneobj->nEvents];
   duneobj->rw_cvnnue = new float[duneobj->nEvents];
+  duneobj->rw_cvnnumu_shifted = new float[duneobj->nEvents];
+  duneobj->rw_cvnnue_shifted = new float[duneobj->nEvents];
   duneobj->rw_etru = new float[duneobj->nEvents];
   duneobj->rw_erec = new float[duneobj->nEvents];
   duneobj->rw_erec_shifted = new float[duneobj->nEvents];
@@ -484,8 +496,10 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
     {
       _data->GetEntry(i);
-      duneobj->rw_cvnnumu[i] = (float)_cvnnumu; 
+      duneobj->rw_cvnnumu[i] = (float)_cvnnumu;
       duneobj->rw_cvnnue[i] = (float)_cvnnue;
+      duneobj->rw_cvnnumu_shifted[i] = (float)_cvnnumu; 
+      duneobj->rw_cvnnue_shifted[i] = (float)_cvnnue;
       if (iselike) {
 	    duneobj->rw_erec[i] = (float)_erec_nue;
 	    duneobj->rw_erec_shifted[i] = (float)_erec_nue; 
@@ -562,6 +576,12 @@ double samplePDFDUNEBase::ReturnKinematicParameter(std::string KinematicParamete
    case kTrueZPos:
 	 KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
 	   break;
+   case kCVNNumu:
+	 KinematicValue = dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
+	   break;
+   case kCVNNue:
+	 KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
+	   break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
 	 throw;
@@ -577,6 +597,7 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
+  fdobj->SampleDetID = SampleDetID;
   fdobj->x_var = new float*[fdobj->nEvents];
   fdobj->y_var = new float*[fdobj->nEvents];
   fdobj->enu_s_bin = new unsigned int[fdobj->nEvents];
@@ -626,7 +647,6 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const 
 	fdobj->osc_w[iEvent] = 1.0;
 	fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
 	fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
-	fdobj->SampleDetID = SampleDetID;
 
 	//ETA - this is where the variables that you want to bin your samples in are defined
 	//If you want to bin in different variables this is where you put it for now
@@ -692,9 +712,15 @@ void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, i
 
 void samplePDFDUNEBase::applyShifts(int iSample, int iEvent)
 {
-
+  
   // reset erec back to original value
   dunemcSamples[iSample].rw_erec_shifted[iEvent] = dunemcSamples[iSample].rw_erec[iEvent];
+
+  // reset cvnnumu back to original value
+  dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent] = dunemcSamples[iSample].rw_cvnnumu[iEvent];
+
+  // reset cvnnue back to original value
+  dunemcSamples[iSample].rw_cvnnue_shifted[iEvent] = dunemcSamples[iSample].rw_cvnnue[iEvent];
 
   //Calculate values needed
   float sqrtErecHad =  sqrt(dunemcSamples[iSample].rw_erec_had[iEvent]);
@@ -753,6 +779,9 @@ void samplePDFDUNEBase::applyShifts(int iSample, int iEvent)
 
   EMResFD(FDDetectorSystPointers[18], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_eRecoPi0[iEvent], dunemcSamples[iSample].rw_ePi0[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], dunemcSamples[iSample].rw_LepE[iEvent], CCnue);
 
+  CVNNumuFD(FDDetectorSystPointers[19], &dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent]);
+
+  CVNNueFD(FDDetectorSystPointers[20], &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent]);
 }
 
 //This is currently here just for show. We'll implement functional parameters soon!

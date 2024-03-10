@@ -76,8 +76,12 @@ struct dunemc_base {
   float *rw_pdf_bin_2d; //global bin in the PDF so we can do a faster fill2Dhist 
   float *rw_lower_erec_2d; // lower to check if Eb has moved the erec bin
   float *rw_upper_erec_2d; // upper to check if Eb has moved the erec bin
+
   float *rw_cvnnumu;
   float *rw_cvnnue;
+  float *rw_cvnnumu_shifted;
+  float *rw_cvnnue_shifted;
+
   float *rw_berpaacvwgt;
   int    *rw_isCC;
   int    *rw_nuPDGunosc;
@@ -265,6 +269,8 @@ public:
   double mu_res_fd_pos;
   double n_res_fd_pos;
   double em_res_fd_pos;
+  double cvn_numu_fd_pos;
+  double cvn_nue_fd_pos;
 
 
   std::vector<const double*> FDDetectorSystPointers;
