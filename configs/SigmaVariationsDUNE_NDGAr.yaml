@@ -1,7 +1,7 @@
 General:
   IncludeFD: true
   IncludeND: false
-  IncludeNDGAr: false
+  IncludeNDGAr: true
   FDPOT: 1.3628319e+23
   NDPOT: 1.1e+21
   #### Asimov A ####
@@ -9,12 +9,14 @@ General:
   # NuFit 4.0 NH ####
   #OscParams: [0.310, 0.582, 0.0224, 7.39e-5, 2.525e-3, -2.498]
   Systematics:
-    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2023.root"
+    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2023_NDGAr.root"
     XsecCovName: "xsec_cov"
     XsecStepScale: 0.1
-    XsecAtGen: false 
+    XsecAtGen: false
     OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
     OscCovName: "osc_cov"
     OscStepScale: 0.045
   Output:
-    FileName: "TestEventRates.root"
+    FileName: "TestSigmaVariations_NDGAr+FD.root"
+SigmaVariations:
+  EvalXsec: true

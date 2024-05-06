@@ -1,6 +1,6 @@
 General:
   IncludeFD: true
-  IncludeND: true
+  IncludeND: false
   FDPOT: 1.3628319e+23
   NDPOT: 1.1e+21
   #### Asimov A ####
@@ -8,7 +8,7 @@ General:
   # NuFit 4.0 NH ####
   OscParams: [0.310, 0.582, 0.0224, 7.39e-5, 2.525e-3, -2.498]
   Systematics:
-    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2023.root"
+    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2023_FDOnly.root"
     XsecCovName: "xsec_cov"
     XsecStepScale: 0.15
     XsecAtGen: false 

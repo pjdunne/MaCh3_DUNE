@@ -39,6 +39,12 @@ CPMFindPackage(
     GITHUB_REPOSITORY mach3-software/MaCh3
 )
 
+CPMFindPackage(
+    NAME duneanaobj
+    GITHUB_REPOSITORY "luketpickering/duneanaobj"
+    GIT_TAG "feature/Clingification_rebase"
+)
+
 #Compile and link options (Should be in experiment project but copied in case CORE is built alone) 
 add_compile_options(-g -O3 -Wextra -fopenmp)
 add_link_options(-fopenmp)
@@ -64,3 +70,5 @@ endif()
 add_subdirectory(splines)
 add_subdirectory(samplePDFDUNE)
 add_subdirectory(src)
+add_subdirectory(utils)
+

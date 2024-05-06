@@ -9,8 +9,13 @@
 #export MACH3_DATA=/home/cwret/P6Data
 #export MACH3_MC=/home/cwret/P6MC
 
-export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/src:$PATH
-export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/_deps/mach3-build/yaml_test:$PATH
+export PATH=/vols/dune/nk3717/MaCh3_refactortry/build/src:$PATH
+export PATH=/vols/dune/nk3717/MaCh3_refactortry/build/_deps/mach3-build/yaml_test:$PATH
+export PATH=/vols/dune/nk3717/MaCh3_refactortry/build/utils/:$PATH
+
+source scripts/link_files.sh
+#export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/src:$PATH
+#export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/_deps/mach3-build/yaml_test:$PATH
 #################################################################
 
 if [[ $HOSTNAME == *gpu.rl.ac.uk ]]; then
@@ -41,7 +46,7 @@ fi
 # MULTITHREAD=1 means MP is on, if environment variable doesn't exist it's off
 unset MULTITHREAD
 export MULTITHREAD=1
-export OMP_NUM_THREADS=1
+export OMP_NUM_THREADS=10
 
 # Automatically set CUDA for Emerald
 if [[ $HOSTNAME == *gpu.rl.ac.uk ]]; then

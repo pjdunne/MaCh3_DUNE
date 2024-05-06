@@ -14,6 +14,7 @@
 
 #include "samplePDFDUNE/samplePDFDUNEBase.h"
 #include "samplePDFDUNE/samplePDFDUNEBaseND.h"
+#include "samplePDFDUNE/samplePDFDUNEBaseNDGAr.h"
 #include "manager/manager.h"
 
 
@@ -115,8 +116,9 @@ int main(int argc, char * argv[]) {
 
   bool addFD = fitMan->raw()["General"]["IncludeFD"].as<bool>();
   bool addND = fitMan->raw()["General"]["IncludeND"].as<bool>();
+  bool addNDGAr = fitMan->raw()["General"]["IncludeNDGAr"].as<bool>();
 
-  if (!addFD && !addND) {std::cerr << "[ERROR:] You've chosen NOT to include FD or ND samples in the config file... you need to add something!" << std::endl; throw;}
+  if (!addFD && !addND && !addNDGAr) {std::cerr << "[ERROR:] You've chosen NOT to include FD or ND samples in the config file... you need to add something!" << std::endl; throw;}
 
 
   std::vector<samplePDFFDBase*> SamplePDFs;
@@ -138,6 +140,14 @@ int main(int argc, char * argv[]) {
     samplePDFDUNEBaseND * RHC_numuCCND_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_RHC_CCnumuselec.yaml", xsec);
     SamplePDFs.push_back(RHC_numuCCND_pdf);
   }
+
+  if(addNDGAr) {
+    samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec.yaml", xsec);
+    SamplePDFs.push_back(FHC_numuCCNDGAr_pdf);
+//    samplePDFDUNEBaseNDGAr * RHC_numuCCNDGAr_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneND_RHC_CCnumuselec.yaml", xsec);
+//    SamplePDFs.push_back(RHC_numuCCNDGAr_pdf);
+  }
+
 
   // Oscillated
   osc -> setParameters(oscpars);

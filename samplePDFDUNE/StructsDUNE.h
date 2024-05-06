@@ -663,6 +663,7 @@ inline int GENIEMode_ToMaCh3Mode(int GENIE_mode, int isCC) {
         ReturnMode = kMaCh3_CC_IMDAnnihalation; // Stick Single Kaon into above
         break;
       default:
+        std::cout<< "kMaCh3_nModes"<<kMaCh3_nModes<< " from " << GENIE_mode <<  std::endl;
         ReturnMode = kMaCh3_nModes; // Something else in MaCh3 (sand?)
         break;
     }
