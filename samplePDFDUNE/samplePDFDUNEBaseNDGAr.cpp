@@ -274,11 +274,11 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   // now fill the actual variables
   if (!IsRHC) 
   { 
-    duneobj->norm_s = (1e21/1.5e21);
+    duneobj->norm_s = 1.0;
   }
   else 
   {
-    duneobj->norm_s = (1e21/1.905e21);
+    duneobj->norm_s = 1.0;
   }
 
   //x10 since we're using 1/10 the MC
@@ -333,7 +333,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   //std::cout<<"sr->mc.nu[0].pdgorig: "<<(int)(sr->mc.nu[0].pdgorig)<<std::endl; 
 
   //FILL DUNE STRUCT
-  for (int i = 1; i < (duneobj->nEvents-100); ++i) // Loop through tree
+  for (int i = 0; i < (duneobj->nEvents); ++i) // Loop through tree
     {
      std:cout<< i<< std::endl;
      _data->GetEntry(i);
@@ -383,6 +383,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
     //!!possible cc1pi exception might need to be 11
     int mode= TMath::Abs(_mode);       
     std::cout<<"mode "<< mode<< "isCC " << _isCC<<std::endl;
+    std::cout << "Erec is " << duneobj->rw_erec[i] << std::endl;
+    std::cout << "Yrec is " << duneobj->rw_yrec[i] << std::endl;
     duneobj->mode[i]=GENIEMode_ToMaCh3Mode(mode, _isCC);
  
     duneobj->energyscale_w[i] = 1.0;
@@ -454,6 +456,7 @@ void samplePDFDUNEBaseNDGAr::setupFDMC(dunendgarmc_base *duneobj, fdmc_base *fdo
   fdobj->Target = new int*[fdobj->nEvents];
 
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
+        std::cout<<"NK: iEvent "<<iEvent<<std::endl;
 	fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
 	fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
 	fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
@@ -488,6 +491,7 @@ void samplePDFDUNEBaseNDGAr::setupFDMC(dunendgarmc_base *duneobj, fdmc_base *fdo
 		//This way we don't have to update both fdmc and skmc when we apply shifts
 		//to variables we're binning in
 		fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
+                std::cout<<"NK: In BinningOpt, fdobj->x_var[iEvent]"<<(fdobj->x_var[iEvent])<<"duneobj->rw_erec[iEvent]"<<duneobj->rw_erec[iEvent]<<std::endl;
 		fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
 		break;
 	  default:

@@ -14,6 +14,8 @@ export PATH=/vols/dune/nk3717/MaCh3_refactortry/build/_deps/mach3-build/yaml_tes
 export PATH=/vols/dune/nk3717/MaCh3_refactortry/build/utils/:$PATH
 
 source scripts/link_files.sh
+
+source setup_dune_env.sh
 #export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/src:$PATH
 #export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/_deps/mach3-build/yaml_test:$PATH
 #################################################################

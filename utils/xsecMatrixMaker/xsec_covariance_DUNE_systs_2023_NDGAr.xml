@@ -185,9 +185,9 @@ BeRPA_A : Has CV weights but still has a generated value of 0
 	<fd_mode>0 2 3 14 15 16</fd_mode>
   </parameter>
 
-  <parameter name="FrElas_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frelasn" nd_spline_name="frelasn" stepscale="0.02">
+<!--  <parameter name="FrElas_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frelasn" nd_spline_name="frelasn" stepscale="0.02">
 	<fd_mode>0 2 3 14 15 16</fd_mode>
-  </parameter>
+  </parameter> -->
 
   <parameter name="FrInel_N" nom="0.0" prior="0.0" lb="-4" ub="4" error="1.0" renorm="0" type="spline" splineind="0" detid="25" fd_spline_name="frineln" nd_spline_name="frineln" stepscale="0.05">
 	<fd_mode>0 2 3 14 15 16</fd_mode>

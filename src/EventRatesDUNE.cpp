@@ -206,8 +206,9 @@ int main(int argc, char * argv[]) {
 
 	SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
-	TH1D *sample_unosc = (TH1D*)SamplePDFs[sample_i] -> get1DHist() -> Clone(NameTString+"_unosc");
+	TH1D *sample_unosc = (TH1D*)SamplePDFs[sample_i] -> get2DHist() -> ProjectionX()-> Clone(NameTString+"_unosc");
 	unoscillated_hists.push_back(sample_unosc);
+	TH2D *sample_unosc_2d = (TH2D*)SamplePDFs[sample_i] -> get2DHist() -> Clone(NameTString+"_unosc_2d");
 
     canv->cd(1);
 	sample_unosc -> SetTitle(NameTString+"_unosc");
@@ -216,6 +217,8 @@ int main(int argc, char * argv[]) {
 
 	Outfile->cd();
 	sample_unosc->Write(NameTString+"_unosc");
+	
+	sample_unosc_2d->Write(NameTString+"_unosc_2d");
 
 	osc->setParameters(oscpars);
 	osc->acceptStep();
@@ -223,6 +226,7 @@ int main(int argc, char * argv[]) {
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
 	TH1D *sample_osc = (TH1D*)SamplePDFs[sample_i] -> get1DHist()->Clone(NameTString+"_osc");
 	oscillated_hists.push_back(sample_osc);
+
 
 	canv->cd(2);
 	sample_osc -> SetTitle(NameTString+"_osc");
