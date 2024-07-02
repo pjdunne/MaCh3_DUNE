@@ -115,20 +115,32 @@ void splinesDUNE::SetupSplines()
 
   TIter next(splinefile->GetListOfKeys());
   TKey *key;
+
+  // HW :: Maybe make this all configurable somewhere so this can be moved to core
+  TString spline_delimiter=".";
+
   while ((key = (TKey*)next())) {
 	TClass *cl = gROOT->GetClass(key->GetClassName());
 	if (!cl->InheritsFrom("TSpline3")) continue;
 
-	char* splinename=(char*)key->GetName();
+	TString splinename=(TString)key->GetName();
 	//std::cout << "Spline is " << splinename << std::endl;
-	char* syst;
+
+	// Split spline name into tokens
+	std::unique_ptr<TObjArray> tokens(splinename.Tokenize(spline_delimiter));
+	/*char* syst;
 	char* mode;
 	int etruebin;
-	int erecbin;
+	int erecbin;*/
 
-	char* tok= strtok(splinename,"_");//dev
-	tok = strtok (NULL, "_");//syst
-	syst = tok;
+
+	TString syst = ((TObjString*)(tokens->At(1)))->GetString();
+	TString mode = ((TObjString*)(tokens->At(2)))->GetString(); 
+
+	// Should be made a bit more flexible
+	int etruebin  = (((TObjString*)(tokens->At(4)))->GetString()).Atoi();
+	int erecbin  = (((TObjString*)(tokens->At(5)))->GetString()).Atoi();
+		
 
 	int systnum=-1;
 	for(unsigned isyst=0; isyst<systs.size(); isyst++){  // loop over systematics
@@ -159,9 +171,6 @@ void splinesDUNE::SetupSplines()
       throw;
 	}
 
-	tok = strtok (NULL, "_");//sp
-	etruebin = atoi(strtok (NULL, "_"));//x
-	erecbin = atoi(strtok (NULL, "_"));//y
 
 	TSpline3 *h = (TSpline3*)key->ReadObj();
 #if USE_SPLINE_FD == USE_TSpline3_FD
@@ -349,11 +358,16 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 
     //std::cout<< "Spline is " << key->GetName()<<std::endl; 
 
-    char* splinename=(char*)key->GetName();
-    char* syst;
-    char* tok= strtok(splinename,"_");//dev
-    tok = strtok (NULL, "_");//syst
-	syst=tok;
+
+    TString FullSplineName = (TString)key->GetName();
+    // First We split into binning and spline name
+    std::unique_ptr<TObjArray> tokens(FullSplineName.Tokenize("."));
+    TString syst = ((TObjString*)(tokens->At(1)))->GetString();
+    TString mode = ((TObjString*)(tokens->At(2)))->GetString();
+    //Skip 3	 
+    int etruebin  = (((TObjString*)(tokens->At(4)))->GetString()).Atoi();
+    int var1bin  = (((TObjString*)(tokens->At(5)))->GetString()).Atoi();
+    int var2bin  = (((TObjString*)(tokens->At(6)))->GetString()).Atoi();
     
 
     int systnum=-1;
@@ -371,7 +385,6 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
     }
     
     int modenum=-1;
-    char* mode = strtok (NULL, "_");//mode
     for(int imode = 0; imode<nUniqueModes; imode++){ // loop over modes
       if(strcmp(mode,(UniqueModeFarSplineNames[imode]).c_str())==0){
 	modenum=imode;
@@ -385,10 +398,6 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
       throw;
     }
     
-    tok = strtok (NULL, "_");//sp
-    int etruebin = atoi(strtok (NULL, "_"));//x
-    int var1bin = atoi(strtok (NULL, "_"));//y
-    int var2bin = atoi(strtok (NULL, "_"));//z
     
     TSpline3 *h = (TSpline3*)key->ReadObj();
 #if USE_SPLINE_FD == USE_TSpline3_FD
