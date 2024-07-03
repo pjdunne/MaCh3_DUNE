@@ -117,7 +117,7 @@ void splinesDUNE::SetupSplines()
   TKey *key;
 
   // HW :: Maybe make this all configurable somewhere so this can be moved to core
-  TString spline_delimiter=".";
+  TString spline_delimiter="_";
 
   while ((key = (TKey*)next())) {
 	TClass *cl = gROOT->GetClass(key->GetClassName());
@@ -157,11 +157,10 @@ void splinesDUNE::SetupSplines()
 	}	
 
 	int modenum=-1;
-	mode = strtok (NULL, "_");//mode
 	for(int imode = 0; imode<nUniqueModes; imode++){ // loop over modes
 	  if(strcmp(mode,(UniqueModeFarSplineNames[imode]).c_str())==0){
-		modenum=imode;
-		break;
+      modenum=imode;
+      break;
 	  }
 	}
 
@@ -361,7 +360,7 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 
     TString FullSplineName = (TString)key->GetName();
     // First We split into binning and spline name
-    std::unique_ptr<TObjArray> tokens(FullSplineName.Tokenize("."));
+    std::unique_ptr<TObjArray> tokens(FullSplineName.Tokenize("_"));
     TString syst = ((TObjString*)(tokens->At(1)))->GetString();
     TString mode = ((TObjString*)(tokens->At(2)))->GetString();
     //Skip 3	 
@@ -374,7 +373,7 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
     for(unsigned isyst=0; isyst<systs.size(); isyst++){  // loop over systematics
       if(strcmp(syst,systs.at(isyst)->name.c_str())==0){
         systnum=isyst;
-	break;
+        break;
       }
     }
     
@@ -385,10 +384,11 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
     }
     
     int modenum=-1;
+
     for(int imode = 0; imode<nUniqueModes; imode++){ // loop over modes
       if(strcmp(mode,(UniqueModeFarSplineNames[imode]).c_str())==0){
-	modenum=imode;
-	break;
+        modenum=imode;
+        break;
       }
     }
     
