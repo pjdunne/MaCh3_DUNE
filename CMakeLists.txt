@@ -35,7 +35,7 @@ include(CPM)
 #This is over-riden with -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
 CPMFindPackage(
     NAME MaCh3
-	  GIT_TAG "DUNECore2024-Patches"
+	  GIT_TAG "DUNECore2024-patches"
     GITHUB_REPOSITORY mach3-software/MaCh3
 )
 
