@@ -45,6 +45,12 @@ enum KinematicTypes {
   kTrueXPos = 6,
   kTrueYPos = 7,
   kTrueZPos = 8,
+  kPionMultiplicity = 9,
+  kNRecoParticles = 10,
+  kInFDV = 11,
+  kTrueMinusRecoEnergy = 12,
+  kM3Mode = 13,
+  kOscChannel = 14,
   kNKinematicParams
 };
 
@@ -57,9 +63,35 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
   if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
   if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
+  if (KinematicParameterStr.find("PionMultiplicity") != std::string::npos) {return kPionMultiplicity;}
+  if (KinematicParameterStr.find("NRecoParticles") != std::string::npos) {return kNRecoParticles;}
+  if (KinematicParameterStr.find("InFDV") != std::string::npos) {return kInFDV;}
+  if (KinematicParameterStr.find("TrueMinusRecoEnergy") != std::string::npos) {return kTrueMinusRecoEnergy;}
+  if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
+  if (KinematicParameterStr.find("OscChannel") != std::string::npos) {return kOscChannel;}
 
   return kNKinematicParams; 
 }
+
+inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes KinematicParameter){
+
+  if (KinematicParameter == kTrueNeutrinoEnergy) {return "TrueNeutrinoEnergy";}
+  if (KinematicParameter == kRecoNeutrinoEnergy) {return "RecoNeutrinoEnergy";}
+  if (KinematicParameter == kTrueQ2) {return "TrueQ2";}
+  if (KinematicParameter == kRecoQ2) {return "RecoQ2";}
+  if (KinematicParameter == kTrueXPos) {return "TrueXPos";}
+  if (KinematicParameter == kTrueYPos) {return "TrueYPos";}
+  if (KinematicParameter == kTrueZPos) {return "TrueZPos";}
+  if (KinematicParameter == kPionMultiplicity) {return "PionMultiplicity";}
+  if (KinematicParameter == kNRecoParticles) {return "NRecoParticles";}
+  if (KinematicParameter == kInFDV) {return "InFDV";}
+  if (KinematicParameter == kTrueMinusRecoEnergy) {return "TrueMinusRecoEnergy";}
+  if (KinematicParameter == kM3Mode) {return "M3Mode";}
+  if (KinematicParameter == kOscChannel) {return "OscChannel";}
+
+  return "NULL"; 
+}
+
 
 // ********************************
 // FD Detector Systematic Functions
@@ -749,6 +781,38 @@ enum Detector_enum {
   kSK = 1
 };
 
+// *******************************
+// Convert String to MaCh3Mode
+inline int DUNEString_ToMaCh3Mode(std::string Mode){
+  // *******************************
+  if (Mode.find("ccqe") != std::string::npos) {return kMaCh3_CCQE;}
+  if (Mode.find("ccdis") != std::string::npos) {return kMaCh3_CC_DIS;}
+  if (Mode.find("ccres") != std::string::npos) {return kMaCh3_CC_RES;}
+  if (Mode.find("cccohel") != std::string::npos) {return kMaCh3_CC_COHEL;}
+  else if (Mode.find("cccoh") != std::string::npos) {return kMaCh3_CC_COH;}
+  if (Mode.find("ccdiff") != std::string::npos) {return kMaCh3_CC_Diffractive;}
+  if (Mode.find("ccnueel") != std::string::npos) {return kMaCh3_CC_Nue_EL;}
+  if (Mode.find("ccmec") != std::string::npos) {return kMaCh3_CC_MEC;}
+  if (Mode.find("ccIMD") != std::string::npos) {return kMaCh3_CC_IMD;}
+  if (Mode.find("ccglasres") != std::string::npos) {return kMaCh3_CC_GlashowRES;}
+  if (Mode.find("ccimdannihilation") != std::string::npos) {return kMaCh3_CC_IMDAnnihalation;}
+  if (Mode.find("ccamnugamma") != std::string::npos) {return kMaCh3_CC_AMnuGamma;}
+  if (Mode.find("ccibd") != std::string::npos) {return kMaCh3_CC_IBD;}
+  if (Mode.find("ncqe") != std::string::npos) {return kMaCh3_NCQE;}
+  if (Mode.find("ncdis") != std::string::npos) {return kMaCh3_NC_DIS;}
+  if (Mode.find("ncres") != std::string::npos) {return kMaCh3_NC_RES;}
+  if (Mode.find("nccohel") != std::string::npos) {return kMaCh3_NC_COHEL;}
+  else if (Mode.find("nccoh") != std::string::npos) {return kMaCh3_NC_COH;}
+  if (Mode.find("ncdiff") != std::string::npos) {return kMaCh3_NC_Diffractive;}
+  if (Mode.find("ncnueel") != std::string::npos) {return kMaCh3_NC_Nue_EL;}
+  if (Mode.find("ncmec") != std::string::npos) {return kMaCh3_NC_MEC;}
+  if (Mode.find("ncIMD") != std::string::npos) {return kMaCh3_NC_IMD;}
+  if (Mode.find("ncglasres") != std::string::npos) {return kMaCh3_NC_GlashowRES;}
+  if (Mode.find("ncimdannihilation") != std::string::npos) {return kMaCh3_NC_IMDAnnihalation;}
+  if (Mode.find("ncamnugamma") != std::string::npos) {return kMaCh3_NC_AMnuGamma;}
+  if (Mode.find("ncibd") != std::string::npos) {return kMaCh3_NC_IBD;}
+  return kMaCh3_nModes;
+}
 // *******************************
 // Convert MaCh3 mode to SK name
 inline std::string MaCh3mode_ToDUNEString(MaCh3_Mode i) {

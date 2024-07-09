@@ -178,16 +178,57 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
 
    TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
    c0->Divide(1,2);
-   c0->Print("sigmavar.ps[");
-  
+   c0->Print("sigmavarnewreco.ps[");
+   std::vector<std::vector<TString>> kinematicvariables;
+   std::vector<TString> trueEkeynames;
+   std::vector<TString> recoEkeynames;
+   std::vector<TString> truerecoEkeynames;
+   std::vector<TString> pionkeynames;
+   std::vector<TString> nrecoparticleskeynames;
+   std::vector<TString> infdvkeynames;
    for(int i=0; i<list->GetEntries(); i++)
    {
      //std::cout << "entry " << i << std::endl;
      TString keyname = list->At(i)->GetName();
-      if(keyname=="FHC_nue_unosc" || keyname=="FHC_numu_unosc" 
-	 || keyname=="RHC_nue_unosc" || keyname=="RHC_numu_unosc" || !keyname.Contains("n3"))
-	 continue;
+        if(keyname=="FHC_nue_unosc" || keyname=="FHC_numu_unosc" 
+	 || keyname=="RHC_nue_unosc" || keyname=="RHC_numu_unosc" || !keyname.Contains("n3") || keyname.Contains("TrueNeutrinoEnergy_NDGAr") || keyname.Contains("RecoNeutrinoEnergy_NDGAr") || keyname.Contains("PionMultiplicity_NDGAr") || keyname.Contains("NRecoParticles_NDGAr") || keyname.Contains("TrueMinusRecoEnergy_NDGAr") || keyname.Contains("InFDV_NDGAr")){
 
+        if(keyname.Contains("TrueNeutrinoEnergy_NDGAr")){
+        trueEkeynames.push_back(keyname);
+        }
+        if(keyname.Contains("RecoNeutrinoEnergy_NDGAr")){
+        recoEkeynames.push_back(keyname);
+        }
+        if(keyname.Contains("TrueMinusRecoEnergy_NDGAr")){
+        truerecoEkeynames.push_back(keyname);
+        }
+        if(keyname.Contains("PionMultiplicity_NDGAr")){
+        pionkeynames.push_back(keyname);
+        }
+        if(keyname.Contains("NRecoParticles_NDGAr")){
+        nrecoparticleskeynames.push_back(keyname);
+        }
+        if(keyname.Contains("InFDV_NDGAr")){
+        infdvkeynames.push_back(keyname);
+        }
+        else{continue;}
+        /*
+        stack->SetTitle("TrueNeutrinoEnergy_NDGAr ;True Energy (GeV);");
+        TH1D* hist =(TH1D*)file->Get(keyname);
+        hist->SetFillColor(icolour);
+        icolour++;
+        c0->cd(1);
+        //c0->Update();
+        stack->Add(hist);
+        std::cout<<"Added new hist to stack"<<std::endl;
+        }
+        else{continue;}
+        stack->Draw();
+        c0->Update();
+        c0->Print("sigmavarnewreco.ps");
+	 continue;*/
+      }
+      /*else{
       TH1D* hVar[4];
       hVar[0]=(TH1D*)file->Get(keyname);
       keyname.ReplaceAll("n3","n1");
@@ -242,7 +283,18 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
        nd_rhc_ccnumu_nom->GetXaxis()->SetTitle("E_{reconstructed} (GeV)");
 	   divisor=nd_rhc_ccnumu_nom;
 	  }
-
+      if(keyname.Contains("NDGAr_FHC_")) {
+       TH1D* ndgar_fhc_ccnumu_nom = (TH1D*)file->Get("NDGAr_FHC_unosc");
+       ndgar_fhc_ccnumu_nom->SetLineColor(kBlack);
+       ndgar_fhc_ccnumu_nom->GetXaxis()->SetTitle("E_{reconstructed} (GeV)");
+	   divisor=ndgar_fhc_ccnumu_nom;
+	  }
+      if(keyname.Contains("NDGAr_RHC_")) {
+       TH1D* ndgar_rhc_ccnumu_nom = (TH1D*)file->Get("NDGAr_RHC_unosc");
+       ndgar_rhc_ccnumu_nom->SetLineColor(kBlack);
+       ndgar_rhc_ccnumu_nom->GetXaxis()->SetTitle("E_{reconstructed} (GeV)");
+	   divisor=ndgar_rhc_ccnumu_nom;
+	  }
       keyname.ReplaceAll("_sig_p3","");
       
       // if xsec, find the name of the parameter
@@ -257,10 +309,12 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
       
       // Set the axis range to max value of all variations
       std::vector<double> maxlist;
-      maxlist.push_back(divisor->GetMaximum());
+//      maxlist.push_back(divisor->GetMaximum());
       for(int j=0; j<4; j++) {
-         maxlist.push_back(hVar[j]->GetMaximum()); }
+         maxlist.push_back(hVar[j]->GetMaximum());
+         std::cout<<"maxlist ["<<j<<"]:"<<maxlist[j]<<std::endl; }
       double maxmax = *std::max_element(maxlist.begin(), maxlist.end());
+      std::cout<<"maxmax: "<<maxmax<<std::endl;
       divisor->GetYaxis()->SetRangeUser(0,1.05*maxmax);
       
 
@@ -307,10 +361,97 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
 
       c0->Update();
 //      getchar();
-      c0->Print("sigmavar.ps");
-
+      }
+   c0->Print("sigmavarnewreco.ps");*/
    }
+   std::vector<int> ccqe = {0};
+   std::vector<int> ccdis = {2};
+   std::vector<int> ccres ={3};
+   std::vector<int> ccmec ={9};
+   std::vector<int> ccother ={1, 4, 5, 6, 7, 8, 10, 11, 12, 13};
+   std::vector<int> nc = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
+   
+   std::vector<std::vector<int>> modebreakdown;
+   modebreakdown.push_back(ccqe);
+   modebreakdown.push_back(ccdis);
+   modebreakdown.push_back(ccres);
+   modebreakdown.push_back(ccmec);
+   modebreakdown.push_back(ccother);
+   modebreakdown.push_back(nc);
 
-   c0->Print("sigmavar.ps]");
+   std::vector<std::string> modenames = {"CCQE", "CCDIS", "CCRES", "CCMEC", "CCOTHER", "NC"};
+   std::vector<int> modecolours = {900-1, 616-6, 880-1, 860-5, 432-7, kGreen+2};
+
+   kinematicvariables.push_back(trueEkeynames);
+   kinematicvariables.push_back(recoEkeynames);
+   kinematicvariables.push_back(truerecoEkeynames);
+   kinematicvariables.push_back(pionkeynames);
+   kinematicvariables.push_back(nrecoparticleskeynames);
+   kinematicvariables.push_back(infdvkeynames);
+   for(int ivars=0; ivars<kinematicvariables.size(); ivars++){
+     THStack* stack = new THStack("stack","");
+     TLegend* leg1 = new TLegend(0.65,0.55,0.8,0.8);
+     std::vector<TH1D*> Hists(modebreakdown.size());
+     for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
+       int index = kinematicvariables[ivars][ikeynames].Last('_');
+       int length = kinematicvariables[ivars][ikeynames].Length();
+       TString fullname = kinematicvariables[ivars][ikeynames];
+       TString name  = fullname.Remove(index, length);
+       std::cout<<"name: "<<name<<" index: "<<index<<" length: "<<length<<std::endl;
+       stack->SetTitle(name);
+       TH1D* hist =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
+       std::cout<<kinematicvariables[ivars][ikeynames]<<" mode: "<<fullname.Remove(0, 10)<<std::endl;
+       fullname = kinematicvariables[ivars][ikeynames];
+       int mode = fullname.Remove(0, index+1).Atoi();
+       std::cout<<"mode: "<<mode<<std::endl;
+         for(int modes =0; modes<modebreakdown.size(); modes++){
+         if(std::find(modebreakdown[modes].begin(), modebreakdown[modes].end(), mode)!=modebreakdown[modes].end()){
+           if(Hists[modes] ==NULL){ Hists[modes] = hist;}
+           else{Hists[modes]->Add(hist);}
+         }
+       }
+     }
+     for(int ihists=0; ihists<Hists.size(); ihists++){
+       TH1D* histogram = Hists[ihists];
+       if(histogram != NULL){
+         histogram->SetFillColor(modecolours[ihists]);
+         histogram->SetLineColor(modecolours[ihists]);
+         stack->Add(histogram);
+         leg1->AddEntry(histogram,modenames[ihists].c_str()); 
+       }
+     }
+     c0->cd(1);
+     stack->Draw("HIST");
+     leg1->Draw("SAME"); 
+     c0->Update();
+     c0->Print("sigmavarnewreco.ps");
+     delete stack;
+     delete leg1;
+     Hists.clear();
+   }
+/*
+   THStack* stack1 = new THStack("stack1","");
+   TLegend* leg2 = new TLegend(0.65,0.55,0.8,0.8);
+   int icolour = 1;
+   for(int ikeynames = 0; ikeynames<recoEkeynames.size(); ikeynames++){
+     stack1->SetTitle("RecoNeutrinoEnergy_NDGAr ;Reco Energy (GeV);");
+     TH1D* hist1 =(TH1D*)file->Get(recoEkeynames[ikeynames]);
+     if(hist1->Integral() != 0){
+       hist1->SetFillColor(icolour);
+       icolour++;
+       if(icolour ==10){icolour++;}
+       stack1->Add(hist1);
+       leg2->AddEntry(hist1,recoEkeynames[ikeynames].Remove(0, 25));
+     }
+   }
+   c0->cd(1);
+   stack1->Draw("HIST");
+   leg2->Draw("SAME"); 
+   c0->Update();
+   c0->Print("sigmavarnewreco.ps");
+   //delete stack;
+   delete stack1;*/
+   std::cout<<"HERE"<<std::endl;
+   c0->Print("sigmavarnewreco.ps]");
 
 }

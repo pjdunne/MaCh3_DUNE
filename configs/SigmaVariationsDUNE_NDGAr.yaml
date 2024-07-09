@@ -3,7 +3,7 @@ General:
   IncludeND: false
   IncludeNDGAr: true
   FDPOT: 1.3628319e+23
-  NDPOT: 1e+21
+  NDPOT: 1.0e+21
 #  NDPOT: 1.1e+21
  #### Asimov A ####
   OscParams: [0.307, 0.528, 0.0218, 7.53e-5, 2.509e-3, -1.601]
@@ -18,6 +18,12 @@ General:
     OscCovName: "osc_cov"
     OscStepScale: 0.045
   Output:
-    FileName: "TestSigmaVariations_NDGAronly.root"
+    FileName: "TestSigmaVariations_NDGAronly_newreco_ghep_allmodes.root"
 SigmaVariations:
   EvalXsec: true
+  KinematicParsToPlot: ["RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV"]
+#  PlotModes: ["all"]
+  PlotModes: ["ccqe", "ccdis", "ccres", "cccoh", "cccohel", "ccdiff", "ccnueel", "ccmec", "ccIMD", "ccglasres", "ccimdannihilation", "ccamnugamma", "ccibd", "ncqe", "ncdis", "ncres", "nccoh", "nccohel", "ncdiff", "ncnueel", "ncmec", "ncIMD", "ncglasres", "ncimdannihilation", "ncamnugamma", "ncibd"]
+#  PlotModes: ["kMaCh3_CCQE", "kMaCh3_CC_DIS", "kMaCh3_CC_RES", "kMaCh3_CC_MEC", "kMaCh3_CC_COHEL", "kMaCh3_NCQE", "kMaCh3_NC_DIS", "kMaCh3_NC_RES", "kMaCh3_NC_COH"]
+#  PlotModes: ["kMaCh3_CCQE", "kMaCh3_CC_DIS", "kMaCh3_CC_RES", "kMaCh3_CC_Diffractive", "kMaCh3_CC_Nue_EL", "kMaCh3_CC_IMD", "kMaCh3_CC_AMnuGamma", "kMaCh3_CC_MEC", "kMaCh3_CC_COHEL", "kMaCh3_CC_IBD", "kMaCh3_CC_GlashowRES", "kMaCh3_CC_IMDAnnihalation", "kMaCh3_NCQE", "kMaCh3_NC_DIS", "kMaCh3_NC_RES", "kMaCh3_NC_COH", "kMaCh3_NC_Diffractive", "kMaCh3_NC_Nue_EL", "kMaCh3_NC_IMD", "kMaCh3_NC_AMnuGamma", "kMaCh3_NC_MEC", "kMaCh3_NC_COHEL", "kMaCh3_NC_IBD", "kMaCh3_NC_GlashowRES", "kMaCh3_NC_IMDAnnihalation"]
+  StackByMode: true

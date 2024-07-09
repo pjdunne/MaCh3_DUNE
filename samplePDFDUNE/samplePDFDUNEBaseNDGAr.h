@@ -83,6 +83,14 @@ struct dunendgarmc_base {
   int *isbound;
   int **rw_ipnu;
 
+  int *nproton; ///< number of (post-FSI) primary protons
+  int *nneutron; ///< number of (post-FSI) primary neutrons
+  int *npip; ///< number of (post-FSI) primary pi+
+  int *npim; ///< number of (post-FSI) primary pi-
+  int *npi0; ///< number of (post-FSI) primary pi0
+
+  int *nrecoparticles;
+  bool *in_fdv;
 
   double pot_s; // s is for scale                                             
   double norm_s;//    
@@ -124,23 +132,25 @@ public:
   //Generic Function applying shifts
   double CalcXsecWeightFunc(int iSample, int iEvent);
   //double CalcFuncSystWeight(int iSample, int iEvent);
-  //double ReturnKinematicParameter (KinematicTypes Var, int i, int j);
+  double ReturnKinematicParameter (KinematicTypes KinematicParameter, int i, int j);
   double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
-
+  std::vector<double> ReturnKinematicParameterBinning(KinematicTypes KinematicParameter);
 
   //Likelihood
   double getCovLikelihood();
   double getDiscVar(int sample , int event , int varindx);
 
-  int getNMCSamples();
+  int getNMCSamples(){return dunendgarmcSamples.size();}
   int getNEventsInSample(int sample);
 
 
   // dunendmc
   std::vector<struct dunendgarmc_base> dunendgarmcSamples;
 
-
+  //
+  TH1D* get1DVarHist(std::string KinematicVar1, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis); 
+  TH1D* get1DVarHist(std::string KinematicVar1,std::vector< std::vector<double> > SelectionVec, int WeightStyle, TAxis* Axis); 
   TFile *_sampleFile;
   TTree *_data;
   TString _nutype;

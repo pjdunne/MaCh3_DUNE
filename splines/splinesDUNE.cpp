@@ -220,7 +220,7 @@ void splinesDUNE::SetupSplines()
 	}//end of imode loop
   }//end of syst loop
 
-  splinefile->Close();                                       
+  //splinefile->Close();                                       
 
   //We're now done with these structs so lets delete them
   for(unsigned int syst_i = 0 ; syst_i < systs.size() ; syst_i++){
@@ -264,7 +264,6 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 #endif
 
   std::vector<std::vector<std::vector<std::vector<std::vector<bool> > > > > flat_vec;
-
   for(int isyst=0; isyst< numSplineParams ; isyst++){  // loop over systematics
 #if USE_SPLINE_FD == USE_TSpline3_FD
 	std::vector<std::vector<std::vector<std::vector<TSpline3*> > > > tmp_tmp_imode;
@@ -319,16 +318,16 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 	  tmp_tmp_imode.push_back(tmp_mbin);
 	  tmp_flat_mode.push_back(tmp_flat_enu);
 	  tmp_w_mode.push_back(tmp_w_enu);
-	}// end of mode loop
+        }// end of mode loop
 	flat_vec.push_back(tmp_flat_mode);
 	dev_2D_vec.push_back(tmp_tmp_imode);
 	dev_2D_w.push_back(tmp_w_mode);
-  }// end of syst loop
+      }// end of syst loop
 
   for(int isyst=0 ; isyst < numSplineParams ; isyst++){
-	syst2D* temp = new syst2D(SplineFileParsNames[isyst], &(dev_2D_vec.at(isyst)));
-	systs.push_back(temp);
-  }
+     	syst2D* temp = new syst2D(SplineFileParsNames[isyst], &(dev_2D_vec.at(isyst)));
+       	systs.push_back(temp);
+       }
 
   // Dummy splines: flat               
   TGraph *dummy_gr = new TGraph();
@@ -336,12 +335,14 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
   dummy_gr->SetPoint(1,0,1);
   dummy_gr->SetPoint(2,99999999999,1);
 
+  std::cout<<"dummy gr made"<<std::endl;
   /////////////////
   // Now load the splines from the spline file
   ////////////////
     
   //get all spline objects from file
   TIter next(splinefile->GetListOfKeys());
+  std::cout<<"GetListOfKeys"<<std::endl;
   TKey *key;
   while ((key = (TKey*)next())) {
     TClass *cl = gROOT->GetClass(key->GetClassName());
@@ -358,6 +359,7 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 
     int systnum=-1;
     for(unsigned isyst=0; isyst<systs.size(); isyst++){  // loop over systematics
+      //std::cout<<"looping over systematics, isyst: "<<isyst<<std::endl;
       if(strcmp(syst,systs.at(isyst)->name.c_str())==0){
         systnum=isyst;
 	break;
@@ -389,13 +391,15 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
     int etruebin = atoi(strtok (NULL, "_"));//x
     int var1bin = atoi(strtok (NULL, "_"));//y
     int var2bin = atoi(strtok (NULL, "_"));//z
-    
+ 
     TSpline3 *h = (TSpline3*)key->ReadObj();
+
 #if USE_SPLINE_FD == USE_TSpline3_FD
     TSpline3 *spl=(TSpline3*)h->Clone();
 #elif USE_SPLINE_FD == USE_TSpline3_red_FD
 	TSpline3_red *spl = new TSpline3_red(h);
 #endif
+
 	delete h;
 	//std::cout << "address is " << spl << std::endl;
 	
@@ -404,6 +408,8 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 	int n_knots = spl->GetNp();
 	bool flat = true;
 	for(int knot_i = 0 ; knot_i < n_knots ; knot_i++){
+          //std::cout<<"looping over knots"<<std::endl;
+
 	  double x =-999;
 	  double y = -999;
 	  spl->GetKnot(knot_i, x, y);
@@ -451,12 +457,16 @@ void splinesDUNE::SetupSplines(int opt_binning) // 2d version
 	}
   }
 
-  splinefile->Close();      
+//  splinefile->Close();      
+
 
   //We're now done with these structs so lets delete them
   for(unsigned int syst_i = 0 ; syst_i < systs.size() ; syst_i++){
+    //std::cout<<"deleting syst_i: "<<syst_i<<std::endl;
+
     delete systs[syst_i];
   }
+  std::cout<<"deleted all structs in systs vector "<<std::endl;
 
   return;
 }

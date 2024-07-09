@@ -17,12 +17,13 @@
 # 	signal = true for signal samples;,
 # },
 #SampleName: "NDGAr_FHC_CCnumu"
-SampleName: "NDGAr_FHC_"
+SampleName: "NDGAr_FHC"
 SelectionCuts:
 Binning:
   BinningOpt: 2
 #  XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
 #  YVarBins: [0., 0.1, 0.2, 0.3, 0.4, 0.6, 1.1]
+  XVarBins: [0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.25, 3.5, 3.75, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.]
   XVarBins: [0., 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.]
   YVarBins: [0., 0.1, 0.2, 0.4, 0.7, 1.1]
 SampleBools:
@@ -33,7 +34,7 @@ InputFiles:
   mtupleprefix: "inputs/DUNE_NDGAr_CAF_files/NDGAr_FHC_ger_"
   mtuplesuffix: "_numuselec.root"
   splineprefix: "inputs/DUNE_NDGAr_spline_files/NDGAr_FHC_ger_"
-  splinesuffix: "_numuselec_2dsplines.root"
+  splinesuffix: "_numuselec_2dsplinesnewreco.root"
 SampleCuts:
   up_bnd: 100000.
 NSubSamples: 4

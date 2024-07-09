@@ -116,6 +116,10 @@ public:
 
   void setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype, int signal);
 
+  TH1D* get1DVarHist(std::string KinematicVar1, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis){return 0;};
+  TH1D* get1DVarHist(std::string KinematicVar1,std::vector< std::vector<double> > SelectionVec, int WeightStyle, TAxis* Axis){return 0;};
+
+
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
   void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
@@ -152,7 +156,7 @@ public:
   // dunemc
   std::vector<struct dunemc_base> dunemcSamples;
 
-
+  
   TFile *_sampleFile;
   TTree *_data;
   TString _nutype;

@@ -9,13 +9,14 @@
 #export MACH3_DATA=/home/cwret/P6Data
 #export MACH3_MC=/home/cwret/P6MC
 
-export PATH=/vols/dune/nk3717/MaCh3_refactortry/build/src:$PATH
-export PATH=/vols/dune/nk3717/MaCh3_refactortry/build/_deps/mach3-build/yaml_test:$PATH
-export PATH=/vols/dune/nk3717/MaCh3_refactortry/build/utils/:$PATH
-
+export PATH=/vols/dune/nk3717/MaCh3_EL9/build/src:$PATH
+export PATH=/vols/dune/nk3717/MaCh3_EL9/build/_deps/mach3-build/yaml_test:$PATH
+export PATH=/vols/dune/nk3717/MaCh3_EL9/build/utils/:$PATH
+export LD_LIBRARY_PATH=/vols/dune/nk3717/MaCh3_EL9/lib/:$LD_LIBRARY_PATH
 source scripts/link_files.sh
 
-source setup_dune_env.sh
+source setup_dune_env_el9.sh
+
 #export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/src:$PATH
 #export PATH=/vols/t2k/users/ea2817/build/MaCh3_DUNE_150822/MaCh3_DUNE_Luke_fix/build/_deps/mach3-build/yaml_test:$PATH
 #################################################################
@@ -41,6 +42,7 @@ if [[ $HOSTNAME == *hep.ph.ic.ac.uk ]]; then
   if [ -z $CUDAPATH ]; then
 	source /vols/software/cuda/setup.sh 11.2.0 # (Latest = 11.2.0) Can give this an argument to get a particular CUDA version, e.g. 10.2.2
 	export CUDAPATH=$CUDA_PATH
+        
   fi
 fi
 

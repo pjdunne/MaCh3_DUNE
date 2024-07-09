@@ -137,6 +137,8 @@ public:
   // dunendmc
   std::vector<struct dunendmc_base> dunendmcSamples;
 
+  TH1D* get1DVarHist(std::string KinematicVar1, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis){return 0;};
+  TH1D* get1DVarHist(std::string KinematicVar1,std::vector< std::vector<double> > SelectionVec, int WeightStyle, TAxis* Axis){return 0;};
 
   TFile *_sampleFile;
   TTree *_data;
