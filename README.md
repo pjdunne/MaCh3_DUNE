@@ -46,6 +46,12 @@ $ -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
 
 This will overrule the CPMFindPackage command in the CMakeList.txt and will tell CPM to build that instead.
 
+If you have an error about not finding `splineMonolith.h` at the `make install` stage, do: 
+
+~~~~~~~~~~~~~
+$ mv build/_deps/mach3-src/splines/SplineMonolith.h build/_deps/mach3-src/splines/splineMonolith.h
+$ mv build/_deps/mach3-src/splines/SplineMonolith.cpp build/_deps/mach3-src/splines/splineMonolith.cpp
+~~~~~~~~~~~~~ 
 
 ###################################
 # Event Rates ######
