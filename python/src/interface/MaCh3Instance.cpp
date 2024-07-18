@@ -57,7 +57,7 @@ MaCh3Instance::MaCh3Instance(std::string yaml_config){
 
     // This will initialise all samples
     setup_samples<samplePDFDUNEBase>(fd_sample_configs, fd_pot);
-    setup_samples<samplePDFDUNEBaseND>(fd_sample_configs, nd_pot);
+    setup_samples<samplePDFDUNEBaseND>(nd_sample_configs, nd_pot);
 
     // Check this has done something!
     if(sample_vector.size()==0){
