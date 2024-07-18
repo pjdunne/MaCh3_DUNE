@@ -19,7 +19,8 @@ MaCh3Instance::MaCh3Instance(std::string yaml_config){
 
     std::string  osc_matrix_file = fit_manager->raw()["General"]["Systematics"]["OscCovFile"].as<std::string>(); 
     std::string  osc_matrix_name = fit_manager->raw()["General"]["Systematics"]["OscCovName"].as<std::string>();
-  
+    std::vector<double> oscpars = fit_manager->raw()["General"]["OscParams"].as<std::vector<double>>();
+
     osc = new covarianceOsc(osc_matrix_name.c_str(), osc_matrix_file.c_str());
 
     if (!(oscpars.size()==6 || oscpars.size()==7))
@@ -51,8 +52,8 @@ MaCh3Instance::MaCh3Instance(std::string yaml_config){
 
 
     // Load in samples from config
-    std::vector<std::string> fd_sample_configs = FitManager->raw()["General"]["FDSamples"].as<std::vector<std::string>>();
-    std::vector<std::string> nd_sample_configs = FitManager->raw()["General"]["NDSamples"].as<std::vector<std::string>>();
+    std::vector<std::string> fd_sample_configs = fit_manager->raw()["General"]["FDSamples"].as<std::vector<std::string>>();
+    std::vector<std::string> nd_sample_configs = fit_manager->raw()["General"]["NDSamples"].as<std::vector<std::string>>();
 
     // This will initialise all samples
     setup_samples<samplePDFDUNEBase>(fd_sample_configs, fd_pot);
@@ -76,28 +77,27 @@ MaCh3Instance::MaCh3Instance(std::string yaml_config){
     std::cout<<"All samples+systematics intialised, ready to roll!"<<std::endl;
 }
 
-void MaCh3Interface::set_parameter_values(std::vector<double> new_pars){
+void MaCh3Instance::set_parameter_values(std::vector<double> new_pars){
     // This is HACKED together
     if((int)new_pars.size()<osc->getNpars()+xsec->getNpars()){
         std::cerr<<"ERROR::Trying to set wrong number of values"<<std::endl;
-        std::cerr<<__FILE__<<":"<<__LINE<<std::endl;
+        std::cerr<<__FILE__<<":"<<__LINE__<<std::endl;
         throw;
     }
 
-    for(unsigned i=0; i<new_pars.size(); i++){
-        if(i<xsec.size()){
+    for(int i=0; i<(int)new_pars.size(); i++){
+        if(i<xsec->getNpars()){
             xsec->setParProp(i, new_pars[i]);
         }
         else{
-            osc->setParProp(i-xsec.size(), new_pars[i]);
+            osc->setParProp(i-xsec->getNpars(), new_pars[i]);
         }
 
     }
 }
 
-double MaCh3Interface::get_likelihood(){
+double MaCh3Instance::get_likelihood(){
     double llh = 0;
-    reject = false;
 
     llh += osc->GetLikelihood();
     llh += xsec->GetLikelihood();
@@ -109,7 +109,7 @@ double MaCh3Interface::get_likelihood(){
 
     // reweight samples
     for(const auto sample : sample_vector){
-        sample->reweight(ocs->getPropPars());
+        sample->reweight(osc->getPropPars());
         llh+=sample->GetLikelihood();
     }
 
@@ -117,45 +117,26 @@ double MaCh3Interface::get_likelihood(){
 
 }
 
-double propose_step(std::vector<double> new_step){
+double MaCh3Instance::propose_step(std::vector<double> new_step){
     set_parameter_values(new_step);
     return get_likelihood();
 }
 
+std::vector<double> MaCh3Instance::get_parameter_values(){
+    //hacked in method for getting parameters
+    std::vector<double> xsec_pars = xsec->getParameters();
+    std::vector<double> osc_pars = osc->getParameters();
 
-// ################################################################################################
-// Protected
-template<typename T> 
-void MaCh3Interface::setup_samples(std::vector<std::string> sample_names, double pot){
-    for(std::string sample : sample_names){
-        static_assert(is_base<samplePDFFDBase,T>::value, "If Error: samplePDFFDBase is not base of T");
-        
-        T* sample_pdf = new T(pot, sample.c_str(), xsec);
-
-        sample_pdf->useNonDoubleAngles(true);
-        sample_pdf->SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
-
-        // Add Data
-        sample_pdf->reweight(osc->getPropPars());
-
-        // Get name
-        TString samp_name(sample_pdf->GetSampleName().c_str());
-
-        switch(sample_pdf->GetBinningOpt()){
-            case 1:
-                sample_pdf->addData((TH1D*)SamplePDFs[sample_i]->get1DHist()->Clone(samp_name+"_asimov"));
-                break;
-            case 2:
-                sample_pdf->addData((TH3D*)SamplePDFs[sample_i]->get2DHist()->Clone(samp_name+"_asimov"));
-                break;
-            default:
-                std::cerr<<"ERROR::Unknown sample binning opt, please pick 1 (1D) or 2 (2D)"<<std::endl;
-                std::cerr<<__FILE__<<":"<<__LINE__<<std::endl;
-                throw;
-        }
-
-        sample_vector.push_back(sample_pdf);
-    }
+    xsec_pars.insert(xsec_pars.end(), osc_pars.begin(), osc_pars.end());
+    return xsec_pars;
 }
 
 
+// ################################################################################################
+// PyBind wrapping
+PYBIND11_MODULE(_pyMaCh3, m){
+    py::class_<MaCh3Instance>(m, "MaCh3Instance")
+        .def(py::init<std::string>())
+        .def("get_parameter_values", &MaCh3Instance::get_parameter_values)
+        .def("propose_step", &MaCh3Instance::propose_step);
+}

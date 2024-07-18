@@ -6,6 +6,8 @@ HW : Simple demonstrator of a MaCh3 instance creator
 // C++ includes
 #include <string>
 #include <vector>
+#include <type_traits>
+
 
 // MaCh3 Includes
 #include "samplePDFDUNE/samplePDFDUNEBase.h"
@@ -20,12 +22,43 @@ class MaCh3Instance{
  public:
     /// @brief MaCh3Instance constructor
     /// @param yaml_config config file name
-    MaCh3Instance(const std::string yaml_config);
+    MaCh3Instance(std::string yaml_config);
+    std::vector<double> get_parameter_values();
     double propose_step(std::vector<double> new_step);
 
  protected:
-    template<typename t>
-    void setup_samples(std::vector<std::string> sample_names, double pot);
+    template<class T>
+    void setup_samples(std::vector<std::string> sample_names, double pot){
+        for(std::string sample : sample_names){
+            static_assert(std::is_base_of<samplePDFFDBase, T>::value, "If Error: samplePDFFDBase is not base of T");
+            
+            T* sample_pdf = new T(pot, sample.c_str(), xsec);
+
+            sample_pdf->useNonDoubledAngles(true);
+            sample_pdf->SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
+
+            // Add Data
+            sample_pdf->reweight(osc->getPropPars());
+
+            // Get name
+            TString samp_name(sample_pdf->GetSampleName().c_str());
+
+            switch(sample_pdf->GetBinningOpt()){
+                case 1:
+                    sample_pdf->addData((TH1D*)sample_pdf->get1DHist()->Clone(samp_name+"_asimov"));
+                    break;
+                case 2:
+                    sample_pdf->addData((TH2D*)sample_pdf->get2DHist()->Clone(samp_name+"_asimov"));
+                    break;
+                default:
+                    std::cerr<<"ERROR::Unknown sample binning opt, please pick 1 (1D) or 2 (2D)"<<std::endl;
+                    std::cerr<<__FILE__<<":"<<__LINE__<<std::endl;
+                    throw;
+            }
+
+            sample_vector.push_back(sample_pdf);
+        }
+    }
 
     // Important getters/setters/
     void set_parameter_values(std::vector<double> new_pars);
@@ -39,10 +72,4 @@ class MaCh3Instance{
 
 }; // MaCh3 Instance
 
-// PyBind wrapping
-PYBIND11_MODULE(MaCh3, m){
-    py::class_<MaCh3Instance>(m, "MaCh3")
-        .def(py::init<const std::string yaml_config>)
-        .def("propose_step", &MaCh3Instance::propose_step);
-}
 

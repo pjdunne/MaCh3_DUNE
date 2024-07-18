@@ -30,6 +30,17 @@ find_program(CMAKE_CXX_COMPILER NAMES $ENV{CXX} g++ PATHS ENV PATH NO_DEFAULT_PA
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 include(CPM)
+CPMFindPackage(
+    NAME CMakeModules
+    GIT_TAG v0.0.11
+    GITHUB_REPOSITORY NuHepMC/CMakeModules
+    DOWNLOAD_ONLY
+)
+include(${CMakeModules_SOURCE_DIR}/NuHepMCModules.cmake)
+include(NuHepMCUtils)
+
+include(ROOT)
+
 
 #Go get the core MAch3, this will be public one day....
 #This is over-riden with -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
