@@ -97,23 +97,21 @@ void MaCh3Instance::set_parameter_values(std::vector<double> new_pars){
     }
 }
 
-std::vector<double> MaCh3Instance::get_likelihood(){
+double MaCh3Instance::get_likelihood(){
     double llh = 0;
-    double prior_llh=0;
-    double sample_llh=0;
 
-    prior_llh += osc->GetLikelihood();
-    prior_llh += xsec->GetLikelihood();
+    llh += osc->GetLikelihood();
+    llh += xsec->GetLikelihood();
 
     // Reject based on boundary conditions
     if(llh>=__LARGE_LOGL__){
-        return {llh * sample_vector.size(), llh, llh*sample_vector.size()}; // scale by NSamples
+        return llh * sample_vector.size(); // scale by NSamples
     }
 
     // reweight samples
     for(const auto sample : sample_vector){
         sample->reweight(osc->getPropPars());
-        sample_llh+=sample->GetLikelihood();
+        llh+=sample->GetLikelihood();
     }
 
     return llh;
@@ -129,7 +127,7 @@ std::vector<double> MaCh3Instance::get_parameter_values(){
     return xsec_pars;
 }
 
-double propose_step(std::vector<double> new_step){
+double MaCh3Instance::propose_step(std::vector<double> new_step){
     set_parameter_values(new_step);
     return get_likelihood();
 }
