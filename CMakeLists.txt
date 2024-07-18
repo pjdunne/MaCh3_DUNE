@@ -39,6 +39,18 @@ CPMFindPackage(
     GITHUB_REPOSITORY mach3-software/MaCh3
 )
 
+# HW: Python nonsense!
+set(MACH3_PYVMAJMIN "${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}")
+set(MACH3_PYTHONPATH "python/${MACH3_PYVMAJMIN}/pyMaCh3")
+
+CPMFindPackage(
+    NAME pybind11
+    VERSION 2.9.2
+    GITHUB_REPOSITORY pybind/pybind11
+    GIT_TAG "v2.9.2"
+)
+
+
 #Compile and link options (Should be in experiment project but copied in case CORE is built alone) 
 add_compile_options(-g -O3 -Wextra -fopenmp)
 add_link_options(-fopenmp)
@@ -64,3 +76,9 @@ endif()
 add_subdirectory(splines)
 add_subdirectory(samplePDFDUNE)
 add_subdirectory(src)
+add_subdirectory(python)
+
+configure_file(cmake/Templates/setup.MaCh3DUNE.sh.in
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/setup.MaCh3DUNE.sh" @ONLY)
+install(FILES
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/setup.MaCh3DUNE.sh" DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
