@@ -23,7 +23,7 @@ class MaCh3Instance{
     /// @brief MaCh3Instance constructor
     /// @param yaml_config config file name
     MaCh3Instance(std::string yaml_config);
-    std::vector<double> get_parameter_values();
+    double get_parameter_values();
     double propose_step(std::vector<double> new_step);
 
  protected:

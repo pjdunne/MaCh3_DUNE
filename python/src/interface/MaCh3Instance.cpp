@@ -77,6 +77,7 @@ MaCh3Instance::MaCh3Instance(std::string yaml_config){
     std::cout<<"All samples+systematics intialised, ready to roll!"<<std::endl;
 }
 
+
 void MaCh3Instance::set_parameter_values(std::vector<double> new_pars){
     // This is HACKED together
     if((int)new_pars.size()<osc->getNpars()+xsec->getNpars()){
@@ -96,30 +97,27 @@ void MaCh3Instance::set_parameter_values(std::vector<double> new_pars){
     }
 }
 
-double MaCh3Instance::get_likelihood(){
+std::vector<double> MaCh3Instance::get_likelihood(){
     double llh = 0;
+    double prior_llh=0;
+    double sample_llh=0;
 
-    llh += osc->GetLikelihood();
-    llh += xsec->GetLikelihood();
+    prior_llh += osc->GetLikelihood();
+    prior_llh += xsec->GetLikelihood();
 
     // Reject based on boundary conditions
     if(llh>=__LARGE_LOGL__){
-        return llh * sample_vector.size(); // scale by NSamples
+        return {llh * sample_vector.size(), llh, llh*sample_vector.size()}; // scale by NSamples
     }
 
     // reweight samples
     for(const auto sample : sample_vector){
         sample->reweight(osc->getPropPars());
-        llh+=sample->GetLikelihood();
+        sample_llh+=sample->GetLikelihood();
     }
 
     return llh;
 
-}
-
-double MaCh3Instance::propose_step(std::vector<double> new_step){
-    set_parameter_values(new_step);
-    return get_likelihood();
 }
 
 std::vector<double> MaCh3Instance::get_parameter_values(){
@@ -129,6 +127,11 @@ std::vector<double> MaCh3Instance::get_parameter_values(){
 
     xsec_pars.insert(xsec_pars.end(), osc_pars.begin(), osc_pars.end());
     return xsec_pars;
+}
+
+double propose_step(std::vector<double> new_step){
+    set_parameter_values(new_step);
+    return get_likelihood();
 }
 
 
