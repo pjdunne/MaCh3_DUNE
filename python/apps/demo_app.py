@@ -11,7 +11,7 @@ if __name__=="__main__":
     
     mach3 = MaCh3Instance(args.config)
     
-    print(f"Parameter values are : {mach3.get_parameter_values}")
+    print(f"Parameter values are : {list(mach3.get_parameter_values)}")
     
     parameter_values = mach3.get_parameter_values()
     parameter_values[0] += 1

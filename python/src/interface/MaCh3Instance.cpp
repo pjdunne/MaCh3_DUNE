@@ -82,6 +82,9 @@ MaCh3Instance::MaCh3Instance(std::string yaml_config){
 
 void MaCh3Instance::set_parameter_values(std::vector<double> new_pars){
     // This is HACKED together
+    // Silences COUTs
+    std::cout.setstate(std::ios_base::failbit);
+
     if((int)new_pars.size()<osc->getNpars()+xsec->getNpars()){
         std::cerr<<"ERROR::Trying to set wrong number of values"<<std::endl;
         std::cerr<<__FILE__<<":"<<__LINE__<<std::endl;
@@ -97,6 +100,8 @@ void MaCh3Instance::set_parameter_values(std::vector<double> new_pars){
         }
 
     }
+    std::cout.clear();
+
 }
 
 double MaCh3Instance::get_likelihood(){
