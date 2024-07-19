@@ -35,7 +35,7 @@ if __name__=="__main__":
     
     
     my_sampler = emcee.EnsembleSampler(args.n_walkers, ndim, likelihood_func, live_dangerously=True)
-    my_sampler.run_mcmc(p0, args.n_steps, skip_initial_state_check≈True, progress=True)
+    my_sampler.run_mcmc(p0, args.n_steps, skip_initial_state_check=True, progress=True)
     print(f"Accepted {my_sampler.acceptance_fraction[-1]}% of steps")
     
     samples = my_sampler.get_chain(flat=True, discard = int(0.01*args.n_steps))
