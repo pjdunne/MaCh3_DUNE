@@ -4,8 +4,13 @@ MCMC interface test with MaCh3!
 from pyMaCh3 import MaCh3Instance
 import argparse
 import numpy as np
-
+from typing import Iterable
 import emcee
+from functools import partial
+
+#HACK: Wrapper around propose step, should really be done at the pybind level!
+def propose_step(mach3_instance: MaCh3Instance, input_iterable: Iterable):
+    return mach3_instance.propose_step(list(input_iterable))
 
 if __name__=="__main__":
 
@@ -17,14 +22,15 @@ if __name__=="__main__":
 
     mach3 = MaCh3Instance(args.config)
 
-    initial_values = np.array(mach3.get_parameter_values())
-    
+    initial_values = mach3.get_parameter_values()
+
+    likelihood_func = partial(propose_step, mach3)
     
     args.n_walkers = 3
     ndim = len(initial_values)
     p0 = [initial_values+0.01*np.random.rand(ndim) for _ in range(args.n_walkers)]
     
-    print(p0)
-    sampler = emcee.EnsembleSampler(args.n_walkers, ndim, mach3.propose_step, skip_initial_state_check=True)
     
-    sampler.run_mcmc(p0, 100)
+    sampler = emcee.EnsembleSampler(args.n_walkers, ndim, likelihood_func, live_dangerously=True)
+    
+    sampler.run_mcmc(p0, 100, skip_initial_state_check=True, progress="=")
