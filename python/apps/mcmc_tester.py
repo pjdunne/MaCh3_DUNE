@@ -34,16 +34,21 @@ if __name__=="__main__":
     p0 = [initial_values+0.0001*np.random.rand(ndim) for _ in range(args.n_walkers)]
     
     
-    my_sampler = emcee.EnsembleSampler(args.n_walkers, ndim, likelihood_func, live_dangerously=True)
+    # Set up async
+    
+    my_sampler = emcee.EnsembleSampler(args.n_walkers, ndim, likelihood_func, live_dangerously=True, threads=8)
     my_sampler.run_mcmc(p0, args.n_steps, skip_initial_state_check=True, progress=True)
     print(f"Accepted {my_sampler.acceptance_fraction[-1]}% of steps")
     
+    
     samples = my_sampler.get_chain(flat=True, discard = int(0.01*args.n_steps))
+    
+    
     
     plt.hist(samples[:, 0], 100, color="k", histtype="step")
     plt.xlabel(r"$\theta_1$")
     plt.ylabel(r"$p(\theta_1)$")
     plt.gca().set_yticks([]);
 
-    plt.savefig("test_fig.png")
+    plt.savefig("test_fig_2.png")
     plt.close()
