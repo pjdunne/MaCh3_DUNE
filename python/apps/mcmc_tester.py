@@ -15,9 +15,10 @@ def propose_step(mach3_instance: MaCh3Instance, input_iterable: Iterable):
 
 if __name__=="__main__":
 
-    parser = argparse.ArgumentParser(usage="python demo_app -c <config_name>.yaml Optional :[ -w <number of walkers>]")
+    parser = argparse.ArgumentParser(usage="python demo_app -c <config_name>.yaml Optional :[ -w <number of walkers> -n <number of steps]")
     parser.add_argument("-c", "--config", help="YAML config file")
     parser.add_argument("-w", "--n_walkers", default=20, type=int, help="Number of walkers")
+    parser.add_argument("-n", "--n_steps", default=100, type=int, help="Number of Steps")
     
     args = parser.parse_args()
 
@@ -28,9 +29,10 @@ if __name__=="__main__":
     likelihood_func = partial(propose_step, mach3)
     
     ndim = len(initial_values)
-    print(f"Dimension is {ndim}, using {args.n_walkers}")
+    print(f"Dimension is {ndim}, using {args.n_walkers} walkers")
     p0 = [initial_values+0.01*np.random.rand(ndim) for _ in range(args.n_walkers)]
     
     
     my_sampler = emcee.EnsembleSampler(args.n_walkers, ndim, likelihood_func, live_dangerously=True)
-    my_sampler.run_mcmc(p0, 10000, skip_initial_state_check=True, progress=True)
+    my_sampler.run_mcmc(p0, args.n_steps, skip_initial_state_check=True, progress=True)
+    print(f"Accepted {my_sampler.acceptance_fraction()}% of steps")
