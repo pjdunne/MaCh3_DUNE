@@ -7,11 +7,12 @@ import numpy as np
 from typing import Iterable
 import emcee
 from functools import partial
+import matplotlib.pyplot as plt
 
 
 #HACK: Wrapper around propose step, should really be done at the pybind level!
 def propose_step(mach3_instance: MaCh3Instance, input_iterable: Iterable):
-    return mach3_instance.propose_step(list(input_iterable))
+    return -1*mach3_instance.propose_step(list(input_iterable))
 
 if __name__=="__main__":
 
@@ -30,9 +31,19 @@ if __name__=="__main__":
     
     ndim = len(initial_values)
     print(f"Dimension is {ndim}, using {args.n_walkers} walkers")
-    p0 = [initial_values+0.01*np.random.rand(ndim) for _ in range(args.n_walkers)]
+    p0 = [initial_values+0.0001*np.random.rand(ndim) for _ in range(args.n_walkers)]
     
     
     my_sampler = emcee.EnsembleSampler(args.n_walkers, ndim, likelihood_func, live_dangerously=True)
-    my_sampler.run_mcmc(p0, args.n_steps, skip_initial_state_check=True, progress=True)
-    print(f"Accepted {my_sampler.acceptance_fraction()}% of steps")
+    my_sampler.run_mcmc(p0, args.n_steps, skip_initial_state_check≈True, progress=True)
+    print(f"Accepted {my_sampler.acceptance_fraction[-1]}% of steps")
+    
+    samples = my_sampler.get_chain(flat=True, discard = int(0.01*args.n_steps))
+    
+    plt.hist(samples[:, 0], 100, color="k", histtype="step")
+    plt.xlabel(r"$\theta_1$")
+    plt.ylabel(r"$p(\theta_1)$")
+    plt.gca().set_yticks([]);
+
+    plt.savefig("test_fig.png")
+    plt.close()
