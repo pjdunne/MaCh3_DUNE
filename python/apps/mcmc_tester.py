@@ -17,7 +17,7 @@ if __name__=="__main__":
 
     parser = argparse.ArgumentParser(usage="python demo_app -c <config_name>.yaml Optional :[ -w <number of walkers>]")
     parser.add_argument("-c", "--config", help="YAML config file")
-    parser.add_argument("-w", "--n_walkers", default=20, help="Number of walkers")
+    parser.add_argument("-w", "--n_walkers", default=20, type=int, help="Number of walkers")
     
     args = parser.parse_args()
 
