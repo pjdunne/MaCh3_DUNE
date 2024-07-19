@@ -9,8 +9,8 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 
 
-
 if __name__=="__main__":
+
     parser = argparse.ArgumentParser(usage="python demo_app -c <config_name>.yaml")
     parser.add_argument("-c", "--config", help="YAML config file")
     
@@ -19,7 +19,7 @@ if __name__=="__main__":
     mach3 = MaCh3Instance(args.config)
     initial_values = np.transpose(mach3.get_parameter_values())
     
-    
+
     def custom_get_likelihood(x):
         x_list = x.numpy().tolist()
         return mach3.propose_step(x_list)
@@ -35,7 +35,6 @@ if __name__=="__main__":
         num_adaptation_steps=int(num_burnin_steps * 0.8)
     )
 
-    @tf.function
     def run_chain():
         # Run the chain (with burn-in).
         samples, is_accepted = tfp.mcmc.sample_chain(

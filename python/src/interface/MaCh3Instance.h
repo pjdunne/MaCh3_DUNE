@@ -15,6 +15,10 @@ HW : Simple demonstrator of a MaCh3 instance creator
 
 // pybind
 #include "pybind11/pybind11.h"
+#include "pybind11/stl.h"
+
+// pyMaCh3
+#include "pyMaCh3.h"
 
 namespace py = pybind11;
 

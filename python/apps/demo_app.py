@@ -1,4 +1,4 @@
-from _pyMaCh3 import MaCh3Instance
+from pyMaCh3 import MaCh3Instance
 import argparse
 
 # HW : Really really simple python app

@@ -1,4 +1,7 @@
-pybind11_add_module(_pyMaCh3 SHARED MaCh3Instance.cpp)
+pybind11_add_module(_pyMaCh3 
+                        SHARED 
+                                pyMaCh3.cpp
+                                MaCh3Instance.cpp)
 
 
 target_include_directories(_pyMaCh3 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)

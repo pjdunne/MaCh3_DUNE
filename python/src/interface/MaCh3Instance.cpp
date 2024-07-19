@@ -115,7 +115,6 @@ double MaCh3Instance::get_likelihood(){
     }
 
     return llh;
-
 }
 
 std::vector<double> MaCh3Instance::get_parameter_values(){
