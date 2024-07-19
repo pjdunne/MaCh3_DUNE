@@ -7,8 +7,7 @@
 
 namespace py = pybind11;
 
-
-void MaCh3Instance(py::module &);
+void pyMaCh3Instance(py::module &);
 
 PYBIND11_MODULE(_pyMaCh3, m) {
 
@@ -27,5 +26,5 @@ PYBIND11_MODULE(_pyMaCh3, m) {
 
     m.doc() = "MaCh3 implementation in python";
 
-    MaCh3Instance(m);
+    pyMaCh3Instance(m);
 }

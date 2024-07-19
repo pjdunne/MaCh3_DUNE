@@ -10,3 +10,5 @@ target_link_libraries(_pyMaCh3 PRIVATE
 install(TARGETS _pyMaCh3 
         LIBRARY DESTINATION ${MACH3_PYTHONPATH})
 
+# Install Python Modules somewhere usable
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/python/src/interface/modules/ DESTINATION ${MACH3_PYTHONPATH})

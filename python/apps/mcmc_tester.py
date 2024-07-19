@@ -1,7 +1,7 @@
 '''
 MCMC interface test with MaCh3!
 '''
-from _pyMaCh3 import pyMaCh3Instance
+from _pyMaCh3 import MaCh3Instance
 import argparse
 import numpy as np
 
@@ -16,7 +16,7 @@ if __name__=="__main__":
     
     args = parser.parse_args()
 
-    mach3 = pyMaCh3Instance(args.config)
+    mach3 = MaCh3Instance(args.config)
     initial_values = np.transpose(mach3.get_parameter_values())
     
 
