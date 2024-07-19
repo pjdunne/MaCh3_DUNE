@@ -5,6 +5,9 @@
 
 #include "pyMaCh3.h"
 
+namespace py = pybind11;
+
+
 void MaCh3Instance(py::module &);
 
 PYBIND11_MODULE(_pyMaCh3, m) {

@@ -1,4 +1,6 @@
 #include "MaCh3Instance.h"
+ 
+namespace py = pybind11;
 
 // Public methods
 MaCh3Instance::MaCh3Instance(std::string yaml_config){
@@ -134,7 +136,8 @@ double MaCh3Instance::propose_step(std::vector<double> new_step){
 
 // ################################################################################################
 // PyBind wrapping
-PYBIND11_MODULE(_pyMaCh3, m){
+
+void pyMaCh3Instance(py::module &m){
     py::class_<MaCh3Instance>(m, "MaCh3Instance")
         .def(py::init<std::string>())
         .def("get_parameter_values", &MaCh3Instance::get_parameter_values)

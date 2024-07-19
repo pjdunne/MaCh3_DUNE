@@ -1,4 +1,4 @@
-from pyMaCh3 import MaCh3Instance
+from pyMaCh3 import pyMaCh3Instance
 import argparse
 
 # HW : Really really simple python app
@@ -9,7 +9,7 @@ if __name__=="__main__":
     
     args = parser.parse_args()
     
-    mach3 = MaCh3Instance(args.config)
+    mach3 = pyMaCh3Instance(args.config)
     
     print(f"Parameter values are : {mach3.get_parameter_values}")
     

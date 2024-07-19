@@ -1,5 +1,4 @@
-pybind11_add_module(_pyMaCh3 
-                        SHARED 
+pybind11_add_module(_pyMaCh3 SHARED
                                 pyMaCh3.cpp
                                 MaCh3Instance.cpp)
 
