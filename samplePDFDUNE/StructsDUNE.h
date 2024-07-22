@@ -49,8 +49,11 @@ enum KinematicTypes {
   kNRecoParticles = 10,
   kInFDV = 11,
   kTrueMinusRecoEnergy = 12,
-  kM3Mode = 13,
-  kOscChannel = 14,
+  kTrueMinusRecoEnergyRatio = 13, 
+  kNMuons = 14,
+  kRecoLepEnergy = 15,
+  kM3Mode = 16,
+  kOscChannel = 17,
   kNKinematicParams
 };
 
@@ -66,7 +69,10 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("PionMultiplicity") != std::string::npos) {return kPionMultiplicity;}
   if (KinematicParameterStr.find("NRecoParticles") != std::string::npos) {return kNRecoParticles;}
   if (KinematicParameterStr.find("InFDV") != std::string::npos) {return kInFDV;}
-  if (KinematicParameterStr.find("TrueMinusRecoEnergy") != std::string::npos) {return kTrueMinusRecoEnergy;}
+  if (KinematicParameterStr.find("TrueMinusRecoEnergyRatio") != std::string::npos) {return kTrueMinusRecoEnergyRatio;}
+  else if (KinematicParameterStr.find("TrueMinusRecoEnergy") != std::string::npos) {return kTrueMinusRecoEnergy;}
+  if (KinematicParameterStr.find("NMuons") != std::string::npos) {return kNMuons;}
+  if (KinematicParameterStr.find("RecoLepEnergy") != std::string::npos) {return kRecoLepEnergy;}
   if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
   if (KinematicParameterStr.find("OscChannel") != std::string::npos) {return kOscChannel;}
 
@@ -86,6 +92,9 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kNRecoParticles) {return "NRecoParticles";}
   if (KinematicParameter == kInFDV) {return "InFDV";}
   if (KinematicParameter == kTrueMinusRecoEnergy) {return "TrueMinusRecoEnergy";}
+  if (KinematicParameter == kTrueMinusRecoEnergyRatio) {return "TrueMinusRecoEnergyRatio";}
+  if (KinematicParameter == kNMuons) {return "NMuons";}
+  if (KinematicParameter == kRecoLepEnergy) {return "NRecoLepEnergy";}
   if (KinematicParameter == kM3Mode) {return "M3Mode";}
   if (KinematicParameter == kOscChannel) {return "OscChannel";}
 

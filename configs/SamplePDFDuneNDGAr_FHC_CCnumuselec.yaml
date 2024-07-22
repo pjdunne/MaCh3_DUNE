@@ -19,6 +19,12 @@
 #SampleName: "NDGAr_FHC_CCnumu"
 SampleName: "NDGAr_FHC"
 SelectionCuts:
+    - KinematicStr: "InFDV"
+      Bounds: [1.0, 2.0]
+    - KinematicStr: "NRecoParticles"
+      Bounds: [1.0, 100.0]
+    - KinematicStr: "NMuons"
+      Bounds: [1.0, 2.0]
 Binning:
   BinningOpt: 2
 #  XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
@@ -30,6 +36,7 @@ SampleBools:
   isrhc: no
   isnd: yes
   iselike: no
+  iscalo_reco: yes
 InputFiles:
   mtupleprefix: "inputs/DUNE_NDGAr_CAF_files/NDGAr_FHC_ger_"
   mtuplesuffix: "_numuselec.root"
@@ -37,6 +44,7 @@ InputFiles:
   splinesuffix: "_numuselec_2dsplinesnewreco.root"
 SampleCuts:
   up_bnd: 100000.
+  muonscore_threshold: 0.5
 NSubSamples: 4
 DetID: 1
 SubSamples:

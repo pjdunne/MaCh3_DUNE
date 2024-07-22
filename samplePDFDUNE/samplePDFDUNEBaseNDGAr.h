@@ -89,6 +89,8 @@ struct dunendgarmc_base {
   int *npim; ///< number of (post-FSI) primary pi-
   int *npi0; ///< number of (post-FSI) primary pi0
 
+  int *nmuon; //number of reconstructed muons
+
   int *nrecoparticles;
   bool *in_fdv;
 
@@ -141,7 +143,7 @@ public:
   double getCovLikelihood();
   double getDiscVar(int sample , int event , int varindx);
 
-  int getNMCSamples(){return dunendgarmcSamples.size();}
+  int getNMCSamples(){return dunendgarmcSamples.size();};
   int getNEventsInSample(int sample);
 
 
@@ -159,6 +161,7 @@ public:
   double _wgtflx;
   double _wgtosc;
   int _ipnu;
+
 
   //Standard Record object
 //  caf::StandardRecord* sr = new caf::StandardRecord();
@@ -193,6 +196,9 @@ public:
   bool iselike;
   bool isND;
   bool iscc1pi;
+
+  bool iscalo_reco; //NK Added so we can easily change what energy reconstruction we are using
+  float muonscore_threshold; //NK Added so we can optimise muon threshold
 
   // Note: the following 4 variables shouldn't be used any more! (From 14/1/2015 - KD). Just kept in for backwards compatibility in compiling, but they have no effect.
   bool do_flux_rw;

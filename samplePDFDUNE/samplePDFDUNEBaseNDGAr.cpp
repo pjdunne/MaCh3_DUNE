@@ -60,6 +60,11 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
+
+  iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
+  muonscore_threshold = SampleManager->raw()["SampleCuts"]["muonscore_threshold"].as<float>(); //NK determine what muon score threshold to use
+
+  std::cout<<"NK: iscalo_reco: "<<iscalo_reco<<std::endl;
   //Inputs
   mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
   mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
@@ -246,7 +251,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //  rec->SetAddress(&sr);
 //  rec->SetAutoDelete(kTRUE);
 //  sr = _data->GetBranch("rec");
-  std::cout<<"here"<<std::endl;
+ // std::cout<<"here"<<std::endl;
 //  _data->GetEntry(0);
 /* 
   _data->SetBranchStatus("*", 0);
@@ -333,8 +338,10 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   duneobj->npim = new int[duneobj->nEvents];
   duneobj->npi0 = new int[duneobj->nEvents];
 
+  duneobj->nmuon = new int[duneobj->nEvents];
   duneobj->nrecoparticles = new int[duneobj->nEvents];
   duneobj->in_fdv = new bool[duneobj->nEvents];
+  duneobj->rw_elep_true = new double[duneobj->nEvents];
 
   duneobj->rw_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
@@ -355,10 +362,6 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   int num_notin_fdv =0;
   int num_nanenergy =0;
   int num_nanparticles =0;
-//  std::cout<<"here"<<std::endl;
-//  _data->GetEntry(0);
-//  std::cout<<"here 1"<<std::endl;
-  //std::cout<<"sr->mc.nu[0].pdgorig: "<<(int)(sr->mc.nu[0].pdgorig)<<std::endl; 
 
   //FILL DUNE STRUCT
   for (int i = 0; i < (duneobj->nEvents); ++i) // Loop through tree
@@ -366,12 +369,15 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
      std:cout<< i<< std::endl;
      _data->GetEntry(i);
      double radius = pow((pow((sr->mc.nu[0].vtx.y+150),2) + pow((sr->mc.nu[0].vtx.z-1486),2)),0.5);
-     if(std::abs(sr->mc.nu[0].vtx.x)<=209.0 || radius<=227.02){
-       //std::cout<<"this event is within the fiducial volume"<<std::endl;
+     if(std::abs(sr->mc.nu[0].vtx.x)<=209.0 &&  radius<=227.02){
+       std::cout<<"x pos: "<<(sr->mc.nu[0].vtx.x)<<" y pos: "<<(sr->mc.nu[0].vtx.y)<<" z pos: "<<(sr->mc.nu[0].vtx.z)<<" radius: "<<radius<<std::endl;
+       std::cout<<"this event is within the fiducial volume"<<std::endl;
        num_in_fdv++;
        duneobj->in_fdv[i] = 1;
      }
      else{
+       std::cout<<"x pos: "<<(sr->mc.nu[0].vtx.x)<<" y pos: "<<(sr->mc.nu[0].vtx.y)<<" z pos: "<<(sr->mc.nu[0].vtx.z)<<" radius: "<<radius<<std::endl;
+       std::cout<<"this event is NOT within the fiducial volume"<<std::endl;
        num_notin_fdv++;
        duneobj->in_fdv[i] = 0;
      }
@@ -385,7 +391,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //     duneobj->rw_elep_reco[i] = (double)(leafptr2->GetValue(i));
 //     duneobj->rw_erec[i] = (double)(sr->common.ixn.dlp[0].Enu.lep_calo);
      if(sr->common.ixn.ngsft == 0){
-       duneobj->rw_erec[i] = (double)(0);
+       //duneobj->rw_erec[i] = (double)(0);
+       float erec_total =0;
        duneobj->rw_elep_reco[i] = double(0);
        duneobj->rw_yrec[i] = (double)(0);
        num_no_ixns++;
@@ -395,8 +402,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
        duneobj->nrecoparticles[i] = (int)(0);
        float erec_total =0;
        float elep_reco =0;
+       float muonscore = muonscore_threshold;
        int nixns = (int)(sr->common.ixn.ngsft);
-       float muonscore =0;
        for(int i_ixn =0; i_ixn<nixns; i_ixn++){
          int nrecoparticles = (int)(sr->common.ixn.gsft[i_ixn].part.ngsft);
          duneobj->nrecoparticles[i] += (int)(sr->common.ixn.gsft[i_ixn].part.ngsft);
@@ -416,15 +423,22 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //           int pdg_rec = (int)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].pdg);
            erec_total+=erec_part;
            if((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.muon_score>muonscore)){
-             muonscore = (float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.muon_score);
-             //std::cout<<"muon_score: "<<muonscore<<std::endl; 
-             elep_reco = erec_part;
+//             muonscore = (float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.muon_score);
+             //std::cout<<"muon_score: "<<muonscore<<std::endl;
+             if(erec_part>elep_reco){
+               elep_reco = erec_part;
+             }
+             duneobj->nmuon[i]++; 
            }
          }
          num_nanparticles = num_nanparticles + (nanparticles/nrecoparticles);
        } //ADD PRIMARY LEPTON ENERGY ELEP_RECO
        if(std::isnan(erec_total)){std::cout<<"nan energy"<<std::endl; num_nanenergy++; erec_total = (float)(sr->common.ixn.gsft[0].Enu.lep_calo);}
-       duneobj->rw_erec[i]=(double)(erec_total);
+       //std::cout<<"iscalo_reco: "<<iscalo_reco<<std::endl;     
+       if(iscalo_reco){duneobj->rw_erec[i]=(double)(sr->common.ixn.gsft[0].Enu.lep_calo);  /*std::cout<<"calo erec: "<<(double)(sr->common.ixn.gsft[0].Enu.lep_calo)<<std::endl;*/}
+       else{duneobj->rw_erec[i]=(double)(erec_total);}
+//       duneobj->rw_erec[i]=(double)(erec_total);
+//       duneobj->rw_erec[i]=(double)(sr->common.ixn.gsft[0].Enu.lep_calo);
        duneobj->rw_elep_reco[i] = (double)(elep_reco);
      }
      //std::cout<<"erec: "<<(double)(duneobj->rw_erec[i])<<std::endl;
@@ -440,7 +454,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 
      if(duneobj->rw_erec[i] != 0){duneobj->rw_yrec[i] = (double)(((duneobj->rw_erec[i])-(duneobj->rw_elep_reco[i]))/(duneobj->rw_erec[i]));}
      else{duneobj->rw_yrec[i] = (double)(0);}
-     //std::cout<<"yrec: "<<(double)(duneobj->rw_yrec[i])<<std::endl;
+//     std::cout<<"NK: erec"<< duneobj->rw_erec[i]<<std::endl; 
+    //std::cout<<"yrec: "<<(double)(duneobj->rw_yrec[i])<<std::endl;
 ///     duneobj->rw_yrec[i] = (sr->mc.nu[0].E - sr->mc.nu[0].prim[0].p.E)/(sr->mc.nu[0].E);
 //     duneobj->rw_etru[i] = _ev; // in GeV
      duneobj->rw_etru[i] = (double)(sr->mc.nu[0].E); // in GeV
@@ -470,6 +485,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
      duneobj->rw_vtx_y[i] = (double)(sr->mc.nu[0].vtx.y);
      duneobj->rw_vtx_z[i] = (double)(sr->mc.nu[0].vtx.z);
 
+     duneobj->rw_elep_true[i] = (double)(sr->mc.nu.prim[0].p.E;
      //Assume everything is on Argon for now....
      duneobj->Target[i] = 40;
   
@@ -512,9 +528,9 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(std::string KinematicPar
 
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
  double KinematicValue = -999;
- std::cout<<"KinematicParameter String: "<<KinematicParameter<<std::endl;
- std::cout<<"KinPar: "<<KinPar<<std::endl;
- std::cout<<"KinPar Int: "<<(int)(ReturnKinematicParameterFromString(KinematicParameter))<<std::endl;
+// std::cout<<"KinematicParameter String: "<<KinematicParameter<<std::endl;
+// std::cout<<"KinPar: "<<KinPar<<std::endl;
+// std::cout<<"KinPar Int: "<<(int)(ReturnKinematicParameterFromString(KinematicParameter))<<std::endl;
 // std::cout<<"kPionMultiplicity: "<<kPionMultiplicity<<std::endl;
  switch(KinPar){
    case kTrueNeutrinoEnergy:
@@ -541,9 +557,21 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(std::string KinematicPar
    case kInFDV:
          KinematicValue = dunendgarmcSamples[iSample].in_fdv[iEvent];
          break;
-   case kTrueMinusRecoEnergy:
+   case kTrueMinusRecoEnergyRatio:
 	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_erec[iEvent])/dunendgarmcSamples[iSample].rw_etru[iEvent]; 
 	 break;
+   case kTrueMinusRecoEnergy:
+	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_erec[iEvent]);
+	 break;
+   case kNMuons:
+         KinematicValue = dunendgarmcSamples[iSample].nmuon[iEvent];
+         break;
+   case kRecoLepEnergy:
+         KinematicValue = dunendgarmcSamples[iSample].rw_elep_reco[iEvent];
+         break;
+   case kTrueLepEnergy:
+         KinematicValue = dunendgarmcSamples[iSample].rw_elep_true[iEvent];
+         break;
    case kM3Mode:
          KinematicValue = dunendgarmcSamples[iSample].mode[iEvent];
          break;
@@ -586,9 +614,24 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
    case kInFDV:
          KinematicValue = dunendgarmcSamples[iSample].in_fdv[iEvent];
          break;
-   case kTrueMinusRecoEnergy:
-	 KinematicValue = dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_erec[iEvent]/dunendgarmcSamples[iSample].rw_etru[iEvent];
+   case kTrueMinusRecoEnergyRatio:
+	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_erec[iEvent])/dunendgarmcSamples[iSample].rw_etru[iEvent];
 	 break;
+   case kTrueMinusRecoEnergy:
+	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_erec[iEvent]);
+	 break;
+   case kNMuons:
+         KinematicValue = dunendgarmcSamples[iSample].nmuon[iEvent];
+         break;
+   case kRecoLepEnergy:
+         KinematicValue = dunendgarmcSamples[iSample].rw_elep_reco[iEvent];
+         break;
+   case kTrueLepEnergy:
+         KinematicValue = dunendgarmcSamples[iSample].rw_elep_true[iEvent];
+         break;
+   case kM3Mode:
+         KinematicValue = dunendgarmcSamples[iSample].mode[iEvent];
+         break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
 	 throw;
@@ -770,10 +813,30 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(std:
            binningVector.push_back(ibins);
          }
          break;
+   case kTrueMinusRecoEnergyRatio:
+         for(int ibins =0; ibins<20*10; ibins++){
+           binningVector.push_back(-10+(double)(ibins)/10);
+         }
+         break;
    case kTrueMinusRecoEnergy:
          for(int ibins =0; ibins<20*10; ibins++){
            binningVector.push_back(-10+(double)(ibins)/10);
          }
+         break;
+   case kNMuons:
+         for(int ibins =0; ibins<10; ibins++){
+           binningVector.push_back(ibins);
+         }
+         break;
+    case kRecoLepEnergy:
+        for(int ibins =0; ibins<10*10; ibins++){
+           binningVector.push_back((double)(ibins)/10);
+         } 
+         break;
+    case kTrueLepEnergy:
+        for(int ibins =0; ibins<10*10; ibins++){
+           binningVector.push_back((double)(ibins)/10);
+         } 
          break;
     default:
          for(int ibins =0; ibins<10*100; ibins++){
@@ -800,7 +863,7 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
         for(int ibins =0; ibins<10*10; ibins++){
            double binval = ibins/10;
            binningVector.push_back(binval);
-           std::cout<<"binningvector "<<ibins<<" : "<<binningVector[ibins]<<" binval: "<<binval<<std::endl;
+ //          std::cout<<"binningvector "<<ibins<<" : "<<binningVector[ibins]<<" binval: "<<binval<<std::endl;
          } 
          break;
     case kTrueXPos:
@@ -832,6 +895,31 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
          for(int ibins =0; ibins<3; ibins++){
            binningVector.push_back(ibins);
          }
+         break;
+   case kTrueMinusRecoEnergyRatio:
+         for(int ibins =0; ibins<20*10; ibins++){
+           binningVector.push_back(-10+(double)(ibins)/10);
+         }
+         break;
+   case kTrueMinusRecoEnergy:
+         for(int ibins =0; ibins<20*10; ibins++){
+           binningVector.push_back(-10+(double)(ibins)/10);
+         }
+         break;
+   case kNMuons:
+         for(int ibins =0; ibins<10; ibins++){
+           binningVector.push_back(ibins);
+         }
+         break;
+    case kRecoLepEnergy:
+        for(int ibins =0; ibins<10*10; ibins++){
+           binningVector.push_back((double)(ibins)/10);
+         } 
+         break;
+    case kTrueLepEnergy:
+        for(int ibins =0; ibins<10*10; ibins++){
+           binningVector.push_back((double)(ibins)/10);
+         } 
          break;
     default:
          for(int ibins =0; ibins<10*100; ibins++){
@@ -933,7 +1021,7 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
 
   for(int ibounds = 0; ibounds <SelectionVec.size(); ibounds++){
     SelectionBounds.push_back(std::vector<double>(SelectionVec[ibounds].begin()+1, SelectionVec[ibounds].end()));
-    std::cout<<"ibounds: "<<ibounds<<" SelectionVec[ibounds][0]: "<<SelectionVec[ibounds][0]<<" SelectionVec[ibounds][1]: "<<SelectionVec[ibounds][1]<<" SelectionVec[ibounds][2]: "<<SelectionVec[ibounds][2]<<std::endl;
+//    std::cout<<"ibounds: "<<ibounds<<" SelectionVec[ibounds][0]: "<<SelectionVec[ibounds][0]<<" SelectionVec[ibounds][1]: "<<SelectionVec[ibounds][1]<<" SelectionVec[ibounds][2]: "<<SelectionVec[ibounds][2]<<std::endl;
     SelectionStr.push_back(ReturnKinematicParameterStringFromEnum((KinematicTypes)(SelectionVec[ibounds][0])));
   }
 
@@ -950,8 +1038,9 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
     SelectionStr.push_back(ReturnKinematicParameterStringFromEnum((KinematicTypes)(Selection[iSelection][0])));
   }
 */
-  for(int istr =0; istr<SelectionStr.size(); istr++){std::cout<<"SelectionStr: "<<SelectionStr[istr]<<std::endl;}
-  for(int ibound =0; ibound<SelectionBounds.size(); ibound++){std::cout<<"SelectionBounds: "<<SelectionBounds[ibound][0]<<" "<<SelectionBounds[ibound][1]<<std::endl;}
+//  for(int istr =0; istr<SelectionStr.size(); istr++){std::cout<<"SelectionStr: "<<SelectionStr[istr]<<std::endl;}
+//  for(int ibound =0; ibound<SelectionBounds.size(); ibound++){std::cout<<"SelectionBounds: "<<SelectionBounds[ibound][0]<<" "<<SelectionBounds[ibound][1]<<std::endl;}
+
   //DB Cut on OscChannel in this function due to speed increase from considering skmcSamples structure (ie. Array of length NChannels)
   bool fChannel = false;
   int kChannelToFill = -1;
@@ -972,8 +1061,8 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
   TH1D* _h1DVar;
   int kPDFBinning = kNKinematicParams; //XVar
   std::string HistName = KinematicVar1 +"_NDGAr_"+std::to_string((int)(Selection[0][1]));
-  std::cout<<"HistName: "<<HistName<<std::endl;
-  std::cout<<"KinematicVar1: "<<KinematicVar1<< " KinematicPar from String: "<<(int)(ReturnKinematicParameterFromString(KinematicVar1))<<std::endl;
+//  std::cout<<"HistName: "<<HistName<<std::endl;
+//  std::cout<<"KinematicVar1: "<<KinematicVar1<< " KinematicPar from String: "<<(int)(ReturnKinematicParameterFromString(KinematicVar1))<<std::endl;
   if (ReturnKinematicParameterFromString(KinematicVar1)==kPDFBinning) {
     _h1DVar = (TH1D*)_hPDF1D->Clone(HistName.c_str());
     _h1DVar->Reset();
@@ -987,7 +1076,7 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
     }
   }
   _h1DVar->GetXaxis()->SetTitle(KinematicVar1.c_str());
-  std::cout<<"here"<<std::endl; 
+  //std::cout<<"here"<<std::endl; 
   //This should be the same as FillArray in core basically, except that
   //events will end up in different bins
   for (int i=0;i<getNMCSamples();i++) {
@@ -998,10 +1087,10 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
 
       //DB Determine which events pass selection
       if (!IsEventSelected(SelectionStr,i,j)) {
-                std::cout<<"here not selected"<<std::endl;
+    //            std::cout<<"here not selected"<<std::endl;
 		continue;
       }
-      std::cout<<"here2"<<std::endl;
+      //std::cout<<"here2"<<std::endl;
       if(MCSamples[i].isNC[j]) { //DB Abstract check on MaCh3Modes to determine which apply to neutral current
         MCSamples[i].osc_w[j] = 1.;
       }
@@ -1014,12 +1103,16 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
             }
        //	Weight = MCSamples[i].osc_w[j] * dunendgarmcSamples[i].pot_s * dunendgarmcSamples[i].norm_s * dunendgarmcSamples[i].flux_w[j] * dunendgarmcSamples[i].NC_w[j];
 	  }
-
+          //std::cout<<"Weight: "<<Weight<<std::endl;
 	  //ETA - not sure about this
-	  if (MCSamples[i].xsec_w[j] == 0.) continue;
+	  //if (MCSamples[i].xsec_w[j] == 0.) continue;
+          //NK changing depending on weight style
+          if (WeightStyle != 0 && MCSamples[i].xsec_w[j] == 0.) continue;
+          if (WeightStyle == 0){Weight = 1.0;}
 
 	  double Var1_Val;
-          KinematicTypes Var1 = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicVar1));          std::cout<<"Var1: "<<(int)(Var1)<<std::endl; 
+          KinematicTypes Var1 = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicVar1));
+          //std::cout<<"Var1: "<<(int)(Var1)<<std::endl; 
 	  if (Var1==kPDFBinning) {
 		Var1_Val = *(MCSamples[i].x_var[j]);
 	  } else {

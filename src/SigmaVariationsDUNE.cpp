@@ -347,6 +347,7 @@ int main(int argc, char * argv[]) {
   std::vector<std::string> HistVariables = fitMan->raw()["SigmaVariations"]["KinematicParsToPlot"].as<std::vector<std::string>>();
   bool StackByMode = fitMan->raw()["SigmaVariations"]["StackByMode"].as<bool>();
   std::vector<std::string> PlotModes = fitMan->raw()["SigmaVariations"]["PlotModes"].as<std::vector<std::string>>();
+  int Weighted = fitMan->raw()["SigmaVariations"]["Weighted"].as<int>();
   for(int i =0; i<PlotModes.size(); i++){std::cout<<"Plot Modes "<<i<<" : "<<PlotModes[i]<<" MaCh3 Mode: "<<(int)DUNEString_ToMaCh3Mode(PlotModes[i])<<std::endl;}
 //  std::vector<std::string> HistVariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV"};
 
@@ -383,7 +384,7 @@ int main(int argc, char * argv[]) {
           int mode;
           if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
           else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, 1, NULL);
+          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
           histogram ->Write();
           delete histogram;
         }

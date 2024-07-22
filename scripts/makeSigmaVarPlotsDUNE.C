@@ -180,22 +180,39 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
    c0->Divide(1,2);
    c0->Print("sigmavarnewreco.ps[");
    std::vector<std::vector<TString>> kinematicvariables;
-   std::vector<TString> trueEkeynames;
-   std::vector<TString> recoEkeynames;
-   std::vector<TString> truerecoEkeynames;
-   std::vector<TString> pionkeynames;
-   std::vector<TString> nrecoparticleskeynames;
-   std::vector<TString> infdvkeynames;
+
+   std::vector<std::string> plotvariables = {"TrueNeutrinoEnergy", "RecoNeutrinoEnergy", "TrueMinusRecoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "TrueYPos", "TrueZPos", "NMuons", "TrueMinusRecoEnergyRatio", "RecoLepEnergy"};
+   int n_vars = plotvariables.size();
+   for(int iplots =0; iplots<n_vars; iplots++){
+      std::vector<TString> keynames;
+      kinematicvariables.push_back(keynames);
+   }
+//   std::vector<TString> trueEkeynames;
+//   std::vector<TString> recoEkeynames;
+//   std::vector<TString> truerecoEkeynames;
+//   std::vector<TString> pionkeynames;
+//   std::vector<TString> nrecoparticleskeynames;
+//   std::vector<TString> infdvkeynames;
+//   std::vector<TString> truexposkeynames;
+//   std::vector<TString> trueyposkeynames;
+//   std::vector<TString> truezposkeynames;
    for(int i=0; i<list->GetEntries(); i++)
    {
+     bool boolcontinue = false;
      //std::cout << "entry " << i << std::endl;
      TString keyname = list->At(i)->GetName();
         if(keyname=="FHC_nue_unosc" || keyname=="FHC_numu_unosc" 
-	 || keyname=="RHC_nue_unosc" || keyname=="RHC_numu_unosc" || !keyname.Contains("n3") || keyname.Contains("TrueNeutrinoEnergy_NDGAr") || keyname.Contains("RecoNeutrinoEnergy_NDGAr") || keyname.Contains("PionMultiplicity_NDGAr") || keyname.Contains("NRecoParticles_NDGAr") || keyname.Contains("TrueMinusRecoEnergy_NDGAr") || keyname.Contains("InFDV_NDGAr")){
-
-        if(keyname.Contains("TrueNeutrinoEnergy_NDGAr")){
-        trueEkeynames.push_back(keyname);
+	 || keyname=="RHC_nue_unosc" || keyname=="RHC_numu_unosc" || !keyname.Contains("n3") || keyname.Contains("_NDGAr_")){
+        for(int iplots=0; iplots<n_vars; iplots++){
+          TString keynametest = plotvariables[iplots]+"_NDGAr_";
+          if(keyname.Contains(keynametest)){
+          kinematicvariables[iplots].push_back(keyname);
+          std::cout<<"iplots: "<<iplots<<" keyname: "<<keyname<<std::endl;
+          boolcontinue = true;
+          break;
+          }
         }
+/*
         if(keyname.Contains("RecoNeutrinoEnergy_NDGAr")){
         recoEkeynames.push_back(keyname);
         }
@@ -211,7 +228,17 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
         if(keyname.Contains("InFDV_NDGAr")){
         infdvkeynames.push_back(keyname);
         }
-        else{continue;}
+        if(keyname.Contains("TrueXPos_NDGAr")){
+        truexposkeynames.push_back(keyname);
+        }
+        if(keyname.Contains("TrueYPos_NDGAr")){
+        trueyposkeynames.push_back(keyname);
+        }
+        if(keyname.Contains("TrueZPos_NDGAr")){
+        truezposkeynames.push_back(keyname);
+        }
+        */
+        if(!boolcontinue){continue;}
         /*
         stack->SetTitle("TrueNeutrinoEnergy_NDGAr ;True Energy (GeV);");
         TH1D* hist =(TH1D*)file->Get(keyname);
@@ -382,12 +409,15 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
    std::vector<std::string> modenames = {"CCQE", "CCDIS", "CCRES", "CCMEC", "CCOTHER", "NC"};
    std::vector<int> modecolours = {900-1, 616-6, 880-1, 860-5, 432-7, kGreen+2};
 
-   kinematicvariables.push_back(trueEkeynames);
-   kinematicvariables.push_back(recoEkeynames);
-   kinematicvariables.push_back(truerecoEkeynames);
-   kinematicvariables.push_back(pionkeynames);
-   kinematicvariables.push_back(nrecoparticleskeynames);
-   kinematicvariables.push_back(infdvkeynames);
+//   kinematicvariables.push_back(trueEkeynames);
+//   kinematicvariables.push_back(recoEkeynames);
+//   kinematicvariables.push_back(truerecoEkeynames);
+//   kinematicvariables.push_back(pionkeynames);
+//   kinematicvariables.push_back(nrecoparticleskeynames);
+//   kinematicvariables.push_back(infdvkeynames);
+//   kinematicvariables.push_back(truexposkeynames);
+//   kinematicvariables.push_back(trueyposkeynames);
+//   kinematicvariables.push_back(truezposkeynames);
    for(int ivars=0; ivars<kinematicvariables.size(); ivars++){
      THStack* stack = new THStack("stack","");
      TLegend* leg1 = new TLegend(0.65,0.55,0.8,0.8);
