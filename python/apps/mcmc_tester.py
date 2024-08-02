@@ -8,6 +8,7 @@ from typing import Iterable
 import emcee
 from functools import partial
 import matplotlib.pyplot as plt
+from jax import value_and_grad
 
 
 #HACK: Wrapper around propose step, should really be done at the pybind level!
@@ -28,27 +29,35 @@ if __name__=="__main__":
     initial_values = mach3.get_parameter_values()
 
     likelihood_func = partial(propose_step, mach3)
-    
-    ndim = len(initial_values)
-    print(f"Dimension is {ndim}, using {args.n_walkers} walkers")
-    p0 = [initial_values+0.0001*np.random.rand(ndim) for _ in range(args.n_walkers)]
-    
-    
-    # Set up async
-    
-    my_sampler = emcee.EnsembleSampler(args.n_walkers, ndim, likelihood_func, live_dangerously=True, threads=8)
-    my_sampler.run_mcmc(p0, args.n_steps, skip_initial_state_check=True, progress=True)
-    print(f"Accepted {my_sampler.acceptance_fraction[-1]}% of steps")
-    
-    
-    samples = my_sampler.get_chain(flat=True, discard = int(0.01*args.n_steps))
-    
-    
-    
-    plt.hist(samples[:, 0], 100, color="k", histtype="step")
-    plt.xlabel(r"$\theta_1$")
-    plt.ylabel(r"$p(\theta_1)$")
-    plt.gca().set_yticks([]);
 
-    plt.savefig("test_fig_2.png")
-    plt.close()
+    ndim = len(initial_values)
+    
+    val, gradient = value_and_grad(likelihood_func(initial_values+0.0001*np.random.rand(ndim)))
+    
+    print(f"Value: {val}   | Grad: {gradient}")
+    
+    # print(f"Dimension is {ndim}, using {args.n_walkers} walkers")
+    # p0 = [initial_values+0.0001*np.random.rand(ndim) for _ in range(args.n_walkers)]
+    
+    # filename = "tutorial.h5"
+    # backend = emcee.backends.HDFBackend(filename)
+    # backend.reset(args.n_walkers, ndim)
+
+    
+    
+    # my_sampler = emcee.EnsembleSampler(args.n_walkers, ndim, likelihood_func, live_dangerously=True, backend=backend, threads=8)
+    # my_sampler.run_mcmc(p0, args.n_steps, skip_initial_state_check=True, progress=True)
+    # print(f"Accepted {my_sampler.acceptance_fraction[-1]}% of steps")
+    
+    
+    # samples = my_sampler.get_chain(flat=True, discard = int(0.01*args.n_steps))
+    
+    
+    
+    # plt.hist(samples[:, 0], 100, color="k", histtype="step")
+    # plt.xlabel(r"$\theta_1$")
+    # plt.ylabel(r"$p(\theta_1)$")
+    # plt.gca().set_yticks([]);
+
+    # plt.savefig("test_fig_2.png")
+    # plt.close()

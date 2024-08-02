@@ -8,6 +8,8 @@ HW : Simple demonstrator of a MaCh3 instance creator
 #include <vector>
 #include <type_traits>
 
+// ROOT Includes
+#include "TH1D.h"
 
 // MaCh3 Includes
 #include "samplePDFDUNE/samplePDFDUNEBase.h"
@@ -27,8 +29,15 @@ class MaCh3Instance{
     /// @brief MaCh3Instance constructor
     /// @param yaml_config config file name
     MaCh3Instance(std::string yaml_config);
+
     std::vector<double> get_parameter_values();
     double propose_step(std::vector<double> new_step);
+
+    void set_nominal_values(std::vector<double> new_vals);
+
+
+    std::vector<double> get_nominal_values();
+    std::vector<std::vector<std::vector<double>>>  get_event_hists();
 
  protected:
     template<class T>
@@ -67,6 +76,7 @@ class MaCh3Instance{
     // Important getters/setters/
     void set_parameter_values(std::vector<double> new_pars);
     double get_likelihood();
+    std::vector<std::vector<double>> convert_hist_to_vec(std::shared_ptr<TH1D> input_hist);
     // Hacky hack
     std::vector<int> parameter_indices;
 

@@ -138,6 +138,87 @@ double MaCh3Instance::propose_step(std::vector<double> new_step){
     return get_likelihood();
 }
 
+std::vector<double> MaCh3Instance::get_nominal_values(){
+    std::vector<double> nominal_vec;
+
+    for(int i=0; i<xsec->getNpars(); ++i){
+        nominal_vec.push_back(xsec->getNominal(i));
+    }
+
+    for(int i=0; i<osc->getNpars(); ++i){
+        nominal_vec.push_back(osc->getNominal(i));
+    }
+
+    return nominal_vec;
+}
+
+void MaCh3Instance::set_nominal_values(std::vector<double> new_vals){
+    std::cout.setstate(std::ios_base::failbit);
+
+    if((int)new_vals.size()<osc->getNpars()+xsec->getNpars()){
+        std::cerr<<"ERROR::Trying to set wrong number of values"<<std::endl;
+        std::cerr<<__FILE__<<":"<<__LINE__<<std::endl;
+        throw;
+    }
+
+    for(int i=0; i<(int)new_vals.size(); ++i){
+        if(i<xsec->getNpars()){
+            xsec->setPar(i, new_vals[i]);
+        }
+        else{
+            osc->setPar(i, new_vals[i]);
+        }
+    }
+    osc->acceptStep();
+
+    // We need to do a quick reweight
+    for(auto sample : sample_vector){
+        sample->reweight(osc->getPropPars());
+    }
+
+    std::cout.clear();
+}
+
+std::vector<std::vector<std::vector<double>>>  MaCh3Instance::get_event_hists(){
+    // Indices : sample[osc, unosc]
+    std::vector<std::vector<std::vector<double>>> output_hists(sample_vector.size());    
+
+    // Get vector
+    for(unsigned int isample=0; isample<sample_vector.size(); ++isample){
+
+	    TString name(sample_vector[isample]->GetSampleName().c_str());
+
+
+        std::shared_ptr<TH1D> osc_hist(dynamic_cast<TH1D*>(sample_vector[isample] -> get1DHist() -> Clone(name)));
+        std::vector<std::vector<double>> binning = convert_hist_to_vec(osc_hist);
+
+        output_hists[isample] = binning;
+    }
+
+    return output_hists;
+}
+
+
+std::vector<std::vector<double>> convert_hist_to_vec(std::shared_ptr<TH1D> input_hist){
+    // Returns vector of form {{bins}, {bin_content}}
+
+    std::vector<double> bin_edges(input_hist->GetNbinsX()+1, 0);
+    std::vector<double> bin_content(input_hist->GetNbinsX(), 0);
+
+
+    bin_edges[0] = input_hist->GetBinLowEdge(0);
+    for(int i=1; i<input_hist->GetNbinsX()+1; ++i){
+        bin_content[i-1] = input_hist->GetBinContent(i);
+        bin_edges[i] = bin_edges[i-1]+input_hist->GetBinWidth(i-1);
+    }
+
+    std::vector<std::vector<double>> output_vec(2);
+    output_vec[0] = bin_content;
+    output_vec[1] = bin_edges;
+
+    return output_vec;
+
+}
 
 // ################################################################################################
 // PyBind wrapping
@@ -146,5 +227,10 @@ void pyMaCh3Instance(py::module &m){
     py::class_<MaCh3Instance>(m, "MaCh3Instance")
         .def(py::init<std::string>())
         .def("get_parameter_values", &MaCh3Instance::get_parameter_values)
-        .def("propose_step", &MaCh3Instance::propose_step);
+        .def("propose_step", &MaCh3Instance::propose_step)
+        .def("get_event_hists", &MaCh3Instance::get_event_hists)
+        .def("get_nominal_values", &MaCh3Instance::set_nominal_values)
+        .def("set_nominal_values", &MaCh3Instance::get_nominal_values)
+        .def("get_event_hists", &MaCh3Instance::get_event_hists);
+
 }
