@@ -19,8 +19,8 @@
 void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numuselec) 
 {  
 
-   const char* path  = "/vols/dune/nk3717/data/NDGAr_testCAFs";
-   const char* outpath  = "/vols/dune/nk3717/data/NDGAr_testCAFs";
+   const char* path  = "/vols/dune/nk3717/data/NDGAr_newtestCAFs";
+   const char* outpath  = "/vols/dune/nk3717/data/NDGAr_newtestCAFs";
    
    caf::StandardRecord * sr = new caf::StandardRecord();
 //   caf::StandardRecord * sr;
@@ -47,12 +47,12 @@ void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numusele
    if (initial_nuPDG == 16) {initial_nu_name = "nutau_x_";}    
    if (initial_nuPDG == -16) {initial_nu_name = "nutaubar_x_";}    
 
-   if (final_nuPDG == 14) {final_nu_name = "numu_";}    
-   if (final_nuPDG == -14) {final_nu_name = "numubar_";}    
-   if (final_nuPDG == 12) {final_nu_name = "nue_";}    
-   if (final_nuPDG == -12) {final_nu_name = "nuebar_";}    
-   if (final_nuPDG == 16) {final_nu_name = "nutau_";}    
-   if (final_nuPDG == -16) {final_nu_name = "nutaubar_";}    
+   if (final_nuPDG == 14) {final_nu_name = "numu";}    
+   if (final_nuPDG == -14) {final_nu_name = "numubar";}    
+   if (final_nuPDG == 12) {final_nu_name = "nue";}    
+   if (final_nuPDG == -12) {final_nu_name = "nuebar";}    
+   if (final_nuPDG == 16) {final_nu_name = "nutau";}    
+   if (final_nuPDG == -16) {final_nu_name = "nutaubar";}    
 
 //   outfile_name = infile.substr(0, 13) + "_" + initial_nu_name + final_nu_name + selec_name + ".root";
    outfile_name = infile.substr(0, 13) + "_" + initial_nu_name + final_nu_name + ".root";  
@@ -101,11 +101,11 @@ void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numusele
 //     std::cout<<"muon energy "<< muonparticle[i] << std::endl;
 //   tree->SetBranchStatus("rec", 1);
 //     tree->SetBranchAddress("rec", &sr);
-     std::cout<<"start loop"<<std::endl;
+//     std::cout<<"start loop"<<std::endl;
 
      tree->GetEntry(i);
 //     gtree->GetEntry(i);
-     std::cout<<"get entries"<<std::endl;
+//     std::cout<<"get entries"<<std::endl;
      // if( i % 100 == 0 ) printf( "Event %d of %d...\n", i, N );
 /*     if(numuselec) {
        cvn_name = "cvnnumu";
@@ -125,14 +125,15 @@ void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numusele
      if(std::isnan(cvn)){cvn =0;}
      std::cout<<"pdgorig "<<(double)(sr->mc.nu[0].pdgorig)<<" pdg "<<(double)(sr->mc.nu[0].pdg)<<" cvn "<<cvn<< " cvn threshold " << cvn_threshold <<std::endl;
 //     std::cout<<"pdgorig "<<(double)(leafptr4->GetValue(i))<<" pdg "<<(double)(leafptr3->GetValue(i))<<" cvn "<<cvn<< " cvn threshold " << cvn_threshold <<std::endl;
-     if((sr->mc.nu[0].pdgorig) == initial_nuPDG and (sr->mc.nu[0].pdg) == final_nuPDG and cvn > cvn_threshold) {
+     if((sr->mc.nu[0].pdgorig) == initial_nuPDG and (sr->mc.nu[0].pdg) == final_nuPDG and cvn >= cvn_threshold) {
 //     if((double)(leafptr4->GetValue(i)) == initial_nuPDG and (double)(leafptr3->GetValue(i))== final_nuPDG and cvn > cvn_threshold) {
        std::cout<<"here"<<std::endl;
        tree->GetEntry(i);
        std::cout<<"here1"<<std::endl;
        newtree->Fill();
-//       std::cout<<"here2"<<std::endl;
+       std::cout<<"here2"<<std::endl;
 //       gbranch->GetEntry(i);
+//       gtree->GetEntry(i);
 //       std::cout<<"here3"<<std::endl;
 //       gnewtree->Fill();
 //       std::cout<<"here4"<<std::endl;
@@ -173,7 +174,7 @@ void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numusele
 void Plot(std::string infile) 
 {  
 
-   const char* path  = "/vols/dune/nk3717/data/NDGAr_testCAFs";
+   const char* path  = "/vols/dune/nk3717/data/NDGAr_newtestCAFs";
 //   const char* outpath  = "/vols/dune/nk3717/MaCh3_refactortry/MaCh3_DUNE/inputs/DUNE_NDGAr_CAF_files/";
    
    caf::StandardRecord * sr = new caf::StandardRecord();

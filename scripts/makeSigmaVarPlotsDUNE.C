@@ -181,7 +181,9 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
    c0->Print("sigmavarnewreco.ps[");
    std::vector<std::vector<TString>> kinematicvariables;
 
-   std::vector<std::string> plotvariables = {"TrueNeutrinoEnergy", "RecoNeutrinoEnergy", "TrueMinusRecoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "TrueYPos", "TrueZPos", "NMuons", "TrueMinusRecoEnergyRatio", "RecoLepEnergy"};
+  std::vector<std::string> plotvariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "RecoXPos", "TrueYPos", "RecoYPos", "TrueZPos", "RecoZPos", "TrueRad", "RecoRad", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy"};
+
+//   std::vector<std::string> plotvariables = {"TrueNeutrinoEnergy", "RecoNeutrinoEnergy", "TrueMinusRecoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "TrueYPos", "TrueZPos", "NMuons", "TrueMinusRecoEnergyRatio", "RecoLepEnergy"};
    int n_vars = plotvariables.size();
    for(int iplots =0; iplots<n_vars; iplots++){
       std::vector<TString> keynames;
@@ -418,6 +420,8 @@ void makeSigmaVarPlotsDUNE(TString inputfile)
 //   kinematicvariables.push_back(truexposkeynames);
 //   kinematicvariables.push_back(trueyposkeynames);
 //   kinematicvariables.push_back(truezposkeynames);
+
+
    for(int ivars=0; ivars<kinematicvariables.size(); ivars++){
      THStack* stack = new THStack("stack","");
      TLegend* leg1 = new TLegend(0.65,0.55,0.8,0.8);

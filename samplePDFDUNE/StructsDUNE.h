@@ -45,15 +45,25 @@ enum KinematicTypes {
   kTrueXPos = 6,
   kTrueYPos = 7,
   kTrueZPos = 8,
-  kPionMultiplicity = 9,
-  kNRecoParticles = 10,
-  kInFDV = 11,
-  kTrueMinusRecoEnergy = 12,
-  kTrueMinusRecoEnergyRatio = 13, 
-  kNMuons = 14,
-  kRecoLepEnergy = 15,
-  kM3Mode = 16,
-  kOscChannel = 17,
+  kTrueRad = 9,
+  kPionMultiplicity = 10,
+  kNRecoParticles = 11,
+  kInFDV = 12,
+  kTrueMinusRecoEnergy = 13,
+  kTrueMinusRecoEnergyRatio = 14, 
+  kNRecoMuons = 15,
+  kNTrueMuons = 16,
+  kNMuonsRecoOverTruth = 17,
+  kTrueLepEnergy = 18,
+  kRecoLepEnergy = 19,
+  kRecoXPos = 20,
+  kRecoYPos = 21,
+  kRecoZPos = 22,
+  kRecoRad = 23,
+  kM3Mode = 24,
+  kOscChannel = 25,
+  kLepPT = 26,
+  kLepPZ = 27,
   kNKinematicParams
 };
 
@@ -66,15 +76,25 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
   if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
   if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
+  if (KinematicParameterStr.find("TrueRad") != std::string::npos) {return kTrueRad;}
   if (KinematicParameterStr.find("PionMultiplicity") != std::string::npos) {return kPionMultiplicity;}
   if (KinematicParameterStr.find("NRecoParticles") != std::string::npos) {return kNRecoParticles;}
   if (KinematicParameterStr.find("InFDV") != std::string::npos) {return kInFDV;}
   if (KinematicParameterStr.find("TrueMinusRecoEnergyRatio") != std::string::npos) {return kTrueMinusRecoEnergyRatio;}
   else if (KinematicParameterStr.find("TrueMinusRecoEnergy") != std::string::npos) {return kTrueMinusRecoEnergy;}
-  if (KinematicParameterStr.find("NMuons") != std::string::npos) {return kNMuons;}
+  if (KinematicParameterStr.find("NRecoMuons") != std::string::npos) {return kNRecoMuons;}
+  if (KinematicParameterStr.find("NTrueMuons") != std::string::npos) {return kNTrueMuons;}
+  if (KinematicParameterStr.find("NMuonsRecoOverTruth") != std::string::npos) {return kNMuonsRecoOverTruth;}
+  if (KinematicParameterStr.find("TrueLepEnergy") != std::string::npos) {return kTrueLepEnergy;}
   if (KinematicParameterStr.find("RecoLepEnergy") != std::string::npos) {return kRecoLepEnergy;}
+  if (KinematicParameterStr.find("RecoXPos") != std::string::npos) {return kRecoXPos;}
+  if (KinematicParameterStr.find("RecoYPos") != std::string::npos) {return kRecoYPos;}
+  if (KinematicParameterStr.find("RecoZPos") != std::string::npos) {return kRecoZPos;}
+  if (KinematicParameterStr.find("RecoRad") != std::string::npos) {return kRecoRad;}
   if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
   if (KinematicParameterStr.find("OscChannel") != std::string::npos) {return kOscChannel;}
+  if (KinematicParameterStr.find("LepPT") != std::string::npos) {return kLepPT;}
+  if (KinematicParameterStr.find("LepPZ") != std::string::npos) {return kLepPZ;}
 
   return kNKinematicParams; 
 }
@@ -88,15 +108,25 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kTrueXPos) {return "TrueXPos";}
   if (KinematicParameter == kTrueYPos) {return "TrueYPos";}
   if (KinematicParameter == kTrueZPos) {return "TrueZPos";}
+  if (KinematicParameter == kTrueRad) {return "TrueRad";} 
   if (KinematicParameter == kPionMultiplicity) {return "PionMultiplicity";}
   if (KinematicParameter == kNRecoParticles) {return "NRecoParticles";}
   if (KinematicParameter == kInFDV) {return "InFDV";}
   if (KinematicParameter == kTrueMinusRecoEnergy) {return "TrueMinusRecoEnergy";}
   if (KinematicParameter == kTrueMinusRecoEnergyRatio) {return "TrueMinusRecoEnergyRatio";}
-  if (KinematicParameter == kNMuons) {return "NMuons";}
-  if (KinematicParameter == kRecoLepEnergy) {return "NRecoLepEnergy";}
+  if (KinematicParameter == kNRecoMuons) {return "NRecoMuons";}
+  if (KinematicParameter == kNTrueMuons) {return "NTrueMuons";}
+  if (KinematicParameter == kNMuonsRecoOverTruth) {return "NMuonsRecoOverTruth";}
+  if (KinematicParameter == kRecoLepEnergy) {return "RecoLepEnergy";}
+  if (KinematicParameter == kTrueLepEnergy) {return "TrueLepEnergy";}
+  if (KinematicParameter == kRecoXPos) {return "RecoXPos";}
+  if (KinematicParameter == kRecoYPos) {return "RecoYPos";}
+  if (KinematicParameter == kRecoZPos) {return "RecoZPos";}
+  if (KinematicParameter == kRecoRad) {return "RecoRad";}
   if (KinematicParameter == kM3Mode) {return "M3Mode";}
   if (KinematicParameter == kOscChannel) {return "OscChannel";}
+  if (KinematicParameter == kLepPT) {return "LepPT";}
+  if (KinematicParameter == kLepPZ) {return "LepPZ";}
 
   return "NULL"; 
 }

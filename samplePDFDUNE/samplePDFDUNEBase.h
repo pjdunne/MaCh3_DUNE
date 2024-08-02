@@ -118,6 +118,8 @@ public:
 
   TH1D* get1DVarHist(std::string KinematicVar1, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis){return 0;};
   TH1D* get1DVarHist(std::string KinematicVar1,std::vector< std::vector<double> > SelectionVec, int WeightStyle, TAxis* Axis){return 0;};
+  TH2D* get2DVarHist(std::string KinematicVar1, std::string KinematicVar2, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis, TAxis* Axis2){return 0;};
+  TH2D* get2DVarHist(std::string KinematicVar1,std::string KinematicVar2,std::vector< std::vector<double> > SelectionVec, int WeightStyle, TAxis* Axis, TAxis* Axis2){return 0;};
 
 
  protected:

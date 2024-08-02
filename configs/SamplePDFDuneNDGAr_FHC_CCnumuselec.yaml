@@ -19,11 +19,19 @@
 #SampleName: "NDGAr_FHC_CCnumu"
 SampleName: "NDGAr_FHC"
 SelectionCuts:
-    - KinematicStr: "InFDV"
+#    - KinematicStr: "InFDV"
+#      Bounds: [1.0, 2.0]
+    - KinematicStr: "RecoRad"
+      Bounds: [0.0, 227.0]
+    - KinematicStr: "NRecoMuons"
       Bounds: [1.0, 2.0]
-    - KinematicStr: "NRecoParticles"
-      Bounds: [1.0, 100.0]
-    - KinematicStr: "NMuons"
+    - KinematicStr: "RecoXPos"
+      Bounds: [-209.0, 209.0]
+#    - KinematicStr: "NRecoParticles"
+#      Bounds: [1.0, 100.0]
+#    - KinematicStr: "NRecoMuons"
+#      Bounds: [1.0, 2.0]
+    - KinematicStr: "PionMultiplicity"
       Bounds: [1.0, 2.0]
 Binning:
   BinningOpt: 2

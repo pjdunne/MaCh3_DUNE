@@ -89,7 +89,20 @@ struct dunendgarmc_base {
   int *npim; ///< number of (post-FSI) primary pi-
   int *npi0; ///< number of (post-FSI) primary pi0
 
-  int *nmuon; //number of reconstructed muons
+  int *ntruemuon; //number of true muons
+  int *ntruemuonprim; //number of true primary muons
+  int *nrecomuon; //number of reconstructed muons
+  double *nmuonsratio; //number of reco muons divided by number of true muons
+
+  double *rw_lep_pT;  //transverse lepton momentum
+  double *rw_lep_pZ; //parallel lepton momentum
+  double *rw_reco_vtx_x;
+  double *rw_reco_vtx_y;
+  double *rw_reco_vtx_z;
+  double *rw_reco_rad;
+  double *rw_rad;
+
+  double *rw_elep_true;
 
   int *nrecoparticles;
   bool *in_fdv;
@@ -153,6 +166,9 @@ public:
   //
   TH1D* get1DVarHist(std::string KinematicVar1, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis); 
   TH1D* get1DVarHist(std::string KinematicVar1,std::vector< std::vector<double> > SelectionVec, int WeightStyle, TAxis* Axis); 
+  TH2D* get2DVarHist(std::string KinematicVar1, std::string KinematicVar2, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis, TAxis* Axis2); 
+  TH2D* get2DVarHist(std::string KinematicVar1,std::string KinematicVar2,std::vector< std::vector<double> > SelectionVec, int WeightStyle, TAxis* Axis, TAxis* Axis2); 
+
   TFile *_sampleFile;
   TTree *_data;
   TString _nutype;
