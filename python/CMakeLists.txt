@@ -1,2 +1,4 @@
 add_subdirectory(src)
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/python/apps/ DESTINATION ${MACH3_PYTHONPATH}/..)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/python/setup DESTINATION ${MACH3_PYTHONPATH}/../)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/python/docs DESTINATION ${MACH3_PYTHONPATH}/../docs)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/python/apps/ DESTINATION ${MACH3_PYTHONPATH}/../apps)
