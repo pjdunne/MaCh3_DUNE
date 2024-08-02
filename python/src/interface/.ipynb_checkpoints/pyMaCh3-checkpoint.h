@@ -13,4 +13,3 @@ PYBIND11_MAKE_OPAQUE(std::vector<int>);
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 PYBIND11_MAKE_OPAQUE(std::vector<uint32_t>);
 PYBIND11_MAKE_OPAQUE(std::vector<std::vector<double>>);
-PYBIND11_MAKE_OPAQUE(std::vector<std::vector<std::vector<double>>>);

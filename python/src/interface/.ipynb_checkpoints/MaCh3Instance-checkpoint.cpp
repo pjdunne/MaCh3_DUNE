@@ -199,7 +199,7 @@ std::vector<std::vector<std::vector<double>>>  MaCh3Instance::get_event_hists(){
 }
 
 
-std::vector<std::vector<double>> MaCh3Instance::convert_hist_to_vec(std::shared_ptr<TH1D> input_hist){
+std::vector<std::vector<double>> convert_hist_to_vec(std::shared_ptr<TH1D> input_hist){
     // Returns vector of form {{bins}, {bin_content}}
 
     std::vector<double> bin_edges(input_hist->GetNbinsX()+1, 0);

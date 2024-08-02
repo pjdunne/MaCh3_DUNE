@@ -17,15 +17,12 @@ PYBIND11_MODULE(_pyMaCh3, m) {
     py::bind_vector<std::vector<uint32_t>>(m, "Vector_uint32_t");
 
     py::bind_vector<std::vector<std::vector<double>> >(m, "Vector_Vector_double_t");
-    py::bind_vector<std::vector<std::vector<std::vector<double>>> >(m, "Vector_Vector_Vector_double_t");
-
 
     py::implicitly_convertible<py::list, std::vector<bool>>();
     py::implicitly_convertible<py::list, std::vector<int>>();
     py::implicitly_convertible<py::list, std::vector<double>>();
     py::implicitly_convertible<py::list, std::vector<uint32_t>>();
     py::implicitly_convertible<py::list, std::vector<std::vector<double>>>();
-    py::implicitly_convertible<py::list, std::vector<std::vector<std::vector<double>>>>();
 
     m.doc() = "MaCh3 implementation in python";
 
