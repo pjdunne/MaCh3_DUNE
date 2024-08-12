@@ -506,84 +506,8 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(std::string KinematicPar
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter));
 // std::cout<<"KinPar: "<<KinPar<<" String: "<<KinematicParameter<<std::endl; 
  double KinematicValue = -999;
- switch(KinPar){
-   case kTrueNeutrinoEnergy:
-	 KinematicValue = dunendgarmcSamples[iSample].rw_etru[iEvent]; 
-	 break;
-   case kPionMultiplicity:
-         KinematicValue = dunendgarmcSamples[iSample].npip[iEvent]+dunendgarmcSamples[iSample].npim[iEvent+dunendgarmcSamples[iSample].npi0[iEvent]];
-         break;
-   case kRecoNeutrinoEnergy:
-         KinematicValue = dunendgarmcSamples[iSample].rw_erec[iEvent];
-         break;
-   case kTrueXPos:
-         KinematicValue = dunendgarmcSamples[iSample].rw_vtx_x[iEvent];
-         break;
-   case kTrueYPos:
-         KinematicValue = dunendgarmcSamples[iSample].rw_vtx_y[iEvent];
-         break;
-   case kTrueZPos:
-         KinematicValue = dunendgarmcSamples[iSample].rw_vtx_z[iEvent];
-         break;
-   case kTrueRad:
-         KinematicValue = dunendgarmcSamples[iSample].rw_rad[iEvent];
-         break;
-   case kNRecoParticles:
-         KinematicValue = dunendgarmcSamples[iSample].nrecoparticles[iEvent];
-         break; 
-   case kInFDV:
-         KinematicValue = dunendgarmcSamples[iSample].in_fdv[iEvent];
-         break;
-   case kTrueMinusRecoEnergyRatio:
-	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_erec[iEvent])/dunendgarmcSamples[iSample].rw_etru[iEvent]; 
-	 break;
-   case kTrueMinusRecoEnergy:
-	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_erec[iEvent]);
-	 break;
-   case kNRecoMuons:
-         KinematicValue = dunendgarmcSamples[iSample].nrecomuon[iEvent];
-         break;
-   case kNTrueMuons:
-         KinematicValue = dunendgarmcSamples[iSample].ntruemuon[iEvent];
-         break;
-   case kNMuonsRecoOverTruth:
-         KinematicValue = dunendgarmcSamples[iSample].nmuonsratio[iEvent];
-         break;
-   case kRecoLepEnergy:
-         KinematicValue = dunendgarmcSamples[iSample].rw_elep_reco[iEvent];
-         break;
-   case kTrueLepEnergy:
-         KinematicValue = dunendgarmcSamples[iSample].rw_elep_true[iEvent];
-         break;
-   case kRecoXPos:
-         KinematicValue = dunendgarmcSamples[iSample].rw_reco_vtx_x[iEvent];
-         break;
-   case kRecoYPos:
-         KinematicValue = dunendgarmcSamples[iSample].rw_reco_vtx_y[iEvent];
-         break;
-   case kRecoZPos:
-         KinematicValue = dunendgarmcSamples[iSample].rw_reco_vtx_z[iEvent];
-         break;
-   case kRecoRad:
-         KinematicValue = dunendgarmcSamples[iSample].rw_reco_rad[iEvent];
-         break;
-   case kLepPT:
-         KinematicValue = dunendgarmcSamples[iSample].rw_lep_pT[iEvent];
-         break;
-   case kLepPZ:
-         KinematicValue = dunendgarmcSamples[iSample].rw_lep_pZ[iEvent];
-         break;
-   case kM3Mode:
-         KinematicValue = dunendgarmcSamples[iSample].mode[iEvent];
-         break;
-//   case kOscChannel:
-//        KinematicValue =  
-   default:
-	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-	 throw;
- }
-
-  return KinematicValue;
+ KinematicValue = samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinPar, iSample, iEvent);
+ return KinematicValue;
 }
 
 double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes KinematicParameter, int iSample, int iEvent){
@@ -796,102 +720,8 @@ double samplePDFDUNEBaseNDGAr::CalcXsecWeightFunc(int iSample, int iEvent)
 }
 std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
 {
-//  std::cout << "ReturnKinematicVarBinning" << std::endl;
-  std::vector<double> binningVector;
   KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameterStr));
-
-  switch(KinPar){
-    case kTrueNeutrinoEnergy:
-         for(int ibins =0; ibins<10*10; ibins++){
-           binningVector.push_back((double)(ibins)/10);
-         }
-	 break;
-    case kRecoNeutrinoEnergy:
-        for(int ibins =0; ibins<10*10; ibins++){
-           binningVector.push_back((double)(ibins)/10);
-         } 
-         break;
-    case kRecoXPos:
-    case kTrueXPos:
-	 for(int ibins =0; ibins<259*2; ibins++){
-           binningVector.push_back(ibins-259);
-         }
-         break;
-    case kRecoYPos:
-    case kTrueYPos:
-	 for(int ibins =0; ibins<277*2; ibins++){
-           binningVector.push_back(ibins-277-150);
-         }
-	 break;
-    case kRecoZPos:
-    case kTrueZPos:
- 	 for(int ibins =0; ibins<277*2; ibins++){
-           binningVector.push_back(ibins-277+1486);
-         }
-	 break;
-    case kPionMultiplicity:
-         for(int ibins =0; ibins<10; ibins++){
-           binningVector.push_back(ibins);
-         }
-         break;
-   case kNRecoParticles:
-         for(int ibins =0; ibins<50; ibins++){
-           binningVector.push_back(ibins);
-         }
-         break; 
-   case kInFDV:
-         for(int ibins =0; ibins<3; ibins++){
-           binningVector.push_back(ibins);
-         }
-         break;
-   case kNMuonsRecoOverTruth:
-   case kTrueMinusRecoEnergyRatio:
-         for(int ibins =0; ibins<20*10; ibins++){
-           binningVector.push_back(-10+(double)(ibins)/10);
-         }
-         break;
-   case kTrueMinusRecoEnergy:
-         for(int ibins =0; ibins<20*10; ibins++){
-           binningVector.push_back(-10+(double)(ibins)/10);
-         }
-         break;
-   case kNTrueMuons:
-   case kNRecoMuons:
-         for(int ibins =0; ibins<10; ibins++){
-           binningVector.push_back(ibins);
-         }
-         break;
-    case kRecoLepEnergy:
-        for(int ibins =0; ibins<10*10; ibins++){
-           binningVector.push_back((double)(ibins)/10);
-         } 
-         break;
-    case kTrueLepEnergy:
-        for(int ibins =0; ibins<10*10; ibins++){
-           binningVector.push_back((double)(ibins)/10);
-         } 
-         break;
-    case kTrueRad:
-    case kRecoRad:
-        for(int ibins =0; ibins<300; ibins++){
-           binningVector.push_back(ibins);
-        }
-        break;
-    case kLepPT:
-    case kLepPZ:
-        for(int ibins =0; ibins<10*10; ibins++){
-           binningVector.push_back((double)(ibins)/10);
-        }
-        break;
-    default:
-         for(int ibins =0; ibins<10*100; ibins++){
-           binningVector.push_back((double)(ibins)/100);
-         }
-         break;
- }
-
-
-  return binningVector;
+  return ReturnKinematicParameterBinning(KinPar);
 }
 std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(KinematicTypes KinPar) 
 {
@@ -899,13 +729,13 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
   std::vector<double> binningVector;
   switch(KinPar){
     case kTrueNeutrinoEnergy:
-         for(int ibins =0; ibins<10*10; ibins++){
+         for(double ibins =0; ibins<10*10; ibins++){
            double binval = ibins/10;
            binningVector.push_back(binval);
          }
 	 break;
     case kRecoNeutrinoEnergy:
-        for(int ibins =0; ibins<10*10; ibins++){
+        for(double ibins =0; ibins<10*10; ibins++){
            double binval = ibins/10;
            binningVector.push_back(binval);
  //          std::cout<<"binningvector "<<ibins<<" : "<<binningVector[ibins]<<" binval: "<<binval<<std::endl;
@@ -913,83 +743,82 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
          break;
     case kRecoXPos:
     case kTrueXPos:
-	 for(int ibins =0; ibins<259*2; ibins++){
+	 for(double ibins =0; ibins<259*2; ibins++){
            binningVector.push_back(ibins-259);
          }
          break;
     case kRecoYPos:
     case kTrueYPos:
-	 for(int ibins =0; ibins<277*2; ibins++){
+	 for(double ibins =0; ibins<277*2; ibins++){
            binningVector.push_back(ibins-277-150);
          }
 	 break;
     case kRecoZPos:
     case kTrueZPos:
- 	 for(int ibins =0; ibins<277*2; ibins++){
+ 	 for(double ibins =0; ibins<277*2; ibins++){
            binningVector.push_back(ibins-277+1486);
          }
 	 break;
     case kPionMultiplicity:
-         for(int ibins =0; ibins<10; ibins++){
+         for(double ibins =0; ibins<10; ibins++){
            binningVector.push_back(ibins);
          }
          break;
    case kNRecoParticles:
-         for(int ibins =0; ibins<50; ibins++){
+         for(double ibins =0; ibins<50; ibins++){
            binningVector.push_back(ibins);
          }
          break; 
    case kInFDV:
-         for(int ibins =0; ibins<3; ibins++){
+         for(double ibins =0; ibins<3; ibins++){
            binningVector.push_back(ibins);
          }
          break;
    case kNMuonsRecoOverTruth:
    case kTrueMinusRecoEnergyRatio:
-         for(int ibins =0; ibins<20*10; ibins++){
+         for(double ibins =0; ibins<20*10; ibins++){
            binningVector.push_back(-10+(double)(ibins)/10);
          }
          break;
    case kTrueMinusRecoEnergy:
-         for(int ibins =0; ibins<20*10; ibins++){
+         for(double ibins =0; ibins<20*10; ibins++){
            binningVector.push_back(-10+(double)(ibins)/10);
          }
          break;
    case kNTrueMuons:
    case kNRecoMuons:
-         for(int ibins =0; ibins<10; ibins++){
+         for(double ibins =0; ibins<10; ibins++){
            binningVector.push_back(ibins);
          }
          break;
     case kRecoLepEnergy:
-        for(int ibins =0; ibins<10*10; ibins++){
+        for(double ibins =0; ibins<10*10; ibins++){
            binningVector.push_back((double)(ibins)/10);
          } 
          break;
     case kTrueLepEnergy:
-        for(int ibins =0; ibins<10*10; ibins++){
+        for(double ibins =0; ibins<10*10; ibins++){
            binningVector.push_back((double)(ibins)/10);
          } 
          break;
     case kTrueRad:
     case kRecoRad:
-        for(int ibins =0; ibins<300; ibins++){
+        for(double ibins =0; ibins<300; ibins++){
            binningVector.push_back(ibins);
         }
         break;
     case kLepPT:
     case kLepPZ:
-        for(int ibins =0; ibins<10*10; ibins++){
+        for(double ibins =0; ibins<10*10; ibins++){
            binningVector.push_back((double)(ibins)/10);
         }
         break;
     default:
-         for(int ibins =0; ibins<10*100; ibins++){
+         for(double ibins =0; ibins<10*100; ibins++){
            binningVector.push_back(ibins/100);
          }
          break;
  }
-
 
   return binningVector;
 }
@@ -1122,7 +951,9 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
 
   TH1D* _h1DVar;
   int kPDFBinning = kNKinematicParams; //XVar
-  std::string HistName = KinematicVar1 +"_NDGAr_"+std::to_string((int)(Selection[0][1]));
+  std::string modename = "all";
+  if(SelectionVec.size() != 0){modename = std::to_string((int)(Selection[0][1]));}
+  std::string HistName = KinematicVar1 +"_NDGAr_"+modename;
 //  std::cout<<"HistName: "<<HistName<<std::endl;
 //  std::cout<<"KinematicVar1: "<<KinematicVar1<< " KinematicPar from String: "<<(int)(ReturnKinematicParameterFromString(KinematicVar1))<<std::endl;
   if (ReturnKinematicParameterFromString(KinematicVar1)==kPDFBinning) {
@@ -1323,7 +1154,7 @@ TH2D* samplePDFDUNEBaseNDGAr::get2DVarHist(std::string KinematicVar1,std::string
     } else {
       std::vector<double> xBinEdges = ReturnKinematicParameterBinning(KinematicVar1);
       std::vector<double> yBinEdges = ReturnKinematicParameterBinning(KinematicVar2);
-      for(int i=0; i<xBinEdges.size(); i++){std::cout<<"bin "<<i<<" : "<<xBinEdges[i]<<std::endl;}
+      //for(int i=0; i<xBinEdges.size(); i++){std::cout<<"bin "<<i<<" : "<<xBinEdges[i]<<std::endl;}
       _h2DVar = new TH2D(HistName.c_str(), KinematicVar1.c_str(), xBinEdges.size()-1, xBinEdges.data(), yBinEdges.size()-1, yBinEdges.data());
     }
   }
@@ -1379,6 +1210,7 @@ TH2D* samplePDFDUNEBaseNDGAr::get2DVarHist(std::string KinematicVar1,std::string
 	  } else {
 		Var2_Val = ReturnKinematicParameter(KinematicVar2,i,j);
 	  }
+          std::cout<<"Var1_Val: "<<Var1_Val<<" Var2_Val: "<<Var2_Val<<std::endl;
 	  if (Var1_Val!=__DEFAULT_RETURN_VAL__ && Var2_Val!=__DEFAULT_RETURN_VAL__ ) {
 		_h2DVar->Fill(Var1_Val,Var2_Val,Weight);
 	  }
