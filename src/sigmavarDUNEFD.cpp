@@ -12,7 +12,7 @@
 #include <TColor.h>
 #include <TMath.h>
 
-#include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 #include "manager/manager.h"
 
   //CAFAna binned Oscillation 
@@ -75,11 +75,11 @@ int main (int argc, char *argv[])
 
   // Make PDFs
   std::vector<char*> names;
-  std::vector<samplePDFDUNEBase*>pdfs; 
-  samplePDFDUNEBase *fhc_nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml",xsec);
-  samplePDFDUNEBase *fhc_numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml",xsec);
-  samplePDFDUNEBase *rhc_nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml",xsec);
-  samplePDFDUNEBase *rhc_numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml",xsec);
+  std::vector<samplePDFDUNEAtmBase*>pdfs; 
+  samplePDFDUNEAtmBase *fhc_nue_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml",xsec);
+  samplePDFDUNEAtmBase *fhc_numu_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml",xsec);
+  samplePDFDUNEAtmBase *rhc_nue_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml",xsec);
+  samplePDFDUNEAtmBase *rhc_numu_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml",xsec);
 
   pdfs.push_back(fhc_nue_pdf);
   pdfs.push_back(fhc_numu_pdf);

@@ -1,6 +1,6 @@
 #include "manager/manager.h"
 #include "OscClass/OscClass_CUDAProb3.h"
-#include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 #include <fenv.h>
 
 std::string getNameNoExt(std::string name, std::string ext)  
@@ -93,9 +93,9 @@ int main(int argc, char * argv[]) {
   xsec->setParameters(XsecParVals);
 
   //####################################################################################
-  std::vector<samplePDFDUNEBase*> SamplePDFs;
+  std::vector<samplePDFDUNEAtmBase*> SamplePDFs;
   for (std::string ConfigName : SampleConfigs) {
-    samplePDFDUNEBase* SampleConfig = new samplePDFDUNEBase(POT, ConfigName.c_str(), xsec);
+    samplePDFDUNEAtmBase* SampleConfig = new samplePDFDUNEAtmBase(POT, ConfigName.c_str(), xsec);
     std::cout << ConfigName << " : " << SampleConfig->get1DHist()->Integral() << std::endl;
     SampleConfig->SetOscillator(Oscill);
 

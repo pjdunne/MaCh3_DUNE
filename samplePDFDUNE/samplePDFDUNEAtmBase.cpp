@@ -1,5 +1,5 @@
 #include <TROOT.h>
-#include "samplePDFDUNEBase.h"
+#include "samplePDFDUNEAtmBase.h"
 #include "TString.h"
 #include <assert.h>
 #include <stdexcept>
@@ -12,7 +12,7 @@
 // Constructors for erec-binned errors
 
 //!!rewrite execs to give arguments in new order
-samplePDFDUNEBase::samplePDFDUNEBase(double pot, std::string mc_version, covarianceXsec* xsec_cov)
+samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(double pot, std::string mc_version, covarianceXsec* xsec_cov)
   : samplePDFBase(pot)
 { 
   std::cout << "- Using DUNE sample config in this file " << mc_version << std::endl;
@@ -22,11 +22,11 @@ samplePDFDUNEBase::samplePDFDUNEBase(double pot, std::string mc_version, covaria
 
 }
 
-samplePDFDUNEBase::~samplePDFDUNEBase()
+samplePDFDUNEAtmBase::~samplePDFDUNEAtmBase()
 {
 }
 
-void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov)
+void samplePDFDUNEAtmBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov)
 {
 
   // Create the libconfig object
@@ -107,7 +107,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   //Now down with yaml file for sample
   delete SampleManager;
   std::cout << "Oscnutype size: " << sample_oscnutype.size() << ", dunemcSamples size: " << dunemcSamples.size() << std::endl;  
-  if(sample_oscnutype.size() != dunemcSamples.size()){std::cerr << "[ERROR:] samplePDFDUNEBase::samplePDFDUNEBase() - something went wrong either getting information from sample config" << std::endl; throw;}
+  if(sample_oscnutype.size() != dunemcSamples.size()){std::cerr << "[ERROR:] samplePDFDUNEAtmBase::samplePDFDUNEAtmBase() - something went wrong either getting information from sample config" << std::endl; throw;}
 
   for(unsigned iSample=0 ; iSample < dunemcSamples.size() ; iSample++){
     setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunemcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
@@ -126,7 +126,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   std::cout << "Setup FD MC   " << std::endl;
   std::cout << "################" << std::endl;
 
-  // ETA - If xsec_cov hasn't been passed to the samplePDFDUNEBase constructor then it's NULL
+  // ETA - If xsec_cov hasn't been passed to the samplePDFDUNEAtmBase constructor then it's NULL
   // and the old funcitonality is kepy
   // this calls this function in the core code
   // this needs to come after setupFDMC as otherwise MCSamples.splinefile will be NULL
@@ -195,7 +195,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 }
 
 
-void samplePDFDUNEBase::SetupWeightPointers() {
+void samplePDFDUNEAtmBase::SetupWeightPointers() {
   
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
 	for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
@@ -215,7 +215,7 @@ void samplePDFDUNEBase::SetupWeightPointers() {
 }
 
 
-void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
+void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
 {
   
   // set up splines
@@ -436,7 +436,7 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   
 }
 
-double samplePDFDUNEBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent){
+double samplePDFDUNEAtmBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent){
 
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
  double KinematicValue = -999;
@@ -465,7 +465,7 @@ double samplePDFDUNEBase::ReturnKinematicParameter(std::string KinematicParamete
   return KinematicValue;
 }
 
-double samplePDFDUNEBase::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent){
+double samplePDFDUNEAtmBase::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent){
   KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
   double KinematicValue = -999;
 
@@ -492,7 +492,7 @@ double samplePDFDUNEBase::ReturnKinematicParameter(double KinematicVariable, int
   return KinematicValue;
 }
 
-void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) 
+void samplePDFDUNEAtmBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) 
 {
 
   fdobj->nEvents = duneobj->nEvents;
@@ -592,7 +592,7 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj)
   return;
 }
 
-std::vector<double> samplePDFDUNEBase::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
+std::vector<double> samplePDFDUNEAtmBase::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
 {
   std::cout << "ReturnKinematicVarBinning" << std::endl;
   std::vector<double> binningVector;

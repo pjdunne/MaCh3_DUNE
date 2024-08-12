@@ -1,8 +1,13 @@
-set(HEADERS samplePDFDUNEBase.h
+set(HEADERS
+  samplePDFDUNEAtmBase.h
+  samplePDFDUNEBeamFDBase.h
+  samplePDFDUNEBeamNDBase.h
 )
 
 add_library(SamplePDFDUNE SHARED
-    samplePDFDUNEBase.cpp
+  samplePDFDUNEAtmBase.cpp
+  samplePDFDUNEBeamFDBase.cpp
+  samplePDFDUNEBeamNDBase.cpp
 )
 
 set_target_properties(SamplePDFDUNE PROPERTIES

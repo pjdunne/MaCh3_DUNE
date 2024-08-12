@@ -12,7 +12,7 @@
 #include <TColor.h>
 #include <TMath.h>
 
-#include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 #include "manager/manager.h"
 
 
@@ -115,12 +115,12 @@ int main(int argc, char * argv[]) {
   osc->setParameters(oscpars);
   osc->acceptStep();
 
-  std::vector<samplePDFDUNEBase*> SamplePDFs;
+  std::vector<samplePDFDUNEAtmBase*> SamplePDFs;
 
   // Set some sample....
-  samplePDFDUNEBase * numu_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+  samplePDFDUNEAtmBase * numu_pdf = new samplePDFDUNEAtmBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
   SamplePDFs.push_back(numu_pdf);
-  samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+  samplePDFDUNEAtmBase * nue_pdf = new samplePDFDUNEAtmBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
   SamplePDFs.push_back(nue_pdf);
 
   // Oscillated

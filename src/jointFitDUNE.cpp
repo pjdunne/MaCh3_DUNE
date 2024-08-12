@@ -10,7 +10,7 @@
 #include <TApplication.h>
 #include <TStopwatch.h>
 
-#include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 #include "mcmc/mcmc.h"
 
 int main(int argc, char **argv)
@@ -110,12 +110,12 @@ int main(int argc, char **argv)
   // make PDFs
   bool domaqeh=true;
   std::cout << "I AM CPU" << std::endl;
-  std::vector<samplePDFDUNEBase*> pdfs;
+  std::vector<samplePDFDUNEAtmBase*> pdfs;
   //!!add pdfs vector to make things easier
-  samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
-  samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
-  samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
-  samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+  samplePDFDUNEAtmBase *numu_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+  samplePDFDUNEAtmBase *numubar_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+  samplePDFDUNEAtmBase *nue_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+  samplePDFDUNEAtmBase *nuebar_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
   pdfs.push_back(numu_pdf);
   pdfs.push_back(numubar_pdf);
   pdfs.push_back(nue_pdf);

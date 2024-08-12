@@ -1,5 +1,5 @@
-#ifndef _samplePDFDUNEBase_h_
-#define _samplePDFDUNEBase_h_
+#ifndef _samplePDFDUNEAtmBase_h_
+#define _samplePDFDUNEAtmBase_h_
 
 #include <iostream>
 #include <TTree.h>
@@ -76,13 +76,11 @@ struct dunemc_base {
 
 };
 
-class samplePDFDUNEBase : virtual public samplePDFFDBase
+class samplePDFDUNEAtmBase : virtual public samplePDFFDBase
 {
 public:
-  samplePDFDUNEBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
-  ~samplePDFDUNEBase();
-
-  void setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype);
+  samplePDFDUNEAtmBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
+  ~samplePDFDUNEAtmBase();
 
   double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
  protected:

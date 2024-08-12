@@ -14,7 +14,7 @@
 #include <TColor.h>
 #include <TMath.h>
 
-#include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 
 int main(int argc, char * argv[]) {
 
@@ -40,7 +40,7 @@ int main(int argc, char * argv[]) {
 
   std::cout << "==============================================================================" << std::endl;
 
-  samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
+  samplePDFDUNEAtmBase *numu_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
   numu_pdf->SetOscillator(Oscill);
   
   std::cout << "==============================================================================" << std::endl;

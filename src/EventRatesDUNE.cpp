@@ -12,7 +12,7 @@
 #include <TColor.h>
 #include <TMath.h>
 
-#include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 #include "manager/manager.h"
 
 
@@ -103,16 +103,16 @@ int main(int argc, char * argv[]) {
   osc->setParameters(oscpars);
   osc->acceptStep();
 
-  std::vector<samplePDFDUNEBase*> SamplePDFs;
+  std::vector<samplePDFDUNEAtmBase*> SamplePDFs;
 
   // Set some sample....
-  samplePDFDUNEBase * numu_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+  samplePDFDUNEAtmBase * numu_pdf = new samplePDFDUNEAtmBase(POT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
   SamplePDFs.push_back(numu_pdf);
-  samplePDFDUNEBase * nue_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+  samplePDFDUNEAtmBase * nue_pdf = new samplePDFDUNEAtmBase(POT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
   SamplePDFs.push_back(nue_pdf);
-  samplePDFDUNEBase * numubar_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+  samplePDFDUNEAtmBase * numubar_pdf = new samplePDFDUNEAtmBase(POT, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
   SamplePDFs.push_back(numubar_pdf);
-  samplePDFDUNEBase * nuebar_pdf = new samplePDFDUNEBase(POT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+  samplePDFDUNEAtmBase * nuebar_pdf = new samplePDFDUNEAtmBase(POT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
   SamplePDFs.push_back(nuebar_pdf);
 
    std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;

@@ -14,7 +14,7 @@
 #include <TColor.h>
 #include <TMath.h>
 
-#include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 
 #include "mcmc/mcmc.h"
 
@@ -138,13 +138,13 @@ int main(int argc, char * argv[]) {
 
   Oscill->FillOscillogram(osc->getPropPars(),25.0,0.5);
   
-  std::vector<samplePDFDUNEBase*> pdfs;
-  samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", xsec);
-  samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/AtmSample_nueselec.yaml", xsec);
-  // samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
-  // samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
-  // samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
-  // samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+  std::vector<samplePDFDUNEAtmBase*> pdfs;
+  samplePDFDUNEAtmBase *numu_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", xsec);
+  samplePDFDUNEAtmBase *nue_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/AtmSample_nueselec.yaml", xsec);
+  // samplePDFDUNEAtmBase *numu_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+  // samplePDFDUNEAtmBase *numubar_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+  // samplePDFDUNEAtmBase *nue_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+  // samplePDFDUNEAtmBase *nuebar_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
 
   // std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;
   // std::cout << "FHC 1Rmu:   " << numu_pdf->get1DHist()->Integral() << std::endl;
