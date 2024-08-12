@@ -29,24 +29,8 @@ struct dunemc_base {
   int nEvents; // how many MC events are there                              
   int *Target; //Target the interaction was on
   
-  // spline bins                                                              
-  unsigned int *enu_s_bin;
-  unsigned int *erec_s_bin;
-
-  // flux bin
-  int *flux_bin;
-
-  // xsec bins  
-  std::list< int > *xsec_norms_bins;
-
-  // oscillation: CUDAprob3
-#if defined (CUDA)
-  //cudaprob3::BeamCudaPropagatorSingle *kNu;
-
-#else
-  //cudaprob3::BeamCpuPropagator<double> *kNu; 
-#endif
-
+  int _ipnu;
+  
   // histo pdf bins
   double *rw_erec;
   double *rw_etru;
@@ -77,6 +61,7 @@ struct dunemc_base {
   int *isbound;
   int **rw_ipnu;
 
+  TH1D *modes;
 
   double pot_s; // s is for scale                                             
   double norm_s;//    
@@ -97,54 +82,33 @@ public:
   samplePDFDUNEBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBase();
 
-  void printPosteriors();
-
   void setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype);
 
+  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
   void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
   void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj);
 
   void SetupWeightPointers() override;
-
-  // oscillation: Prob3++ 
-  TH1D *modes;
   
-  bool osc_binned;
-  // an axis to set binned oscillation weights
-  TAxis *osc_binned_axis ;
-
-  //Generic Function applying shifts
-  double CalcXsecWeightFunc(int iSample, int iEvent);
-  //double CalcFuncSystWeight(int iSample, int iEvent);
-  //double ReturnKinematicParameter (KinematicTypes Var, int i, int j);
   double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent) override;
   double ReturnKinematicParameter (double KinematicVariable, int iSample, int iEvent) override;
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
 
-
-  //Likelihood
-  double getCovLikelihood();
-  double getDiscVar(int sample , int event , int varindx);
-
-  int getNMCSamples();
-  int getNEventsInSample(int sample);
-
-
+  inline int getNMCSamples() {return dunemcSamples.size();}
+  inline int getNEventsInSample(int sample) {return dunemcSamples[sample].nEvents;}
+  
   // dunemc
   std::vector<struct dunemc_base> dunemcSamples;
-
 
   TFile *_sampleFile;
   TTree *_data;
   TString _nutype;
   int _mode;
-  float _pnu[50];
-  double _wgtflx;
-  double _wgtosc;
-  int _ipnu;
 
+  int _ipnu;
+  
   // DUNEMC Variables
   double _ev;
   double _erec;
@@ -175,71 +139,9 @@ public:
   double _weight;
 
 
-
-  //covarianceFlux *flux;
-  //covarianceSkDet_joint *skdet_joint;
-  
   // configuration 
   bool iselike;
   bool iscc1pi;
-
-  // Note: the following 4 variables shouldn't be used any more! (From 14/1/2015 - KD). Just kept in for backwards compatibility in compiling, but they have no effect.
-  bool do_flux_rw;
-  bool do_xsec_rw;
-  bool do_det_rw;
-  
-  //stuff for xsec norms  
-  int nxsec_norm_modes;
-  int *xsec_norm_modes;
-  std::vector<std::vector<int> > xsec_norm_pdgs;
-  std::vector<std::vector<int> > xsec_norm_targets;
-  int *xsec_norm_startbin;
-  std::vector<std::string> xsec_norm_names;
-  //std::vector<XsecNorms3> xsec_norms;
-
-  //for nuebar appearance
-  double Beta;
-  bool useBeta;
-  bool applyBetaNue;
-  bool applyBetaDiag;
-
-  vector< double > rwFracs;
-  vector< int > ids;
-
-  // Using the smarter xsec covariance matrix reader?
-  bool DoItSmart;
-
-  // Parameters used in the DoItSmart xsec setup
-  // The old version hard-codes these instead
-  std::vector<int> normParsModes;
-  std::vector< std::vector<int> > normParsTarget;
-  std::vector< std::vector<int> > normParsPDG;
-  std::vector<int> normParsIndex;
-  int nFuncParams;
-  std::vector<int> funcParsIndex;
-  std::vector<std::string> funcParsNames;
-  // spline params (don't technically need, just included for print-screen sanity check purposes)
-  int nSplineParams;
-  std::vector<int> splineParsIndex;
-  std::vector<std::string> splineParsNames;
-
-
- private:
-  void calcXsecNormsBins(dunemc_base* dunemc);
-  //void calcHistoBins();
-  //TH1D *_hPDF1Dtest;
 };
 
 #endif
-
-//init same for all should just take a config with file names
-
-//think about splines
-
-//setcov functions should be doable
-
-//calcoscweights all same
-
-//reweight all the same
-
-//getcovlikelihood 

@@ -83,8 +83,6 @@ else
   echo "******************************************"
 fi
 
-mkdir -pv ${MACH3}/bin
-mkdir -pv ${MACH3}/lib
 mkdir -pv ${MACH3}/plots
 
 echo ========================================================

@@ -29,20 +29,6 @@ samplePDFDUNEBase::~samplePDFDUNEBase()
 void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov)
 {
 
-  Beta=1;
-  useBeta=false;
-  applyBetaNue=false;
-  applyBetaDiag=false;
-
-  //doubled_angle =true ;
-  UseNonDoubledAngles(true);
-  if (doubled_angle) std::cout << "- Using non doubled angles for oscillation parameters" << std::endl;
-
-  osc_binned = false;
-  if (osc_binned) std::cout << "- Using binned oscillation weights" << std::endl;
-
-  modes = new TH1D("modes","",120,-60,60);
-
   // Create the libconfig object
   //libconfig::Config samplecfg;
   // Could turn on automatic type conversion in the future, but could be a bad idea..
@@ -120,7 +106,7 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 
   //Now down with yaml file for sample
   delete SampleManager;
-  std::cout << "Oscnutype size: " << sample_oscnutype.size() << ", dunemcSamples size: " << dunemcSamples.size() << endl;  
+  std::cout << "Oscnutype size: " << sample_oscnutype.size() << ", dunemcSamples size: " << dunemcSamples.size() << std::endl;  
   if(sample_oscnutype.size() != dunemcSamples.size()){std::cerr << "[ERROR:] samplePDFDUNEBase::samplePDFDUNEBase() - something went wrong either getting information from sample config" << std::endl; throw;}
 
   for(unsigned iSample=0 ; iSample < dunemcSamples.size() ; iSample++){
@@ -150,9 +136,9 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
   std::vector<std::string> spline_filepaths;
 
   std::cout << "Now setting up Splines" << std::endl;
+
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-	setupSplines(&MCSamples[sample_vecno[iSample]] , (splineprefix+spline_files[iSample]+splinesuffix).c_str(), MCSamples[iSample].nutype);
-  spline_filepaths.push_back(splineprefix+spline_files[iSample]+splinesuffix);
+    spline_filepaths.push_back(splineprefix+spline_files[iSample]+splinesuffix);
   }
 
   splineFile = new splinesDUNE(xsec_cov);
@@ -187,12 +173,6 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile, covarianceXs
 
   fillSplineBins();
 
-  #ifdef USE_PROB3
-  std::cout << "- Setup Prob3++" << std::endl;
-  #else
-  std::cout << "- Setup CUDAProb3" << std::endl;
-  #endif
-  
   _sampleFile->Close();
   char *histname = (char*)"blah";
   char *histtitle = (char*)"blahblah";
@@ -359,20 +339,16 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
     throw;
   } 
 
-  // now fill the actual variables
-  // duneobj->norm_s = norm->GetBinContent(1);
-  // duneobj->pot_s = pot/norm->GetBinContent(2);
   duneobj->norm_s = 1;
   duneobj->pot_s = 1;
-  //duneobj->norm_s = 1.0;
-  //duneobj->pot_s = 1.0;
+
   std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
   std::cout<< "norm_s = " << duneobj->norm_s << std::endl;
+
   duneobj->nEvents = _data->GetEntries();
   duneobj->nutype = nutype;
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
- 
   
   std::cout << "signal: " << duneobj->signal << std::endl;
   std::cout << "nevents: " << duneobj->nEvents << std::endl;
@@ -398,7 +374,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
   duneobj->rw_truecz = new double[duneobj->nEvents];
 
-
   duneobj->energyscale_w = new double[duneobj->nEvents];
   duneobj->mode = new int[duneobj->nEvents];
   duneobj->rw_lower_erec_1d = new double[duneobj->nEvents]; //lower erec bound for bin
@@ -407,12 +382,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   duneobj->rw_upper_erec_2d = new double[duneobj->nEvents]; //upper erec bound for bin
   duneobj->rw_ipnu = new int*[duneobj->nEvents]; 
 
-  //These spline bins get filled in fillSplineBins
-  duneobj->enu_s_bin = new unsigned int[duneobj->nEvents];
-  duneobj->erec_s_bin = new unsigned int[duneobj->nEvents];
-  //duneobj->theta_s_bin = new unsigned int[duneobj->nEvents];
-  duneobj->flux_bin = new int[duneobj->nEvents];
-  duneobj->xsec_norms_bins = new std::list< int >[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
@@ -421,13 +390,15 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
   for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
     {
       _data->GetEntry(i);
-      //      cout << "Event[" << i << "]: erec " << _erec << endl;
+
       if (iselike) {
-        duneobj->rw_erec[i] = _erec_nue;}
-        //std::cout << "NUE EREC Energy" << std::endl;
-      else {duneobj->rw_erec[i] = _erec;} // in GeV
+        duneobj->rw_erec[i] = _erec_nue;
+      } else {
+	duneobj->rw_erec[i] = _erec;
+      } // in GeV
+
       duneobj->rw_etru[i] = _ev; // in GeV
-      if ( i == 1 ) {std::cout << "Etrue = " << duneobj->rw_etru[i] << std::endl;}
+
       duneobj->rw_cvnnumu[i] = _cvnnumu; 
       duneobj->rw_cvnnue[i] = _cvnnue;
       // duneobj->rw_theta[i] = _LepNuAngle;
@@ -444,14 +415,12 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
       duneobj->rw_vtx_z[i] = _vtx_z;
       duneobj->rw_truecz[i] = _NuMomY/_ev;
 
-	  //Assume everything is on Argon for now....
-	  duneobj->Target[i] = 40;
+      //Assume everything is on Argon for now....
+      duneobj->Target[i] = 40;
  
       duneobj->beam_w[i] = 1.0;
       duneobj->xsec_w[i] = 1.0;
 
-      // fill modes
-      modes->Fill(_mode);
       //!!possible cc1pi exception might need to be 11
       int mode= TMath::Abs(_mode);       
 
@@ -462,10 +431,6 @@ void samplePDFDUNEBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj
       duneobj->flux_w[i] = _weight;
     }
   
-  //std::vector<double> etruVector(duneobj->rw_etru, duneobj->rw_etru + duneobj->nEvents);
-  //duneobj->kNu = new cudaprob3::BeamCpuPropagator<double>(duneobj->nEvents, 1); 
-  //duneobj->kNu = new cudaprob3::BeamCudaPropagatorSingle(0, duneobj->nEvents); 
-  //duneobj->kNu->setEnergyList(etruVector);
   _sampleFile->Close();
   std::cout << "Sample set up OK" << std::endl;
   
@@ -627,81 +592,9 @@ void samplePDFDUNEBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj)
   return;
 }
 
-void samplePDFDUNEBase::setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype) {
-
-  int nevents = fdobj->nEvents;
-  std::cout << "##################" << std::endl;
-  std::cout << "Initialising splines from file: " << (splineFile) << std::endl;
-  std::cout << "##################" << std::endl;
-
-  switch (BinningOpt){
-	case 0:
-	case 1:
-	  fdobj->splineFile = new splinesDUNE(XsecCov);
-	  if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)){
-		std::cerr << "problem setting up splines in erec" << std::endl;
-	  }
-	  break;
-	case 2:
-	  std::cout << "Creating splineDUNEBase" << std::endl;
-	  fdobj->splineFile = new splinesDUNE(XsecCov);
-    std::cout << "splineFile is -> " << fdobj->splineFile << std::endl;
-	  if (!(nutype==1 || nutype==-1 || nutype==2 || nutype==-2)) {
-		std::cerr << "problem setting up splines in erec" << std::endl;
-	  } 
-	  break;
-    default:
-	  break;
-  }
-
-  // ETA - Moved SetupSplineInfoArrays to be here
-  // fdobj->splineFile->SetupSplineInfoArray(xsecCov);
-  // fdobj->splineFile->SetSplineInfoArrays();
-
-  return;
-}
-
-//This is currently here just for show. We'll implement functional parameters soon!
-double samplePDFDUNEBase::CalcXsecWeightFunc(int iSample, int iEvent) 
-{
-  return 1.0;
-}
-
 std::vector<double> samplePDFDUNEBase::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
 {
   std::cout << "ReturnKinematicVarBinning" << std::endl;
   std::vector<double> binningVector;
   return binningVector;
-}
-
-double samplePDFDUNEBase::getDiscVar(int iSample, int iEvent, int varindx) 
-{
-  std::cout << "getDiscVar" << std::endl;
-  return 0.0;
-}
-
-double samplePDFDUNEBase::getCovLikelihood() 
-{
-  std::cout << "getCovLikelihood" << std::endl;
-  return 0.0;
-}
-
-void samplePDFDUNEBase::printPosteriors()
-{
-  std::cout << "printPosteriors" << std::endl;
-}
-
-
-int samplePDFDUNEBase::getNMCSamples()
-{
-  // std::cout << "getNMCSamples" << std::endl;
-  // return 0;
-  return dunemcSamples.size();
-}
-
-int samplePDFDUNEBase::getNEventsInSample(int sample)
-{
-  // std::cout << "getNEventsInSample" << std::endl;
-  // return 0;
-  return dunemcSamples[sample].nEvents;
 }

@@ -9,6 +9,7 @@ def convert_parameter(param:"dict[str, str]") -> dict:
 
     yaml_param['Names'] = {}
     yaml_param['Names']['ParameterName'] = param['name']
+    yaml_param['Names']['FancyName'] = param['name']
 
     yaml_param['ParameterValues'] = {}
     yaml_param['ParameterValues']['PreFitValue'] = float(param['prior']) #TODO: check which is which between prior and nom
@@ -31,7 +32,7 @@ def convert_parameter(param:"dict[str, str]") -> dict:
         if 'fd_mode' in param:
             yaml_param['SplineInformation']['FDMode'] = list(map(int, param['fd_mode'][0]['value'].split()))
         if 'nd_spline_name' in param:
-            yaml_param['SplineInformation']['NDSplineName'] = param['nd_spline_name']
+            yaml_param['SplineInformation']['NDSplineName'] = param['fd_spline_name']
 
     if 'kinematic_cut' in param:
         yaml_param['KinematicCuts'] = []

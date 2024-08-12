@@ -504,8 +504,7 @@ enum MaCh3_Spline_Modes {
 
 
 int MaCh3Mode_to_SplineMode(int iMode){
-
-  //No grouping of modes in MaCh3
+  //No grouping of modes in DUNE
   return iMode;
 }
 

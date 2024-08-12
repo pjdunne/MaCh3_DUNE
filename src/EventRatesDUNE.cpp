@@ -67,13 +67,12 @@ int main(int argc, char * argv[]) {
  
   // ----------------------- COVARIANCE AND SAMPLEPDF OBJECTS ---------------------------------------- //
 
-  gStyle -> SetPalette(1);
-
   // make file to save plots
   TFile *Outfile = new TFile(fitMan->raw()["General"]["Output"]["FileName"].as<std::string>().c_str() , "RECREATE");
 
   //initialise xsec
-  covarianceXsec *xsec = new covarianceXsec(XsecMatrixName.c_str(), XsecMatrixFile.c_str());
+  std::vector<std::string> Vec = {XsecMatrixName};
+  covarianceXsec *xsec = new covarianceXsec(Vec, XsecMatrixFile.c_str());
 
   std::cout << "---------- Printing off nominal parameter values ----------" << std::endl;
   std::cout << "Cross section parameters:" << std::endl;
@@ -98,14 +97,9 @@ int main(int argc, char * argv[]) {
   // Ask config file whether to use reactor constraint
   //std::cout << "use reactor prior is : " << useRC << std::endl ;
 
-  // Use prior for 12 parameters only
-  //osc->setEvalLikelihood(0,false);
-  osc->setEvalLikelihood(1,false);
-  osc->setEvalLikelihood(2,false);
-  //osc->setEvalLikelihood(3,false);
-  osc->setEvalLikelihood(4,false);
-  osc->setEvalLikelihood(5,false);
-  // This line gives a crash and stack trace...
+  std::cout << "DB Need to use osc->setFlatPrior(2,true) " << std::endl;
+  throw;
+  
   osc->setParameters(oscpars);
   osc->acceptStep();
 
@@ -124,9 +118,6 @@ int main(int argc, char * argv[]) {
    std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;
   std::cout << "FHC 1Rmu:   " << numu_pdf->get1DHist()->Integral() << std::endl;
   std::cout << "FHC 1Re:    " << nue_pdf->get1DHist()->Integral() << std::endl;
-  throw;
-
-  
 
   // Oscillated
   osc -> setParameters(oscpars);
