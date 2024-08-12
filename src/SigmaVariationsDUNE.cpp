@@ -344,53 +344,6 @@ int main(int argc, char * argv[]) {
 	}//end of loop over xsec systs
 
   }//end of EvalXsec
-  std::vector<std::string> HistVariables = fitMan->raw()["SigmaVariations"]["KinematicParsToPlot"].as<std::vector<std::string>>();
-  bool StackByMode = fitMan->raw()["SigmaVariations"]["StackByMode"].as<bool>();
-  std::vector<std::string> PlotModes = fitMan->raw()["SigmaVariations"]["PlotModes"].as<std::vector<std::string>>();
-  int Weighted = fitMan->raw()["SigmaVariations"]["Weighted"].as<int>();
-  for(int i =0; i<PlotModes.size(); i++){std::cout<<"Plot Modes "<<i<<" : "<<PlotModes[i]<<" MaCh3 Mode: "<<(int)DUNEString_ToMaCh3Mode(PlotModes[i])<<std::endl;}
-//  std::vector<std::string> HistVariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV"};
-
-  if(StackByMode){ 
-    for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        std::string stackname = HistVariables[ihist];
-        std::cout<<"stackname: "<<stackname<<std::endl;
-        THStack* stack = new THStack(stackname.c_str(), HistVariables[ihist].c_str());
-        TCanvas* canvas = new TCanvas(HistVariables[ihist].c_str(), HistVariables[ihist].c_str());
-        for(int imode = 0; imode<PlotModes.size(); imode++){
-          int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, 1, NULL);
-          histogram->Write();
-          stack->Add(histogram);
-          delete histogram;
-        }
-        canvas->Draw();
-        canvas->cd();
-        stack->Draw();
-        //stack->Write();
-        delete stack;
-        canvas->Write();
-        delete canvas;
-      }
-    }
-  }
-  else{ 
-    for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
-          int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
-          histogram ->Write();
-          delete histogram;
-        }
-      }
-    }
-  } 
   std::cout<<"before closing outputfile"<<std::endl;
   OutputFile->Close();
   std::cout<<"after closing outputfile"<<std::endl;

@@ -120,9 +120,7 @@ int main(int argc, char * argv[]) {
   
   bool efficiency = fitMan->raw()["Selections"]["Efficiency"].as<bool>();
   bool purity = fitMan->raw()["Selections"]["Purity"].as<bool>();
-  bool efficiencyvsenergy = fitMan->raw()["Selections"]["EfficiencyVsEnergy"].as<bool>();
   bool twodimhist = fitMan->raw()["Selections"]["2DHist"].as<bool>();
-//  int n_efficiencysamples = fitMan->raw()["Selections"]["NEfficiencySamples"].as<int>();
 
   if (!addFD && !addND && !addNDGAr) {std::cerr << "[ERROR:] You've chosen NOT to include FD or ND samples in the config file... you need to add something!" << std::endl; throw;}
 
@@ -156,60 +154,10 @@ int main(int argc, char * argv[]) {
       samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_trueselected_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TrueSelected.yaml", xsec);
       SamplePDFs.push_back(FHC_numuCCNDGAr_trueselected_pdf);
     }
-/*    if(efficiency) {
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf);
-    }
-    else if(efficiencyvsenergy){
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_0 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_0.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_0);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_0 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_0.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_0);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_1 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_1.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_1);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_1 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_1.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_1);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_2 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_2.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_2);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_2 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_2.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_2);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_3 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_3.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_3);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_3 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_3.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_3);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_4 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_4.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_4);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_4 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_4.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_4);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_5 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_5.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_5);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_5 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_5.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_5);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_6 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_6.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_6);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_6 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_6.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_6);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_7 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_7.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_7);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_7 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_7.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_7);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_8 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_8.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_8);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_8 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_8.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_8);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_reco_pdf_9 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_RecoCuts_9.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_reco_pdf_9);
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_true_pdf_9 = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec_TruthCuts_9.yaml", xsec);
-      SamplePDFs.push_back(FHC_numuCCNDGAr_true_pdf_9);
-    }*/
     else{
       samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec.yaml", xsec);
       SamplePDFs.push_back(FHC_numuCCNDGAr_pdf);
     }
-//    samplePDFDUNEBaseNDGAr * RHC_numuCCNDGAr_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneND_RHC_CCnumuselec.yaml", xsec);
-//    SamplePDFs.push_back(RHC_numuCCNDGAr_pdf);
   }
 
 
@@ -409,53 +357,11 @@ int main(int argc, char * argv[]) {
 
   }//end of EvalXsec
   std::vector<std::string> HistVariables = fitMan->raw()["Selections"]["KinematicParsToPlot"].as<std::vector<std::string>>();
-  bool StackByMode = fitMan->raw()["Selections"]["StackByMode"].as<bool>();
   std::vector<std::string> PlotModes = fitMan->raw()["Selections"]["PlotModes"].as<std::vector<std::string>>();
   int Weighted = fitMan->raw()["Selections"]["Weighted"].as<int>();
   for(int i =0; i<PlotModes.size(); i++){std::cout<<"Plot Modes "<<i<<" : "<<PlotModes[i]<<" MaCh3 Mode: "<<(int)DUNEString_ToMaCh3Mode(PlotModes[i])<<std::endl;}
 //  std::vector<std::string> HistVariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV"};
-/*
-  if(efficiency){ 
-    for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
-          int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
-          string name = histogram->GetName();
-          string nameadd;
-          if(ipdf ==0){nameadd = "_RECO";}
-          else if(ipdf == 1){nameadd = "_TRUTH";}
-          string newname = name + nameadd;
-          histogram ->SetName(newname.c_str());
-          histogram ->Write();
-          delete histogram;
-        }
-      }
-    }
-  }
-  else if(efficiencyvsenergy){ 
-    for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
-          int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
-          string name = histogram->GetName();
-          string nameadd;
-          string nameadd2;
-          if(ipdf % 2 ==0){nameadd = "_RECO_"; nameadd2 = std::to_string(ipdf/2).c_str();}
-          else if(ipdf % 2 != 0){nameadd = "_TRUTH_"; nameadd2 = std::to_string((ipdf-1)/2).c_str();}
-          string newname = name + nameadd + nameadd2;
-          histogram ->SetName(newname.c_str());
-          histogram ->Write();
-          delete histogram;
-        }
-      }
-    }
-  }*/
+
   if(efficiency){ 
     for(unsigned ipdf = 1 ; ipdf < SamplePDFs.size() ; ipdf++) {
       for(int ihist=0; ihist<HistVariables.size(); ihist++){
@@ -503,7 +409,6 @@ int main(int argc, char * argv[]) {
       for(int ihist=0; ihist<HistVariables.size(); ihist = ihist+2){
         for(int imode = 0; imode<PlotModes.size(); imode++){
           int mode;
-          std::cout<<"ipdf: "<<ipdf<<" ihist: "<<ihist<<" imode: "<<imode<< " SamplePDFs.size(): "<< SamplePDFs.size()<<std::endl;
           if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1; std::cout<<"mode: "<<mode<<std::endl;}
           else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
           TH2D * histogram = (TH2D*)SamplePDFs[ipdf]->get2DVarHist(HistVariables[ihist], HistVariables[ihist+1], mode, -1, Weighted, NULL, NULL);
@@ -528,47 +433,6 @@ int main(int argc, char * argv[]) {
       }
     }
   } 
-/*
-  if(StackByMode){ 
-    for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        std::string stackname = HistVariables[ihist];
-        std::cout<<"stackname: "<<stackname<<std::endl;
-        THStack* stack = new THStack(stackname.c_str(), HistVariables[ihist].c_str());
-        TCanvas* canvas = new TCanvas(HistVariables[ihist].c_str(), HistVariables[ihist].c_str());
-        for(int imode = 0; imode<PlotModes.size(); imode++){
-          int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, 1, NULL);
-          histogram->Write();
-          stack->Add(histogram);
-          delete histogram;
-        }
-        canvas->Draw();
-        canvas->cd();
-        stack->Draw();
-        //stack->Write();
-        delete stack;
-        canvas->Write();
-        delete canvas;
-      }
-    }
-  }
-  else{ 
-    for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
-          int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
-          histogram ->Write();
-          delete histogram;
-        }
-      }
-    }
-  }*/ 
   std::cout<<"before closing outputfile"<<std::endl;
   OutputFile->Close();
   std::cout<<"after closing outputfile"<<std::endl;
