@@ -71,9 +71,9 @@ NERSC Perlmutter:
 /pscratch/sd/l/lwarsame
 ~~~~~~~~~~~~~~
 
-We are also getting the inputs placed on CVMFS and will eventually live here:
+CVMFS:
 ~~~~~~~~~~~~~~
-/cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
+/cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2
 ~~~~~~~~~~~~~~
 
 Current (Feburary 2024) FD event rates using DUNE FD TDR inputs are below (ND is still under-development). These are made using xsec systematics at their prior central value. Oscillation parameter values used here are:
