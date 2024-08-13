@@ -49,6 +49,23 @@ if(DEFINED ROOT_CXX_STANDARD AND ROOT_CXX_STANDARD GREATER CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD ${ROOT_CXX_STANDARD})
 endif()
 
+############################  DUNEAnaObj  ####################################
+
+find_package(duneanaobj)
+
+if(NOT duneanaobj_FOUND)
+  CPMFindPackage(
+    NAME duneanaobj
+    GIT_TAG "patch-1"
+    GITHUB_REPOSITORY dbarrow257/duneanaobj
+    OPTIONS
+    "STANDALONE_BUILD ON"
+  )
+endif()
+
+if(NOT TARGET duneanaobj::All)
+  cmessage(FATAL_ERROR "MaCh3 DUNE Expected dependency target: duneanaobj::All")
+endif()
 
 ##################################  MaCh3  ######################################
 #If MaCh3 was sourced find it, otherwise use CPM
@@ -65,7 +82,6 @@ else()
   FILE(GLOB MaCh3Exe $ENV{MaCh3_ROOT}/Diagnostics/*)
   FILE(COPY ${MaCh3Exe} DESTINATION ${CMAKE_BINARY_DIR}/Diagnostics/)
 endif()
-#dump_cmake_variables(MaCh3)
 
 if(NOT TARGET MaCh3::All)
   cmessage(FATAL_ERROR "MaCh3 DUNE Expected dependency target: MaCh3::All, did you source setup.MaCh3.sh")

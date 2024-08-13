@@ -16,6 +16,7 @@
 
 #include "samplePDFDUNE/samplePDFDUNEBeamFDBase.h"
 #include "samplePDFDUNE/samplePDFDUNEBeamNDBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamNDGarBase.h"
 
 int main(int argc, char * argv[]) {
 
@@ -43,6 +44,7 @@ int main(int argc, char * argv[]) {
 
   samplePDFDUNEBeamFDBase *numu_FD_pdf = new samplePDFDUNEBeamFDBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
   samplePDFDUNEBeamNDBase *numu_ND_pdf = new samplePDFDUNEBeamNDBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
+  samplePDFDUNEBeamNDGarBase *numu_NDGar_pdf = new samplePDFDUNEBeamNDGarBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
   numu_FD_pdf->SetOscillator(Oscill);
   
   std::cout << "==============================================================================" << std::endl;

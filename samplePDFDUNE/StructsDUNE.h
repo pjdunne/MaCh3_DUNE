@@ -57,7 +57,6 @@ inline std::vector<double> get_default_CAFana_bins(){
 }
 
 struct dunemc_base {
-
   int nutype;
   int oscnutype;
   bool signal; // true if signue
@@ -116,10 +115,34 @@ struct dunemc_base {
   int *isbound;
 
   double *rw_truecz;
+
+  int *nproton; ///< number of (post-FSI) primary protons
+  int *nneutron; ///< number of (post-FSI) primary neutrons
+  int *npip; ///< number of (post-FSI) primary pi+
+  int *npim; ///< number of (post-FSI) primary pi-
+  int *npi0; ///< number of (post-FSI) primary pi0
+
+  int *ntruemuon; //number of true muons
+  int *ntruemuonprim; //number of true primary muons
+  int *nrecomuon; //number of reconstructed muons
+  double *nmuonsratio; //number of reco muons divided by number of true muons
+
+  double *rw_lep_pT;  //transverse lepton momentum
+  double *rw_lep_pZ; //parallel lepton momentum
+  double *rw_reco_vtx_x;
+  double *rw_reco_vtx_y;
+  double *rw_reco_vtx_z;
+  double *rw_reco_rad;
+  double *rw_rad;
+
+  double *rw_elep_reco;
+  double *rw_elep_true;
+
+  int *nrecoparticles;
+  bool *in_fdv;
 };
 
 enum KinematicTypes {
-
   kTrueNeutrinoEnergy = 0,
   kRecoNeutrinoEnergy = 1,
   kTrueQ2 = 2,
@@ -134,6 +157,25 @@ enum KinematicTypes {
   kIsCC = 11,
   kRecoQ = 12,
   kTrueCosZ = 13,
+  kPionMultiplicity = 14,
+  kNRecoParticles = 15,
+  kInFDV = 16,
+  kTrueMinusRecoEnergy = 17,
+  kTrueMinusRecoEnergyRatio = 18, 
+  kNRecoMuons = 19,
+  kNTrueMuons = 20,
+  kNMuonsRecoOverTruth = 21,
+  kTrueLepEnergy = 22,
+  kRecoLepEnergy = 23,
+  kRecoXPos = 24,
+  kRecoYPos = 25,
+  kRecoZPos = 26,
+  kRecoRad = 27,
+  kM3Mode = 28,
+  kOscChannel = 29,
+  kLepPT = 30,
+  kLepPZ = 31,
+  kTrueRad = 32,
   kNKinematicParams
 };
 
@@ -151,6 +193,25 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("IsCC") != std::string::npos) {return kIsCC;}
   if (KinematicParameterStr.find("RecoQ") != std::string::npos) {return kRecoQ;}
   if (KinematicParameterStr.find("TrueCosZ") != std::string::npos) {return kTrueCosZ;}
+  if (KinematicParameterStr.find("TrueRad") != std::string::npos) {return kTrueRad;}
+  if (KinematicParameterStr.find("PionMultiplicity") != std::string::npos) {return kPionMultiplicity;}
+  if (KinematicParameterStr.find("NRecoParticles") != std::string::npos) {return kNRecoParticles;}
+  if (KinematicParameterStr.find("InFDV") != std::string::npos) {return kInFDV;}
+  if (KinematicParameterStr.find("TrueMinusRecoEnergyRatio") != std::string::npos) {return kTrueMinusRecoEnergyRatio;}
+  if (KinematicParameterStr.find("TrueMinusRecoEnergy") != std::string::npos) {return kTrueMinusRecoEnergy;}
+  if (KinematicParameterStr.find("NRecoMuons") != std::string::npos) {return kNRecoMuons;}
+  if (KinematicParameterStr.find("NTrueMuons") != std::string::npos) {return kNTrueMuons;}
+  if (KinematicParameterStr.find("NMuonsRecoOverTruth") != std::string::npos) {return kNMuonsRecoOverTruth;}
+  if (KinematicParameterStr.find("TrueLepEnergy") != std::string::npos) {return kTrueLepEnergy;}
+  if (KinematicParameterStr.find("RecoLepEnergy") != std::string::npos) {return kRecoLepEnergy;}
+  if (KinematicParameterStr.find("RecoXPos") != std::string::npos) {return kRecoXPos;}
+  if (KinematicParameterStr.find("RecoYPos") != std::string::npos) {return kRecoYPos;}
+  if (KinematicParameterStr.find("RecoZPos") != std::string::npos) {return kRecoZPos;}
+  if (KinematicParameterStr.find("RecoRad") != std::string::npos) {return kRecoRad;}
+  if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
+  if (KinematicParameterStr.find("OscChannel") != std::string::npos) {return kOscChannel;}
+  if (KinematicParameterStr.find("LepPT") != std::string::npos) {return kLepPT;}
+  if (KinematicParameterStr.find("LepPZ") != std::string::npos) {return kLepPZ;}
   return kNKinematicParams; 
 }
 
