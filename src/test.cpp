@@ -14,7 +14,8 @@
 #include <TColor.h>
 #include <TMath.h>
 
-#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamFDBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamNDBase.h"
 
 int main(int argc, char * argv[]) {
 
@@ -40,14 +41,15 @@ int main(int argc, char * argv[]) {
 
   std::cout << "==============================================================================" << std::endl;
 
-  samplePDFDUNEAtmBase *numu_pdf = new samplePDFDUNEAtmBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
-  numu_pdf->SetOscillator(Oscill);
+  samplePDFDUNEBeamFDBase *numu_FD_pdf = new samplePDFDUNEBeamFDBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
+  samplePDFDUNEBeamNDBase *numu_ND_pdf = new samplePDFDUNEBeamNDBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
+  numu_FD_pdf->SetOscillator(Oscill);
   
   std::cout << "==============================================================================" << std::endl;
   
-  numu_pdf->reweight(Osc->getPropPars());
-  TH2D *numu_asimov = (TH2D*)numu_pdf->get2DHist()->Clone("numu_asimov");
-  std::cout << numu_asimov->Integral()/1. << std::endl;
+  numu_FD_pdf->reweight(Osc->getPropPars());
+  TH2D *numu_FD_asimov = (TH2D*)numu_FD_pdf->get2DHist()->Clone("numu_asimov");
+  std::cout << numu_FD_asimov->Integral()/1. << std::endl;
 }
 
 

@@ -284,7 +284,7 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
   set2DBinning(sample_erec_bins.size()-1, erec_bin_edges, sample_theta_bins.size()-1, theta_bin_edges); 
 }
 
-void samplePDFDUNEBeamNDBase::setupWeightPointers() {
+void samplePDFDUNEBeamNDBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendmcSamples.size(); ++i) {
 	for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
 	  //DB Setting total weight pointers
@@ -462,6 +462,28 @@ double samplePDFDUNEBeamNDBase::ReturnKinematicParameter(std::string KinematicPa
 
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
  double KinematicValue = -999;
+
+ switch(KinPar){
+   case kTrueNeutrinoEnergy:
+	 KinematicValue = dunendmcSamples[iSample].rw_etru[iEvent]; 
+	 break;
+   case kIsCC:
+	 KinematicValue = dunendmcSamples[iSample].rw_isCC[iEvent];
+	   break;
+   case kRecoQ:
+	 KinematicValue = dunendmcSamples[iSample].rw_reco_q[iEvent];
+	   break;
+   default:
+	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
+	 throw;
+ }
+
+  return KinematicValue;
+}
+
+double samplePDFDUNEBeamNDBase::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
+  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
+  double KinematicValue = -999;
 
  switch(KinPar){
    case kTrueNeutrinoEnergy:

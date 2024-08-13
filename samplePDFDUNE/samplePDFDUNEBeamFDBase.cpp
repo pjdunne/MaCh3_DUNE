@@ -303,7 +303,7 @@ void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covari
 }
 
 
-void samplePDFDUNEBeamFDBase::setupWeightPointers() {
+void samplePDFDUNEBeamFDBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
 	for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
 	  //DB Setting total weight pointers
@@ -512,8 +512,38 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   std::cout << "Sample set up OK" << std::endl;  
 }
 
-double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
+double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
+  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
+  double KinematicValue = -999;
 
+ switch(KinPar){
+   case kTrueNeutrinoEnergy:
+	 KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
+	 break;
+   case kTrueXPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
+	   break;
+   case kTrueYPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
+	   break;
+   case kTrueZPos:
+	 KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
+	   break;
+   case kCVNNumu:
+	 KinematicValue = dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
+	   break;
+   case kCVNNue:
+	 KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
+	   break;
+   default:
+	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
+	 throw;
+ }
+
+  return KinematicValue;
+}
+
+double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
  double KinematicValue = -999;
 

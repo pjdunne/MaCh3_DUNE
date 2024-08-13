@@ -32,12 +32,12 @@ public:
   void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
   void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile);
 
-  void setupWeightPointers();
+  void SetupWeightPointers();
 
-  double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent);
+  double ReturnKinematicParameter (double KinematicVariable, int iSample, int iEvent);
+  double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
 
-  //Apply shifts from functional parameters
   void applyShifts(int iSample, int iEvent);
 
   // dunemc
