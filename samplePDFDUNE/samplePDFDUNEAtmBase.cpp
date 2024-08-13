@@ -100,7 +100,7 @@ void samplePDFDUNEAtmBase::init(double pot, std::string samplecfgfile, covarianc
   // create dunemc storage
   int nSamples = SampleManager->raw()["NSubSamples"].as<int>();
   for (int i=0;i<nSamples;i++) {
-    struct duneatmmc_base obj = duneatmmc_base();
+    struct dunemc_base obj = dunemc_base();
     dunemcSamples.push_back(obj);
   }
 
@@ -215,7 +215,7 @@ void samplePDFDUNEAtmBase::SetupWeightPointers() {
 }
 
 
-void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, duneatmmc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
+void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
 {
   
   // set up splines
@@ -226,109 +226,60 @@ void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, duneatmmc_base *d
   _data = (TTree*)_sampleFile->Get("cafTree");
   // _data = (TTree*)_sampleFile->Get("caf");
 
-  _isND = false;
-
   if(_data){
     std::cout << "Found mtuple tree is " << sampleFile << std::endl;
     std::cout << "N of entries: " << _data->GetEntries() << std::endl;
   }
   
-  if (_isND) {
-    _data->SetBranchStatus("*", 0);
-    _data->SetBranchStatus("Ev", 1);
-    _data->SetBranchAddress("Ev", &_ev);
-    _data->SetBranchStatus("Ev_reco", 1);
-    _data->SetBranchAddress("Ev_reco", &_erec);
-    _data->SetBranchStatus("Ev_reco", 1);
-    _data->SetBranchAddress("Ev_reco", &_erec_nue);
-    _data->SetBranchStatus("mode",1);
-    _data->SetBranchAddress("mode",&_mode);
-    _data->SetBranchAddress("NuMomX", &_NuMomX);
-    _data->SetBranchAddress("NuMomY", &_NuMomY);
-    _data->SetBranchAddress("NuMomZ", &_NuMomZ);
-    _data->SetBranchAddress("LepMomX", &_LepMomX);
-    _data->SetBranchAddress("LepMomY", &_LepMomY);
-    _data->SetBranchAddress("LepMomZ", &_LepMomZ);
-    _data->SetBranchStatus("cvnnumu",1);
-    _data->SetBranchAddress("cvnnumu", &_cvnnumu);
-    _data->SetBranchStatus("cvnnue",1);
-    _data->SetBranchAddress("cvnnue", &_cvnnue);
-    _data->SetBranchStatus("isCC", 1);
-    _data->SetBranchAddress("isCC", &_isCC);
-    _data->SetBranchStatus("nuPDGunosc", 1);
-    _data->SetBranchAddress("nuPDGunosc", &_nuPDGunosc);
-    _data->SetBranchStatus("nuPDG", 1);
-    _data->SetBranchAddress("nuPDG", &_nuPDGunosc);
-    _data->SetBranchStatus("run", 1);
-    _data->SetBranchAddress("run", &_run);
-    _data->SetBranchStatus("isFHC", 1);
-    _data->SetBranchAddress("isFHC", &_isFHC);
-    _data->SetBranchStatus("BeRPA_A_cvwgt", 1);
-    _data->SetBranchAddress("BeRPA_A_cvwgt", &_BeRPA_cvwgt);
-    _data->SetBranchStatus("vtx_x", 1);
-    _data->SetBranchAddress("vtx_x", &_vtx_x);
-    _data->SetBranchStatus("vtx_y", 1);
-    _data->SetBranchAddress("vtx_y", &_vtx_y);
-    _data->SetBranchStatus("vtx_z", 1);
-    _data->SetBranchAddress("vtx_z", &_vtx_z);  
-    _data->SetBranchStatus("LepPDG",1); 
-    _data->SetBranchAddress("LepPDG",&_ipnu); 
-    _data->SetBranchStatus("LepNuAngle",1); 
-    _data->SetBranchAddress("LepNuAngle",&_LepTheta); 
-    _data->SetBranchStatus("Q2",1); 
-    _data->SetBranchAddress("Q2",&_Q2); 
-  }
-  else {	
-    _data->SetBranchStatus("*", 0);
-    _data->SetBranchStatus("Ev", 1);
-    _data->SetBranchAddress("Ev", &_ev);
-    _data->SetBranchStatus("Ev_reco_numu", 1);
-    _data->SetBranchAddress("Ev_reco_numu", &_erec);
-    _data->SetBranchStatus("Ev_reco_nue", 1);
-    _data->SetBranchAddress("Ev_reco_nue", &_erec_nue);
-    _data->SetBranchStatus("mode",1);
-    _data->SetBranchAddress("mode",&_mode);
-    _data->SetBranchAddress("NuMomX", &_NuMomX);
-    _data->SetBranchStatus("NuMomY", 1);
-    _data->SetBranchAddress("NuMomY", &_NuMomY);
-    _data->SetBranchAddress("NuMomZ", &_NuMomZ);
-    _data->SetBranchStatus("LepMomX", 1);
-    _data->SetBranchAddress("LepMomX", &_LepMomX);
-    _data->SetBranchStatus("LepMomY", 1);
-    _data->SetBranchAddress("LepMomY", &_LepMomY);
-    _data->SetBranchStatus("LepMomZ", 1);
-    _data->SetBranchAddress("LepMomZ", &_LepMomZ);
-    _data->SetBranchStatus("cvnnumu",1);
-    _data->SetBranchAddress("cvnnumu", &_cvnnumu);
-    _data->SetBranchStatus("cvnnue",1);
-    _data->SetBranchAddress("cvnnue", &_cvnnue);
-    _data->SetBranchStatus("isCC", 1);
-    _data->SetBranchAddress("isCC", &_isCC);
-    _data->SetBranchStatus("nuPDGunosc", 1);
-    _data->SetBranchAddress("nuPDGunosc", &_nuPDGunosc);
-    _data->SetBranchStatus("nuPDG", 1);
-    _data->SetBranchAddress("nuPDG", &_nuPDGunosc);
-    _data->SetBranchStatus("run", 1);
-    _data->SetBranchAddress("run", &_run);
-    _data->SetBranchStatus("isFHC", 1);
-    _data->SetBranchAddress("isFHC", &_isFHC);
-    _data->SetBranchStatus("BeRPA_A_cvwgt", 1);
-    _data->SetBranchAddress("BeRPA_A_cvwgt", &_BeRPA_cvwgt);
-    _data->SetBranchStatus("vtx_x", 1);
-    _data->SetBranchAddress("vtx_x", &_vtx_x);
-    _data->SetBranchStatus("vtx_y", 1);
-    _data->SetBranchAddress("vtx_y", &_vtx_y);
-    _data->SetBranchStatus("vtx_z", 1);
-    _data->SetBranchAddress("vtx_z", &_vtx_z);  
-    _data->SetBranchStatus("LepPDG",1); 
-    _data->SetBranchAddress("LepPDG",&_ipnu); 
-    _data->SetBranchStatus("LepNuAngle",1); 
-    _data->SetBranchAddress("LepNuAngle",&_LepTheta); 
-    _data->SetBranchStatus("Q2",1); 
-    _data->SetBranchAddress("Q2",&_Q2);
-    _data->SetBranchStatus("weight",1); 
-    _data->SetBranchAddress("weight",&_weight);
- }
+  _data->SetBranchStatus("*", 0);
+  _data->SetBranchStatus("Ev", 1);
+  _data->SetBranchAddress("Ev", &_ev);
+  _data->SetBranchStatus("Ev_reco_numu", 1);
+  _data->SetBranchAddress("Ev_reco_numu", &_erec);
+  _data->SetBranchStatus("Ev_reco_nue", 1);
+  _data->SetBranchAddress("Ev_reco_nue", &_erec_nue);
+  _data->SetBranchStatus("mode",1);
+  _data->SetBranchAddress("mode",&_mode);
+  _data->SetBranchAddress("NuMomX", &_NuMomX);
+  _data->SetBranchStatus("NuMomY", 1);
+  _data->SetBranchAddress("NuMomY", &_NuMomY);
+  _data->SetBranchAddress("NuMomZ", &_NuMomZ);
+  _data->SetBranchStatus("LepMomX", 1);
+  _data->SetBranchAddress("LepMomX", &_LepMomX);
+  _data->SetBranchStatus("LepMomY", 1);
+  _data->SetBranchAddress("LepMomY", &_LepMomY);
+  _data->SetBranchStatus("LepMomZ", 1);
+  _data->SetBranchAddress("LepMomZ", &_LepMomZ);
+  _data->SetBranchStatus("cvnnumu",1);
+  _data->SetBranchAddress("cvnnumu", &_cvnnumu);
+  _data->SetBranchStatus("cvnnue",1);
+  _data->SetBranchAddress("cvnnue", &_cvnnue);
+  _data->SetBranchStatus("isCC", 1);
+  _data->SetBranchAddress("isCC", &_isCC);
+  _data->SetBranchStatus("nuPDGunosc", 1);
+  _data->SetBranchAddress("nuPDGunosc", &_nuPDGunosc);
+  _data->SetBranchStatus("nuPDG", 1);
+  _data->SetBranchAddress("nuPDG", &_nuPDGunosc);
+  _data->SetBranchStatus("run", 1);
+  _data->SetBranchAddress("run", &_run);
+  _data->SetBranchStatus("isFHC", 1);
+  _data->SetBranchAddress("isFHC", &_isFHC);
+  _data->SetBranchStatus("BeRPA_A_cvwgt", 1);
+  _data->SetBranchAddress("BeRPA_A_cvwgt", &_BeRPA_cvwgt);
+  _data->SetBranchStatus("vtx_x", 1);
+  _data->SetBranchAddress("vtx_x", &_vtx_x);
+  _data->SetBranchStatus("vtx_y", 1);
+  _data->SetBranchAddress("vtx_y", &_vtx_y);
+  _data->SetBranchStatus("vtx_z", 1);
+  _data->SetBranchAddress("vtx_z", &_vtx_z);  
+  _data->SetBranchStatus("LepPDG",1); 
+  _data->SetBranchAddress("LepPDG",&_ipnu); 
+  _data->SetBranchStatus("LepNuAngle",1); 
+  _data->SetBranchAddress("LepNuAngle",&_LepTheta); 
+  _data->SetBranchStatus("Q2",1); 
+  _data->SetBranchAddress("Q2",&_Q2);
+  _data->SetBranchStatus("weight",1); 
+  _data->SetBranchAddress("weight",&_weight);
 
   //FIX Commenting out for now
   TH1D* norm = (TH1D*)_sampleFile->Get("norm");
@@ -360,28 +311,19 @@ void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, duneatmmc_base *d
   duneobj->rw_Q2 = new double[duneobj->nEvents];
   duneobj->beam_w = new double[duneobj->nEvents];
   duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->xsec_w = new double[duneobj->nEvents];
   duneobj->rw_cvnnumu = new double[duneobj->nEvents];
   duneobj->rw_cvnnue = new double[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
   duneobj->rw_run = new int[duneobj->nEvents];
-  duneobj->rw_isFHC = new int[duneobj->nEvents];
   duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
   duneobj->rw_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
   duneobj->rw_truecz = new double[duneobj->nEvents];
 
-  duneobj->energyscale_w = new double[duneobj->nEvents];
   duneobj->mode = new int[duneobj->nEvents];
-  duneobj->rw_lower_erec_1d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_1d = new double[duneobj->nEvents]; //upper erec bound for bin
-  duneobj->rw_lower_erec_2d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_2d = new double[duneobj->nEvents]; //upper erec bound for bin
-  duneobj->rw_ipnu = new int*[duneobj->nEvents]; 
-
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
@@ -408,7 +350,6 @@ void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, duneatmmc_base *d
       duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
       duneobj->rw_nuPDG[i] = _nuPDG;
       duneobj->rw_run[i] = _run;
-      duneobj->rw_isFHC[i] = _isFHC;
       duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
       duneobj->rw_vtx_x[i] = _vtx_x;
       duneobj->rw_vtx_y[i] = _vtx_y;
@@ -419,15 +360,12 @@ void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, duneatmmc_base *d
       duneobj->Target[i] = 40;
  
       duneobj->beam_w[i] = 1.0;
-      duneobj->xsec_w[i] = 1.0;
 
       //!!possible cc1pi exception might need to be 11
       int mode= TMath::Abs(_mode);       
 
       duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
  
-      duneobj->energyscale_w[i] = 1.0;
-      
       duneobj->flux_w[i] = _weight;
     }
   
@@ -492,7 +430,7 @@ double samplePDFDUNEAtmBase::ReturnKinematicParameter(double KinematicVariable, 
   return KinematicValue;
 }
 
-void samplePDFDUNEAtmBase::setupFDMC(duneatmmc_base *duneobj, fdmc_base *fdobj) 
+void samplePDFDUNEAtmBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) 
 {
 
   fdobj->nEvents = duneobj->nEvents;

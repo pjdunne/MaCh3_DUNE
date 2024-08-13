@@ -86,14 +86,8 @@ struct dunemc_base {
   double *rw_mom;
   double *rw_theta;
   double *rw_Q2;
-  double *rw_pdf_bin_1d;
-  double *rw_lower_erec_1d;
-  double *rw_upper_erec_1d;
-  double *rw_pdf_bin_2d;
-  double *rw_lower_erec_2d;
-  double *rw_upper_erec_2d;
 
-    double *rw_cvnnumu;
+  double *rw_cvnnumu;
   double *rw_cvnnue;
   double *rw_cvnnumu_shifted;
   double *rw_cvnnue_shifted;
@@ -117,11 +111,11 @@ struct dunemc_base {
 
   double *beam_w;
   double *flux_w;
-  double *xsec_w;
-  double *energyscale_w;
 
   int *mode;
   int *isbound;
+
+  double *rw_truecz;
 };
 
 enum KinematicTypes {

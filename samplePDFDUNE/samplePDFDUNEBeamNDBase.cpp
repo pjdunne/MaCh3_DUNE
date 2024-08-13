@@ -398,7 +398,6 @@ void samplePDFDUNEBeamNDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   duneobj->rw_erec_shifted = new double[duneobj->nEvents];
   duneobj->rw_theta = new double[duneobj->nEvents];
   duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->xsec_w = new double[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->rw_reco_q = new int[duneobj->nEvents];
   duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
@@ -418,15 +417,7 @@ void samplePDFDUNEBeamNDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   duneobj->rw_ePi0 = new double[duneobj->nEvents];
   duneobj->rw_eN = new double[duneobj->nEvents];
 
-  duneobj->energyscale_w = new double[duneobj->nEvents];
   duneobj->mode = new int[duneobj->nEvents];
-  duneobj->rw_lower_erec_1d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_1d = new double[duneobj->nEvents]; //upper erec bound for bin
-  duneobj->rw_lower_erec_2d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_2d = new double[duneobj->nEvents]; //upper erec bound for bin
-
-  //These spline bins get filled in fillSplineBins
-  // change so only points to one
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
@@ -463,12 +454,10 @@ void samplePDFDUNEBeamNDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
       
       //Assume everything is on Argon for now....
       duneobj->Target[i] = 40;
-      duneobj->xsec_w[i] = 1.0;
       
       int mode= TMath::Abs(_mode);       
       duneobj->mode[i]=GENIEMode_ToMaCh3Mode(mode, _isCC);
  
-      duneobj->energyscale_w[i] = 1.0;
       duneobj->flux_w[i] = 1.0;
     }
   

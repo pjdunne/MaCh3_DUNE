@@ -25,6 +25,8 @@ public:
   samplePDFDUNEBeamNDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBeamNDBase();
 
+  //DB This should be removed once core-develop has the virtual function removed
+  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
   void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);

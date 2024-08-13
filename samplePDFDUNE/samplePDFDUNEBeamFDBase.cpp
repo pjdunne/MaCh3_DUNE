@@ -449,7 +449,6 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
 
   duneobj->rw_theta = new double[duneobj->nEvents];
   duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->xsec_w = new double[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
@@ -458,14 +457,7 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
 
-  duneobj->energyscale_w = new double[duneobj->nEvents];
   duneobj->mode = new int[duneobj->nEvents];
-  duneobj->rw_lower_erec_1d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_1d = new double[duneobj->nEvents]; //upper erec bound for bin
-  duneobj->rw_lower_erec_2d = new double[duneobj->nEvents]; //lower erec bound for bin
-  duneobj->rw_upper_erec_2d = new double[duneobj->nEvents]; //upper erec bound for bin
-
-  // change so only points to one
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
@@ -491,19 +483,19 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
 	    duneobj->rw_erec_lep[i] = (double)_erec_lep; 
       }
 
-	  duneobj->rw_eRecoP[i] = (double)_eRecoP; 
-	  duneobj->rw_eRecoPip[i] = (double)_eRecoPip; 
-	  duneobj->rw_eRecoPim[i] = (double)_eRecoPim; 
-	  duneobj->rw_eRecoPi0[i] = (double)_eRecoPi0; 
-	  duneobj->rw_eRecoN[i] = (double)_eRecoN; 
-
-	  duneobj->rw_LepE[i] = (double)_LepE; 
-	  duneobj->rw_eP[i] = (double)_eP; 
-	  duneobj->rw_ePip[i] = (double)_ePip; 
-	  duneobj->rw_ePim[i] = (double)_ePim; 
-	  duneobj->rw_ePi0[i] = (double)_ePi0; 
-	  duneobj->rw_eN[i] = (double)_eN; 
-
+      duneobj->rw_eRecoP[i] = (double)_eRecoP; 
+      duneobj->rw_eRecoPip[i] = (double)_eRecoPip; 
+      duneobj->rw_eRecoPim[i] = (double)_eRecoPim; 
+      duneobj->rw_eRecoPi0[i] = (double)_eRecoPi0; 
+      duneobj->rw_eRecoN[i] = (double)_eRecoN; 
+      
+      duneobj->rw_LepE[i] = (double)_LepE; 
+      duneobj->rw_eP[i] = (double)_eP; 
+      duneobj->rw_ePip[i] = (double)_ePip; 
+      duneobj->rw_ePim[i] = (double)_ePim; 
+      duneobj->rw_ePi0[i] = (double)_ePi0; 
+      duneobj->rw_eN[i] = (double)_eN; 
+      
       duneobj->rw_etru[i] = (double)_ev;
       duneobj->rw_theta[i] = (double)_LepNuAngle;
       duneobj->rw_isCC[i] = _isCC;
@@ -517,13 +509,9 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
       //Assume everything is on Argon for now....
       duneobj->Target[i] = 40;
       
-      duneobj->xsec_w[i] = 1.0;
-
       int mode= TMath::Abs(_mode);       
       duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
  
-      duneobj->energyscale_w[i] = 1.0;
-      
       duneobj->flux_w[i] = 1.0;
     }
   
@@ -603,7 +591,6 @@ void samplePDFDUNEBeamFDBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, 
 	fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
 	fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
 	fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
-	//ETA - set these to a dummy value to begin with, these get set in set1DBinning or set2DBinning
 	fdobj->NomXBin[iEvent] = -1;
 	fdobj->NomYBin[iEvent] = -1;
 	fdobj->XBin[iEvent] = -1;
