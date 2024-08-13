@@ -18,13 +18,7 @@ samplePDFDUNEBeamNDBase::~samplePDFDUNEBeamNDBase() {
 }
 
 void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov) {
-  std::string mtupleprefix;
-  std::string mtuplesuffix;
-  std::string splineprefix;
-  std::string splinesuffix;
-
   char* sample_char = (char*)samplecfgfile.c_str();
-  //ETA - trying to read stuff from yaml file
   manager* SampleManager = new manager(sample_char);
 
   //Bools
@@ -33,10 +27,10 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
   //Inputs
-  mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
-  mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
-  splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
-  splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
+  std::string mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
+  std::string mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
+  std::string splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
+  std::string splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
 
   //Binning
   BinningOpt = SampleManager->raw()["Binning"]["BinningOpt"].as<int>();  
@@ -134,7 +128,6 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
   n_res_nd_pos = -999;
   em_res_nd_pos = -999;
 
-  
   nNDDetectorSystPointers = funcParsIndex.size();
   std::cout << "nNDDetectorSystPointers = " << nNDDetectorSystPointers << std::endl;
   NDDetectorSystPointers = std::vector<const double*>(nNDDetectorSystPointers);

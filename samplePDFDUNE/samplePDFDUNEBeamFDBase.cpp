@@ -18,13 +18,7 @@ samplePDFDUNEBeamFDBase::~samplePDFDUNEBeamFDBase() {
 }
 
 void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov) {
-  std::string mtupleprefix;
-  std::string mtuplesuffix;
-  std::string splineprefix;
-  std::string splinesuffix;
-
   char* sample_char = (char*)samplecfgfile.c_str();
-  //ETA - trying to read stuff from yaml file
   manager* SampleManager = new manager(sample_char);
 
   //Bools
@@ -33,10 +27,10 @@ void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covari
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
   //Inputs
-  mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
-  mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
-  splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
-  splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
+  std::string mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
+  std::string mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
+  std::string splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
+  std::string splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
 
   //Binning
   BinningOpt = SampleManager->raw()["Binning"]["BinningOpt"].as<int>();  
@@ -62,7 +56,6 @@ void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covari
 	sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
 	sample_signal.push_back(osc_channel["signal"].as<bool>());
   }
-
 
   //Now loop over the kinematic cuts
   for ( auto const &SelectionCuts : SampleManager->raw()["SelectionCuts"]) {
@@ -91,11 +84,11 @@ void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covari
   //Now down with yaml file for sample
   delete SampleManager;
   if(sample_oscnutype.size() != dunemcSamples.size()){std::cerr << "[ERROR:] samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase() - something went wrong either getting information from sample config" << std::endl; throw;}
-
+  
   for(unsigned iSample=0 ; iSample < dunemcSamples.size() ; iSample++){
     setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunemcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
   }
-
+  
   for (int i=0;i<nSamples;i++) {
     struct fdmc_base obj = fdmc_base();
     MCSamples.push_back(obj);
