@@ -21,7 +21,7 @@
 
 
 //constructors are same for all three so put in here
-struct dunemc_base {
+struct duneatmmc_base {
 
   int nutype;            
   int oscnutype;    
@@ -85,8 +85,8 @@ public:
   double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
-  void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
-  void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj);
+  void setupDUNEMC(const char *sampleInputFile, duneatmmc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
+  void setupFDMC(duneatmmc_base *duneobj, fdmc_base *fdobj);
 
   void SetupWeightPointers() override;
   
@@ -98,7 +98,7 @@ public:
   inline int getNEventsInSample(int sample) {return dunemcSamples[sample].nEvents;}
   
   // dunemc
-  std::vector<struct dunemc_base> dunemcSamples;
+  std::vector<struct duneatmmc_base> dunemcSamples;
 
   TFile *_sampleFile;
   TTree *_data;

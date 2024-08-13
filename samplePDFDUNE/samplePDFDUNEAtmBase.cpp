@@ -100,7 +100,7 @@ void samplePDFDUNEAtmBase::init(double pot, std::string samplecfgfile, covarianc
   // create dunemc storage
   int nSamples = SampleManager->raw()["NSubSamples"].as<int>();
   for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
+    struct duneatmmc_base obj = duneatmmc_base();
     dunemcSamples.push_back(obj);
   }
 
@@ -215,7 +215,7 @@ void samplePDFDUNEAtmBase::SetupWeightPointers() {
 }
 
 
-void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
+void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, duneatmmc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
 {
   
   // set up splines
@@ -492,7 +492,7 @@ double samplePDFDUNEAtmBase::ReturnKinematicParameter(double KinematicVariable, 
   return KinematicValue;
 }
 
-void samplePDFDUNEAtmBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) 
+void samplePDFDUNEAtmBase::setupFDMC(duneatmmc_base *duneobj, fdmc_base *fdobj) 
 {
 
   fdobj->nEvents = duneobj->nEvents;

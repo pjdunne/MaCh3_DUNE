@@ -7,43 +7,17 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-
-//#define DEBUG
-
-// Constructors for erec-binned errors
-
-//!!rewrite execs to give arguments in new order
-samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov)
-  : samplePDFBase(pot)
-{ 
+samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov) : samplePDFBase(pot) { 
   std::cout << "- Using DUNE sample config in this file " << mc_version << std::endl;
   //ETA - safety feature so you can't pass a NULL xsec_cov
   if(xsec_cov == NULL){std::cerr << "[ERROR:] You've passed me a NULL xsec covariance matrix... I need this to setup splines!" << std::endl; throw;}
   init(pot, mc_version, xsec_cov);          
-
 }
 
-samplePDFDUNEBeamFDBase::~samplePDFDUNEBeamFDBase()
-{
+samplePDFDUNEBeamFDBase::~samplePDFDUNEBeamFDBase() {
 }
 
-void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov)
-{
-
-  Beta=1;
-  useBeta=false;
-  applyBetaNue=false;
-  applyBetaDiag=false;
-
-  //doubled_angle =true ;
-  UseNonDoubledAngles(true);
-  if (doubled_angle) std::cout << "- Using non doubled angles for oscillation parameters" << std::endl;
-
-  osc_binned = false;
-  if (osc_binned) std::cout << "- Using binned oscillation weights" << std::endl;
-
-  modes = new TH1D("modes","",120,-60,60);
-
+void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov) {
   std::string mtupleprefix;
   std::string mtuplesuffix;
   std::string splineprefix;
@@ -319,8 +293,6 @@ void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covari
   fillSplineBins();
   
   _sampleFile->Close();
-  char *histname = (char*)"blah";
-  char *histtitle = (char*)"blahblah";
 
   std::cout << "-------------------------------------------------------------------" <<std::endl;
 
@@ -329,19 +301,16 @@ void samplePDFDUNEBeamFDBase::init(double pot, std::string samplecfgfile, covari
   //to be what we actually want
   _hPDF1D = new TH1D("hErec_nue", "Reconstructed Energy", 200, 0 , 50.0);
   dathist = new TH1D("dat_nue","",200,0, 50.0); 
-  _hPDF2D = new TH2D(histname,histtitle,15,0,50.0*1000,15,0,150);
+  _hPDF2D = new TH2D("blah","blah",15,0,50.0*1000,15,0,150);
   dathist2d = new TH2D("dat2d_nue","",15,0,1500,15,0,150);
 
   //ETA Don't forget the -1 on the size here, as it's number of bins not bin edges
   set1DBinning(sample_erec_bins.size()-1, erec_bin_edges);
   set2DBinning(sample_erec_bins.size()-1, erec_bin_edges, sample_theta_bins.size()-1, theta_bin_edges); 
-
-  return;
 }
 
 
 void samplePDFDUNEBeamFDBase::setupWeightPointers() {
-  
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
 	for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
 	  //DB Setting total weight pointers
@@ -355,13 +324,10 @@ void samplePDFDUNEBeamFDBase::setupWeightPointers() {
 	  MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
 	}
   }
-
-  return;
 }
 
 
-void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
-{
+void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats) {
   
   // set up splines
   std::cout << "-------------------------------------------------------------------" << std::endl;
@@ -454,7 +420,6 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
  
-  
   std::cout << "signal: " << duneobj->signal << std::endl;
   std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
@@ -500,14 +465,10 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   duneobj->rw_lower_erec_2d = new double[duneobj->nEvents]; //lower erec bound for bin
   duneobj->rw_upper_erec_2d = new double[duneobj->nEvents]; //upper erec bound for bin
 
-  //These spline bins get filled in fillSplineBins
-  duneobj->flux_bin = new int[duneobj->nEvents];
-  duneobj->xsec_norms_bins = new std::list< int >[duneobj->nEvents];
   // change so only points to one
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
-  
 
   //FILL DUNE STRUCT
   for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
@@ -553,16 +514,12 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
       duneobj->rw_vtx_y[i] = (double)_vtx_y;
       duneobj->rw_vtx_z[i] = (double)_vtx_z;
 
-	  //Assume everything is on Argon for now....
-	  duneobj->Target[i] = 40;
- 
+      //Assume everything is on Argon for now....
+      duneobj->Target[i] = 40;
+      
       duneobj->xsec_w[i] = 1.0;
 
-      // fill modes
-      modes->Fill(_mode);
-      //!!possible cc1pi exception might need to be 11
       int mode= TMath::Abs(_mode);       
-
       duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
  
       duneobj->energyscale_w[i] = 1.0;
@@ -571,11 +528,10 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
     }
   
   _sampleFile->Close();
-  std::cout << "Sample set up OK" << std::endl;
-  
+  std::cout << "Sample set up OK" << std::endl;  
 }
 
-double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent){
+double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
 
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
  double KinematicValue = -999;
@@ -607,8 +563,7 @@ double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(std::string KinematicPa
   return KinematicValue;
 }
 
-void samplePDFDUNEBeamFDBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile) 
-{
+void samplePDFDUNEBeamFDBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile)  {
 
   fdobj->nEvents = duneobj->nEvents;
   fdobj->nutype = duneobj->nutype;
@@ -687,12 +642,9 @@ void samplePDFDUNEBeamFDBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, 
 	}
 
   }
-
-  return;
 }
 
-void samplePDFDUNEBeamFDBase::applyShifts(int iSample, int iEvent)
-{
+void samplePDFDUNEBeamFDBase::applyShifts(int iSample, int iEvent) {
 
   // reset erec back to original value
   dunemcSamples[iSample].rw_erec_shifted[iEvent] = dunemcSamples[iSample].rw_erec[iEvent];
@@ -765,45 +717,8 @@ void samplePDFDUNEBeamFDBase::applyShifts(int iSample, int iEvent)
   CVNNueFD(FDDetectorSystPointers[20], &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent]);
 }
 
-//This is currently here just for show. We'll implement functional parameters soon!
-double samplePDFDUNEBeamFDBase::CalcXsecWeightFunc(int iSample, int iEvent) 
-{
-  return 1.0;
-}
-
-std::vector<double> samplePDFDUNEBeamFDBase::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
-{
+std::vector<double> samplePDFDUNEBeamFDBase::ReturnKinematicParameterBinning(std::string KinematicParameterStr) {
   std::cout << "ReturnKinematicVarBinning" << std::endl;
   std::vector<double> binningVector;
   return binningVector;
-}
-
-double samplePDFDUNEBeamFDBase::getDiscVar(int iSample, int iEvent, int varindx) 
-{
-  std::cout << "getDiscVar" << std::endl;
-  return 0.0;
-}
-
-double samplePDFDUNEBeamFDBase::getCovLikelihood() 
-{
-  std::cout << "getCovLikelihood" << std::endl;
-  return 0.0;
-}
-
-void samplePDFDUNEBeamFDBase::printPosteriors()
-{
-  std::cout << "printPosteriors" << std::endl;
-}
-
-
-int samplePDFDUNEBeamFDBase::getNMCSamples()
-{
-  std::cout << "getNMCSamples" << std::endl;
-  return 0;
-}
-
-int samplePDFDUNEBeamFDBase::getNEventsInSample(int sample)
-{
-  std::cout << "getNEventsInSample" << std::endl;
-  return 0;
 }

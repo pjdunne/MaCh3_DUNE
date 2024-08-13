@@ -19,8 +19,6 @@
 
 #define __LARGE_WEIGHT__ 100
 
-
-
 #include <iostream>
 #include <vector>
 #include <TSpline.h>
@@ -57,6 +55,74 @@ inline std::vector<double> get_default_CAFana_bins(){
   return edges;
 
 }
+
+struct dunemc_base {
+
+  int nutype;
+  int oscnutype;
+  bool signal; // true if signue
+  int nEvents; // how many MC events are there
+  int *Target; //Target the interaction was on
+  
+  double *rw_erec;
+  double *rw_erec_shifted;
+  double *rw_erec_had;
+  double *rw_erec_lep;
+  double *rw_yrec;
+  double *rw_eRecoP;
+  double *rw_eRecoPip;
+  double *rw_eRecoPim;
+  double *rw_eRecoPi0;
+  double *rw_eRecoN;
+
+  double *rw_LepE;
+  double *rw_eP;
+  double *rw_ePip;
+  double *rw_ePim;
+  double *rw_ePi0;
+  double *rw_eN;
+
+  double *rw_etru;
+  double *rw_mom;
+  double *rw_theta;
+  double *rw_Q2;
+  double *rw_pdf_bin_1d;
+  double *rw_lower_erec_1d;
+  double *rw_upper_erec_1d;
+  double *rw_pdf_bin_2d;
+  double *rw_lower_erec_2d;
+  double *rw_upper_erec_2d;
+
+    double *rw_cvnnumu;
+  double *rw_cvnnue;
+  double *rw_cvnnumu_shifted;
+  double *rw_cvnnue_shifted;
+  int *rw_reco_nue;
+  int *rw_reco_numu;
+  double *rw_berpaacvwgt;
+  int    *rw_isCC;
+  int    *rw_nuPDGunosc;
+  int    *rw_nuPDG;
+  int    *rw_run;
+  bool    *rw_isFHC;
+  double *rw_vtx_x;
+  double *rw_vtx_y;
+  double *rw_vtx_z;
+  double dummy_y;
+  int *rw_reco_q;
+  double *reco_numu;
+
+  double pot_s;
+  double norm_s;
+
+  double *beam_w;
+  double *flux_w;
+  double *xsec_w;
+  double *energyscale_w;
+
+  int *mode;
+  int *isbound;
+};
 
 enum KinematicTypes {
 
