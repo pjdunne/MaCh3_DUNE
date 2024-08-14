@@ -8,9 +8,8 @@
 #include "manager/manager.h"
 #include "TLeaf.h"
 
-samplePDFDUNEBeamNDGarBase::samplePDFDUNEBeamNDGarBase(double pot, std::string mc_version, covarianceXsec* xsec_cov) : samplePDFBase(pot) { 
-  if(xsec_cov == NULL){std::cerr << "[ERROR:] You've passed me a NULL xsec covariance matrix... I need this to setup splines!" << std::endl; throw;}
-  init(pot, mc_version, xsec_cov);          
+samplePDFDUNEBeamNDGarBase::samplePDFDUNEBeamNDGarBase(double pot, std::string mc_version, covarianceXsec* XsecCov) : samplePDFFDBase(pot, mc_version, XsecCov) { 
+  Init();
 }
 
 samplePDFDUNEBeamNDGarBase::~samplePDFDUNEBeamNDGarBase() {
@@ -18,11 +17,7 @@ samplePDFDUNEBeamNDGarBase::~samplePDFDUNEBeamNDGarBase() {
   delete _sampleFile;
 }
 
-void samplePDFDUNEBeamNDGarBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov) {
-  char* sample_char = (char*)samplecfgfile.c_str();
-  //ETA - trying to read stuff from yaml file
-  manager* SampleManager = new manager(sample_char);
-
+void samplePDFDUNEBeamNDGarBase::Init() {
   //Bools
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
@@ -35,13 +30,6 @@ void samplePDFDUNEBeamNDGarBase::init(double pot, std::string samplecfgfile, cov
   std::string mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
   std::string splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
   std::string splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
-
-  //Binning
-  BinningOpt = SampleManager->raw()["Binning"]["BinningOpt"].as<int>();  
-  std::vector<double> sample_erec_bins = SampleManager->raw()["Binning"]["XVarBins"].as<std::vector<double>>();
-  std::vector<double> sample_theta_bins = SampleManager->raw()["Binning"]["YVarBins"].as<std::vector<double>>();
-
-  samplename = SampleManager->raw()["SampleName"].as<std::string>();
 
   std::vector<std::string> mtuple_files;
   std::vector<std::string> spline_files;
@@ -80,29 +68,18 @@ void samplePDFDUNEBeamNDGarBase::init(double pot, std::string samplecfgfile, cov
     StoredSelection.push_back(tempselection);
   }
   
-  //Make some arrays so we can initialise _hPDF1D and _hPDF2D with these
-  double erec_bin_edges[sample_erec_bins.size()];
-  double theta_bin_edges[sample_theta_bins.size()];
-  for(unsigned erec_i = 0 ; erec_i < sample_erec_bins.size() ; erec_i++){erec_bin_edges[erec_i] = sample_erec_bins[erec_i];}
-  for(unsigned theta_i = 0 ; theta_i < sample_theta_bins.size() ; theta_i++){theta_bin_edges[theta_i] = sample_theta_bins[theta_i];}
-  
   // create dunendgarmc storage
-  int nSamples = SampleManager->raw()["NSubSamples"].as<int>();
   for (int i=0;i<nSamples;i++) {
     struct dunemc_base obj = dunemc_base();
     dunendgarmcSamples.push_back(obj);
   }
+
   //Now down with yaml file for sample
   delete SampleManager;
   for(unsigned iSample=0 ; iSample < dunendgarmcSamples.size() ; iSample++){
     setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunendgarmcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
   }
 
-  for (int i=0;i<nSamples;i++) {
-    struct fdmc_base obj = fdmc_base();
-    MCSamples.push_back(obj);
-  }
-  
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
     setupFDMC(&dunendgarmcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]], (splineprefix+spline_files[iSample]+splinesuffix).c_str());
   }
@@ -111,19 +88,13 @@ void samplePDFDUNEBeamNDGarBase::init(double pot, std::string samplecfgfile, cov
   std::cout << "Setup FD MC   " << std::endl;
   std::cout << "################" << std::endl;
 
-  // ETA - If xsec_cov hasn't been passed to the samplePDFDUNEBaseND constructor then it's NULL
-  // and the old funcitonality is kept
-  // this calls this function in the core code
-  // this needs to come after setupFDMC as otherwise MCSamples.splinefile will be NULL
-  SetXsecCov(xsec_cov); 
-  
   std::vector<std::string> spline_filepaths;
   
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
     spline_filepaths.push_back(splineprefix+spline_files[iSample]+splinesuffix);
   }
   
-  splineFile = new splinesDUNE(xsec_cov);
+  splineFile = new splinesDUNE(XsecCov);
   
   //////////////////////////////////
   // Now add samples to spline monolith
@@ -158,18 +129,6 @@ void samplePDFDUNEBeamNDGarBase::init(double pot, std::string samplecfgfile, cov
   _sampleFile->Close();
   
   std::cout << "-------------------------------------------------------------------" <<std::endl;
-  
-  //The binning here is arbitrary, now we get info from cfg so the 
-  //set1DBinning and set2Dbinning calls below will make the binning
-  //to be what we actually want
-  _hPDF1D = new TH1D("hErec_nue", "Reconstructed Energy", 200, 0 , 50.0);
-  dathist = new TH1D("dat_nue","",200,0, 50.0); 
-  _hPDF2D = new TH2D("blah","blah",15,0,50.0*1000,15,0,150);
-  dathist2d = new TH2D("dat2d_nue","",15,0,1500,15,0,150);
-
-  //ETA Don't forget the -1 on the size here, as it's number of bins not bin edges
-  set1DBinning(sample_erec_bins.size()-1, erec_bin_edges);
-  set2DBinning(sample_erec_bins.size()-1, erec_bin_edges, sample_theta_bins.size()-1, theta_bin_edges); 
 }
 
 void samplePDFDUNEBeamNDGarBase::SetupWeightPointers() {

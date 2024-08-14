@@ -74,7 +74,7 @@ find_package(MaCh3)
 if(NOT MaCh3_FOUND)
   CPMFindPackage(
       NAME MaCh3
-      GIT_TAG "develop"
+      GIT_TAG "develop_DUNECoreMerge"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()

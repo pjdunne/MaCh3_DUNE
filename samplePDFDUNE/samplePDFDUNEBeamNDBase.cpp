@@ -7,20 +7,13 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamNDBase::samplePDFDUNEBeamNDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov) : samplePDFBase(pot) {
-  std::cout << "- Using DUNE sample config in this file " << mc_version << std::endl;
-  //ETA - safety feature so you can't pass a NULL xsec_cov
-  if(xsec_cov == NULL){std::cerr << "[ERROR:] You've passed me a NULL xsec covariance matrix... I need this to setup splines!" << std::endl; throw;}
-  init(pot, mc_version, xsec_cov);          
+samplePDFDUNEBeamNDBase::samplePDFDUNEBeamNDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov) : samplePDFFDBase(pot, mc_version, xsec_cov) {
 }
 
 samplePDFDUNEBeamNDBase::~samplePDFDUNEBeamNDBase() {
 }
 
-void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covarianceXsec *xsec_cov) {
-  char* sample_char = (char*)samplecfgfile.c_str();
-  manager* SampleManager = new manager(sample_char);
-
+void samplePDFDUNEBeamNDBase::Init() {
   //Bools
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
@@ -31,13 +24,6 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
   std::string mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
   std::string splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
   std::string splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
-
-  //Binning
-  BinningOpt = SampleManager->raw()["Binning"]["BinningOpt"].as<int>();  
-  std::vector<double> sample_erec_bins = SampleManager->raw()["Binning"]["XVarBins"].as<std::vector<double>>();
-  std::vector<double> sample_theta_bins = SampleManager->raw()["Binning"]["YVarBins"].as<std::vector<double>>();
-
-  samplename = SampleManager->raw()["SampleName"].as<std::string>();
 
   std::vector<std::string> mtuple_files;
   std::vector<std::string> spline_files;
@@ -57,7 +43,6 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
 	sample_signal.push_back(osc_channel["signal"].as<bool>());
   }
 
-
   //Now loop over the kinematic cuts
   for ( auto const &SelectionCuts : SampleManager->raw()["SelectionCuts"]) {
 	std::cout << "Looping over selection cuts " << std::endl;
@@ -69,14 +54,7 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
   }
   NSelections = SelectionStr.size();
 
-  //Make some arrays so we can initialise _hPDF1D and _hPDF2D with these
-  double erec_bin_edges[sample_erec_bins.size()];
-  double theta_bin_edges[sample_theta_bins.size()];
-  for(unsigned erec_i = 0 ; erec_i < sample_erec_bins.size() ; erec_i++){erec_bin_edges[erec_i] = sample_erec_bins[erec_i];}
-  for(unsigned theta_i = 0 ; theta_i < sample_theta_bins.size() ; theta_i++){theta_bin_edges[theta_i] = sample_theta_bins[theta_i];}
-
   // create dunendmc storage
-  int nSamples = SampleManager->raw()["NSubSamples"].as<int>();
   for (int i=0;i<nSamples;i++) {
     struct dunemc_base obj = dunemc_base();
     dunendmcSamples.push_back(obj);
@@ -89,11 +67,6 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
     setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunendmcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
   }
 
-  for (int i=0;i<nSamples;i++) {
-    struct fdmc_base obj = fdmc_base();
-    MCSamples.push_back(obj);
-  }
-
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
     setupFDMC(&dunendmcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]], (splineprefix+spline_files[iSample]+splinesuffix).c_str());
   }
@@ -101,12 +74,6 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
   std::cout << "################" << std::endl;
   std::cout << "Setup FD MC   " << std::endl;
   std::cout << "################" << std::endl;
-
-  // ETA - If xsec_cov hasn't been passed to the samplePDFDUNEBeamNDBase constructor then it's NULL
-  // and the old funcitonality is kept
-  // this calls this function in the core code
-  // this needs to come after setupFDMC as otherwise MCSamples.splinefile will be NULL
-  SetXsecCov(xsec_cov); 
 
   tot_escale_nd_pos = -999;
   tot_escale_sqrt_nd_pos = -999;
@@ -138,96 +105,96 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
 
 	if (name == "TotalEScaleND") {
 	  tot_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(tot_escale_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_nd_pos);
 	}
 	else if (name == "TotalEScaleSqrtND") {
 	  tot_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(tot_escale_sqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_sqrt_nd_pos);
 	}
 
 	else if (name == "TotalEScaleInvSqrtND") {
 	  tot_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(tot_escale_invsqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_invsqrt_nd_pos);
 	}
 
 	else if (name == "HadEScaleND") {
 	  had_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(had_escale_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_nd_pos);
 	}
 
 	else if (name == "HadEScaleSqrtND") {
 	  had_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(had_escale_sqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_sqrt_nd_pos);
 	}
 
 	else if (name == "HadEScaleInvSqrtND") {
 	  had_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(had_escale_invsqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_invsqrt_nd_pos);
 	}
 
 	else if (name == "MuEScaleND") {
 	  mu_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(mu_escale_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_nd_pos);
 	}
 
 	else if (name == "MuEScaleSqrtND") {
 	  mu_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(mu_escale_sqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_sqrt_nd_pos);
 	}
 
 	else if (name == "MuEScaleInvSqrtND") {
 	  mu_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(mu_escale_invsqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_invsqrt_nd_pos);
 	}
 
 	else if (name == "NEScaleND") {
 	  n_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(n_escale_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_nd_pos);
 	}
 
 	else if (name == "NEScaleSqrtND") {
 	  n_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(n_escale_sqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_sqrt_nd_pos);
 	}
 
 	else if (name == "NEScaleInvSqrtND") {
 	  n_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(n_escale_invsqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_invsqrt_nd_pos);
 	}
 
 	else if (name == "EMEScaleND") {
 	  em_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_escale_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_nd_pos);
 	}
 
 	else if (name == "EMEScaleSqrtND") {
 	  em_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_escale_sqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_sqrt_nd_pos);
 	}
 
 	else if (name == "EMEScaleInvSqrtND") {
 	  em_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_escale_invsqrt_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_invsqrt_nd_pos);
 	}
 
 	else if (name == "HadResND") {
 	  had_res_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(had_res_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_res_nd_pos);
 	}
 
 	else if (name == "MuResND") {
 	  mu_res_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(mu_res_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_res_nd_pos);
 	}
 
 	else if (name == "NResND") {
 	  n_res_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(n_res_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_res_nd_pos);
 	}
 
 	else if (name == "EMResND") {
 	  em_res_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = xsec_cov->retPointer(em_res_nd_pos);
+	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_res_nd_pos);
 	}
 
 	else { 
@@ -243,7 +210,7 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
     spline_filepaths.push_back(splineprefix+spline_files[iSample]+splinesuffix);
   }
 
-  splineFile = new splinesDUNE(xsec_cov);
+  splineFile = new splinesDUNE(XsecCov);
 
   std::cout<<"Adding samples to spline monolith"<<std::endl;
   std::cout << "samplename is " << samplename << std::endl;
@@ -270,18 +237,6 @@ void samplePDFDUNEBeamNDBase::init(double pot, std::string samplecfgfile, covari
   _sampleFile->Close();
 
   std::cout << "-------------------------------------------------------------------" <<std::endl;
-
-  //The binning here is arbitrary, now we get info from cfg so the 
-  //set1DBinning and set2Dbinning calls below will make the binning
-  //to be what we actually want
-  _hPDF1D = new TH1D("hErec_nue", "Reconstructed Energy", 200, 0 , 50.0);
-  dathist = new TH1D("dat_nue","",200,0, 50.0); 
-  _hPDF2D = new TH2D("blah","blah",15,0,50.0*1000,15,0,150);
-  dathist2d = new TH2D("dat2d_nue","",15,0,1500,15,0,150);
-
-  //ETA Don't forget the -1 on the size here, as it's number of bins not bin edges
-  set1DBinning(sample_erec_bins.size()-1, erec_bin_edges);
-  set2DBinning(sample_erec_bins.size()-1, erec_bin_edges, sample_theta_bins.size()-1, theta_bin_edges); 
 }
 
 void samplePDFDUNEBeamNDBase::SetupWeightPointers() {
