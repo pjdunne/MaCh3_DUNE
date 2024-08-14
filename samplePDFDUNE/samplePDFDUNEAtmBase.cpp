@@ -41,34 +41,19 @@ void samplePDFDUNEAtmBase::Init() {
     sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
     sample_signal.push_back(osc_channel["signal"].as<bool>());
   }
-  
-  //Now loop over the kinematic cuts
-  for ( auto const &SelectionCuts : SampleManager->raw()["SelectionCuts"]) {
-    std::cout << "Looping over selection cuts " << std::endl;
-    SelectionStr.push_back(SelectionCuts["KinematicStr"].as<std::string>());
-    
-    SelectionBounds.push_back(SelectionCuts["Bounds"].as<std::vector<double>>());
-    std::cout << "Found cut on string " << SelectionCuts["KinematicStr"].as<std::string>() << std::endl;
-    std::cout << "With bounds " << SelectionCuts["Bounds"].as<std::vector<double>>()[0] << " to " << SelectionCuts["Bounds"].as<std::vector<double>>()[1] << std::endl;
-  }
-  NSelections = SelectionStr.size();
-  
+
   // create dunemc storage
   for (int i=0;i<nSamples;i++) {
     struct dunemc_base obj = dunemc_base();
     dunemcSamples.push_back(obj);
   }
   
-  //Now down with yaml file for sample
-  delete SampleManager;
-  std::cout << "Oscnutype size: " << sample_oscnutype.size() << ", dunemcSamples size: " << dunemcSamples.size() << std::endl;  
-  if(sample_oscnutype.size() != dunemcSamples.size()){std::cerr << "[ERROR:] samplePDFDUNEAtmBase::samplePDFDUNEAtmBase() - something went wrong either getting information from sample config" << std::endl; throw;}
-  
   for(unsigned iSample=0 ; iSample < dunemcSamples.size() ; iSample++){
     setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunemcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
   }
   
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
+    InitialiseSingleFDMCObject(iSample,dunemcSamples[iSample].nEvents);
     setupFDMC(&dunemcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]]);
   }
   
@@ -122,30 +107,27 @@ void samplePDFDUNEAtmBase::Init() {
 
 void samplePDFDUNEAtmBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
-	for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
-	  //DB Setting total weight pointers
-	  MCSamples[i].ntotal_weight_pointers[j] = 6;
-	  MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
-	  MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].pot_s);
-	  MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].norm_s);
-	  MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
-	  MCSamples[i].total_weight_pointers[j][3] = &(dunemcSamples[i].rw_berpaacvwgt[j]);
-	  MCSamples[i].total_weight_pointers[j][4] = &(MCSamples[i].flux_w[j]);
-	  MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
-	}
+    for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
+      MCSamples[i].ntotal_weight_pointers[j] = 6;
+      MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].pot_s);
+      MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].norm_s);
+      MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
+      MCSamples[i].total_weight_pointers[j][3] = &(dunemcSamples[i].rw_berpaacvwgt[j]);
+      MCSamples[i].total_weight_pointers[j][4] = &(MCSamples[i].flux_w[j]);
+      MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
+    }
   }
-
+  
 }
 
 
 void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats) {
-  // set up splines
   std::cout << "-------------------------------------------------------------------" << std::endl;
   std::cout << "input file: " << sampleFile << std::endl;
   
   _sampleFile = new TFile(sampleFile, "READ");
   _data = (TTree*)_sampleFile->Get("cafTree");
-  // _data = (TTree*)_sampleFile->Get("caf");
 
   if(_data){
     std::cout << "Found mtuple tree is " << sampleFile << std::endl;
@@ -205,18 +187,11 @@ void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *dune
   duneobj->norm_s = 1;
   duneobj->pot_s = 1;
 
-  std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
-  std::cout<< "norm_s = " << duneobj->norm_s << std::endl;
-
   duneobj->nEvents = _data->GetEntries();
   duneobj->nutype = nutype;
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
-  
-  std::cout << "signal: " << duneobj->signal << std::endl;
-  std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
-  // allocate memory for dunemc variables
   duneobj->rw_etru = new double[duneobj->nEvents];
   duneobj->rw_erec = new double[duneobj->nEvents];
   duneobj->rw_theta = new double[duneobj->nEvents];
@@ -241,41 +216,40 @@ void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *dune
   _data->GetEntry(0);
   
   //FILL DUNE STRUCT
-  for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
-    {
-      _data->GetEntry(i);
-
-      if (iselike) {
-        duneobj->rw_erec[i] = _erec_nue;
-      } else {
-	duneobj->rw_erec[i] = _erec;
-      }
-
-      duneobj->rw_etru[i] = _ev; // in GeV
-
-      duneobj->rw_cvnnumu[i] = _cvnnumu; 
-      duneobj->rw_cvnnue[i] = _cvnnue;
-      duneobj->rw_theta[i] = _LepMomY/sqrt(pow(_LepMomZ, 2) + pow(_LepMomY, 2) + pow(_LepMomX, 2));
-      duneobj->rw_Q2[i] = _Q2;
-      duneobj->rw_isCC[i] = _isCC;
-      duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
-      duneobj->rw_nuPDG[i] = _nuPDG;
-      duneobj->rw_run[i] = _run;
-      duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
-      duneobj->rw_vtx_x[i] = _vtx_x;
-      duneobj->rw_vtx_y[i] = _vtx_y;
-      duneobj->rw_vtx_z[i] = _vtx_z;
-      duneobj->rw_truecz[i] = _NuMomY/_ev;
-
-      //Assume everything is on Argon for now....
-      duneobj->Target[i] = 40;
- 
-      duneobj->beam_w[i] = 1.0;
-      int mode= TMath::Abs(_mode);       
-
-      duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
-      duneobj->flux_w[i] = _weight;
+  for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
+    _data->GetEntry(i);
+    
+    if (iselike) {
+      duneobj->rw_erec[i] = _erec_nue;
+    } else {
+      duneobj->rw_erec[i] = _erec;
     }
+    
+    duneobj->rw_etru[i] = _ev; // in GeV
+    
+    duneobj->rw_cvnnumu[i] = _cvnnumu; 
+    duneobj->rw_cvnnue[i] = _cvnnue;
+    duneobj->rw_theta[i] = _LepMomY/sqrt(pow(_LepMomZ, 2) + pow(_LepMomY, 2) + pow(_LepMomX, 2));
+    duneobj->rw_Q2[i] = _Q2;
+    duneobj->rw_isCC[i] = _isCC;
+    duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
+    duneobj->rw_nuPDG[i] = _nuPDG;
+    duneobj->rw_run[i] = _run;
+    duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
+    duneobj->rw_vtx_x[i] = _vtx_x;
+    duneobj->rw_vtx_y[i] = _vtx_y;
+    duneobj->rw_vtx_z[i] = _vtx_z;
+    duneobj->rw_truecz[i] = _NuMomY/_ev;
+    
+    //Assume everything is on Argon for now....
+    duneobj->Target[i] = 40;
+    
+    duneobj->beam_w[i] = 1.0;
+    int mode= TMath::Abs(_mode);       
+    
+    duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
+    duneobj->flux_w[i] = _weight;
+  }
   
   _sampleFile->Close();
   std::cout << "Sample set up OK" << std::endl;
@@ -338,92 +312,43 @@ double samplePDFDUNEAtmBase::ReturnKinematicParameter(double KinematicVariable, 
 }
 
 void samplePDFDUNEAtmBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj)  {
-  fdobj->nEvents = duneobj->nEvents;
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
-  fdobj->x_var = new double*[fdobj->nEvents];
-  fdobj->y_var = new double*[fdobj->nEvents];
-  fdobj->rw_etru = new double*[fdobj->nEvents];
-  fdobj->XBin = new int[fdobj->nEvents];
-  fdobj->YBin = new int[fdobj->nEvents];    
-  fdobj->NomXBin = new int[fdobj->nEvents];
-  fdobj->NomYBin = new int[fdobj->nEvents];
-  fdobj->XBin = new int [fdobj->nEvents];
-  fdobj->YBin = new int [fdobj->nEvents];;	 
-  fdobj->rw_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_lower_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_upper_xbinedge = new double [fdobj->nEvents];
-  fdobj->mode = new int*[fdobj->nEvents];
-  fdobj->nxsec_spline_pointers = new int[fdobj->nEvents]; 
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
-  fdobj->nxsec_norm_pointers = new int[fdobj->nEvents];
-  fdobj->xsec_norm_pointers = new const double**[fdobj->nEvents];
-  fdobj->xsec_norms_bins = new std::list< int >[fdobj->nEvents];
-  fdobj->xsec_w = new double[fdobj->nEvents];
-  fdobj->flux_w = new double[fdobj->nEvents];
-  fdobj->osc_w = new double[fdobj->nEvents];
-  fdobj->isNC = new bool[fdobj->nEvents];
-  fdobj->rw_etru = new double*[fdobj->nEvents];
-  fdobj->nxsec_spline_pointers = new int[fdobj->nEvents];
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
-  fdobj->ntotal_weight_pointers = new int[fdobj->nEvents];
-  fdobj->total_weight_pointers = new double**[fdobj->nEvents];
-  fdobj->Target = new int*[fdobj->nEvents];
-
-  //DB Example Atmospheric Implementation
-  fdobj->Unity = 1.;
-  fdobj->osc_w_pointer = new const double*[fdobj->nEvents];
-  fdobj->rw_truecz = new double[fdobj->nEvents];
-
-  for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
-	fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
-	fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
-	fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
-	//ETA - set these to a dummy value to begin with, these get set in set1DBinning or set2DBinning
-	fdobj->NomXBin[iEvent] = -1;
-	fdobj->NomYBin[iEvent] = -1;
-	fdobj->XBin[iEvent] = -1;
-	fdobj->YBin[iEvent] = -1;	 
-	fdobj->rw_lower_xbinedge[iEvent] = -1;
-	fdobj->rw_lower_lower_xbinedge[iEvent] = -1;
-	fdobj->rw_upper_xbinedge[iEvent] = -1;
-	fdobj->rw_upper_upper_xbinedge[iEvent] = -1;
-	fdobj->xsec_w[iEvent] = 1.0;
-	fdobj->osc_w[iEvent] = 1.0;
-	fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-	fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
-	fdobj->SampleDetID = SampleDetID;
-
-	//DB Example Atmospheric Implementation
-	fdobj->osc_w_pointer[iEvent] = &(fdobj->Unity);
-	fdobj->rw_truecz[iEvent] = duneobj->rw_truecz[iEvent];
-
-	//ETA - this is where the variables that you want to bin your samples in are defined
-	//If you want to bin in different variables this is where you put it for now
-	switch(BinningOpt){
-	case 0:
-	case 1:
-	  //Just point to xvar to the address of the variable you want to bin in
-	  //This way we don't have to update both fdmc and skmc when we apply shifts
-	  //to variables we're binning in
-	  fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
-	  fdobj->y_var[iEvent] = &(duneobj->rw_truecz[iEvent]);
-	  break;
-	case 2:
-	  //Just point to xvar to the address of the variable you want to bin in
-	  //This way we don't have to update both fdmc and skmc when we apply shifts
-	  //to variables we're binning in
-	  fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
-	  fdobj->y_var[iEvent] = &(duneobj->rw_theta[iEvent]);
-	  break;
-	default:
-	  std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << BinningOpt << std::endl;
-	  throw;
-	  break;
-	}
-	
+  fdobj->SampleDetID = SampleDetID;
+  
+  for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent) {
+    fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
+    fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
+    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
+    fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+    fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
+    fdobj->rw_truecz[iEvent] = duneobj->rw_truecz[iEvent];
+    
+    //ETA - this is where the variables that you want to bin your samples in are defined
+    //If you want to bin in different variables this is where you put it for now
+    switch(BinningOpt){
+    case 0:
+    case 1:
+      //Just point to xvar to the address of the variable you want to bin in
+      //This way we don't have to update both fdmc and skmc when we apply shifts
+      //to variables we're binning in
+      fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
+      fdobj->y_var[iEvent] = &(duneobj->rw_truecz[iEvent]);
+      break;
+    case 2:
+      //Just point to xvar to the address of the variable you want to bin in
+      //This way we don't have to update both fdmc and skmc when we apply shifts
+      //to variables we're binning in
+      fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
+      fdobj->y_var[iEvent] = &(duneobj->rw_theta[iEvent]);
+      break;
+    default:
+      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << BinningOpt << std::endl;
+      throw;
+      break;
+    }
+    
   }
 }
 

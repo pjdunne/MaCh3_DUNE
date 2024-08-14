@@ -34,41 +34,28 @@ void samplePDFDUNEBeamNDBase::Init() {
   
   //Loop over all the sub-samples
   for (auto const &osc_channel : SampleManager->raw()["SubSamples"]) {
-	std::cout << "Found sub sample" << std::endl;
-	mtuple_files.push_back(osc_channel["mtuplefile"].as<std::string>());
-	spline_files.push_back(osc_channel["splinefile"].as<std::string>());
-	sample_vecno.push_back(osc_channel["samplevecno"].as<int>());
-	sample_nutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["nutype"].as<int>())));
-	sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
-	sample_signal.push_back(osc_channel["signal"].as<bool>());
+    std::cout << "Found sub sample" << std::endl;
+    mtuple_files.push_back(osc_channel["mtuplefile"].as<std::string>());
+    spline_files.push_back(osc_channel["splinefile"].as<std::string>());
+    sample_vecno.push_back(osc_channel["samplevecno"].as<int>());
+    sample_nutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["nutype"].as<int>())));
+    sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
+    sample_signal.push_back(osc_channel["signal"].as<bool>());
   }
-
-  //Now loop over the kinematic cuts
-  for ( auto const &SelectionCuts : SampleManager->raw()["SelectionCuts"]) {
-	std::cout << "Looping over selection cuts " << std::endl;
-	SelectionStr.push_back(SelectionCuts["KinematicStr"].as<std::string>());
-
-	SelectionBounds.push_back(SelectionCuts["Bounds"].as<std::vector<double>>());
-	std::cout << "Found cut on string " << SelectionCuts["KinematicStr"].as<std::string>() << std::endl;
-	std::cout << "With bounds " << SelectionCuts["Bounds"].as<std::vector<double>>()[0] << " to " << SelectionCuts["Bounds"].as<std::vector<double>>()[1] << std::endl;
-  }
-  NSelections = SelectionStr.size();
-
+  
   // create dunendmc storage
   for (int i=0;i<nSamples;i++) {
     struct dunemc_base obj = dunemc_base();
     dunendmcSamples.push_back(obj);
   }
-  //Now down with yaml file for sample
-  delete SampleManager;
-  if(sample_oscnutype.size() != dunendmcSamples.size()){std::cerr << "[ERROR:] samplePDFDUNEBeamNDBase::samplePDFDUNEBeamNDBase() - something went wrong either getting information from sample config" << std::endl; throw;}
 
   for(unsigned iSample=0 ; iSample < dunendmcSamples.size() ; iSample++){
     setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunendmcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
   }
 
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    setupFDMC(&dunendmcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]], (splineprefix+spline_files[iSample]+splinesuffix).c_str());
+    InitialiseSingleFDMCObject(iSample,dunendmcSamples[iSample].nEvents);
+    setupFDMC(&dunendmcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]]);
   }
 
   std::cout << "################" << std::endl;
@@ -101,106 +88,106 @@ void samplePDFDUNEBeamNDBase::Init() {
 
   int func_it = 0;
   for (std::vector<int>::iterator it = funcParsIndex.begin(); it != funcParsIndex.end(); ++it, ++func_it) {
-	std::string name = funcParsNames.at(func_it);
-
-	if (name == "TotalEScaleND") {
-	  tot_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_nd_pos);
-	}
-	else if (name == "TotalEScaleSqrtND") {
-	  tot_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_sqrt_nd_pos);
-	}
-
-	else if (name == "TotalEScaleInvSqrtND") {
-	  tot_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_invsqrt_nd_pos);
-	}
-
-	else if (name == "HadEScaleND") {
-	  had_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_nd_pos);
-	}
-
-	else if (name == "HadEScaleSqrtND") {
-	  had_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_sqrt_nd_pos);
-	}
-
-	else if (name == "HadEScaleInvSqrtND") {
-	  had_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_invsqrt_nd_pos);
-	}
-
-	else if (name == "MuEScaleND") {
-	  mu_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_nd_pos);
-	}
-
-	else if (name == "MuEScaleSqrtND") {
-	  mu_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_sqrt_nd_pos);
-	}
-
-	else if (name == "MuEScaleInvSqrtND") {
-	  mu_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_invsqrt_nd_pos);
-	}
-
-	else if (name == "NEScaleND") {
-	  n_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_nd_pos);
-	}
-
-	else if (name == "NEScaleSqrtND") {
-	  n_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_sqrt_nd_pos);
-	}
-
-	else if (name == "NEScaleInvSqrtND") {
-	  n_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_invsqrt_nd_pos);
-	}
-
-	else if (name == "EMEScaleND") {
-	  em_escale_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_nd_pos);
-	}
-
-	else if (name == "EMEScaleSqrtND") {
-	  em_escale_sqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_sqrt_nd_pos);
-	}
-
-	else if (name == "EMEScaleInvSqrtND") {
-	  em_escale_invsqrt_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_invsqrt_nd_pos);
-	}
-
-	else if (name == "HadResND") {
-	  had_res_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_res_nd_pos);
-	}
-
-	else if (name == "MuResND") {
-	  mu_res_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_res_nd_pos);
-	}
-
-	else if (name == "NResND") {
-	  n_res_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_res_nd_pos);
-	}
-
-	else if (name == "EMResND") {
-	  em_res_nd_pos = *it;
-	  NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_res_nd_pos);
-	}
-
-	else { 
-	  std::cerr << "Found a functional parameter which wasn't specified in the xml | samplePDFDUNEBeamNDBase:" << name << std::endl;
-	  throw;
-	}
+    std::string name = funcParsNames.at(func_it);
+    
+    if (name == "TotalEScaleND") {
+      tot_escale_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_nd_pos);
+    }
+    else if (name == "TotalEScaleSqrtND") {
+      tot_escale_sqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_sqrt_nd_pos);
+    }
+    
+    else if (name == "TotalEScaleInvSqrtND") {
+      tot_escale_invsqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_invsqrt_nd_pos);
+    }
+    
+    else if (name == "HadEScaleND") {
+      had_escale_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_nd_pos);
+    }
+    
+    else if (name == "HadEScaleSqrtND") {
+      had_escale_sqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_sqrt_nd_pos);
+    }
+    
+    else if (name == "HadEScaleInvSqrtND") {
+      had_escale_invsqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_invsqrt_nd_pos);
+    }
+    
+    else if (name == "MuEScaleND") {
+      mu_escale_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_nd_pos);
+    }
+    
+    else if (name == "MuEScaleSqrtND") {
+      mu_escale_sqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_sqrt_nd_pos);
+    }
+    
+    else if (name == "MuEScaleInvSqrtND") {
+      mu_escale_invsqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_invsqrt_nd_pos);
+    }
+    
+    else if (name == "NEScaleND") {
+      n_escale_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_nd_pos);
+    }
+    
+    else if (name == "NEScaleSqrtND") {
+      n_escale_sqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_sqrt_nd_pos);
+    }
+    
+    else if (name == "NEScaleInvSqrtND") {
+      n_escale_invsqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_invsqrt_nd_pos);
+    }
+    
+    else if (name == "EMEScaleND") {
+      em_escale_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_nd_pos);
+    }
+    
+    else if (name == "EMEScaleSqrtND") {
+      em_escale_sqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_sqrt_nd_pos);
+    }
+    
+    else if (name == "EMEScaleInvSqrtND") {
+      em_escale_invsqrt_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_invsqrt_nd_pos);
+    }
+    
+    else if (name == "HadResND") {
+      had_res_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(had_res_nd_pos);
+    }
+    
+    else if (name == "MuResND") {
+      mu_res_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_res_nd_pos);
+    }
+    
+    else if (name == "NResND") {
+      n_res_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(n_res_nd_pos);
+    }
+    
+    else if (name == "EMResND") {
+      em_res_nd_pos = *it;
+      NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_res_nd_pos);
+    }
+    
+    else { 
+      std::cerr << "Found a functional parameter which wasn't specified in the xml | samplePDFDUNEBeamNDBase:" << name << std::endl;
+      throw;
+    }
   }
 
   std::vector<std::string> spline_filepaths;
@@ -241,23 +228,20 @@ void samplePDFDUNEBeamNDBase::Init() {
 
 void samplePDFDUNEBeamNDBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendmcSamples.size(); ++i) {
-	for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
-	  //DB Setting total weight pointers
-	  MCSamples[i].ntotal_weight_pointers[j] = 6;
-	  MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
-	  MCSamples[i].total_weight_pointers[j][0] = &(dunendmcSamples[i].pot_s);
-	  MCSamples[i].total_weight_pointers[j][1] = &(dunendmcSamples[i].norm_s);
-	  MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
-	  MCSamples[i].total_weight_pointers[j][3] = &(dunendmcSamples[i].rw_berpaacvwgt[j]);
-	  MCSamples[i].total_weight_pointers[j][4] = &(MCSamples[i].flux_w[j]);
-	  MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
-	}
+    for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
+      MCSamples[i].ntotal_weight_pointers[j] = 6;
+      MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j][0] = &(dunendmcSamples[i].pot_s);
+      MCSamples[i].total_weight_pointers[j][1] = &(dunendmcSamples[i].norm_s);
+      MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
+      MCSamples[i].total_weight_pointers[j][3] = &(dunendmcSamples[i].rw_berpaacvwgt[j]);
+      MCSamples[i].total_weight_pointers[j][4] = &(MCSamples[i].flux_w[j]);
+      MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
+    }
   }
 }
 
-
 void samplePDFDUNEBeamNDBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats) {
-  // set up splines
   std::cout << "-------------------------------------------------------------------" << std::endl;
   std::cout << "input file: " << sampleFile << std::endl;
   
@@ -313,31 +297,18 @@ void samplePDFDUNEBeamNDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   _data->SetBranchStatus("eN", 1);
   _data->SetBranchAddress("eN", &_eN);
 
-  // now fill the actual variables
-  if (!IsRHC) 
-  { 
+  if (!IsRHC) { 
     duneobj->norm_s = (1e21/1.5e21);
-  }
-  else 
-  {
+  } else {
     duneobj->norm_s = (1e21/1.905e21);
   }
-
   duneobj->pot_s = (pot)/1e21;
-
-  //LW - eventually add norm bins to CAFs
-  std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
-  std::cout<< "norm_s = " << duneobj->norm_s << std::endl;
 
   duneobj->nEvents = _data->GetEntries();
   duneobj->nutype = nutype;
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
-  
-  std::cout << "signal: " << duneobj->signal << std::endl;
-  std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
-  // allocate memory for dunendmc variables
   duneobj->rw_yrec = new double[duneobj->nEvents];
   duneobj->rw_erec_lep = new double[duneobj->nEvents];
   duneobj->rw_erec_had = new double[duneobj->nEvents];
@@ -371,43 +342,42 @@ void samplePDFDUNEBeamNDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   _data->GetEntry(0);
 
   //FILL DUNE STRUCT
-  for (int i = 0; i < duneobj->nEvents; ++i) // Loop through tree
-    {
-      _data->GetEntry(i);
-      duneobj->rw_erec[i] = (double)_erec;
-      duneobj->rw_erec_shifted[i] = (double)_erec;
-      duneobj->rw_erec_lep[i] = (double)_erec_lep;
-      duneobj->rw_erec_had[i] = (double)(_erec - _erec_lep);
-      duneobj->rw_yrec[i] = (double)((_erec - _erec_lep)/_erec);
-      duneobj->rw_etru[i] = (double)_ev; // in GeV
-      duneobj->rw_theta[i] = (double)_LepNuAngle;
-      duneobj->rw_isCC[i] = _isCC;
-      duneobj->rw_reco_q[i] = _reco_q;
-      duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
-      duneobj->rw_nuPDG[i] = _nuPDG;
-      duneobj->rw_berpaacvwgt[i] = (double)_BeRPA_cvwgt;
-      
-      duneobj->rw_eRecoP[i] = (double)_eRecoP; 
-      duneobj->rw_eRecoPip[i] = (double)_eRecoPip; 
-      duneobj->rw_eRecoPim[i] = (double)_eRecoPim; 
-      duneobj->rw_eRecoPi0[i] = (double)_eRecoPi0; 
-      duneobj->rw_eRecoN[i] = (double)_eRecoN; 
-      
-      duneobj->rw_LepE[i] = (double)_LepE; 
-      duneobj->rw_eP[i] = (double)_eP; 
-      duneobj->rw_ePip[i] = (double)_ePip; 
-      duneobj->rw_ePim[i] = (double)_ePim; 
-      duneobj->rw_ePi0[i] = (double)_ePi0; 
-      duneobj->rw_eN[i] = (double)_eN; 
-      
-      //Assume everything is on Argon for now....
-      duneobj->Target[i] = 40;
-      
-      int mode= TMath::Abs(_mode);       
-      duneobj->mode[i]=GENIEMode_ToMaCh3Mode(mode, _isCC);
- 
-      duneobj->flux_w[i] = 1.0;
-    }
+  for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
+    _data->GetEntry(i);
+    duneobj->rw_erec[i] = (double)_erec;
+    duneobj->rw_erec_shifted[i] = (double)_erec;
+    duneobj->rw_erec_lep[i] = (double)_erec_lep;
+    duneobj->rw_erec_had[i] = (double)(_erec - _erec_lep);
+    duneobj->rw_yrec[i] = (double)((_erec - _erec_lep)/_erec);
+    duneobj->rw_etru[i] = (double)_ev; // in GeV
+    duneobj->rw_theta[i] = (double)_LepNuAngle;
+    duneobj->rw_isCC[i] = _isCC;
+    duneobj->rw_reco_q[i] = _reco_q;
+    duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
+    duneobj->rw_nuPDG[i] = _nuPDG;
+    duneobj->rw_berpaacvwgt[i] = (double)_BeRPA_cvwgt;
+    
+    duneobj->rw_eRecoP[i] = (double)_eRecoP; 
+    duneobj->rw_eRecoPip[i] = (double)_eRecoPip; 
+    duneobj->rw_eRecoPim[i] = (double)_eRecoPim; 
+    duneobj->rw_eRecoPi0[i] = (double)_eRecoPi0; 
+    duneobj->rw_eRecoN[i] = (double)_eRecoN; 
+    
+    duneobj->rw_LepE[i] = (double)_LepE; 
+    duneobj->rw_eP[i] = (double)_eP; 
+    duneobj->rw_ePip[i] = (double)_ePip; 
+    duneobj->rw_ePim[i] = (double)_ePim; 
+    duneobj->rw_ePi0[i] = (double)_ePi0; 
+    duneobj->rw_eN[i] = (double)_eN; 
+    
+    //Assume everything is on Argon for now....
+    duneobj->Target[i] = 40;
+    
+    int mode= TMath::Abs(_mode);       
+    duneobj->mode[i]=GENIEMode_ToMaCh3Mode(mode, _isCC);
+    
+    duneobj->flux_w[i] = 1.0;
+  }
   
   _sampleFile->Close();
   std::cout << "Sample set up OK" << std::endl;
@@ -415,127 +385,86 @@ void samplePDFDUNEBeamNDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
 
 double samplePDFDUNEBeamNDBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
 
- KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
- double KinematicValue = -999;
-
- switch(KinPar){
-   case kTrueNeutrinoEnergy:
-	 KinematicValue = dunendmcSamples[iSample].rw_etru[iEvent]; 
-	 break;
-   case kIsCC:
-	 KinematicValue = dunendmcSamples[iSample].rw_isCC[iEvent];
-	   break;
-   case kRecoQ:
-	 KinematicValue = dunendmcSamples[iSample].rw_reco_q[iEvent];
-	   break;
-   default:
-	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-	 throw;
- }
-
+  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
+  double KinematicValue = -999;
+  
+  switch(KinPar){
+  case kTrueNeutrinoEnergy:
+    KinematicValue = dunendmcSamples[iSample].rw_etru[iEvent]; 
+    break;
+  case kIsCC:
+    KinematicValue = dunendmcSamples[iSample].rw_isCC[iEvent];
+    break;
+  case kRecoQ:
+    KinematicValue = dunendmcSamples[iSample].rw_reco_q[iEvent];
+    break;
+  default:
+    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
+    throw;
+  }
+  
   return KinematicValue;
 }
 
 double samplePDFDUNEBeamNDBase::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
   KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
   double KinematicValue = -999;
-
- switch(KinPar){
-   case kTrueNeutrinoEnergy:
-	 KinematicValue = dunendmcSamples[iSample].rw_etru[iEvent]; 
-	 break;
-   case kIsCC:
-	 KinematicValue = dunendmcSamples[iSample].rw_isCC[iEvent];
-	   break;
-   case kRecoQ:
-	 KinematicValue = dunendmcSamples[iSample].rw_reco_q[iEvent];
-	   break;
-   default:
-	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-	 throw;
- }
-
+  
+  switch(KinPar){
+  case kTrueNeutrinoEnergy:
+    KinematicValue = dunendmcSamples[iSample].rw_etru[iEvent]; 
+    break;
+  case kIsCC:
+    KinematicValue = dunendmcSamples[iSample].rw_isCC[iEvent];
+    break;
+  case kRecoQ:
+    KinematicValue = dunendmcSamples[iSample].rw_reco_q[iEvent];
+    break;
+  default:
+    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
+    throw;
+  }
+  
   return KinematicValue;
 }
 
-void samplePDFDUNEBeamNDBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile) 
-{
-  fdobj->nEvents = duneobj->nEvents;
+void samplePDFDUNEBeamNDBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) {
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
-  fdobj->x_var = new double*[fdobj->nEvents];
-  fdobj->y_var = new double*[fdobj->nEvents];
-  fdobj->rw_etru = new double*[fdobj->nEvents];
-  fdobj->XBin = new int[fdobj->nEvents];
-  fdobj->YBin = new int[fdobj->nEvents];    
-  fdobj->NomXBin = new int[fdobj->nEvents];
-  fdobj->NomYBin = new int[fdobj->nEvents];
-  fdobj->rw_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_lower_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_upper_xbinedge = new double [fdobj->nEvents];
-  fdobj->mode = new int*[fdobj->nEvents];
-  fdobj->nxsec_spline_pointers = new int[fdobj->nEvents]; 
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
-  fdobj->nxsec_norm_pointers = new int[fdobj->nEvents];
-  fdobj->xsec_norm_pointers = new const double**[fdobj->nEvents];
-  fdobj->xsec_norms_bins = new std::list< int >[fdobj->nEvents];
-  fdobj->xsec_w = new double[fdobj->nEvents];
-  fdobj->flux_w = new double[fdobj->nEvents];
-  fdobj->osc_w = new double[fdobj->nEvents];
-  fdobj->isNC = new bool[fdobj->nEvents];
-  fdobj->nxsec_spline_pointers = new int[fdobj->nEvents];
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
-  fdobj->ntotal_weight_pointers = new int[fdobj->nEvents];
-  fdobj->total_weight_pointers = new double**[fdobj->nEvents];
-  fdobj->Target = new int*[fdobj->nEvents];
 
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
-	fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
-	fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
-	fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
-	//ETA - set these to a dummy value to begin with, these get set in set1DBinning or set2DBinning
-	fdobj->NomXBin[iEvent] = -1;
-	fdobj->NomYBin[iEvent] = -1;
-	fdobj->XBin[iEvent] = -1;
-	fdobj->YBin[iEvent] = -1;	 
-	fdobj->rw_lower_xbinedge[iEvent] = -1;
-	fdobj->rw_lower_lower_xbinedge[iEvent] = -1;
-	fdobj->rw_upper_xbinedge[iEvent] = -1;
-	fdobj->rw_upper_upper_xbinedge[iEvent] = -1;
-	fdobj->xsec_w[iEvent] = 1.0;
-	fdobj->osc_w[iEvent] = 1.0;
-	fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-	fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
-
-	//ETA - this is where the variables that you want to bin your samples in are defined
-	//If you want to bin in different variables this is where you put it for now
-	switch(BinningOpt){
-	  case 0:
-	  case 1:
-		//Just point to xvar to the address of the variable you want to bin in
-		//This way we don't have to update both fdmc and skmc when we apply shifts
-		//to variables we're binning in
-		fdobj->x_var[iEvent] = &(duneobj->rw_erec_shifted[iEvent]);
-		fdobj->y_var[iEvent] = &(duneobj->dummy_y);//ETA - don't think we even need this as if we have a 1D sample we never need this, just not sure I like an unitialised variable in fdmc struct? 
-		break;
-	  case 2:
-		//Just point to xvar to the address of the variable you want to bin in
-		//This way we don't have to update both fdmc and skmc when we apply shifts
-		//to variables we're binning in
-		fdobj->x_var[iEvent] = &(duneobj->rw_erec_shifted[iEvent]);
-		fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
-		break;
-	  default:
-		std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << BinningOpt << std::endl;
-		throw;
-		break;
-	}
-
+    fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
+    fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
+    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
+    fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+    fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
+    
+    //ETA - this is where the variables that you want to bin your samples in are defined
+    //If you want to bin in different variables this is where you put it for now
+    switch(BinningOpt){
+    case 0:
+    case 1:
+      //Just point to xvar to the address of the variable you want to bin in
+      //This way we don't have to update both fdmc and skmc when we apply shifts
+      //to variables we're binning in
+      fdobj->x_var[iEvent] = &(duneobj->rw_erec_shifted[iEvent]);
+      fdobj->y_var[iEvent] = &(duneobj->dummy_y);//ETA - don't think we even need this as if we have a 1D sample we never need this, just not sure I like an unitialised variable in fdmc struct? 
+      break;
+    case 2:
+      //Just point to xvar to the address of the variable you want to bin in
+      //This way we don't have to update both fdmc and skmc when we apply shifts
+      //to variables we're binning in
+      fdobj->x_var[iEvent] = &(duneobj->rw_erec_shifted[iEvent]);
+      fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
+      break;
+    default:
+      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << BinningOpt << std::endl;
+      throw;
+      break;
+    }
   }
-
 }
 
 void samplePDFDUNEBeamNDBase::applyShifts(int iSample, int iEvent) {

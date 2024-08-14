@@ -49,17 +49,6 @@ void samplePDFDUNEBeamNDGarBase::Init() {
     sample_signal.push_back(osc_channel["signal"].as<bool>());
   }
   
-  //Now loop over the kinematic cuts
-  for ( auto const &SelectionCuts : SampleManager->raw()["SelectionCuts"]) {
-    std::cout << "Looping over selection cuts " << std::endl;
-    SelectionStr.push_back(SelectionCuts["KinematicStr"].as<std::string>());
-    
-    SelectionBounds.push_back(SelectionCuts["Bounds"].as<std::vector<double>>());
-    std::cout << "Found cut on string " << SelectionCuts["KinematicStr"].as<std::string>() << std::endl;
-    std::cout << "With bounds " << SelectionCuts["Bounds"].as<std::vector<double>>()[0] << " to " << SelectionCuts["Bounds"].as<std::vector<double>>()[1] << std::endl;
-  }
-  NSelections = SelectionStr.size();
-  
   std::vector<double> tempselection(3);
   for(int iSelec=0; iSelec<NSelections; iSelec++){
     tempselection[0] = ReturnKinematicParameterFromString(SelectionStr[iSelec]);
@@ -81,7 +70,8 @@ void samplePDFDUNEBeamNDGarBase::Init() {
   }
 
   for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    setupFDMC(&dunendgarmcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]], (splineprefix+spline_files[iSample]+splinesuffix).c_str());
+    InitialiseSingleFDMCObject(iSample,dunendgarmcSamples[iSample].nEvents);
+    setupFDMC(&dunendgarmcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]]);
   }
   
   std::cout << "################" << std::endl;
@@ -438,57 +428,17 @@ double samplePDFDUNEBeamNDGarBase::ReturnKinematicParameter(KinematicTypes Kinem
  return KinematicValue;
 }
 
-void samplePDFDUNEBeamNDGarBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile) {
-  fdobj->nEvents = duneobj->nEvents;
+void samplePDFDUNEBeamNDGarBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) {
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
-  fdobj->x_var = new double*[fdobj->nEvents];
-  fdobj->y_var = new double*[fdobj->nEvents];
-  fdobj->rw_etru = new double*[fdobj->nEvents];
-  fdobj->XBin = new int[fdobj->nEvents];
-  fdobj->YBin = new int[fdobj->nEvents];    
-  fdobj->NomXBin = new int[fdobj->nEvents];
-  fdobj->NomYBin = new int[fdobj->nEvents];
-  fdobj->rw_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_lower_lower_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_xbinedge = new double [fdobj->nEvents];
-  fdobj->rw_upper_upper_xbinedge = new double [fdobj->nEvents];
-  fdobj->mode = new int*[fdobj->nEvents];
-  fdobj->nxsec_spline_pointers = new int[fdobj->nEvents]; 
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
-  fdobj->nxsec_norm_pointers = new int[fdobj->nEvents];
-  fdobj->xsec_norm_pointers = new const double**[fdobj->nEvents];
-  fdobj->xsec_norms_bins = new std::list< int >[fdobj->nEvents];
-  fdobj->xsec_w = new double[fdobj->nEvents];
-  fdobj->flux_w = new double[fdobj->nEvents];
-  fdobj->osc_w = new double[fdobj->nEvents];
-  fdobj->isNC = new bool[fdobj->nEvents];
-  fdobj->nxsec_spline_pointers = new int[fdobj->nEvents];
-  fdobj->xsec_spline_pointers = new const double**[fdobj->nEvents];
-  fdobj->ntotal_weight_pointers = new int[fdobj->nEvents];
-  fdobj->total_weight_pointers = new double**[fdobj->nEvents];
-  fdobj->Target = new int*[fdobj->nEvents];
+  fdobj->SampleDetID = SampleDetID;
   
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
-    //ETA - set these to a dummy value to begin with, these get set in set1DBinning or set2DBinning
-    fdobj->NomXBin[iEvent] = -1;
-    fdobj->NomYBin[iEvent] = -1;
-    fdobj->XBin[iEvent] = -1;
-    fdobj->YBin[iEvent] = -1;	 
-    fdobj->rw_lower_xbinedge[iEvent] = -1;
-    fdobj->rw_lower_lower_xbinedge[iEvent] = -1;
-    fdobj->rw_upper_xbinedge[iEvent] = -1;
-    fdobj->rw_upper_upper_xbinedge[iEvent] = -1;
-    fdobj->xsec_w[iEvent] = 1.0;
-    fdobj->osc_w[iEvent] = 1.0;
-    fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
-    fdobj->SampleDetID = SampleDetID;
-    
+
     //ETA - this is where the variables that you want to bin your samples in are defined
     //If you want to bin in different variables this is where you put it for now
     switch(BinningOpt){

@@ -30,7 +30,7 @@ public:
  protected:
   void Init();
   void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
-  void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj, const char *splineFile);
+  void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj);
 
   void SetupWeightPointers();
 
