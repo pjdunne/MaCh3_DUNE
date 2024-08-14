@@ -59,7 +59,6 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
       if(unique_spline_names.count(std::string(SplineName)) > 0){
         if (std::string(SplineName).find("unknown") == std::string::npos)
           std::cout << "Repeated entry for spline named: " << std::string(SplineName) << std::endl;
-	std::cout << "DB A" << std::endl;
 	continue;
       }
       unique_spline_names.insert(std::string(SplineName));
@@ -84,7 +83,6 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
 
       // If the syst doesn't match any of the spline names then skip it
       if (SystNum == -1){
-	std::cout << "DB B" << std::endl;
 	continue;
       }
 
