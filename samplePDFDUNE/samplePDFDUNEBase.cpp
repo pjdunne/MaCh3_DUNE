@@ -325,6 +325,9 @@ void samplePDFDUNEBase::init(double pot, std::string samplecfgfile,
 
   std::cout << "Now setting up Splines" << std::endl;
   for (unsigned iSample = 0; iSample < MCSamples.size(); iSample++) {
+    if(!splineprefix.size() || !splinesuffix.size()){
+      continue;
+    }
     setupSplines(&MCSamples[sample_vecno[iSample]],
                  (splineprefix + spline_files[iSample] + splinesuffix).c_str(),
                  MCSamples[iSample].nutype, MCSamples[iSample].signal);

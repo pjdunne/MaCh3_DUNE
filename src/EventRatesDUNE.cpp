@@ -111,7 +111,7 @@ int main(int argc, char * argv[]) {
   osc->acceptStep();
 
   bool addFD = fitMan->raw()["General"]["IncludeFD"].as<bool>();
-  bool addND = fitMan->raw()["General"]["IncludeND"].as<bool>();
+  bool addND =  false;//fitMan->raw()["General"]["IncludeND"].as<bool>();
 
   if (!addFD && !addND) {std::cerr << "[ERROR:] You've chosen NOT to include FD or ND samples in the config file... you need to add something!" << std::endl; throw;}
 
@@ -119,14 +119,14 @@ int main(int argc, char * argv[]) {
   std::vector<samplePDFFDBase*> SamplePDFs;
   
   if(addFD) { 
-    samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+    samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_numuselec-nosplines.yaml", xsec);
     SamplePDFs.push_back(numu_pdf);
-    samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
-    SamplePDFs.push_back(nue_pdf);
-    samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
-    SamplePDFs.push_back(numubar_pdf);
-    samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
-    SamplePDFs.push_back(nuebar_pdf);
+    // samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+    // SamplePDFs.push_back(nue_pdf);
+    // samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+    // SamplePDFs.push_back(numubar_pdf);
+    // samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+    // SamplePDFs.push_back(nuebar_pdf);
   }
  
   if(addND) {
