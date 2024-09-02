@@ -34,7 +34,7 @@ SampleBools:
   isrhc: no
   iselike: no
 InputFiles:
-  mtupleprefix: "inputs/DUNE_CAF_files/FD_FHC_ger_"
+  mtupleprefix: "inputs/DUNE_CAF_files/ND/ND_FHC_ger_"
   mtuplesuffix: "_numuselec.root"
   splineprefix: "" #"inputs/DUNE_spline_files/FD_FHC_ger_"
   splinesuffix: "" #"_numuselec_splines.root"

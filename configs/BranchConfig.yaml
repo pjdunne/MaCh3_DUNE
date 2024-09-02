@@ -1,0 +1,10 @@
+branches:
+  - [ "eRecoP", "d" ]
+  - [ "eRecoN", "d" ]
+  - [ "eRecoPip", "d" ]
+  - [ "eRecoPim", "d" ]
+  - [ "eRecoPi0", "d" ]
+  - [ "eRecoOther", "d" ]
+  - [ "Ev", "d" ]
+  - [ "mode", "i" ]
+  - [ "isCC", "i" ]

@@ -34,9 +34,17 @@ include(CPM)
 #Go get the core MAch3, this will be public one day....
 #This is over-riden with -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
 CPMFindPackage(
-    NAME MaCh3
+  NAME MaCh3
 	GIT_TAG "DUNECore2024"
-    GITHUB_REPOSITORY mach3-software/MaCh3
+  GITHUB_REPOSITORY mach3-software/MaCh3
+)
+
+CPMFindPackage(
+  NAME Eigen3
+  VERSION 3.4.0
+  GITLAB_REPOSITORY "libeigen/eigen"
+  GIT_TAG "3.4.0"
+  OPTIONS "EIGEN_BUILD_DOC no" "BUILD_TESTING no"
 )
 
 #Compile and link options (Should be in experiment project but copied in case CORE is built alone) 
