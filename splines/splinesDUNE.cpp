@@ -4,13 +4,7 @@
 #include "TKey.h"
 #include "TROOT.h"
 
-splinesDUNE::splinesDUNE(covarianceXsec* xsec_cov) : splineFDBase(xsec_cov)
-{
-//   FindUniqueModes();
-//   SetupSplines();
-
-  std::cout << "Created splinesDUNE object" << std::endl;
-
+splinesDUNE::splinesDUNE(covarianceXsec* xsec_cov) : splineFDBase(xsec_cov) {
 }
 
 //****************************************

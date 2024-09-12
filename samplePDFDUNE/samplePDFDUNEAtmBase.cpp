@@ -6,104 +6,30 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(double pot, std::string mc_version, covarianceXsec* xsec_cov) : samplePDFFDBase(pot, mc_version, xsec_cov) { 
+samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
+  // create dunemc storage
+  for (int i=0;i<nSamples;i++) {
+    struct dunemc_base obj = dunemc_base();
+    dunemcSamples.push_back(obj);
+  }
+
+  Initialise();
 }
 
 samplePDFDUNEAtmBase::~samplePDFDUNEAtmBase() {
 }
 
 void samplePDFDUNEAtmBase::Init() {
-  //Bools
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
-  //Inputs
-  std::string mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
-  std::string mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
-  std::string splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
-  std::string splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
-
-  std::vector<std::string> mtuple_files;
-  std::vector<std::string> spline_files;
-  std::vector<int> sample_vecno;
-  std::vector<int> sample_oscnutype;
-  std::vector<int> sample_nutype;
-  std::vector<bool> sample_signal;
+  splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
+  splineFile = (splineFDBase*)DUNESplines;
+  InitialiseSplineObject();
   
-  //Loop over all the sub-samples
-  for (auto const &osc_channel : SampleManager->raw()["SubSamples"]) {
-    std::cout << "Found sub sample" << std::endl;
-    mtuple_files.push_back(osc_channel["mtuplefile"].as<std::string>());
-    spline_files.push_back(osc_channel["splinefile"].as<std::string>());
-    sample_vecno.push_back(osc_channel["samplevecno"].as<int>());
-    sample_nutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["nutype"].as<int>())));
-    sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
-    sample_signal.push_back(osc_channel["signal"].as<bool>());
-  }
-
-  // create dunemc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunemcSamples.push_back(obj);
-  }
-  
-  for(unsigned iSample=0 ; iSample < dunemcSamples.size() ; iSample++){
-    setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunemcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
-  }
-  
-  for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    InitialiseSingleFDMCObject(iSample,dunemcSamples[iSample].nEvents);
-    setupFDMC(&dunemcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]]);
-  }
-  
-  std::cout << "################" << std::endl;
-  std::cout << "Setup FD MC   " << std::endl;
-  std::cout << "################" << std::endl;
-
-  std::vector<std::string> spline_filepaths;
-
-  for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    spline_filepaths.push_back(splineprefix+spline_files[iSample]+splinesuffix);
-  }
-
-  splineFile = new splinesDUNE(XsecCov);
-
-  //////////////////////////////////
-  // Now add samples to spline monolith
-  //////////////////////////////////
-
-  //ETA - do we need to do this here?
-  //Can't we have one splineFile object for all samples as Dan does in atmospherics fit?
-  //Then just add spline files to monolith?
-  std::cout<<"Adding samples to spline monolith"<<std::endl;
-  std::cout << "samplename is " << samplename << std::endl;
-  std::cout << "BinningOpt is " << BinningOpt << std::endl;
-  std::cout << "SampleDetID is " << SampleDetID << std::endl;
-  std::cout << "spline_filepaths is of size " << spline_filepaths.size() << std::endl;
-
-  splineFile->AddSample(samplename, BinningOpt, SampleDetID, spline_filepaths);
-
-  // Print statements for debugging
-  splineFile->PrintArrayDimension();
-  splineFile->CountNumberOfLoadedSplines(false, 1);
-  splineFile->TransferToMonolith();
-  std::cout << "--------------------------------" <<std::endl;
-
-  std::cout << "################" << std::endl;
-  std::cout << "Setup FD splines   " << std::endl;
-  std::cout << "################" << std::endl;
-
-  SetupNormParameters();
-  SetupWeightPointers();
-
-  fillSplineBins();
-
-  _sampleFile->Close();
-
   std::cout << "-------------------------------------------------------------------" <<std::endl;
 }
-
 
 void samplePDFDUNEAtmBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
@@ -118,11 +44,15 @@ void samplePDFDUNEAtmBase::SetupWeightPointers() {
       MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
     }
   }
-  
 }
 
+int samplePDFDUNEAtmBase::setupExperimentMC(int iSample) {
+  const char *sampleFile = (mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str();
+  dunemc_base *duneobj = &(dunemcSamples[iSample]);
+  int nutype = sample_nutype[iSample];
+  int oscnutype = sample_oscnutype[iSample];
+  bool signal = sample_signal[iSample];
 
-void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats) {
   std::cout << "-------------------------------------------------------------------" << std::endl;
   std::cout << "input file: " << sampleFile << std::endl;
   
@@ -214,8 +144,6 @@ void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *dune
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
-  
-  //FILL DUNE STRUCT
   for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
     _data->GetEntry(i);
     
@@ -252,7 +180,7 @@ void samplePDFDUNEAtmBase::setupDUNEMC(const char *sampleFile, dunemc_base *dune
   }
   
   _sampleFile->Close();
-  std::cout << "Sample set up OK" << std::endl;
+  return duneobj->nEvents;
 }
 
 double samplePDFDUNEAtmBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
@@ -311,7 +239,10 @@ double samplePDFDUNEAtmBase::ReturnKinematicParameter(double KinematicVariable, 
   return KinematicValue;
 }
 
-void samplePDFDUNEAtmBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj)  {
+void samplePDFDUNEAtmBase::setupFDMC(int iSample) {
+  dunemc_base *duneobj = &(dunemcSamples[iSample]);
+  fdmc_base *fdobj = &(MCSamples[iSample]);
+  
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
@@ -348,7 +279,6 @@ void samplePDFDUNEAtmBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj)  {
       throw;
       break;
     }
-    
   }
 }
 

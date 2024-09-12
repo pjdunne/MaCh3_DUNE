@@ -8,115 +8,28 @@
 #include "manager/manager.h"
 #include "TLeaf.h"
 
-samplePDFDUNEBeamNDGarBase::samplePDFDUNEBeamNDGarBase(double pot, std::string mc_version, covarianceXsec* XsecCov) : samplePDFFDBase(pot, mc_version, XsecCov) { 
-  Init();
-}
-
-samplePDFDUNEBeamNDGarBase::~samplePDFDUNEBeamNDGarBase() {
-  delete sr;
-  delete _sampleFile;
-}
-
-void samplePDFDUNEBeamNDGarBase::Init() {
-  //Bools
-  IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
-  SampleDetID = SampleManager->raw()["DetID"].as<int>();
-
-  iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
-  muonscore_threshold = SampleManager->raw()["SampleCuts"]["muonscore_threshold"].as<float>(); //NK determine what muon score threshold to use
-
-  //Inputs
-  std::string mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
-  std::string mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
-  std::string splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
-  std::string splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
-
-  std::vector<std::string> mtuple_files;
-  std::vector<std::string> spline_files;
-  std::vector<int> sample_vecno;
-  std::vector<int> sample_oscnutype;
-  std::vector<int> sample_nutype;
-  std::vector<bool> sample_signal;
-  
-  //Loop over all the sub-samples
-  for (auto const &osc_channel : SampleManager->raw()["SubSamples"]) {
-    std::cout << "Found sub sample" << std::endl;
-    mtuple_files.push_back(osc_channel["mtuplefile"].as<std::string>());
-    spline_files.push_back(osc_channel["splinefile"].as<std::string>());
-    sample_vecno.push_back(osc_channel["samplevecno"].as<int>());
-    sample_nutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["nutype"].as<int>())));
-    sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
-    sample_signal.push_back(osc_channel["signal"].as<bool>());
-  }
-  
-  std::vector<double> tempselection(3);
-  for(int iSelec=0; iSelec<NSelections; iSelec++){
-    tempselection[0] = ReturnKinematicParameterFromString(SelectionStr[iSelec]);
-    tempselection[1] = SelectionBounds[iSelec][0];
-    tempselection[2] = SelectionBounds[iSelec][1];
-    StoredSelection.push_back(tempselection);
-  }
-  
+samplePDFDUNEBeamNDGarBase::samplePDFDUNEBeamNDGarBase(double pot_, std::string mc_version_, covarianceXsec* XsecCov_) : samplePDFFDBase(pot_, mc_version_, XsecCov_) {
   // create dunendgarmc storage
   for (int i=0;i<nSamples;i++) {
     struct dunemc_base obj = dunemc_base();
     dunendgarmcSamples.push_back(obj);
   }
+  
+  Initialise();
+}
 
-  //Now down with yaml file for sample
-  delete SampleManager;
-  for(unsigned iSample=0 ; iSample < dunendgarmcSamples.size() ; iSample++){
-    setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunendgarmcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
-  }
+samplePDFDUNEBeamNDGarBase::~samplePDFDUNEBeamNDGarBase() {
+}
 
-  for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    InitialiseSingleFDMCObject(iSample,dunendgarmcSamples[iSample].nEvents);
-    setupFDMC(&dunendgarmcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]]);
-  }
-  
-  std::cout << "################" << std::endl;
-  std::cout << "Setup FD MC   " << std::endl;
-  std::cout << "################" << std::endl;
+void samplePDFDUNEBeamNDGarBase::Init() {
+  IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
+  SampleDetID = SampleManager->raw()["DetID"].as<int>();
+  iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
+  muonscore_threshold = SampleManager->raw()["SampleCuts"]["muonscore_threshold"].as<float>(); //NK determine what muon score threshold to use
 
-  std::vector<std::string> spline_filepaths;
-  
-  for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    spline_filepaths.push_back(splineprefix+spline_files[iSample]+splinesuffix);
-  }
-  
-  splineFile = new splinesDUNE(XsecCov);
-  
-  //////////////////////////////////
-  // Now add samples to spline monolith
-  //////////////////////////////////
-  
-  //ETA - do we need to do this here?
-  //Can't we have one splineFile object for all samples as Dan does in atmospherics fit?
-  //Then just add spline files to monolith?
-  std::cout<<"Adding samples to spline monolith"<<std::endl;
-  std::cout << "samplename is " << samplename << std::endl;
-  std::cout << "BinningOpt is " << BinningOpt << std::endl;
-  std::cout << "SampleDetID is " << SampleDetID << std::endl;
-  std::cout << "spline_filepaths is of size " << spline_filepaths.size() << std::endl;
-  
-  splineFile->AddSample(samplename, BinningOpt, SampleDetID, spline_filepaths);
-  
-  // Print statements for debugging
-  splineFile->PrintArrayDimension();
-  splineFile->CountNumberOfLoadedSplines(false, 1);
-  splineFile->TransferToMonolith();
-  std::cout << "--------------------------------" <<std::endl;
-  
-  std::cout << "################" << std::endl;
-  std::cout << "Setup FD splines   " << std::endl;
-  std::cout << "################" << std::endl;
-  
-  SetupNormParameters();
-  SetupWeightPointers();
-  
-  fillSplineBins();
-  
-  _sampleFile->Close();
+  splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
+  splineFile = (splineFDBase*)DUNESplines;
+  InitialiseSplineObject();
   
   std::cout << "-------------------------------------------------------------------" <<std::endl;
 }
@@ -124,7 +37,6 @@ void samplePDFDUNEBeamNDGarBase::Init() {
 void samplePDFDUNEBeamNDGarBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendgarmcSamples.size(); ++i) {
     for (int j = 0; j < dunendgarmcSamples[i].nEvents; ++j) {
-      //DB Setting total weight pointers
       MCSamples[i].ntotal_weight_pointers[j] = 6;
       MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
       MCSamples[i].total_weight_pointers[j][0] = &(dunendgarmcSamples[i].pot_s);
@@ -137,7 +49,13 @@ void samplePDFDUNEBeamNDGarBase::SetupWeightPointers() {
   }
 }
 
-void samplePDFDUNEBeamNDGarBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats) {
+void samplePDFDUNEBeamNDGarBase::setupExperimentMC(int iSample) {
+  const char *sampleFile = (mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str();
+  dunemc_base *duneobj = &(dunendgarmcSamples[iSample]);
+  int nutype = sample_nutype[iSample];
+  int oscnutype = sample_oscnutype[iSample];
+  bool signal = sample_signal[iSample];
+  
   std::cout << "-------------------------------------------------------------------" << std::endl;
   std::cout << "input file: " << sampleFile << std::endl;
   
@@ -221,8 +139,7 @@ void samplePDFDUNEBeamNDGarBase::setupDUNEMC(const char *sampleFile, dunemc_base
       //std::cout<<"this event is within the fiducial volume"<<std::endl;
       num_in_fdv++;
       duneobj->in_fdv[i] = 1;
-    }
-    else{
+    } else{
       //std::cout<<"this event is NOT within the fiducial volume"<<std::endl;
       num_notin_fdv++;
       duneobj->in_fdv[i] = 0;
@@ -235,27 +152,24 @@ void samplePDFDUNEBeamNDGarBase::setupDUNEMC(const char *sampleFile, dunemc_base
       duneobj->rw_yrec[i] = (double)(0);
       num_no_ixns++;
       duneobj->nrecoparticles[i] = (int)(0);
-    }
-    else{
+    } else{
       duneobj->nrecoparticles[i] = (int)(0);
       float erec_total =0;
       float elep_reco =0;
       float muonscore = muonscore_threshold;
       int nixns = (int)(sr->common.ixn.ngsft);
-      for(int i_ixn =0; i_ixn<nixns; i_ixn++){
+      for(int i_ixn =0; i_ixn<nixns; i_ixn++) {
 	int nrecoparticles = (int)(sr->common.ixn.gsft[i_ixn].part.ngsft);
 	duneobj->nrecoparticles[i] += (int)(sr->common.ixn.gsft[i_ixn].part.ngsft);
 	int nanparticles = 0;
 	if(nrecoparticles ==0){
 	  double radius = pow((pow((sr->mc.nu[0].vtx.y+150.),2) + pow((sr->mc.nu[0].vtx.z-1486.),2)),0.5);
-	  if(std::abs(sr->mc.nu[0].vtx.x)<=209.0 || radius<=227.02){
-	    //std::cout<<"within fd"<<std::endl;
+	  if(std::abs(sr->mc.nu[0].vtx.x)<=209.0 || radius<=227.02) {
 	    num_in_fdv_noreco++;
 	  }   
 	  num_no_recparticles++;}
-	for(int i_part =0; i_part<nrecoparticles; i_part++){
+	for(int i_part =0; i_part<nrecoparticles; i_part++) {
 	  float erec_part = (float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].E);
-	  //std::cout<<"erec_part: "<<erec_part<<std::endl;
 	  if(std::isnan(erec_part)){nanparticles++;}
 	  erec_total+=erec_part;
 	  if((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.muon_score>muonscore)){
@@ -326,15 +240,9 @@ void samplePDFDUNEBeamNDGarBase::setupDUNEMC(const char *sampleFile, dunemc_base
     
     duneobj->flux_w[i] = 1.0;
   }
-  
-  std::cout<<"num evts in fdv: "<<num_in_fdv<<std::endl;
-  std::cout<<"num evts not in fdv: "<<num_notin_fdv<<std::endl;
-  std::cout<<"num no reco particles in fdv"<< num_in_fdv_noreco<<std::endl;
-  std::cout<<"num no ixns: "<<num_no_ixns<<std::endl;
-  std::cout<<"num no rec particles: "<<num_no_recparticles<<std::endl;
-  std::cout<<"num nan energy: "<<num_nanenergy<<std::endl;
-  std::cout<<"num nan particles: "<<num_nanparticles<<std::endl;
-  std::cout << "Sample set up OK" << std::endl;
+
+  _sampleFile->Close();
+  return duneobj->nEvents;
 }
 
 double samplePDFDUNEBeamNDGarBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
@@ -428,7 +336,10 @@ double samplePDFDUNEBeamNDGarBase::ReturnKinematicParameter(KinematicTypes Kinem
  return KinematicValue;
 }
 
-void samplePDFDUNEBeamNDGarBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) {
+void samplePDFDUNEBeamNDGarBase::setupFDMC(int iSample) {
+  dunemc_base *duneobj = &(dunendgarmcSamples[iSample]);
+  fdmc_base *fdobj = &(MCSamples[iSample]);
+  
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;

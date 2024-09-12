@@ -7,61 +7,23 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov) : samplePDFFDBase(pot, mc_version, xsec_cov) { 
-  Init();
+samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
+  // create dunemc storage
+  for (int i=0;i<nSamples;i++) {
+    struct dunemc_base obj = dunemc_base();
+    dunemcSamples.push_back(obj);
+  }
+  
+  Initialise();
 }
 
 samplePDFDUNEBeamFDBase::~samplePDFDUNEBeamFDBase() {
 }
 
 void samplePDFDUNEBeamFDBase::Init() {
-  //Bools
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
-
-  //Inputs
-  std::string mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
-  std::string mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
-  std::string splineprefix = SampleManager->raw()["InputFiles"]["splineprefix"].as<std::string>();
-  std::string splinesuffix = SampleManager->raw()["InputFiles"]["splinesuffix"].as<std::string>();
-
-  std::vector<std::string> mtuple_files;
-  std::vector<std::string> spline_files;
-  std::vector<int> sample_vecno;
-  std::vector<int> sample_oscnutype;
-  std::vector<int> sample_nutype;
-  std::vector<bool> sample_signal;
-  
-  //Loop over all the sub-samples
-  for (auto const &osc_channel : SampleManager->raw()["SubSamples"]) {
-	std::cout << "Found sub sample" << std::endl;
-	mtuple_files.push_back(osc_channel["mtuplefile"].as<std::string>());
-	spline_files.push_back(osc_channel["splinefile"].as<std::string>());
-	sample_vecno.push_back(osc_channel["samplevecno"].as<int>());
-	sample_nutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["nutype"].as<int>())));
-	sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
-	sample_signal.push_back(osc_channel["signal"].as<bool>());
-  }
-
-  // create dunemc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunemcSamples.push_back(obj);
-  }
-
-  for(unsigned iSample=0 ; iSample < dunemcSamples.size() ; iSample++){
-    setupDUNEMC((mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str(), &dunemcSamples[sample_vecno[iSample]], pot, sample_nutype[iSample], sample_oscnutype[iSample], sample_signal[iSample]);
-  }
-
-  for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    InitialiseSingleFDMCObject(iSample,dunemcSamples[iSample].nEvents);
-    setupFDMC(&dunemcSamples[sample_vecno[iSample]], &MCSamples[sample_vecno[iSample]]);
-  }
-
-  std::cout << "################" << std::endl;
-  std::cout << "Setup FD MC   " << std::endl;
-  std::cout << "################" << std::endl;
 
   tot_escale_fd_pos = -999;
   tot_escale_sqrt_fd_pos = -999;
@@ -90,157 +52,102 @@ void samplePDFDUNEBeamFDBase::Init() {
 
   int func_it = 0;
   for (std::vector<int>::iterator it = funcParsIndex.begin(); it != funcParsIndex.end(); ++it, ++func_it) {
-	std::string name = funcParsNames.at(func_it);
-
-	if (name == "TotalEScaleFD") {
-	  tot_escale_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_fd_pos);
-	}
-
-	else if (name == "TotalEScaleSqrtFD") {
-	  tot_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_sqrt_fd_pos);
-	}
-
-	else if (name == "TotalEScaleInvSqrtFD") {
-	  tot_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_invsqrt_fd_pos);
-	}
-
-	else if (name == "HadEScaleFD") {
-	  had_escale_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_fd_pos);
-	}
-
-	else if (name == "HadEScaleSqrtFD") {
-	  had_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_sqrt_fd_pos);
-	}
-
-	else if (name == "HadEScaleInvSqrtFD") {
-	  had_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_invsqrt_fd_pos);
-	}
-
-	else if (name == "MuEScaleFD") {
-	  mu_escale_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_fd_pos);
-	}
-
-	else if (name == "MuEScaleSqrtFD") {
-	  mu_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_sqrt_fd_pos);
-	}
-
-	else if (name == "MuEScaleInvSqrtFD") {
-	  mu_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_invsqrt_fd_pos);
-	}
-
-	else if (name == "NEScaleFD") {
-	  n_escale_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_fd_pos);
-	}
-
-	else if (name == "NEScaleSqrtFD") {
-	  n_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_sqrt_fd_pos);
-	}
-
-	else if (name == "NEScaleInvSqrtFD") {
-	  n_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_invsqrt_fd_pos);
-	}
-
-	else if (name == "EMEScaleFD") {
-	  em_escale_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_fd_pos);
-	}
-
-	else if (name == "EMEScaleSqrtFD") {
-	  em_escale_sqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_sqrt_fd_pos);
-	}
-
-	else if (name == "EMEScaleInvSqrtFD") {
-	  em_escale_invsqrt_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_invsqrt_fd_pos);
-	}
-
-	else if (name == "HadResFD") {
-	  had_res_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(had_res_fd_pos);
-	}
-
-	else if (name == "MuResFD") {
-	  mu_res_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_res_fd_pos);
-	}
-
-	else if (name == "NResFD") {
-	  n_res_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(n_res_fd_pos);
-	}
-
-	else if (name == "EMResFD") {
-	  em_res_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(em_res_fd_pos);
-	}
-	else if (name == "CVNNumuFD") {
-	  cvn_numu_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(cvn_numu_fd_pos);
-	}
-	else if (name == "CVNNueFD") {
-	  cvn_nue_fd_pos = *it;
-	  FDDetectorSystPointers[func_it] = XsecCov->retPointer(cvn_nue_fd_pos);
-	}
-
-	else { 
-	  std::cerr << "Found a functional parameter which wasn't specified in the xml | samplePDFDUNEBeamFDBase:" << name << std::endl;
-	  throw;
-	}
+    std::string name = funcParsNames.at(func_it);
+    
+    if (name == "TotalEScaleFD") {
+      tot_escale_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_fd_pos);
+    }
+    else if (name == "TotalEScaleSqrtFD") {
+      tot_escale_sqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_sqrt_fd_pos);
+    }
+    else if (name == "TotalEScaleInvSqrtFD") {
+      tot_escale_invsqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(tot_escale_invsqrt_fd_pos);
+    }
+    else if (name == "HadEScaleFD") {
+      had_escale_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_fd_pos);
+    }
+    else if (name == "HadEScaleSqrtFD") {
+      had_escale_sqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_sqrt_fd_pos);
+    }
+    else if (name == "HadEScaleInvSqrtFD") {
+      had_escale_invsqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(had_escale_invsqrt_fd_pos);
+    }
+    else if (name == "MuEScaleFD") {
+      mu_escale_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_fd_pos);
+    }
+    else if (name == "MuEScaleSqrtFD") {
+      mu_escale_sqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_sqrt_fd_pos);
+    }
+    else if (name == "MuEScaleInvSqrtFD") {
+      mu_escale_invsqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_escale_invsqrt_fd_pos);
+    }
+    else if (name == "NEScaleFD") {
+      n_escale_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_fd_pos);
+    }
+    else if (name == "NEScaleSqrtFD") {
+      n_escale_sqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_sqrt_fd_pos);
+    }
+    else if (name == "NEScaleInvSqrtFD") {
+      n_escale_invsqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(n_escale_invsqrt_fd_pos);
+    }
+    else if (name == "EMEScaleFD") {
+      em_escale_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_fd_pos);
+    }
+    else if (name == "EMEScaleSqrtFD") {
+      em_escale_sqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_sqrt_fd_pos);
+    }
+    else if (name == "EMEScaleInvSqrtFD") {
+      em_escale_invsqrt_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(em_escale_invsqrt_fd_pos);
+    }
+    else if (name == "HadResFD") {
+      had_res_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(had_res_fd_pos);
+    }
+    else if (name == "MuResFD") {
+      mu_res_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(mu_res_fd_pos);
+    }
+    else if (name == "NResFD") {
+      n_res_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(n_res_fd_pos);
+    }
+    else if (name == "EMResFD") {
+      em_res_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(em_res_fd_pos);
+    }
+    else if (name == "CVNNumuFD") {
+      cvn_numu_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(cvn_numu_fd_pos);
+    }
+    else if (name == "CVNNueFD") {
+      cvn_nue_fd_pos = *it;
+      FDDetectorSystPointers[func_it] = XsecCov->retPointer(cvn_nue_fd_pos);
+    }
+    
+    else { 
+      std::cerr << "Found a functional parameter which wasn't specified in the xml | samplePDFDUNEBeamFDBase:" << name << std::endl;
+      throw;
+    }
   }
 
-  std::vector<std::string> spline_filepaths;
-  std::cout << "Now setting up Splines" << std::endl;
-
-  for(unsigned iSample=0 ; iSample < MCSamples.size() ; iSample++){
-    spline_filepaths.push_back(splineprefix+spline_files[iSample]+splinesuffix);
-  }
-
-  splineFile = new splinesDUNE(XsecCov);
-
-    //////////////////////////////////
-  // Now add samples to spline monolith
-  //////////////////////////////////
-
-  //ETA - do we need to do this here?
-  //Can't we have one splineFile object for all samples as Dan does in atmospherics fit?
-  //Then just add spline files to monolith?
-  std::cout<<"Adding samples to spline monolith"<<std::endl;
-  std::cout << "samplename is " << samplename << std::endl;
-  std::cout << "BinningOpt is " << BinningOpt << std::endl;
-  std::cout << "SampleDetID is " << SampleDetID << std::endl;
-  std::cout << "spline_filepaths is of size " << spline_filepaths.size() << std::endl;
-
-  splineFile->AddSample(samplename, BinningOpt, SampleDetID, spline_filepaths);
-
-  // Print statements for debugging
-  splineFile->PrintArrayDimension();
-  splineFile->CountNumberOfLoadedSplines(false, 1);
-  splineFile->TransferToMonolith();
-  std::cout << "--------------------------------" <<std::endl;
-
-  std::cout << "################" << std::endl;
-  std::cout << "Setup FD splines   " << std::endl;
-  std::cout << "################" << std::endl;
-
-  SetupNormParameters();
-  SetupWeightPointers();
-
-  fillSplineBins();
-  
-  _sampleFile->Close();
+  splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
+  splineFile = (splineFDBase*)DUNESplines;
+  InitialiseSplineObject();
 
   std::cout << "-------------------------------------------------------------------" <<std::endl;
 }
@@ -261,7 +168,13 @@ void samplePDFDUNEBeamFDBase::SetupWeightPointers() {
 }
 
 
-void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats) {
+void samplePDFDUNEBeamFDBase::setupExperimentMC(int iSample) {
+  const char *sampleFile = (mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str();
+  dunemc_base *duneobj = &(dunemcSamples[iSample]);
+  int nutype = sample_nutype[iSample];
+  int oscnutype = sample_oscnutype[iSample];
+  bool signal = sample_signal[iSample];
+  
   std::cout << "-------------------------------------------------------------------" << std::endl;
   std::cout << "input file: " << sampleFile << std::endl;
   
@@ -442,7 +355,7 @@ void samplePDFDUNEBeamFDBase::setupDUNEMC(const char *sampleFile, dunemc_base *d
   }
   
   _sampleFile->Close();
-  std::cout << "Sample set up OK" << std::endl;  
+  return duneobj->nEvents;
 }
 
 double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
@@ -507,7 +420,10 @@ double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(std::string KinematicPa
  return KinematicValue;
 }
 
-void samplePDFDUNEBeamFDBase::setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj) {
+void samplePDFDUNEBeamFDBase::setupFDMC(int iSample) {
+  dunemc_base *duneobj = &(dunemcSamples[iSample]);
+  fdmc_base *fdobj = &(MCSamples[iSample]);  
+  
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;

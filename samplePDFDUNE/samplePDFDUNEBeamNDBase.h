@@ -25,12 +25,10 @@ public:
   samplePDFDUNEBeamNDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBeamNDBase();
 
-  //DB This should be removed once core-develop has the virtual function removed
-  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
  protected:
   void Init();
-  void setupDUNEMC(const char *sampleInputFile, dunemc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
-  void setupFDMC(dunemc_base *duneobj, fdmc_base *fdobj);
+  int setupExperimentMC(int iSample);
+  void setupFDMC(int iSample);
 
   void SetupWeightPointers();
 
@@ -38,7 +36,8 @@ public:
   double ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
 
-  //Apply shifts from functional parameters
+  //DB functions which could be initialised to do something which is non-trivial
+  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
   void applyShifts(int iSample, int iEvent);
 
   std::vector<struct dunemc_base> dunendmcSamples;
