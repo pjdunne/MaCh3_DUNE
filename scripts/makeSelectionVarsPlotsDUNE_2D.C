@@ -9,30 +9,27 @@
 
 #include <iostream>
 
-void makeSelectionVarsPlotsDUNE(TString inputfile)
+void makeSelectionVarsPlotsDUNE_2D(TString inputfile)
 {
   std::cout << "honk" << std::endl;
   gStyle->SetOptStat(0);
    TFile* file = new TFile(inputfile);
-   TList* list = file->GetListOfKeys();
-   
+   TList* list = file->GetListOfKeys();   
 
    std::cout << "honk2" << std::endl;
    std::cout << list->GetEntries() << "  number of Hists" << std::endl;
 
    TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
    c0->Divide(1,2);
-   c0->Print("selectionvars.ps[");
+   c0->Print("selectionvars_2d.ps[");
    std::vector<std::vector<TString>> kinematicvariables;
+
+    std::vector<std::string> plotvariables = {"TrueQ0","TrueQ3"};
+//    std::vector<std::string> plotvariables = {"LepPT","LepPZ"};
+//    std::vector<std::string> plotvariables = {"LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "MuonPiRecoAngle", "PiTrueEnergy", "MuonPiAngle", "PiRecoEnergy", "PiZRecoAngle", "PiTrueEnergy", "PiZAngle", "PiRecoEnergy","PiTrueEnergy"};
 
 //   std::vector<std::string> plotvariables = {"NMuonsRecoOverTruth"};
 //  std::vector<std::string> plotvariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "RecoXPos", "TrueYPos", "RecoYPos", "TrueZPos", "RecoZPos", "TrueRad", "RecoRad", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy"};
-//  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "TrueNeutrinoEnergy", "TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "ChargedPionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
-
-  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "TrueNeutrinoEnergy", "TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "RecoNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "ChargedPionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons","PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
-
-
-//{"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
 
   std::vector<std::string> x_axis;
 //   std::vector<std::string> plotvariables = {"TrueNeutrinoEnergy", "RecoNeutrinoEnergy", "TrueMinusRecoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "TrueYPos", "TrueZPos", "NMuons", "TrueMinusRecoEnergyRatio", "RecoLepEnergy"};
@@ -55,8 +52,10 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
      //std::cout << "entry " << i << std::endl;
      TString keyname = list->At(i)->GetName();
         if(keyname.Contains("_NDGAr_")){
-        for(int iplots=0; iplots<n_vars; iplots++){
-          TString keynametest = plotvariables[iplots]+"_NDGAr_";
+        std::cout<<"here ndgar"<<std::endl;
+        for(int iplots=0; iplots<n_vars; iplots = iplots+2){
+          TString keynametest = plotvariables[iplots]+"_"+plotvariables[iplots+1]+"_NDGAr_";
+          std::cout<<"keynametest: "<<keynametest<<std::endl;
           if(keyname.Contains(keynametest)){
           kinematicvariables[iplots].push_back(keyname);
           std::cout<<"iplots: "<<iplots<<" keyname: "<<keyname<<std::endl;
@@ -90,6 +89,7 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
      THStack* stack = new THStack("stack","");
      TLegend* leg1 = new TLegend(0.65,0.55,0.8,0.8);
      std::vector<TH1D*> Hists(modebreakdown.size());
+     std::cout<<"here"<<std::endl;
      for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
        int index = kinematicvariables[ivars][ikeynames].Last('_');
        int length = kinematicvariables[ivars][ikeynames].Length();
@@ -100,15 +100,16 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
        TH1D* hist =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
        std::cout<<kinematicvariables[ivars][ikeynames]<<" mode: "<<fullname.Remove(0, 10)<<std::endl;
        fullname = kinematicvariables[ivars][ikeynames];
-       int mode = fullname.Remove(0, index+1).Atoi();
-       std::cout<<"mode: "<<mode<<std::endl;
-         for(int modes =0; modes<modebreakdown.size(); modes++){
-         if(std::find(modebreakdown[modes].begin(), modebreakdown[modes].end(), mode)!=modebreakdown[modes].end()){
-           if(Hists[modes] ==NULL){ Hists[modes] = hist;}
-           else{Hists[modes]->Add(hist);}
-         }
-       }
+
+     std::cout<<"here2 "<<kinematicvariables[ivars][ikeynames]<<std::endl;
+     TH2D* twodhist = (TH2D*)file->Get(kinematicvariables[ivars][ikeynames]);
+     c0->cd(1);
+
+     twodhist->Draw("COLZ");
+//     c0->Update();
+     c0->Print("selectionvars_2d.ps");
      }
+     /*
      for(int ihists=0; ihists<Hists.size(); ihists++){
        TH1D* histogram = Hists[ihists];
        if(histogram != NULL){
@@ -125,9 +126,9 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
      c0->Print("selectionvars.ps");
      delete stack;
      delete leg1;
-     Hists.clear();
+     Hists.clear();*/
    }
    std::cout<<"HERE"<<std::endl;
-   c0->Print("selectionvars.ps]");
+   c0->Print("selectionvars_2d.ps]");
 
 }

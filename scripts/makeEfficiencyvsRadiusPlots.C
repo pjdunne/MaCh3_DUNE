@@ -21,7 +21,7 @@ void makeEfficiencyvsRadiusPlots(TString inputfile)
    std::cout << list->GetEntries() << "  number of Hists" << std::endl;
 
    TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
-   c0->Divide(2,2);
+   c0->Divide(1,4);
    c0->Print("efficiencyvsradius.ps[");
    std::vector<std::vector<TString>> kinematicvariables;
 
@@ -80,163 +80,151 @@ void makeEfficiencyvsRadiusPlots(TString inputfile)
 
    std::vector<std::string> modenames = {"CCQE", "CCDIS", "CCRES", "CCMEC", "CCOTHER", "NC"};
    std::vector<int> modecolours = {900-1, 616-6, 880-1, 860-5, 432-7, kGreen+2};
-  /*
-   for(int ivars=0; ivars<kinematicvariables.size(); ivars++){
-     THStack* stack = new THStack("stack","");
-     TLegend* leg1 = new TLegend(0.65,0.55,0.8,0.8);
-     std::vector<TH1D*> HistsReco(modebreakdown.size());
-     std::vector<TH1D*> HistsTruth(modebreakdown.size());
-     for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
-       if(kinematicvariables[ivars][ikeynames].Contains("_RECO")){
-         int index = kinematicvariables[ivars][ikeynames].First('_');
-         int index2 = kinematicvariables[ivars][ikeynames].Last('_');
-         int length = kinematicvariables[ivars][ikeynames].Length();
-         TString fullname = kinematicvariables[ivars][ikeynames];
-         TString name  = fullname.Remove(index+6, length)+"_RecoCuts";
-         std::cout<<"name: "<<name<<" index: "<<index<<" length: "<<length<<std::endl;
-         stack->SetTitle(name);
-         std::cout<<"name: "<<kinematicvariables[ivars][ikeynames]<<std::endl;
-         TH1D* hist =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-         //std::cout<<kinematicvariables[ivars][ikeynames]<<" mode: "<<fullname.Remove(0, 10)<<std::endl;
-         fullname = kinematicvariables[ivars][ikeynames];
-         fullname.Remove(index2, length);
-         int mode = fullname.Remove(0, index+7).Atoi();
-         std::cout<<"mode: "<<mode<<std::endl;
-           for(int modes =0; modes<modebreakdown.size(); modes++){
-           if(std::find(modebreakdown[modes].begin(), modebreakdown[modes].end(), mode)!=modebreakdown[modes].end()){
-             if(HistsReco[modes] ==NULL){ HistsReco[modes] = hist;}
-             else{HistsReco[modes]->Add(hist);}
-           }
-         }
-       }
-     }
-     for(int ihists=0; ihists<HistsReco.size(); ihists++){
-       TH1D* histogram = HistsReco[ihists];
-       if(histogram != NULL){
-         histogram->SetFillColor(modecolours[ihists]);
-         histogram->SetLineColor(modecolours[ihists]);
-         stack->Add(histogram);
-         leg1->AddEntry(histogram,modenames[ihists].c_str());
-         if(kinematicvariables[ivars][0].Contains("NRecoMuons")){recostack->Add(histogram); leg2->AddEntry(histogram,modenames[ihists].c_str());}
-       }
-     }
-     c0->cd(1);
-     stack->Draw("HIST");
-     leg1->Draw("SAME"); 
-//     c0->Update();
-//     c0->Print("efficiencyvars.ps");
-//     delete stack;
-//     leg1->Clear();
-//     Hists.clear();
 
-     THStack* stack2 = new THStack("stack2","");
-     TLegend* leg0 = new TLegend(0.65,0.55,0.8,0.8);
-     for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
-       if(kinematicvariables[ivars][ikeynames].Contains("_TRUTH")){
-         int index = kinematicvariables[ivars][ikeynames].First('_');
-         int index2 = kinematicvariables[ivars][ikeynames].Last('_');
-         int length = kinematicvariables[ivars][ikeynames].Length();
-         TString fullname = kinematicvariables[ivars][ikeynames];
-         TString name  = fullname.Remove(index+6, length)+"_TruthCuts";
-         std::cout<<"name: "<<name<<" index: "<<index<<" length: "<<length<<std::endl;
-         stack2->SetTitle(name);
-         TH1D* hist1 =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-         std::cout<<kinematicvariables[ivars][ikeynames]<<" mode: "<<fullname.Remove(0, 10)<<std::endl;
-         fullname = kinematicvariables[ivars][ikeynames];
-         fullname.Remove(index2, length);
-         int mode = fullname.Remove(0, index+7).Atoi();
-         std::cout<<"mode: "<<mode<<" name: "<<name<<std::endl;
-           for(int modes =0; modes<modebreakdown.size(); modes++){
-           if(std::find(modebreakdown[modes].begin(), modebreakdown[modes].end(), mode)!=modebreakdown[modes].end()){
-             if(HistsTruth[modes] ==NULL){ HistsTruth[modes] = hist1;}
-             else{HistsTruth[modes]->Add(hist1);}
-           }
-         }
-       }
-     }
-     for(int ihists=0; ihists<HistsTruth.size(); ihists++){
-       TH1D* histogram1 = HistsTruth[ihists];
-       if(histogram1 != NULL){
-         histogram1->SetFillColor(modecolours[ihists]);
-         histogram1->SetLineColor(modecolours[ihists]);
-         stack2->Add(histogram1);
-         leg0->AddEntry(histogram1,modenames[ihists].c_str());
-         if(kinematicvariables[ivars][0].Contains("NTrueMuons")){truestack->Add(histogram1); leg3->AddEntry(histogram1,modenames[ihists].c_str());}
-       }
-     }
-     c0->cd(2);
-     stack2->Draw("HIST");
-     leg0->Draw("SAME"); 
-     c0->Update();
-     c0->Print("efficiencyvars.ps");
-     delete stack;
-     delete stack2;
-     delete leg1;
-     delete leg0;
-     HistsReco.clear();
-     HistsTruth.clear();
-     //}
-     
-     int counter =0;
-     if(kinematicvariables[ivars][0].Contains("NTrueMuons")){
-       for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
-         if(kinematicvariables[ivars][ikeynames].Contains("_TRUTH")){
-           TH1D* hist3 =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-           if(counter ==0){truenmuons = (TH1D*)hist3->Clone("NTrueMuons"); truenmuons->Reset();counter++;}
-           truenmuons->Add(hist3);
-         }
-       }
-     }
-     counter =0;
-     if(kinematicvariables[ivars][0].Contains("NRecoMuons")){
-       for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
-         if(kinematicvariables[ivars][ikeynames].Contains("_RECO")){
-           TH1D* hist4 =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-           if(counter ==0){reconmuons = (TH1D*)hist4->Clone("NRecoMuons"); reconmuons->Reset();counter++;}
-           reconmuons->Add(hist4);
-         }
-       }
-     }
-   }
-*/
    TH1D* trueselected = (TH1D*)file->Get("RecoRad_NDGAr_all_TrueSelected");
    TH1D* alltrue = (TH1D*)file->Get("RecoRad_NDGAr_all_AllTrue");;
-   TH1D* efficiency = (TH1D*)trueselected->Clone();
-   efficiency->Reset();
+//   TH1D* efficiency = (TH1D*)trueselected->Clone();
+   std::vector<double> x, y, ex, ey, x1, y1, ex1, ey1, x2, y2, ex2, ey2;
+
+//   TGraphErrors* efficiency = new TGraphErrors();
+//   TGraphErrors* efficiency_binbybin = new TGraphErrors();
+//   TGraphErrors* effvsrad2 = new TGraphErrors();
+
+//   TH1D* efficiency_binbybin = (TH1D*)trueselected->Clone();
+//   efficiency->Reset();
+//   efficiency_binbybin->Reset();
 
    int nbins = trueselected->GetNbinsX();
    double truselec =0;
    double alltru = 0;
-   double eff;
+   double eff, rad, absolute_eff, eff_per5cm, trusel_5, alltru_5, error, error2, error3, error4, error5;
    for(int bin =1; bin<nbins+1; bin++){
      truselec = truselec + trueselected->GetBinContent(bin);
      alltru = alltru + alltrue->GetBinContent(bin);
+     trusel_5 = trusel_5 + trueselected->GetBinContent(bin);
+     alltru_5 = alltru_5 + alltrue->GetBinContent(bin);
      eff = truselec/alltru;
-     std::cout<<"truselec: "<<truselec<<" alltru: "<<alltru<<" eff: "<<eff<<std::endl;
+     error = pow(alltrue->GetBinContent(bin), 0.5);
+     error2 = pow(trueselected->GetBinContent(bin), 0.5);
+     trueselected->SetBinError(bin,error2);
+     alltrue->SetBinError(bin,error);
+     if(error !=0 && error2 !=0){
+     error3 = pow((pow(1/error, 2)+(pow(1/error2, 2))), 0.5);
+     }
+     else{error3 = 0;}
+     if(truselec !=0 && alltru != 0){
+     error4 = pow((1/truselec + 1/alltru), 0.5);
+     }
+     else{error4 = 0;}
+     rad = trueselected->GetXaxis()->GetBinCenter(bin);
+     std::cout<<"error3: "<<error3<<std::endl;
+     std::cout<<"error4: "<<error4<<std::endl;
+     std::cout<<"rad: "<<rad<<" truselec_5: "<<trusel_5<<" alltru_5: "<<alltru_5<<" eff: "<<eff<<std::endl;
      if(std::isnan(eff)){eff =0;}
-     efficiency->SetBinContent(bin, eff);
+//     efficiency->SetBinContent(bin, eff);
+     //efficiency->AddPoint(rad, eff);
+     y.push_back(eff);
+     x.push_back(rad);
+     ex.push_back(2.5);
+     ey.push_back(error4);
+     std::cout<<"here"<<std::endl;
+     //efficiency->SetPointError(efficiency->GetN(), 1, error4);
+//     efficiency->SetBinError(bin, 1/pow(bin, 0.5));
+     if(alltrue->GetBinContent(bin) != 0) {
+       absolute_eff = trueselected->GetBinContent(bin)/alltrue->GetBinContent(bin);
+       y1.push_back(absolute_eff);
+       x1.push_back(rad);
+       ex1.push_back(2.5);
+       ey1.push_back(error3);
+//       efficiency_binbybin->AddPoint(rad, absolute_eff);
+//       std::cout<<"point binbybin: "<<efficiency_binbybin->GetN()<<std::endl;
+//       efficiency_binbybin->SetPointError((int)(efficiency_binbybin->GetN()),1, error3);
+//       std::cout<<"geterror: "<<efficiency_binbybin->GetErrorX((int)(efficiency_binbybin->GetN()))<<" "<<efficiency_binbybin->GetErrorX(bin)<<std::endl;
+       //effvsrad2->AddPoint(pow(rad, 2), absolute_eff);
+       y2.push_back(absolute_eff);
+       x2.push_back(pow(rad, 2));
+       ex2.push_back(pow(2.5, 2));
+       ey2.push_back(error3);
+    
+     }
+/*
+     if((bin+1)%5==0){
+       if(alltru_5 !=0){
+         eff_per5cm = trusel_5/alltru_5;
+         if(trusel_5 != 0){
+         error5 = pow((1/trusel_5 + 1/alltru_5), 0.5);
+         }
+         else{error5 = 0;}
+         y2.push_back(eff_per5cm);
+         x2.push_back(pow(rad-2.5, 2));
+         ex2.push_back(pow(2.5, 2));
+         ey2.push_back(error5);
+         std::cout<<"y2: "<<eff_per5cm<<" x2: "<<(pow(rad-2.5, 2))<<" ex2: "<<pow(2.5, 2)<<" ey2: "<<error5<<std::endl;
+         //effvsrad2->AddPoint(pow(rad-2.5, 2), eff_per5cm);
+         //effvsrad2->SetPointError(effvsrad2->GetN(), pow(2.5, 2), error5);
+       }
+       trusel_5 =0;
+       alltru_5 =0;
+     }*/
    }
+   auto legend = new TLegend(0.8,0.8,0.9,0.9);
+   TGraphErrors* efficiency = new TGraphErrors(x.size(), &x[0], &y[0], &ex[0], &ey[0]);
+   TGraphErrors* efficiency_binbybin = new TGraphErrors(x1.size(), &x1[0], &y1[0], &ex1[0], &ey1[0]);
+   TGraphErrors* effvsrad2 = new TGraphErrors(x2.size(), &x2[0], &y2[0], &ex2[0], &ey2[0]);
 
+   std::cout<<" points: "<<efficiency->GetN()<<" "<<efficiency_binbybin->GetN()<<" "<<effvsrad2->GetN()<<std::endl;
    c0->cd(1);
+   alltrue->SetMarkerStyle(kPlus);
+   alltrue->SetMarkerColor(kBlue);
+   alltrue->SetLineColor(kBlue);
    alltrue->Draw("HIST");
-   alltrue->Sumw2();
+//   alltrue->Sumw2();
 //   leg2->Draw("SAME");
 //   c0->Update();
-   c0->cd(2);
-   trueselected->Draw("HIST");
-   trueselected->Sumw2();
+//   c0->cd(2);
+    trueselected->SetMarkerStyle(kPlus);
+    trueselected->SetMarkerColor(kRed);
+    trueselected->SetLineColor(kRed);
+    trueselected->Draw("EP SAME");
+    legend->AddEntry(alltrue, "All True CC1mu", "l");
+    legend->AddEntry(trueselected, "True Selected CC1mu", "lp");
+    legend->Draw();
+//   trueselected->Sumw2();
 //   leg3->Draw("SAME");
    c0->Update();
-   c0->Print("efficiencyvsradius.ps");
-   c0->cd(3);
+//   c0->Print("efficiencyvsradius.ps");
+   c0->cd(2);
 //   efficiency->Divide(trueselected, alltrue);
 //   efficiency->SetTitle("Efficiency");
 //   efficiency->Sumw2();
 //   trueselected->Divide(alltrue);
 //   trueselected->SetTitle("Efficiency");
-   efficiency->SetMarkerStyle(kMultiply);
-   efficiency->Draw("P");
-//   c0->Update();
+   efficiency->SetTitle("Cumulative Efficiency");
+   efficiency->GetXaxis()->SetTitle("Radius /cm");
+   efficiency->GetYaxis()->SetTitle("Efficiency");
+   efficiency->SetMarkerStyle(kPlus);
+   efficiency->SetMarkerSize(0.1);
+   efficiency->Draw("AP");
+   c0->cd(3);
+//   efficiency_binbybin->Divide(trueselected, alltrue);
+//   efficiency_binbybin->Sumw2();
+   efficiency_binbybin->SetTitle("Absolute Efficiency");
+   efficiency_binbybin->GetXaxis()->SetTitle("Radius /cm");
+   efficiency_binbybin->GetYaxis()->SetTitle("Efficiency");
+   efficiency_binbybin->SetMarkerStyle(kPlus);
+   efficiency_binbybin->SetMarkerSize(0.1);
+   efficiency_binbybin->Draw("AP");
+   c0->Update();
+   c0->cd(4);
+   gPad->SetLogx();
+   effvsrad2->SetTitle("Efficiency vs Radius Squared");
+   effvsrad2->GetXaxis()->SetTitle("Radius Squared /cm^2");
+   effvsrad2->GetYaxis()->SetTitle("Efficiency");
+   effvsrad2->SetMarkerStyle(kPlus);
+   effvsrad2->SetMarkerSize(0.3);   
+   effvsrad2->Draw("AP");
+   c0->Update();
+//   c0->SetLogx(0);
    c0->Print("efficiencyvsradius.ps");
    std::cout<<"HERE"<<std::endl;
    c0->Print("efficiencyvsradius.ps]");

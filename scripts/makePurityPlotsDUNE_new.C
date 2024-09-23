@@ -21,7 +21,7 @@ void makePurityPlotsDUNE_new(TString inputfile)
    std::cout << list->GetEntries() << "  number of Hists" << std::endl;
 
    TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
-   c0->Divide(2,2);
+   c0->Divide(1,2);
    c0->Print("purityvars.ps[");
    std::vector<std::vector<TString>> kinematicvariables;
 
@@ -80,148 +80,54 @@ void makePurityPlotsDUNE_new(TString inputfile)
 
    std::vector<std::string> modenames = {"CCQE", "CCDIS", "CCRES", "CCMEC", "CCOTHER", "NC"};
    std::vector<int> modecolours = {900-1, 616-6, 880-1, 860-5, 432-7, kGreen+2};
-  /*
-   for(int ivars=0; ivars<kinematicvariables.size(); ivars++){
-     THStack* stack = new THStack("stack","");
-     TLegend* leg1 = new TLegend(0.65,0.55,0.8,0.8);
-     std::vector<TH1D*> HistsReco(modebreakdown.size());
-     std::vector<TH1D*> HistsTruth(modebreakdown.size());
-     for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
-       if(kinematicvariables[ivars][ikeynames].Contains("_RECO")){
-         int index = kinematicvariables[ivars][ikeynames].First('_');
-         int index2 = kinematicvariables[ivars][ikeynames].Last('_');
-         int length = kinematicvariables[ivars][ikeynames].Length();
-         TString fullname = kinematicvariables[ivars][ikeynames];
-         TString name  = fullname.Remove(index+6, length)+"_RecoCuts";
-         std::cout<<"name: "<<name<<" index: "<<index<<" length: "<<length<<std::endl;
-         stack->SetTitle(name);
-         std::cout<<"name: "<<kinematicvariables[ivars][ikeynames]<<std::endl;
-         TH1D* hist =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-         //std::cout<<kinematicvariables[ivars][ikeynames]<<" mode: "<<fullname.Remove(0, 10)<<std::endl;
-         fullname = kinematicvariables[ivars][ikeynames];
-         fullname.Remove(index2, length);
-         int mode = fullname.Remove(0, index+7).Atoi();
-         std::cout<<"mode: "<<mode<<std::endl;
-           for(int modes =0; modes<modebreakdown.size(); modes++){
-           if(std::find(modebreakdown[modes].begin(), modebreakdown[modes].end(), mode)!=modebreakdown[modes].end()){
-             if(HistsReco[modes] ==NULL){ HistsReco[modes] = hist;}
-             else{HistsReco[modes]->Add(hist);}
-           }
-         }
-       }
-     }
-     for(int ihists=0; ihists<HistsReco.size(); ihists++){
-       TH1D* histogram = HistsReco[ihists];
-       if(histogram != NULL){
-         histogram->SetFillColor(modecolours[ihists]);
-         histogram->SetLineColor(modecolours[ihists]);
-         stack->Add(histogram);
-         leg1->AddEntry(histogram,modenames[ihists].c_str());
-         if(kinematicvariables[ivars][0].Contains("NRecoMuons")){recostack->Add(histogram); leg2->AddEntry(histogram,modenames[ihists].c_str());}
-       }
-     }
-     c0->cd(1);
-     stack->Draw("HIST");
-     leg1->Draw("SAME"); 
-//     c0->Update();
-//     c0->Print("efficiencyvars.ps");
-//     delete stack;
-//     leg1->Clear();
-//     Hists.clear();
 
-     THStack* stack2 = new THStack("stack2","");
-     TLegend* leg0 = new TLegend(0.65,0.55,0.8,0.8);
-     for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
-       if(kinematicvariables[ivars][ikeynames].Contains("_TRUTH")){
-         int index = kinematicvariables[ivars][ikeynames].First('_');
-         int index2 = kinematicvariables[ivars][ikeynames].Last('_');
-         int length = kinematicvariables[ivars][ikeynames].Length();
-         TString fullname = kinematicvariables[ivars][ikeynames];
-         TString name  = fullname.Remove(index+6, length)+"_TruthCuts";
-         std::cout<<"name: "<<name<<" index: "<<index<<" length: "<<length<<std::endl;
-         stack2->SetTitle(name);
-         TH1D* hist1 =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-         std::cout<<kinematicvariables[ivars][ikeynames]<<" mode: "<<fullname.Remove(0, 10)<<std::endl;
-         fullname = kinematicvariables[ivars][ikeynames];
-         fullname.Remove(index2, length);
-         int mode = fullname.Remove(0, index+7).Atoi();
-         std::cout<<"mode: "<<mode<<" name: "<<name<<std::endl;
-           for(int modes =0; modes<modebreakdown.size(); modes++){
-           if(std::find(modebreakdown[modes].begin(), modebreakdown[modes].end(), mode)!=modebreakdown[modes].end()){
-             if(HistsTruth[modes] ==NULL){ HistsTruth[modes] = hist1;}
-             else{HistsTruth[modes]->Add(hist1);}
-           }
-         }
-       }
-     }
-     for(int ihists=0; ihists<HistsTruth.size(); ihists++){
-       TH1D* histogram1 = HistsTruth[ihists];
-       if(histogram1 != NULL){
-         histogram1->SetFillColor(modecolours[ihists]);
-         histogram1->SetLineColor(modecolours[ihists]);
-         stack2->Add(histogram1);
-         leg0->AddEntry(histogram1,modenames[ihists].c_str());
-         if(kinematicvariables[ivars][0].Contains("NTrueMuons")){truestack->Add(histogram1); leg3->AddEntry(histogram1,modenames[ihists].c_str());}
-       }
-     }
-     c0->cd(2);
-     stack2->Draw("HIST");
-     leg0->Draw("SAME"); 
-     c0->Update();
-     c0->Print("efficiencyvars.ps");
-     delete stack;
-     delete stack2;
-     delete leg1;
-     delete leg0;
-     HistsReco.clear();
-     HistsTruth.clear();
-     //}
-     
-     int counter =0;
-     if(kinematicvariables[ivars][0].Contains("NTrueMuons")){
-       for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
-         if(kinematicvariables[ivars][ikeynames].Contains("_TRUTH")){
-           TH1D* hist3 =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-           if(counter ==0){truenmuons = (TH1D*)hist3->Clone("NTrueMuons"); truenmuons->Reset();counter++;}
-           truenmuons->Add(hist3);
-         }
-       }
-     }
-     counter =0;
-     if(kinematicvariables[ivars][0].Contains("NRecoMuons")){
-       for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
-         if(kinematicvariables[ivars][ikeynames].Contains("_RECO")){
-           TH1D* hist4 =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-           if(counter ==0){reconmuons = (TH1D*)hist4->Clone("NRecoMuons"); reconmuons->Reset();counter++;}
-           reconmuons->Add(hist4);
-         }
-       }
-     }
-   }
-*/
    TH1D* trueselected = (TH1D*)file->Get("TrueNeutrinoEnergy_NDGAr_all_TrueSelected");
    TH1D* allselected = (TH1D*)file->Get("TrueNeutrinoEnergy_NDGAr_all_AllSelected");;
-   TH1D* purity = (TH1D*)file->Get("TrueNeutrinoEnergy_NDGAr_all_TrueSelected");
+  // TH1D* purity = (TH1D*)file->Get("TrueNeutrinoEnergy_NDGAr_all_TrueSelected");
+   std::vector<double> x1, y1, ex1, ey1;
 
+   int nbins = trueselected->GetNbinsX();
+   double pur, energy, error, error2, error3;
+   for(int bin =1; bin<nbins+1; bin++){
+     error = pow(allselected->GetBinContent(bin), 0.5);
+     error2 = pow(trueselected->GetBinContent(bin), 0.5);
+     trueselected->SetBinError(bin,error2);
+     allselected->SetBinError(bin,error);
+     if(error !=0 && error2 !=0){
+     error3 = pow((pow(1/error, 2)+(pow(1/error2, 2))), 0.5);
+     }
+     else{error3 = 0;}
+     energy = trueselected->GetXaxis()->GetBinCenter(bin);
+     if(allselected->GetBinContent(bin) != 0) {
+       pur = trueselected->GetBinContent(bin)/allselected->GetBinContent(bin);
+       y1.push_back(pur);
+       x1.push_back(energy);
+       ex1.push_back(0.1);
+       ey1.push_back(error3);
+     }
+   }
+   TGraphErrors* purity = new TGraphErrors(x1.size(), &x1[0], &y1[0], &ex1[0], &ey1[0]);
+
+   auto legend = new TLegend(0.8,0.8,0.9,0.9);
+   
    c0->cd(1);
+   allselected->SetMarkerStyle(kPlus);
+   allselected->SetMarkerColor(kBlue);
+   allselected->SetLineColor(kBlue);
    allselected->Draw("HIST");
-   allselected->Sumw2();
-//   leg2->Draw("SAME");
-//   c0->Update();
-   c0->cd(2);
-   trueselected->Draw("HIST");
-   trueselected->Sumw2();
-//   leg3->Draw("SAME");
-   c0->Update();
-   c0->Print("purityvars.ps");
-   c0->cd(3);
-   purity->Divide(trueselected, allselected);
-   purity->SetTitle("Purity");
-   purity->Sumw2();
-//   trueselected->Divide(alltrue);
-//   trueselected->SetTitle("Efficiency");
-   purity->Draw("E P*");
-//   c0->Update();
+    trueselected->SetMarkerStyle(kPlus);
+    trueselected->SetMarkerColor(kRed);
+    trueselected->SetLineColor(kRed);
+    trueselected->Draw("EP SAME");
+    legend->AddEntry(allselected, "All True CC1mu", "l");
+    legend->AddEntry(trueselected, "True Selected CC1mu", "lp");
+    legend->Draw();
+    c0->cd(2);
+   purity->SetMarkerColor(kRed);
+   purity->SetMarkerStyle(kPlus);
+   purity->SetTitle("Efficiency");
+
+   purity->Draw("AP");
    c0->Print("purityvars.ps");
    std::cout<<"HERE"<<std::endl;
    c0->Print("purityvars.ps]");

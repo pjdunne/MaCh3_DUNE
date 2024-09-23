@@ -63,7 +63,20 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
 
   iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
   muonscore_threshold = SampleManager->raw()["SampleCuts"]["muonscore_threshold"].as<float>(); //NK determine what muon score threshold to use
+  protondEdxscore = SampleManager->raw()["SampleCuts"]["protondEdxscore_threshold"].as<float>(); //NK determine what proton score threshold to use
+  protontofscore = SampleManager->raw()["SampleCuts"]["protontofscore_threshold"].as<float>();  //NK determine what muon score threshold to use
+  recovertexradiusthreshold =  SampleManager->raw()["SampleCuts"]["recovertexradius_threshold"].as<float>();  //NK determine what radius threshold to use
+  pionenergy_threshold = (SampleManager->raw()["SampleCuts"]["pionenergy_threshold"].as<float>())/1000; //NK determine what muon score threshold to use
 
+  B_field = SampleManager->raw()["SampleCuts"]["B_field"].as<float>(); //NK B field value in T
+  momentum_resolution_threshold = SampleManager->raw()["SampleCuts"]["momentum_resolution_threshold"].as<float>(); //NK momentum_resolution threshold, total as a fraction of momentum
+  pixel_spacing = SampleManager->raw()["SampleCuts"]["pixel_spacing"].as<float>(); //NK pixel spacing in mm to find mom resolution in y,z plane
+  adc_sampling_frequency = SampleManager->raw()["SampleCuts"]["adc_sampling_frequency"].as<float>(); //NK sampling frequency for ADC - needed to find timing resolution and spatial resolution in x dir in MHz
+  drift_velocity = SampleManager->raw()["SampleCuts"]["drift_velocity"].as<float>(); //NK drift velocity of electrons in gas - needed to find timing resolution and spatial resolution in x dir in cm/microsecond
+
+//  hits_per_mm = SampleManager->raw()["SampleCuts"]["hits_per_mm"].as<float>();
+
+  //muonscore_threshold = 0.5;
   //Inputs
   mtupleprefix = SampleManager->raw()["InputFiles"]["mtupleprefix"].as<std::string>();
   mtuplesuffix = SampleManager->raw()["InputFiles"]["mtuplesuffix"].as<std::string>();
@@ -109,6 +122,7 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
 
   std::vector<double> tempselection(3);
   for(int iSelec=0; iSelec<NSelections; iSelec++){
+    std::cout<<"SelectionStr: "<<SelectionStr[iSelec]<<std::endl;
     tempselection[0] = ReturnKinematicParameterFromString(SelectionStr[iSelec]);
     tempselection[1] = SelectionBounds[iSelec][0];
     tempselection[2] = SelectionBounds[iSelec][1];
@@ -279,6 +293,14 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   duneobj->rw_elep_reco = new double[duneobj->nEvents];
   duneobj->rw_etru = new double[duneobj->nEvents];
   duneobj->rw_erec = new double[duneobj->nEvents];
+
+  duneobj->rw_etrurec = new double[duneobj->nEvents];
+  duneobj->rw_Q2 = new double[duneobj->nEvents];
+  duneobj->rw_W = new double[duneobj->nEvents];
+  duneobj->rw_Q0 = new double[duneobj->nEvents];
+  duneobj->rw_Q3 = new double[duneobj->nEvents];
+  duneobj->rw_etrurec_nopionthreshold = new double[duneobj->nEvents];
+
   //duneobj->rw_theta = new double[duneobj->nEvents];
   duneobj->flux_w = new double[duneobj->nEvents];
   duneobj->xsec_w = new double[duneobj->nEvents];
@@ -300,14 +322,18 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   duneobj->npim = new int[duneobj->nEvents];
   duneobj->npi0 = new int[duneobj->nEvents];
 
+  duneobj->nrecopion = new int[duneobj->nEvents];
+
   duneobj->nrecomuon = new int[duneobj->nEvents];
   duneobj->ntruemuon = new int[duneobj->nEvents];
   duneobj->nmuonsratio = new double[duneobj->nEvents];
   duneobj->ntruemuonprim = new int[duneobj->nEvents];
+  duneobj->isnumuCC = new bool[duneobj->nEvents];
 
   duneobj->nrecoparticles = new int[duneobj->nEvents];
   duneobj->in_fdv = new bool[duneobj->nEvents];
   duneobj->rw_elep_true = new double[duneobj->nEvents];
+  duneobj->is_accepted = new bool[duneobj->nEvents];
 
   duneobj->rw_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
@@ -315,7 +341,33 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   duneobj->rw_rad = new double[duneobj->nEvents];
 
   duneobj->rw_lep_pT = new double[duneobj->nEvents];
+  duneobj->rw_lep_pMag = new double[duneobj->nEvents];
   duneobj->rw_lep_pZ = new double[duneobj->nEvents];
+  duneobj->rw_lep_pY = new double[duneobj->nEvents];
+  duneobj->rw_lep_pX = new double[duneobj->nEvents];
+  duneobj->rw_reco_lep_pT = new double[duneobj->nEvents];
+  duneobj->rw_reco_lep_pZ = new double[duneobj->nEvents];
+  duneobj->rw_reco_lep_pY = new double[duneobj->nEvents];
+  duneobj->rw_reco_lep_pX = new double[duneobj->nEvents];
+  duneobj->rw_reco_lep_pMag = new double[duneobj->nEvents];
+  duneobj->rw_lep_energy = new double[duneobj->nEvents];
+
+  duneobj->rw_reco_pi_energy = new double[duneobj->nEvents];
+  duneobj->rw_pi_energy = new double[duneobj->nEvents];
+  duneobj->muon_pi_reco_angle = new double[duneobj->nEvents];
+  duneobj->muon_pi_angle = new double[duneobj->nEvents];
+  duneobj->pi_z_reco_angle = new double[duneobj->nEvents];
+  duneobj->pi_z_angle = new double[duneobj->nEvents];
+  duneobj->rw_reco_pi_pZ = new double[duneobj->nEvents];
+  duneobj->rw_reco_pi_pY = new double[duneobj->nEvents];
+  duneobj->rw_reco_pi_pX = new double[duneobj->nEvents];
+  duneobj->rw_reco_pi_pT = new double[duneobj->nEvents];
+  duneobj->rw_reco_pi_pMag = new double[duneobj->nEvents];
+  duneobj->rw_pi_pZ = new double[duneobj->nEvents];
+  duneobj->rw_pi_pY = new double[duneobj->nEvents];
+  duneobj->rw_pi_pX = new double[duneobj->nEvents];
+  duneobj->rw_pi_pT = new double[duneobj->nEvents];
+  duneobj->rw_pi_pMag = new double[duneobj->nEvents];
 
   duneobj->rw_reco_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_y = new double[duneobj->nEvents];
@@ -367,7 +419,6 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
        duneobj->nrecoparticles[i] = (int)(0);
        float erec_total =0;
        float elep_reco =0;
-       float muonscore = muonscore_threshold;
        int nixns = (int)(sr->common.ixn.ngsft);
        for(int i_ixn =0; i_ixn<nixns; i_ixn++){
          int nrecoparticles = (int)(sr->common.ixn.gsft[i_ixn].part.ngsft);
@@ -381,25 +432,67 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
            }   
          num_no_recparticles++;}
          for(int i_part =0; i_part<nrecoparticles; i_part++){
+//           std::cout<<"Number associated particles: "<<sr->common.ixn.gsft[i_ixn].part.gsft[i_part].truth.size()<<std::endl;
+//           std::cout<<"True Associated particle ixn: "<<sr->common.ixn.gsft[i_ixn].part.gsft[i_part].truth[0].ixn<<std::endl;
+//           std::cout<<"True Associated particle pdg: "<<sr->mc.Particle((sr->common.ixn.gsft[i_ixn].part.gsft[i_part].truth[0]))->pdg<<std::endl;
+//           std::cout<<"True Associated particle E: "<<sr->mc.Particle((sr->common.ixn.gsft[i_ixn].part.gsft[i_part].truth[0]))->p.E<<std::endl;
+//           std::cout<<"Reco particle pdg: "<<sr->common.ixn.gsft[i_ixn].part.gsft[i_part].pdg<<std::endl;
            float erec_part = (float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].E);
            //std::cout<<"erec_part: "<<erec_part<<std::endl;
            if(std::isnan(erec_part)){nanparticles++;}
            erec_total+=erec_part;
-           if((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.muon_score>muonscore)){
+//           std::cout<<"muonscore_threshold: "<<muonscore_threshold<<" muonscore: "<<(float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.muon_score)<<std::endl;
+           if((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.muon_score)>muonscore_threshold){
              if(erec_part>elep_reco){
                elep_reco = erec_part;
                duneobj->rw_reco_vtx_x[i] = (double)((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.x));
                duneobj->rw_reco_vtx_y[i] = (double)((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.y));
                duneobj->rw_reco_vtx_z[i] = (double)((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.z));
-               duneobj->rw_lep_pT[i] = (double)(pow(pow((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.x), 2) + pow((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.y), 2), 0.5));
-               duneobj->rw_lep_pZ[i] = (double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.z);
+               duneobj->rw_reco_lep_pT[i] = (double)(pow(pow((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.x), 2) + pow((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.y), 2), 0.5));
+               duneobj->rw_reco_lep_pZ[i] = (double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.z);
+               duneobj->rw_reco_lep_pY[i] = (double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.y);
+               duneobj->rw_reco_lep_pX[i] = (double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.x);
+//               std::cout<<"muon x: "<<(double)((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.x))<<" muon y: "<<(double)((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.y))<<" muon z: "<<(double)((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.z))<<std::endl;
              }
              duneobj->nrecomuon[i]++; 
            }
          }
+         double pionenergy =0.0;
+         for(int i_part =0; i_part<nrecoparticles; i_part++){
+           if(std::abs((int)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].pdg))!=0){
+           if((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.muon_score)<=muonscore_threshold){
+//             std::cout<<"not a muon"<<std::endl;
+//             std::cout<<"proton dedx score: "<<(float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.proton_dEdx_score)<<" proton tof score: "<<(float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.proton_tof_score)<<std::endl;
+//             std::cout<<"reco pdg: "<<sr->common.ixn.gsft[i_ixn].part.gsft[i_part].pdg<<std::endl;
+             if((float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.proton_dEdx_score)<=protondEdxscore && (float)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].score.gsft_pid.proton_tof_score)<=protontofscore){
+//               std::cout<<"not a proton"<<std::endl;
+               double partradiusvertex = pow(pow((double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.x)-duneobj->rw_reco_vtx_x[i], 2)+pow((double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.y)-duneobj->rw_reco_vtx_y[i], 2)+pow((double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.z)-duneobj->rw_reco_vtx_z[i], 2), 0.5);
+//               std::cout<<"pion x: "<<(double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.x)<<" pion y: "<<(double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.y)<<" pion z:"<<(double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].start.z)<<" muon x: "<<duneobj->rw_reco_vtx_x[i]<<" muon y: "<<duneobj->rw_reco_vtx_y[i]<<" muon z: "<<duneobj->rw_reco_vtx_z[i]<<" partradiusvertex: "<<partradiusvertex<<std::endl;
+               if(partradiusvertex<recovertexradiusthreshold){
+//                 std::cout<<"near reco vertex"<<std::endl;
+                 if((double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].E)>pionenergy){
+//                   std::cout<<"energy greater than pionenergy prev"<<std::endl;                 
+                   pionenergy = (double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].E);
+                   duneobj->rw_reco_pi_energy[i] = pionenergy;
+//                   std::cout<<"pionenergy: "<<pionenergy<<std::endl;
+                   duneobj->rw_reco_pi_energy[i] = (double)(pionenergy-0.13957);
+//                   duneobj->rw_reco_pi_energy[i] = (double)(pow(pow(pionenergy, 2)-pow(0.13957, 2), 0.5));
+                   duneobj->rw_reco_pi_pZ[i] = (double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.z);
+                   duneobj->rw_reco_pi_pX[i] = (double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.x);
+                   duneobj->rw_reco_pi_pY[i] = (double)(sr->common.ixn.gsft[i_ixn].part.gsft[i_part].p.y);
+                 }
+                 duneobj->nrecopion[i]++;
+               }
+             }
+           }
+         }
+         }
          num_nanparticles = num_nanparticles + (nanparticles/nrecoparticles);
        } //ADD PRIMARY LEPTON ENERGY ELEP_RECO
-       if(std::isnan(erec_total)){std::cout<<"nan energy"<<std::endl; num_nanenergy++; erec_total = (float)(sr->common.ixn.gsft[0].Enu.lep_calo);}
+       if(std::isnan(erec_total)){
+        //std::cout<<"nan energy"<<std::endl;
+        num_nanenergy++;
+        erec_total = (float)(sr->common.ixn.gsft[0].Enu.lep_calo);}
        if(iscalo_reco){duneobj->rw_erec[i]=(double)(sr->common.ixn.gsft[0].Enu.lep_calo);  /*std::cout<<"calo erec: "<<(double)(sr->common.ixn.gsft[0].Enu.lep_calo)<<std::endl;*/}
        else{duneobj->rw_erec[i]=(double)(erec_total);}
        duneobj->rw_elep_reco[i] = (double)(elep_reco);
@@ -414,8 +507,18 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
      duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
 
      int ntrueparticles = (int)(sr->mc.nu[0].nprim);
+     double muonenergy =0;
      for(int i_truepart =0; i_truepart<ntrueparticles; i_truepart++){
        if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 13){
+         if((double)(sr->mc.nu[0].prim[i_truepart].p.E)>muonenergy){
+//           std::cout<<"muon energy: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.E)<<" muon mass: 0.10566"<<std::endl;
+           muonenergy = (double)(sr->mc.nu[0].prim[i_truepart].p.E);           
+           duneobj->rw_lep_energy[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.E - 0.10566);
+//           duneobj->rw_lep_energy[i] = (double)(pow(pow((double)(sr->mc.nu[0].prim[i_truepart].p.E), 2) - pow(0.10566, 2), 0.5));
+           duneobj->rw_lep_pZ[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.pz);
+           duneobj->rw_lep_pX[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.px);
+           duneobj->rw_lep_pY[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.py);
+         }
          duneobj->ntruemuon[i]++;
          duneobj->ntruemuonprim[i]++;
        }
@@ -426,13 +529,167 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
          duneobj->ntruemuon[i]++;
        }
      }
-      
+     if((bool)(sr->mc.nu[0].iscc) && (int)(sr->mc.nu[0].pdg)==14){duneobj->isnumuCC[i]=1;}
+     else{duneobj->isnumuCC[i]=0;}
      duneobj->nproton[i] = sr->mc.nu[0].nproton;
      duneobj->nneutron[i] = sr->mc.nu[0].nneutron;
      duneobj->npip[i] = sr->mc.nu[0].npip;
      duneobj->npim[i] = sr->mc.nu[0].npim;
      duneobj->npi0[i] = sr->mc.nu[0].npi0;
+     
+//     std::cout<<"npim: "<<duneobj->npim[i]<<" npi0: "<<duneobj->npi0[i]<<" npip: "<<duneobj->npip[i]<<std::endl;
+     double pionenergymax = 0;
+     duneobj->rw_etrurec[i] = 0.0;
+     int nprimpipm = 0;
+     int nprimpizero =0;
+     int nprimproton = 0;
+     int nprimneutron = 0;
+     int nprimmuon = 0;
+     int isaccepted = 0;
+     double pdgmass = 0;
+//     if((duneobj->npip[i]+duneobj->npim[i]) == 1){
+       for(int i_truepart =0; i_truepart<ntrueparticles; i_truepart++){
+         if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 211){
+             pdgmass = m_chargedpi;
+             nprimpipm++;
+//           std::cout<<"one pion"<<std::endl;
+           if((double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass) > pionenergy_threshold){ 
+             duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E);
+             duneobj->rw_etrurec_nopionthreshold[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E);
+             if((double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass)>pionenergymax){
+               duneobj->rw_pi_energy[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass);
+//           duneobj->rw_pi_energy[i] = (double)(pow(pow((double)(sr->mc.nu[0].prim[i_truepart].p.E), 2) - pow(0.13957, 2), 0.5));
+               duneobj->rw_pi_pZ[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.pz);
+               duneobj->rw_pi_pX[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.px);
+               duneobj->rw_pi_pY[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.py);
+               pionenergymax = duneobj->rw_pi_energy[i];
+             }
+           }
+           else{
+             duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E - pdgmass);
+             duneobj->rw_etrurec_nopionthreshold[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E); 
+           }
+         }
+         else if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) != 211){
+           if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 111){nprimpizero++; pdgmass = m_pi0; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass); duneobj->rw_etrurec_nopionthreshold[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E - pdgmass);} //duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E - 0.13498);}
+           if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 2212){nprimproton++; pdgmass = m_p; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E - pdgmass); duneobj->rw_etrurec_nopionthreshold[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass);}
+           if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 2112){nprimneutron++; pdgmass = m_n; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E - pdgmass); duneobj->rw_etrurec_nopionthreshold[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass);}
+           if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 13){nprimmuon++; pdgmass = m_mu; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E); duneobj->rw_etrurec_nopionthreshold[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E);}
+         
+           if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 11){pdgmass = m_e;}
+         }
+         std::cout<<"start pos x: "<<(double)(sr->mc.nu[0].prim[i_truepart].start_pos.X())<<" end pos x: "<<(double)(sr->mc.nu[0].prim[i_truepart].end_pos.x)<<std::endl;
+         std::cout<<" start rad: "<<pow((pow((double)(sr->mc.nu[0].prim[i_truepart].start_pos.y)+150, 2)+pow((double)(sr->mc.nu[0].prim[i_truepart].start_pos.z)-1486, 2)), 0.5)<<" end rad: "<< pow((pow((double)(sr->mc.nu[0].prim[i_truepart].end_pos.y)+150, 2)+pow((double)(sr->mc.nu[0].prim[i_truepart].end_pos.z)-1486, 2)), 0.5)<<std::endl;
+         std::cout<<"pdg: "<<sr->mc.nu[0].prim[i_truepart].pdg<<std::endl;
+         std::cout<<"mag pos: "<<(double)(sr->mc.nu[0].prim[i_truepart].start_pos.Mag())<<" mag mom: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())<<std::endl;
+//         if(!std::isnan((double)(sr->mc.nu[0].prim[i_truepart].start_pos.X()))){hasstart++;}
+         if(std::abs(sr->mc.nu[0].prim[i_truepart].start_pos.x)>209.0 || std::abs(sr->mc.nu[0].prim[i_truepart].end_pos.x>209.0)){
+           if(pow((pow(sr->mc.nu[0].prim[i_truepart].start_pos.y+150, 2)+pow(sr->mc.nu[0].prim[i_truepart].start_pos.z-1486, 2)), 0.5)>227.0 || pow((pow(sr->mc.nu[0].prim[i_truepart].end_pos.y+150, 2)+pow(sr->mc.nu[0].prim[i_truepart].end_pos.z-1486, 2)), 0.5)>227.0){
+             if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 13) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 211)){
+               double length_track_x = sr->mc.nu[0].prim[i_truepart].end_pos.x-sr->mc.nu[0].prim[i_truepart].start_pos.x; //in cm
+               double length_track_y = sr->mc.nu[0].prim[i_truepart].end_pos.y-sr->mc.nu[0].prim[i_truepart].start_pos.y; //in cm
+               double length_track_z = sr->mc.nu[0].prim[i_truepart].end_pos.z-sr->mc.nu[0].prim[i_truepart].start_pos.z; //in cm
+//               double N_x = length_track_x/(drift_velocity*adc_sampling_rate);
+               double L_yz = pow((pow(length_track_z, 2)+pow(length_track_y, 2)), 0.5);
+               double L_tot = pow((pow(length_track_z, 2)+pow(length_track_y, 2)+pow(length_track_x, 2)), 0.5);
+//length in cm
+//               double theta_track = atan(sr->mc.nu[0].prim[i_truepart].p.py/sr->mc.nu[0].prim[i_truepart].p.pz); //find angle of 
+               double transverse_mom = pow((pow(sr->mc.nu[0].prim[i_truepart].p.py, 2)+pow(sr->mc.nu[0].prim[i_truepart].p.pz, 2)), 0.5); //Momentum in y,z plane
+               double rad_curvature = transverse_mom/(0.3*B_field); //p = 0.3*B*r where p in GeV/c, B in T, r in m
+               double arclength = rad_curvature*2*asin((L_tot*100)/2*rad_curvature); //r*theta in m
 
+               //Calculate dE/dX for this particle. This calculation is taken from garsoft/DetectorInfo/DetectorPropertiesStandard.cxx
+               //First Calculate required kinematic quantities
+               double p_mag = sr->mc.nu[0].prim[i_truepart].p.px/sr->mc.nu[0].prim[i_truepart].p.Mag();
+               double bg = p_mag/pdgmass; //beta*gamma
+               double gamma = pow((1+bg*bg), 0.5); //gamma
+               double beta = bg/gamma; //beta (velocity)
+               double mer = m_e/pdgmass; //electron mass/mass of particle
+               double tmax = 2.*m_e* bg*bg / (1. + 2.*gamma*mer + mer*mer);  // Maximum delta ray energy (MeV).
+               //Assume tcut = tmax
+               double tcut = tmax;
+               //Find density effect correction (delta). Sternheimer values set in header file
+               double log_bg = std::log10(bg);
+               double delta = 0;
+               if( log_bg >= sternheimer_X0){
+                 delta = 2. * std::log(10.)*log_bg - sternheimer_Cbar;
+                   if(log_bg < sternheimer_X1){
+                     delta += sternheimer_A * std::pow(sternheimer_X1 - log_bg, sternheimer_K);
+                   }
+                }
+               
+               //Calculate Stopping number, B
+               double B = 0.5 * std::log(2.*m_e*bg*bg*tcut / (1.e-12 * pow(excitationenergy, 0.5)))- 0.5*beta*beta*(1. + tcut / tmax) - 0.5*delta;
+               if(B<1.){B=1.;} //Don't let B become negative
+
+               //Calculate dE/dX 
+               double dedx = density*K_const*18*B / (39.981 * beta*beta); //18 is atmic number and 39.981 is atomic mass in g/mol
+               
+               //Calculate energy loss 
+               double E_loss = dedx*arclength;
+               //Estimate number of hits
+               double N_hits = 5*(E_loss*3.788*pow(10,7));
+               //double N_hits = arclength*1000/hits_per_mm;
+//               double N_yz = (pow((pow(length_track_y, 2)+pow(length_track_z, 2)), 0.5))
+               double sigmax = drift_velocity*adc_sampling_frequency;
+               double sigmayz = pixel_spacing;              
+               double momres_x = sr->mc.nu[0].prim[i_truepart].p.px*(pow(720/(N_hits+4), 0.5)*(sigmax*sr->mc.nu[0].prim[i_truepart].p.px/(0.3*B_field*pow(length_track_x, 2))));
+               double momres_yz = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz, 2))));
+               double momres_tot = (sr->mc.nu[0].prim[i_truepart].p.px/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_x + (transverse_mom/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_yz;
+               double momres_frac = momres_tot/sr->mc.nu[0].prim[i_truepart].p.Mag();
+//               std::cout<<"momres_frac: "<<momres_frac<<" momres_tot: "<<momres_tot<<" total momentum: "<<sr->mc.nu[0].prim[i_truepart].p.Mag()<<std::endl;
+               if(momres_frac > momentum_resolution_threshold){isaccepted++;}
+             }
+           }
+         }
+       }
+       if(isaccepted > 0){duneobj->is_accepted[i] = 0;}
+       else{duneobj->is_accepted[i] = 1;}
+//       std::cout<<"1st Secondary start pos x: "<<(double)(sr->mc.nu[0].sec[0].start_pos.X())<<" end pos x: "<<(double)(sr->mc.nu[0].sec[0].end_pos.X())<<std::endl;
+//     }
+/*
+//     PREFSI ENERGY CALC STARTS HERE
+       int ntrueprefsiparticles = (int)(sr->mc.nu[0].nprefsi);
+       int nprefsipipm = 0;
+       int nprefsipizero =0;
+       int nprefsiproton = 0;
+       int nprefsineutron = 0;
+       int nprefsimuon = 0;
+       std::cout<<"ntrueprefsiparticles: "<<ntrueprefsiparticles<<" ntrueprimparticles: "<<ntrueparticles<<std::endl;
+       for(int i_truepart =0; i_truepart<ntrueprefsiparticles; i_truepart++){
+         if(std::abs(sr->mc.nu[0].prefsi[i_truepart].pdg) == 111){nprefsipizero++; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prefsi[i_truepart].p.E);}
+         if(std::abs(sr->mc.nu[0].prefsi[i_truepart].pdg) == 2212){nprefsiproton++; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prefsi[i_truepart].p.E - 0.93827);}
+         if(std::abs(sr->mc.nu[0].prefsi[i_truepart].pdg) == 2112){nprefsineutron++; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prefsi[i_truepart].p.E - 0.93957);}
+         if(std::abs(sr->mc.nu[0].prefsi[i_truepart].pdg) == 211){nprefsipipm++; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prefsi[i_truepart].p.E);}
+         if(std::abs(sr->mc.nu[0].prefsi[i_truepart].pdg) == 13){nprefsimuon++; duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prefsi[i_truepart].p.E);}
+         //duneobj->rw_etrurec[i] -= (double)(sr->mc.nu[0].prefsi[i_truepart].p.E);
+         //} 
+//         duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prefsi[i_truepart].p.Mag());
+        std::cout<<" etrurec["<<i_truepart<<"]: "<<duneobj->rw_etrurec[i]<<std::endl; 
+        }
+        duneobj->rw_etrurec[i]+=(double)(sr->mc.nu[0].prim[0].p.E); //NK THIS IS FOR ADDING PRIMARY MUON ENERGY TO PREFSI PARTS
+*/ 
+//     PREFSI ENERGY CALC ENDS HERE
+
+//     duneobj->rw_etrurec[i] = duneobj->rw_etrurec[i] - (nprimpipm - nprefsipipm)*0.13957 - (nprimpizero - nprefsipizero)*0.13498 - (nprimproton - nprefsiproton)*0.93827 - (nprimneutron - nprefsineutron)*0.93957; 
+//     std::cout<<"true charged pi: "<<duneobj->npip[i]+duneobj->npim[i]<<" true pi0: "<<duneobj->npi0[i]<<" prefsi charged pi: "<<nprefsipipm<<" prim charged pi: "<<nprimpipm<<" prefsi pi0: "<<nprefsipizero<<" nprimpizero: "<<nprimpizero<<" true protons: "<<duneobj->nproton[i]<<" prefsi protons: "<<nprefsiproton<<" prim proton: "<<nprimproton<<" true neutrons: "<<duneobj->nneutron[i]<<" prefsi neutron: "<<nprefsineutron<<" prim neutron: "<<nprimneutron<<std::endl;
+//     std::cout<<"prefsi muon: "<<nprefsimuon<<" prim muon: "<<nprimmuon<<std::endl;
+//     std::cout<<"True NuE: "<<duneobj->rw_etru[i]<<"Reco NuE: "<<duneobj->rw_etrurec[i]<<" True Minus Reco: "<<(duneobj->rw_etru[i]-duneobj->rw_etrurec[i])<<" Ratio: "<<(duneobj->rw_etru[i]-duneobj->rw_etrurec[i])/duneobj->rw_etru[i]<<std::endl;
+     duneobj->rw_lep_pT[i] = (double)(pow(pow(duneobj->rw_lep_pX[i], 2) + pow(duneobj->rw_lep_pY[i], 2), 0.5));
+     duneobj->rw_pi_pT[i] = (double)(pow(pow(duneobj->rw_pi_pX[i], 2) + pow(duneobj->rw_pi_pY[i], 2), 0.5));
+     duneobj->rw_reco_pi_pT[i] = (double)(pow(pow(duneobj->rw_reco_pi_pX[i], 2) + pow(duneobj->rw_reco_pi_pY[i], 2), 0.5));
+     duneobj->rw_reco_pi_pMag[i] = (double)(pow(pow(duneobj->rw_reco_pi_pX[i], 2) + pow(duneobj->rw_reco_pi_pY[i], 2) + pow(duneobj->rw_reco_pi_pZ[i], 2), 0.5));
+     duneobj->rw_reco_lep_pMag[i] = (double)(pow(pow(duneobj->rw_reco_lep_pX[i], 2) + pow(duneobj->rw_reco_lep_pY[i], 2) + pow(duneobj->rw_reco_lep_pZ[i], 2), 0.5));
+     duneobj->rw_pi_pMag[i] = (double)(pow(pow(duneobj->rw_pi_pX[i], 2) + pow(duneobj->rw_pi_pY[i], 2) + pow(duneobj->rw_pi_pZ[i], 2), 0.5));
+     duneobj->rw_lep_pMag[i] = (double)(pow(pow(duneobj->rw_lep_pX[i], 2) + pow(duneobj->rw_lep_pY[i], 2) + pow(duneobj->rw_lep_pZ[i], 2), 0.5));
+     duneobj->muon_pi_reco_angle[i] = (180/TMath::Pi())*TMath::ACos((double)((duneobj->rw_reco_lep_pX[i]*duneobj->rw_reco_pi_pX[i] + duneobj->rw_reco_lep_pY[i]*duneobj->rw_reco_pi_pY[i] + duneobj->rw_reco_lep_pZ[i]*duneobj->rw_reco_pi_pZ[i])/(duneobj->rw_reco_pi_pMag[i]*duneobj->rw_reco_lep_pMag[i])));
+     duneobj->muon_pi_angle[i] = (180/TMath::Pi())*TMath::ACos((double)((duneobj->rw_lep_pX[i]*duneobj->rw_pi_pX[i] + duneobj->rw_reco_lep_pY[i]*duneobj->rw_pi_pY[i] + duneobj->rw_lep_pZ[i]*duneobj->rw_pi_pZ[i])/(duneobj->rw_pi_pMag[i]*duneobj->rw_lep_pMag[i])));
+     duneobj->pi_z_reco_angle[i] = (180/TMath::Pi())*TMath::ACos((double)(duneobj->rw_reco_pi_pZ[i]/duneobj->rw_reco_pi_pMag[i]));
+     duneobj->pi_z_angle[i] =  (180/TMath::Pi())*TMath::ACos((double)(duneobj->rw_pi_pZ[i]/duneobj->rw_pi_pMag[i]));
+ 
+//     std::cout<<"reco pi energy: "<<duneobj->rw_reco_pi_energy[i]<<" true pi energu: "<<duneobj->rw_pi_energy[i]<<std::endl;
+//     std::cout<<"reco pi pZ: "<<duneobj->rw_reco_pi_pZ[i]<<" reco pi pMag: "<<duneobj->rw_reco_pi_pMag[i]<<" True pi pZ: "<<duneobj->rw_pi_pZ[i]<<" True pi pMag: "<<duneobj->rw_pi_pMag[i]<<std::endl;
+//     std::cout<<"reco lep Mag: "<<duneobj->rw_lep_pMag[i]<<std::endl;
      duneobj->nmuonsratio[i] = (double)(duneobj->nrecomuon[i])/(double)(duneobj->ntruemuonprim[i]);
      duneobj->rw_vtx_x[i] = (double)(sr->mc.nu[0].vtx.x);
      duneobj->rw_vtx_y[i] = (double)(sr->mc.nu[0].vtx.y);
@@ -441,11 +698,16 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
      duneobj->rw_rad[i] = (double)(pow((pow((duneobj->rw_vtx_y[i]+150),2) + pow((duneobj->rw_vtx_z[i]-1486),2)),0.5)); 
      duneobj->rw_reco_rad[i] = (double)(pow(pow((duneobj->rw_reco_vtx_y[i]+150),2) + pow((duneobj->rw_reco_vtx_z[i]-1486), 2), 0.5));
      duneobj->rw_elep_true[i] = (double)(sr->mc.nu[0].prim[0].p.E);
+
      //Assume everything is on Argon for now....
      duneobj->Target[i] = 40;
   
      duneobj->xsec_w[i] = 1.0;
 
+     duneobj->rw_W[i] = (double)(sr->mc.nu[0].W); 
+     duneobj->rw_Q2[i] = (double)(sr->mc.nu[0].Q2);
+     duneobj->rw_Q0[i] = (double)(sr->mc.nu[0].q0);
+     duneobj->rw_Q3[i] = (double)(sr->mc.nu[0].modq);
     // fill modes
     _mode = sr->mc.nu[0].mode;
     _isCC = (int)(sr->mc.nu[0].iscc);
@@ -485,8 +747,11 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
    case kTrueNeutrinoEnergy:
 	 KinematicValue = dunendgarmcSamples[iSample].rw_etru[iEvent]; 
 	 break;
+   case kIdealNeutrinoRecoEnergy:
+	 KinematicValue = dunendgarmcSamples[iSample].rw_etrurec[iEvent]; 
+	 break;
    case kPionMultiplicity:
-         KinematicValue = dunendgarmcSamples[iSample].npip[iEvent]+dunendgarmcSamples[iSample].npim[iEvent+dunendgarmcSamples[iSample].npi0[iEvent]];
+         KinematicValue = dunendgarmcSamples[iSample].npip[iEvent]+dunendgarmcSamples[iSample].npim[iEvent]+dunendgarmcSamples[iSample].npi0[iEvent];
          break;
    case kRecoNeutrinoEnergy:
          KinematicValue = dunendgarmcSamples[iSample].rw_erec[iEvent];
@@ -515,8 +780,17 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
    case kTrueMinusRecoEnergy:
 	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_erec[iEvent]);
 	 break;
+   case kTrueMinusIdealRecoEnergyRatio:
+	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_etrurec[iEvent])/dunendgarmcSamples[iSample].rw_etru[iEvent];
+	 break;
+   case kTrueMinusIdealRecoEnergy:
+	 KinematicValue = (dunendgarmcSamples[iSample].rw_etru[iEvent]-dunendgarmcSamples[iSample].rw_etrurec[iEvent]);
+	 break;
    case kNRecoMuons:
          KinematicValue = dunendgarmcSamples[iSample].nrecomuon[iEvent];
+         break;
+   case kNTruePrimMuons:
+         KinematicValue = dunendgarmcSamples[iSample].ntruemuonprim[iEvent];
          break;
    case kNTrueMuons:
          KinematicValue = dunendgarmcSamples[iSample].ntruemuon[iEvent];
@@ -548,8 +822,68 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
    case kLepPZ:
          KinematicValue = dunendgarmcSamples[iSample].rw_lep_pZ[iEvent];
          break;
+   case kIsnumuCC:
+         KinematicValue = dunendgarmcSamples[iSample].isnumuCC[iEvent];
+         break;
    case kM3Mode:
          KinematicValue = dunendgarmcSamples[iSample].mode[iEvent];
+         break;
+   case kLepRecoPT:
+         KinematicValue = dunendgarmcSamples[iSample].rw_reco_lep_pT[iEvent];
+         break;
+   case kLepRecoPZ:
+         KinematicValue = dunendgarmcSamples[iSample].rw_reco_lep_pZ[iEvent];
+         break;
+   case kMuonPiAngle:
+         KinematicValue = dunendgarmcSamples[iSample].muon_pi_angle[iEvent];
+         break;
+   case kMuonPiRecoAngle:
+         KinematicValue = dunendgarmcSamples[iSample].muon_pi_reco_angle[iEvent];
+         break;
+   case kPiRecoEnergy:
+         KinematicValue = dunendgarmcSamples[iSample].rw_reco_pi_energy[iEvent];
+         break;
+   case kPiTrueEnergy:
+         KinematicValue = dunendgarmcSamples[iSample].rw_pi_energy[iEvent];
+         break;
+   case kPiZAngle:
+         KinematicValue = dunendgarmcSamples[iSample].pi_z_angle[iEvent];
+         break;
+   case kPiZRecoAngle:
+         KinematicValue = dunendgarmcSamples[iSample].pi_z_reco_angle[iEvent];
+         break;
+   case kNChargedPions:
+         KinematicValue = dunendgarmcSamples[iSample].npip[iEvent]+dunendgarmcSamples[iSample].npim[iEvent];
+         break;
+   case kNRecoPions:
+         KinematicValue = dunendgarmcSamples[iSample].nrecopion[iEvent];
+         break;
+   case kPiRecoMomentum:
+         KinematicValue = dunendgarmcSamples[iSample].rw_reco_pi_pMag[iEvent];
+         break;
+   case kPiTrueMomentum:
+         KinematicValue = dunendgarmcSamples[iSample].rw_pi_pMag[iEvent];
+         break;
+   case kTrueQ2:
+	 KinematicValue = dunendgarmcSamples[iSample].rw_Q2[iEvent]; 
+	 break;
+   case kTrueW:
+	 KinematicValue = dunendgarmcSamples[iSample].rw_W[iEvent]; 
+	 break;
+   case kTrueQ0:
+	 KinematicValue = dunendgarmcSamples[iSample].rw_Q0[iEvent]; 
+	 break;
+   case kTrueQ3:
+	 KinematicValue = dunendgarmcSamples[iSample].rw_Q3[iEvent]; 
+	 break;
+   case kDeltaRecoEnergyThreshold:
+         KinematicValue = dunendgarmcSamples[iSample].rw_etrurec_nopionthreshold[iEvent] - dunendgarmcSamples[iSample].rw_etrurec[iEvent];
+         break;
+   case kIsAccepted:
+	 KinematicValue = dunendgarmcSamples[iSample].is_accepted[iEvent]; 
+	 break;
+   case kIsCC:
+         KinematicVAlue = dunendgarmcSamples[iSample].rw_isCC[iEvent];
          break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
@@ -693,18 +1027,28 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
 {
   std::vector<double> binningVector;
   switch(KinPar){
+    case kRecoNeutrinoEnergy:
     case kTrueNeutrinoEnergy:
+    case kIdealNeutrinoRecoEnergy:
          for(double ibins =0; ibins<10*10; ibins++){
            double binval = ibins/10;
            binningVector.push_back(binval);
          }
 	 break;
-    case kRecoNeutrinoEnergy:
-        for(double ibins =0; ibins<10*10; ibins++){
-           double binval = ibins/10;
+    case kTrueQ2:
+    case kTrueW:
+         for(double ibins =0; ibins<10*50; ibins++){
+           double binval = ibins/50;
            binningVector.push_back(binval);
-         } 
-         break;
+         }
+	 break;
+    case kTrueQ0:
+    case kTrueQ3:
+         for(double ibins =0; ibins<3*50; ibins++){
+           double binval = ibins/50;
+           binningVector.push_back(binval);
+         }
+	 break;
     case kRecoXPos:
     case kTrueXPos:
 	 for(double ibins =0; ibins<259*2; ibins++){
@@ -723,6 +1067,7 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
            binningVector.push_back(ibins-277+1486);
          }
 	 break;
+    case kNChargedPions:
     case kPionMultiplicity:
          for(double ibins =0; ibins<10; ibins++){
            binningVector.push_back(ibins);
@@ -732,16 +1077,28 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
          for(double ibins =0; ibins<50; ibins++){
            binningVector.push_back(ibins);
          }
-         break; 
+         break;
+   case kIsnumuCC: 
    case kInFDV:
          for(double ibins =0; ibins<3; ibins++){
            binningVector.push_back(ibins);
          }
          break;
    case kNMuonsRecoOverTruth:
+   case kTrueMinusIdealRecoEnergyRatio:
+         for(double ibins =0; ibins<2*100; ibins++){
+           binningVector.push_back(-1+(double)(ibins)/100);
+         }
+         break;
    case kTrueMinusRecoEnergyRatio:
          for(double ibins =0; ibins<20*10; ibins++){
            binningVector.push_back(-10+(double)(ibins)/10);
+         }
+         break;
+   case kTrueMinusIdealRecoEnergy:
+   case kDeltaRecoEnergyThreshold:
+         for(double ibins =0; ibins<3*100; ibins++){
+           binningVector.push_back(-1+(double)(ibins)/100);
          }
          break;
    case kTrueMinusRecoEnergy:
@@ -749,8 +1106,10 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
            binningVector.push_back(-10+(double)(ibins)/10);
          }
          break;
+   case kNTruePrimMuons:
    case kNTrueMuons:
    case kNRecoMuons:
+   case kNRecoPions:
          for(double ibins =0; ibins<10; ibins++){
            binningVector.push_back(ibins);
          }
@@ -767,19 +1126,37 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
          break;
     case kTrueRad:
     case kRecoRad:
-        for(double ibins =0; ibins<300; ibins++){
+        for(double ibins =0; ibins<300; ibins = ibins+5){
            binningVector.push_back(ibins);
         }
         break;
+    case kLepRecoPT:
+    case kLepRecoPZ:
     case kLepPT:
     case kLepPZ:
         for(double ibins =0; ibins<10*10; ibins++){
            binningVector.push_back((double)(ibins)/10);
         }
         break;
+    case kPiZAngle:
+    case kPiZRecoAngle:
+    case kMuonPiAngle:
+    case kMuonPiRecoAngle:
+        for(double ibins =0; ibins<360; ibins = ibins+5){
+           binningVector.push_back((double)(ibins));
+        }
+        break;
+    case kPiTrueMomentum:
+    case kPiRecoMomentum:
+    case kPiTrueEnergy:
+    case kPiRecoEnergy:
+        for(double ibins =0; ibins<1.0*100; ibins = ibins+5){
+           binningVector.push_back((double)(ibins/100));
+        }
+        break;
     default:
-         for(double ibins =0; ibins<10*100; ibins++){
-           binningVector.push_back(ibins/100);
+         for(double ibins =0; ibins<10*5; ibins++){
+           binningVector.push_back(ibins/5);
          }
          break;
  }
@@ -879,6 +1256,7 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
   }
 
   for (unsigned int iStoredSelection=0;iStoredSelection<StoredSelection.size();iStoredSelection++) {
+//    std::cout<<"StoredSelection: "<<StoredSelection[iStoredSelection][0]<<std::endl;
     Selection.push_back(StoredSelection[iStoredSelection]);
   }
   

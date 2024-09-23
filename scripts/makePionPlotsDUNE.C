@@ -9,27 +9,44 @@
 
 #include <iostream>
 
-void makeSelectionVarsPlotsDUNE(TString inputfile)
+void makePionPlotsDUNE(TString inputfile, bool gif, bool allnpions, int npions = 0)
 {
   std::cout << "honk" << std::endl;
   gStyle->SetOptStat(0);
-   TFile* file = new TFile(inputfile);
+  TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
+  c0->Divide(1,2);
+  TCanvas* c1 = new TCanvas("c1","c1",0,0,600,600);
+//  c1->Divide(1,2);
+  c0->Print("pionvars.ps[");
+  int ipionmax;
+  int yaxismax;
+  int yaxismin;
+  
+  if(allnpions){ipionmax = 4; npions = 0;}
+  else{ipionmax = npions+1;}
+  std::cout<<"ipionmax: "<<ipionmax<<" npions: "<<npions<<std::endl; 
+  for(int ipion = npions; ipion<ipionmax; ipion++){
+   for(int ithreshold = 0; ithreshold<710; ithreshold=ithreshold+10){
+   if(ipion == 0 && ithreshold > 0){continue;}
+   if((ithreshold > 150) && (ithreshold % 50 != 0)){continue;}
+   std::string filenamestart(inputfile);
+   std::string fullfile = filenamestart+"_"+std::to_string(ipion)+"_pions_"+std::to_string(ithreshold)+"_MeV.root";
+   TFile* file = new TFile(fullfile.c_str());
    TList* list = file->GetListOfKeys();
    
 
    std::cout << "honk2" << std::endl;
    std::cout << list->GetEntries() << "  number of Hists" << std::endl;
 
-   TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
-   c0->Divide(1,2);
-   c0->Print("selectionvars.ps[");
    std::vector<std::vector<TString>> kinematicvariables;
 
 //   std::vector<std::string> plotvariables = {"NMuonsRecoOverTruth"};
 //  std::vector<std::string> plotvariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "RecoXPos", "TrueYPos", "RecoYPos", "TrueZPos", "RecoZPos", "TrueRad", "RecoRad", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy"};
 //  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "TrueNeutrinoEnergy", "TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "ChargedPionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
 
-  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "TrueNeutrinoEnergy", "TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "RecoNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "ChargedPionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons","PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
+//  std::vector<std::string> plotvariables = {"TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "TrueQ2", "TrueW"};
+  std::vector<std::string> plotvariables = {"TrueMinusIdealRecoEnergy"};
+//  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "RecoNeutrinoEnergy"};
 
 
 //{"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
@@ -41,7 +58,10 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
       std::vector<TString> keynames;
       kinematicvariables.push_back(keynames);
       std::string xaxisname= plotvariables[iplots];
-      if(plotvariables[iplots].find("Ratio")!= std::string::npos){xaxisname += "";}
+      if(plotvariables[iplots].find("TrueMinus")!= std::string::npos){
+      if(plotvariables[iplots].find("Ratio")!= std::string::npos){xaxisname = "(E_{#nu} - E_{rec})/E_{#nu}";}
+      else{xaxisname = "E_{#nu} - E_{rec} (GeV)";}
+      }
       else if(plotvariables[iplots].find("Energy")!= std::string::npos){xaxisname += " (GeV)";}
       else if(plotvariables[iplots].find("Pos")!= std::string::npos){xaxisname += " (cm)";}
       else if(plotvariables[iplots].find("Rad")!= std::string::npos){xaxisname += " (cm)";}
@@ -84,8 +104,8 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
    modebreakdown.push_back(nc);
 
    std::vector<std::string> modenames = {"CCQE", "CCDIS", "CCRES", "CCMEC", "CCOTHER", "NC"};
-   std::vector<int> modecolours = {900-1, 616-6, 880-1, 860-5, 432-7, kGreen+2};
-
+   std::vector<int> modecolours = {900-1, 616-6,  kGreen+2, 860-5, 432-7, 880-1};
+   std::string histnamefull = "";
    for(int ivars=0; ivars<kinematicvariables.size(); ivars++){
      THStack* stack = new THStack("stack","");
      TLegend* leg1 = new TLegend(0.65,0.55,0.8,0.8);
@@ -95,8 +115,10 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
        int length = kinematicvariables[ivars][ikeynames].Length();
        TString fullname = kinematicvariables[ivars][ikeynames];
        TString name  = fullname.Remove(index, length);
+       std::string histnamestart(name);
+       histnamefull = histnamestart+"_"+std::to_string(ipion)+"_pions_"+std::to_string(ithreshold)+"_MeV";
        std::cout<<"name: "<<name<<" index: "<<index<<" length: "<<length<<std::endl;
-       stack->SetTitle(name);
+       stack->SetTitle(histnamefull.c_str());
        TH1D* hist =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
        std::cout<<kinematicvariables[ivars][ikeynames]<<" mode: "<<fullname.Remove(0, 10)<<std::endl;
        fullname = kinematicvariables[ivars][ikeynames];
@@ -114,20 +136,59 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
        if(histogram != NULL){
          histogram->SetFillColor(modecolours[ihists]);
          histogram->SetLineColor(modecolours[ihists]);
+//         TH1D* histrebin = (TH1D*)(histogram->Rebin(2, "histrebin"));
+//         stack->Add(histrebin);
+//         leg1->AddEntry(histrebin,modenames[ihists].c_str()); 
          stack->Add(histogram);
          leg1->AddEntry(histogram,modenames[ihists].c_str()); 
        }
      }
+     if(ithreshold == 0){yaxismax = stack->GetMaximum()+100;}
      c0->cd(1);
+   //  if(ithreshold == 0){stack->Draw("HIST");}
+  //   else{ stack->Draw("HIST SAME");}
      stack->Draw("HIST");
+     std::cout<<"yaxismax = "<<yaxismax<<std::endl;
+//     stack->GetYaxis()->SetRangeUser(0, yaxismax);
+     stack->SetTitle(histnamefull.c_str());
+     stack->SetMaximum(yaxismax);
+     if(plotvariables[0] == "TrueMinusIdealRecoEnergy"){
+       stack->GetXaxis()->SetRangeUser(-0.2, 1.0);
+     }
+//     gPad->RedrawAxis();
+//     gPad->GetTickx();
+//     gPad->SetTicks(0,0);
+//     gPad->GetTicky();
+//     gPad->SetTicks(0,0);
+     std::cout<<"yaxismax = "<<yaxismax<<std::endl;
+     stack->GetXaxis()->SetTitle(x_axis[ivars].c_str());
      leg1->Draw("SAME"); 
+//     gPad->Modified();
+//     gPad->Update();
      c0->Update();
-     c0->Print("selectionvars.ps");
+     c0->Print("pionvars.ps");
+     if(gif){
+     c1->cd();
+     stack->Draw("HIST");
+     std::cout<<"yaxismax = "<<yaxismax<<std::endl;
+     stack->SetTitle(histnamefull.c_str());
+     stack->SetMaximum(yaxismax);
+     if(plotvariables[0] == "TrueMinusIdealRecoEnergy"){
+       std::cout<<"here:"<<std::endl;
+       stack->GetXaxis()->SetRangeUser(-0.2, 1.0);
+     }
+     std::cout<<"yaxismax = "<<yaxismax<<std::endl;
+     stack->GetXaxis()->SetTitle(x_axis[ivars].c_str());
+     leg1->Draw("SAME");     
+     c1->Update();
+     c1->Print("pion.gif+25");}
      delete stack;
      delete leg1;
      Hists.clear();
    }
+   }
+   }
    std::cout<<"HERE"<<std::endl;
-   c0->Print("selectionvars.ps]");
+   c0->Print("pionvars.ps]");
 
 }

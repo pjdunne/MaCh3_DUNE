@@ -19,20 +19,36 @@
 #SampleName: "NDGAr_FHC_CCnumu"
 SampleName: "NDGAr_FHC"
 SelectionCuts:
-#    - KinematicStr: "InFDV"
-#      Bounds: [1.0, 2.0]
-    - KinematicStr: "RecoRad"
-      Bounds: [0.0, 227.0]
-    - KinematicStr: "NRecoMuons"
+    - KinematicStr: "InFDV"
       Bounds: [1.0, 2.0]
-    - KinematicStr: "RecoXPos"
-      Bounds: [-209.0, 209.0]
-#    - KinematicStr: "NRecoParticles"
-#      Bounds: [1.0, 100.0]
+    - KinematicStr: "IsAccepted"
+      Bounds: [1.0, 2.0]
+    - KinematicStr: "IsCC"
+      Bounds: [1.0, 2.0]
+#    - KinematicStr: "NTruePrimMuons"
+#      Bounds: [1.0, 2.0]
+#    - KinematicStr: "RecoRad"
+#      Bounds: [0.0, 227.0]
 #    - KinematicStr: "NRecoMuons"
 #      Bounds: [1.0, 2.0]
-    - KinematicStr: "PionMultiplicity"
-      Bounds: [1.0, 2.0]
+#    - KinematicStr: "RecoXPos"
+#      Bounds: [-209.0, 209.0]
+#    - KinematicStr: "NRecoParticles"
+#      Bounds: [2.0, 100.0]
+#    - KinematicStr: "NRecoMuons"
+#      Bounds: [1.0, 2.0]
+#    - KinematicStr: "NChargedPions"
+#      Bounds: [3,4]
+#    - KinematicStr: "DeltaRecoEnergyThreshold"
+#      Bounds: [0.09,2.0]
+
+#    - KinematicStr: "NRecoPions"
+#      Bounds: [1.0, 2.0]
+#    - KinematicStr: "PiTrueEnergy"
+#      Bounds: [0.0, 1.0]
+#    - KinematicStr: "PiRecoEnergy"
+#      Bounds: [0.0, 1.0]
+
 Binning:
   BinningOpt: 2
 #  XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
@@ -53,6 +69,15 @@ InputFiles:
 SampleCuts:
   up_bnd: 100000.
   muonscore_threshold: 0.5
+  protondEdxscore_threshold: 0.3
+  protontofscore_threshold: 0.6
+  recovertexradius_threshold: 100.0
+  pionenergy_threshold: 0
+  B_field: 0.5
+  momentum_resolution_threshold: 0.05 
+  pixel_spacing: 6.0
+  adc_sampling_frequency: 20.0
+  drift_velocity: 3.011
 NSubSamples: 4
 DetID: 1
 SubSamples:

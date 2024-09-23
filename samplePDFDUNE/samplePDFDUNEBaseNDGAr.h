@@ -52,6 +52,8 @@ struct dunendgarmc_base {
   // histo pdf bins
   double *rw_erec;
   double *rw_etru;
+  double *rw_etrurec;
+  double *rw_etrurec_nopionthreshold;
   double *rw_elep_reco;
   double *rw_mom;
   double *rw_theta;
@@ -74,6 +76,14 @@ struct dunendgarmc_base {
   double *rw_vtx_x;
   double *rw_vtx_y;
   double *rw_vtx_z;
+
+  double *rw_W;
+  double *rw_Q0;
+  double *rw_Q3;
+  double *rw_reco_Q2;
+  double *rw_reco_Q0;
+  double *rw_reco_Q3;
+
   double dummy_y;
 
   double *reco_numu;
@@ -89,23 +99,58 @@ struct dunendgarmc_base {
   int *npim; ///< number of (post-FSI) primary pi-
   int *npi0; ///< number of (post-FSI) primary pi0
 
+  int *nrecopion; //number of reconstructed pion
   int *ntruemuon; //number of true muons
   int *ntruemuonprim; //number of true primary muons
   int *nrecomuon; //number of reconstructed muons
   double *nmuonsratio; //number of reco muons divided by number of true muons
+  bool *isnumuCC; //is the true interaction numuCC
 
-  double *rw_lep_pT;  //transverse lepton momentum
-  double *rw_lep_pZ; //parallel lepton momentum
+  double *rw_lep_pT;  //transverse most energetic lepton momentum
+  double *rw_lep_pZ; //parallel most energetic lepton momentum
+  double *rw_lep_pY;
+  double *rw_lep_pX;
+  double *rw_lep_pMag;
+  double *rw_reco_lep_pT;  //transverse most energetic reconstructed lepton momentum
+  double *rw_reco_lep_pZ; //parallel most energetic reconstructed lepton momentum
+  double *rw_reco_lep_pY;
+  double *rw_reco_lep_pX;
+  double *rw_reco_lep_pMag;
+
+  double *rw_pi_pT;  //transverse most energetic pion momentum
+  double *rw_pi_pZ; //parallel most energetic pion momentum
+  double *rw_pi_pY;
+  double *rw_pi_pX;
+  double *rw_pi_pMag;
+  double *rw_reco_pi_pT;  //transverse reconstructed most energetic momentum
+  double *rw_reco_pi_pZ; //parallel reconstructed most energetic pion momentum
+  double *rw_reco_pi_pY;
+  double *rw_reco_pi_pX;
+  double *rw_reco_pi_pMag;
+
+
   double *rw_reco_vtx_x;
   double *rw_reco_vtx_y;
   double *rw_reco_vtx_z;
   double *rw_reco_rad;
   double *rw_rad;
 
+  double *rw_reco_lep_energy;
+  double *rw_lep_energy;
+
+  double *rw_reco_pi_energy;
+  double *muon_pi_reco_angle;
+  double *pi_z_reco_angle;
+  double *rw_pi_energy;
+  double *muon_pi_angle;
+  double *pi_z_angle;
+  
   double *rw_elep_true;
 
   int *nrecoparticles;
   bool *in_fdv;
+
+  bool *is_accepted;
 
   double pot_s; // s is for scale                                             
   double norm_s;//    
@@ -203,8 +248,22 @@ public:
   double _LepTheta;
   double _Q2;
 
+  //particle masses
+  double m_chargedpi = 0.13957039;
+  double m_pi0 = 0.1349768;
+  double m_e = 0.00051099895;
+  double m_mu = 0.0001056583755;
+  double m_p = 0.93827208816;
+  double m_n = 0.9395654205;
 
-
+  double K_const = 0.307075; //4 pi N_A r_e^2 m_e c^2 (MeV cm^2/mol)
+  double sternheimer_A = 0.1956;
+  double sternheimer_K = 3.0000;
+  double sternheimer_X0 = 0.2000;
+  double sternheimer_X1 = 3.0000;
+  double sternheimer_Cbar = 5.2146;
+  double excitationenergy = 188.0; //excitation energy for electrons in argon gas in eV
+  double density = -0.00615*294.26 + 1.928;
   //covarianceFlux *flux;
   //covarianceSkDet_joint *skdet_joint;
   
@@ -215,7 +274,16 @@ public:
 
   bool iscalo_reco; //NK Added so we can easily change what energy reconstruction we are using
   float muonscore_threshold; //NK Added so we can optimise muon threshold
-
+  float protondEdxscore;
+  float protontofscore;
+  float recovertexradiusthreshold;
+  float pionenergy_threshold; //NK Added so we can find pion energy threshold
+  float B_field;
+  float momentum_resolution_threshold;
+  float pixel_spacing;
+  float adc_sampling_frequency;
+  float drift_velocity;
+  float hits_per_mm;
   // Note: the following 4 variables shouldn't be used any more! (From 14/1/2015 - KD). Just kept in for backwards compatibility in compiling, but they have no effect.
   bool do_flux_rw;
   bool do_xsec_rw;

@@ -9,27 +9,45 @@
 
 #include <iostream>
 
-void makeSelectionVarsPlotsDUNE(TString inputfile)
+void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile)
 {
   std::cout << "honk" << std::endl;
   gStyle->SetOptStat(0);
-   TFile* file = new TFile(inputfile);
+  TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
+  c0->Divide(1,2);
+  TCanvas* c1 = new TCanvas("c1","c1",0,0,600,600);
+//  c1->Divide(1,2);
+  c0->Print("acceptancecorrectionvars_2d.ps[");
+  int ipionmax;
+  int yaxismax;
+  int yaxismin;
+  
+//  if(allnpions){ipionmax = 4; npions = 0;}
+//  else{ipionmax = npions+1;}
+/*  std::cout<<"ipionmax: "<<ipionmax<<" npions: "<<npions<<std::endl; 
+  for(int ipion = npions; ipion<ipionmax; ipion++){
+   for(int ithreshold = 0; ithreshold<710; ithreshold=ithreshold+10){
+   if(ipion == 0 && ithreshold > 0){continue;}
+   if((ithreshold > 150) && (ithreshold % 50 != 0)){continue;}
+*/
+   std::string filenamestart(inputfile);
+   std::string fullfile = filenamestart+".root";
+   TFile* file = new TFile(fullfile.c_str());
    TList* list = file->GetListOfKeys();
    
 
    std::cout << "honk2" << std::endl;
    std::cout << list->GetEntries() << "  number of Hists" << std::endl;
 
-   TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
-   c0->Divide(1,2);
-   c0->Print("selectionvars.ps[");
    std::vector<std::vector<TString>> kinematicvariables;
 
 //   std::vector<std::string> plotvariables = {"NMuonsRecoOverTruth"};
 //  std::vector<std::string> plotvariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "RecoXPos", "TrueYPos", "RecoYPos", "TrueZPos", "RecoZPos", "TrueRad", "RecoRad", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy"};
 //  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "TrueNeutrinoEnergy", "TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "ChargedPionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
 
-  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "TrueNeutrinoEnergy", "TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "RecoNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "ChargedPionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons","PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
+//  std::vector<std::string> plotvariables = {"TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "TrueQ2", "TrueW"};
+  std::vector<std::string> plotvariables = {"TrueQ0", "TrueQ3"};
+//  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "RecoNeutrinoEnergy"};
 
 
 //{"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
@@ -41,11 +59,18 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
       std::vector<TString> keynames;
       kinematicvariables.push_back(keynames);
       std::string xaxisname= plotvariables[iplots];
-      if(plotvariables[iplots].find("Ratio")!= std::string::npos){xaxisname += "";}
+      if(plotvariables[iplots].find("TrueMinus")!= std::string::npos){
+      if(plotvariables[iplots].find("Ratio")!= std::string::npos){xaxisname = "(E_nu - E_rec)/E_nu";}
+      else{xaxisname = "E_nu - E_rec (GeV)";}
+      }
       else if(plotvariables[iplots].find("Energy")!= std::string::npos){xaxisname += " (GeV)";}
       else if(plotvariables[iplots].find("Pos")!= std::string::npos){xaxisname += " (cm)";}
       else if(plotvariables[iplots].find("Rad")!= std::string::npos){xaxisname += " (cm)";}
       else if(plotvariables[iplots].find("Muons")!= std::string::npos){xaxisname += "";}
+      else if(plotvariables[iplots].find("TrueQ2")!= std::string::npos){xaxisname += " (GeV^{2})";}
+      else if(plotvariables[iplots].find("TrueQ0")!= std::string::npos){xaxisname += " (GeV)";}
+      else if(plotvariables[iplots].find("TrueQ3")!= std::string::npos){xaxisname += " (GeV)";}
+      else if(plotvariables[iplots].find("TrueW")!= std::string::npos){xaxisname += " (GeV^{2})";}
       x_axis.push_back(xaxisname);
    }
 
@@ -55,8 +80,10 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
      //std::cout << "entry " << i << std::endl;
      TString keyname = list->At(i)->GetName();
         if(keyname.Contains("_NDGAr_")){
-        for(int iplots=0; iplots<n_vars; iplots++){
-          TString keynametest = plotvariables[iplots]+"_NDGAr_";
+        std::cout<<"here ndgar"<<std::endl;
+        for(int iplots=0; iplots<n_vars; iplots = iplots+2){
+          TString keynametest = plotvariables[iplots]+"_"+plotvariables[iplots+1]+"_NDGAr_";
+          std::cout<<"keynametest: "<<keynametest<<std::endl;
           if(keyname.Contains(keynametest)){
           kinematicvariables[iplots].push_back(keyname);
           std::cout<<"iplots: "<<iplots<<" keyname: "<<keyname<<std::endl;
@@ -84,50 +111,35 @@ void makeSelectionVarsPlotsDUNE(TString inputfile)
    modebreakdown.push_back(nc);
 
    std::vector<std::string> modenames = {"CCQE", "CCDIS", "CCRES", "CCMEC", "CCOTHER", "NC"};
-   std::vector<int> modecolours = {900-1, 616-6, 880-1, 860-5, 432-7, kGreen+2};
-
+   std::vector<int> modecolours = {900-1, 616-6,  kGreen+2, 860-5, 432-7, 880-1};
+   std::string histnamefull = "";
    for(int ivars=0; ivars<kinematicvariables.size(); ivars++){
      THStack* stack = new THStack("stack","");
      TLegend* leg1 = new TLegend(0.65,0.55,0.8,0.8);
-     std::vector<TH1D*> Hists(modebreakdown.size());
      for(int ikeynames = 0; ikeynames<kinematicvariables[ivars].size(); ikeynames++){
+     std::cout<<"here2 "<<kinematicvariables[ivars][ikeynames]<<std::endl;
        int index = kinematicvariables[ivars][ikeynames].Last('_');
        int length = kinematicvariables[ivars][ikeynames].Length();
        TString fullname = kinematicvariables[ivars][ikeynames];
-       TString name  = fullname.Remove(index, length);
-       std::cout<<"name: "<<name<<" index: "<<index<<" length: "<<length<<std::endl;
-       stack->SetTitle(name);
-       TH1D* hist =(TH1D*)file->Get(kinematicvariables[ivars][ikeynames]);
-       std::cout<<kinematicvariables[ivars][ikeynames]<<" mode: "<<fullname.Remove(0, 10)<<std::endl;
-       fullname = kinematicvariables[ivars][ikeynames];
-       int mode = fullname.Remove(0, index+1).Atoi();
-       std::cout<<"mode: "<<mode<<std::endl;
-         for(int modes =0; modes<modebreakdown.size(); modes++){
-         if(std::find(modebreakdown[modes].begin(), modebreakdown[modes].end(), mode)!=modebreakdown[modes].end()){
-           if(Hists[modes] ==NULL){ Hists[modes] = hist;}
-           else{Hists[modes]->Add(hist);}
-         }
-       }
+//       TString name  = fullname.Remove(index, length);
+//       std::string histnamestart(name);
+       histnamefull = fullname;
+
+       TH2D* hist = (TH2D*)file->Get(kinematicvariables[ivars][ikeynames]);
+//       TH2D* histrebin = (TH2D*)(hist->Rebin2D(1, 1, "histrebin"));
+  
+       c0->cd(1);
+       hist->Draw("COLZ");
+       hist->SetTitle(histnamefull.c_str());
+       hist->GetXaxis()->SetTitle(x_axis[0].c_str());
+       hist->GetYaxis()->SetTitle(x_axis[1].c_str());
+//     histrebin->SetMaximum(yaxismax);
+//     c0->Update();
+       c0->Print("acceptancecorrectionvars_2d.ps");
      }
-     for(int ihists=0; ihists<Hists.size(); ihists++){
-       TH1D* histogram = Hists[ihists];
-       if(histogram != NULL){
-         histogram->SetFillColor(modecolours[ihists]);
-         histogram->SetLineColor(modecolours[ihists]);
-         stack->Add(histogram);
-         leg1->AddEntry(histogram,modenames[ihists].c_str()); 
-       }
-     }
-     c0->cd(1);
-     stack->Draw("HIST");
-     leg1->Draw("SAME"); 
-     c0->Update();
-     c0->Print("selectionvars.ps");
-     delete stack;
-     delete leg1;
-     Hists.clear();
    }
+   //}
    std::cout<<"HERE"<<std::endl;
-   c0->Print("selectionvars.ps]");
+   c0->Print("acceptancecorrectionvars_2d.ps]");
 
 }

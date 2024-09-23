@@ -362,11 +362,35 @@ int main(int argc, char * argv[]) {
   for(int i =0; i<PlotModes.size(); i++){std::cout<<"Plot Modes "<<i<<" : "<<PlotModes[i]<<" MaCh3 Mode: "<<(int)DUNEString_ToMaCh3Mode(PlotModes[i])<<std::endl;}
 //  std::vector<std::string> HistVariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV"};
 
-  if(efficiency){ 
+  if(efficiency && purity){
+    for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
+      for(int ihist=0; ihist<HistVariables.size(); ihist++){
+        for(int imode = 0; imode<PlotModes.size(); imode++){
+          int mode;
+          std::cout<<"ipdf: "<<ipdf<<std::endl;
+          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
+          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
+          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
+          string name = histogram->GetName();
+          string nameadd;
+          if(ipdf ==0){nameadd = "_AllSelected";}
+          else if(ipdf ==1){nameadd = "_AllTrue";}
+          else if(ipdf == 2){nameadd = "_TrueSelected";}
+          string newname = name + nameadd;
+          histogram ->SetName(newname.c_str());
+          histogram ->Write();
+          delete histogram;
+        }
+      }
+    }
+  }
+   
+  else if(efficiency){ 
     for(unsigned ipdf = 1 ; ipdf < SamplePDFs.size() ; ipdf++) {
       for(int ihist=0; ihist<HistVariables.size(); ihist++){
         for(int imode = 0; imode<PlotModes.size(); imode++){
           int mode;
+          std::cout<<"ipdf: "<<ipdf<<std::endl;
           if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
           else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
           TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
