@@ -51,6 +51,9 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
   std::string splineprefix;
   std::string splinesuffix;
 
+//  std::string geantprefix;
+//  std::string geantsuffix;
+
   char* sample_char = (char*)samplecfgfile.c_str();
   //ETA - trying to read stuff from yaml file
   manager* SampleManager = new manager(sample_char);
@@ -60,7 +63,9 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
-
+  //NK - Bools whether to read GEANT files
+  incl_geant = SampleManager->raw()["SampleBools"]["incl_geant"].as<bool>();
+  
   iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
   muonscore_threshold = SampleManager->raw()["SampleCuts"]["muonscore_threshold"].as<float>(); //NK determine what muon score threshold to use
   protondEdxscore = SampleManager->raw()["SampleCuts"]["protondEdxscore_threshold"].as<float>(); //NK determine what proton score threshold to use
@@ -73,6 +78,7 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
   pixel_spacing = SampleManager->raw()["SampleCuts"]["pixel_spacing"].as<float>(); //NK pixel spacing in mm to find mom resolution in y,z plane
   adc_sampling_frequency = SampleManager->raw()["SampleCuts"]["adc_sampling_frequency"].as<float>(); //NK sampling frequency for ADC - needed to find timing resolution and spatial resolution in x dir in MHz
   drift_velocity = SampleManager->raw()["SampleCuts"]["drift_velocity"].as<float>(); //NK drift velocity of electrons in gas - needed to find timing resolution and spatial resolution in x dir in cm/microsecond
+  average_gain = SampleManager->raw()["SampleCuts"]["average_gain"].as<float>();
 
 //  hits_per_mm = SampleManager->raw()["SampleCuts"]["hits_per_mm"].as<float>();
 
@@ -96,6 +102,9 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
   std::vector<int> sample_oscnutype;
   std::vector<int> sample_nutype;
   std::vector<bool> sample_signal;
+  // NK - adding the ability to also read anatrees
+  //std::vector<std::string geant_files;
+
   
   //Loop over all the sub-samples
   for (auto const &osc_channel : SampleManager->raw()["SubSamples"]) {
@@ -106,6 +115,10 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
 	sample_nutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["nutype"].as<int>())));
 	sample_oscnutype.push_back(PDGToProbs(static_cast<NuPDG>(osc_channel["oscnutype"].as<int>())));
 	sample_signal.push_back(osc_channel["signal"].as<bool>());
+
+//        if(incl_geant){
+//          geant_files.push_back(osc_channel["geantfile"].as<std::string>());
+//        }
   }
 
 
@@ -237,6 +250,20 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   std::cout << "-------------------------------------------------------------------" << std::endl;
   std::cout << "input file: " << sampleFile << std::endl;
 
+
+  std::string geantfilename(sampleFile);
+  std::string prefix = "inputs/DUNE_NDGAr_CAF_files/";
+  std::string::size_type i_prefix = geantfilename.find(prefix);
+  if(i_prefix != std::string::npos){
+    geantfilename.erase(i_prefix, prefix.length());
+  }
+  std::string suffix = ".root";
+  std::string::size_type i_suffix = geantfilename.find(suffix);
+  if(i_suffix != std::string::npos){
+    geantfilename.erase(i_suffix, suffix.length());
+  }
+  std::string geantfilename_final = "inputs/DUNE_NDGAr_AnaTrees/"+geantfilename + "_geant.root";
+
   _sampleFile = new TFile(sampleFile, "READ");
   _data = (TTree*)_sampleFile->Get("cafTree");
   if(_data){
@@ -244,10 +271,33 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
     std::cout << "N of entries: " << _data->GetEntries() << std::endl;
   }
 
+  if(incl_geant){
+    _sampleFile_geant = new TFile(geantfilename_final.c_str(), "READ");
+    _data_geant = (TTree*)_sampleFile_geant->Get("GArAnaTree");
+    _data->AddFriend(_data_geant);
+  }
+
   _data->SetBranchStatus("*", 1);
 
 
   _data->SetBranchAddress("rec", &sr);
+
+  if(incl_geant){
+    _data->SetBranchAddress("MCPStartX", &_MCPStartX);
+    _data->SetBranchAddress("MCPStartY", &_MCPStartY);
+    _data->SetBranchAddress("MCPStartZ", &_MCPStartZ);
+    _data->SetBranchAddress("MCPEndX", &_MCPEndX);
+    _data->SetBranchAddress("MCPEndY", &_MCPEndY);
+    _data->SetBranchAddress("MCPEndZ", &_MCPEndZ);
+    _data->SetBranchAddress("MCPStartPX", &_MCPStartPX);
+    _data->SetBranchAddress("MCPStartPY", &_MCPStartPY);
+    _data->SetBranchAddress("MCPStartPZ", &_MCPStartPZ);
+    _data->SetBranchAddress("MCPEndPX", &_MCPEndPX);
+    _data->SetBranchAddress("MCPEndPY", &_MCPEndPY);
+    _data->SetBranchAddress("MCPEndPZ", &_MCPEndPZ);
+    _data->SetBranchAddress("PDG", &_PDG);
+  }
+
 
   //FIX Commenting out for now 
   /*
@@ -545,7 +595,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
      int nprimproton = 0;
      int nprimneutron = 0;
      int nprimmuon = 0;
-     int isaccepted = 0;
+     int isnotaccepted = 0;
      double pdgmass = 0;
 //     if((duneobj->npip[i]+duneobj->npim[i]) == 1){
        for(int i_truepart =0; i_truepart<ntrueparticles; i_truepart++){
@@ -578,25 +628,32 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
          
            if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 11){pdgmass = m_e;}
          }
-         std::cout<<"start pos x: "<<(double)(sr->mc.nu[0].prim[i_truepart].start_pos.X())<<" end pos x: "<<(double)(sr->mc.nu[0].prim[i_truepart].end_pos.x)<<std::endl;
-         std::cout<<" start rad: "<<pow((pow((double)(sr->mc.nu[0].prim[i_truepart].start_pos.y)+150, 2)+pow((double)(sr->mc.nu[0].prim[i_truepart].start_pos.z)-1486, 2)), 0.5)<<" end rad: "<< pow((pow((double)(sr->mc.nu[0].prim[i_truepart].end_pos.y)+150, 2)+pow((double)(sr->mc.nu[0].prim[i_truepart].end_pos.z)-1486, 2)), 0.5)<<std::endl;
-         std::cout<<"pdg: "<<sr->mc.nu[0].prim[i_truepart].pdg<<std::endl;
-         std::cout<<"mag pos: "<<(double)(sr->mc.nu[0].prim[i_truepart].start_pos.Mag())<<" mag mom: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())<<std::endl;
+         for(int i_anapart =0; i_anapart<_MCPStartPX->size(); i_anapart++){
+           float mom_tot = pow(pow(_MCPStartPX->at(i_anapart), 2)+pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2), 0.5);
+//           std::cout<<"mom_tot: "<<mom_tot<<" p Mag: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())<<std::endl;
+//           std::cout<<"_PDG: "<<_PDG->at(i_anapart)<<" pdg caf: "<<sr->mc.nu[0].prim[i_truepart].pdg<<std::endl;
+           if(_PDG->at(i_anapart) == sr->mc.nu[0].prim[i_truepart].pdg && (double)(mom_tot) == (double)(sr->mc.nu[0].prim[i_truepart].p.Mag())){
+//           std::cout<<"start pos x: "<<_MCPStartX->at(i_anapart)<<" end pos x: "<<_MCPEndX->at(i_anapart)<<std::endl;
+//           std::cout<<" start rad: "<<pow((pow((double)(_MCPStartY->at(i_anapart))+150, 2)+pow((double)(_MCPStartZ->at(i_anapart))-1486, 2)), 0.5)<<" end rad: "<< pow((pow((double)(_MCPEndY->at(i_anapart))+150, 2)+pow((double)(_MCPEndZ->at(i_anapart))-1486, 2)), 0.5)<<std::endl;
+//         std::cout<<"pdg: "<<sr->mc.nu[0].prim[i_truepart].pdg<<std::endl;
+//         std::cout<<"mag pos: "<<(double)(sr->mc.nu[0].prim[i_truepart].start_pos.Mag())<<" mag mom: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())<<std::endl;
 //         if(!std::isnan((double)(sr->mc.nu[0].prim[i_truepart].start_pos.X()))){hasstart++;}
-         if(std::abs(sr->mc.nu[0].prim[i_truepart].start_pos.x)>209.0 || std::abs(sr->mc.nu[0].prim[i_truepart].end_pos.x>209.0)){
-           if(pow((pow(sr->mc.nu[0].prim[i_truepart].start_pos.y+150, 2)+pow(sr->mc.nu[0].prim[i_truepart].start_pos.z-1486, 2)), 0.5)>227.0 || pow((pow(sr->mc.nu[0].prim[i_truepart].end_pos.y+150, 2)+pow(sr->mc.nu[0].prim[i_truepart].end_pos.z-1486, 2)), 0.5)>227.0){
-             if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 13) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 211)){
-               double length_track_x = sr->mc.nu[0].prim[i_truepart].end_pos.x-sr->mc.nu[0].prim[i_truepart].start_pos.x; //in cm
-               double length_track_y = sr->mc.nu[0].prim[i_truepart].end_pos.y-sr->mc.nu[0].prim[i_truepart].start_pos.y; //in cm
-               double length_track_z = sr->mc.nu[0].prim[i_truepart].end_pos.z-sr->mc.nu[0].prim[i_truepart].start_pos.z; //in cm
+         if(std::abs(_MCPStartX->at(i_anapart))>209.0 || std::abs(_MCPEndX->at(i_anapart))>209.0 || pow((pow(_MCPStartY->at(i_anapart)+150, 2)+pow(_MCPStartZ->at(i_anapart)-1486, 2)), 0.5)>227.0 || pow((pow(_MCPEndY->at(i_anapart)+150, 2)+pow(_MCPEndZ->at(i_anapart)-1486, 2)), 0.5)>227.0){
+             if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 13) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 211) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 2212) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 11)){
+               double length_track_x = _MCPEndX->at(i_anapart)-_MCPStartX->at(i_anapart); //in cm
+               double length_track_y = _MCPEndY->at(i_anapart)-_MCPStartY->at(i_anapart); //in cm
+               double length_track_z = _MCPEndZ->at(i_anapart)-_MCPStartZ->at(i_anapart); //in cm
 //               double N_x = length_track_x/(drift_velocity*adc_sampling_rate);
                double L_yz = pow((pow(length_track_z, 2)+pow(length_track_y, 2)), 0.5);
-               double L_tot = pow((pow(length_track_z, 2)+pow(length_track_y, 2)+pow(length_track_x, 2)), 0.5);
+//               double L_tot = pow((pow(length_track_z, 2)+pow(length_track_y, 2)+pow(length_track_x, 2)), 0.5);
 //length in cm
 //               double theta_track = atan(sr->mc.nu[0].prim[i_truepart].p.py/sr->mc.nu[0].prim[i_truepart].p.pz); //find angle of 
-               double transverse_mom = pow((pow(sr->mc.nu[0].prim[i_truepart].p.py, 2)+pow(sr->mc.nu[0].prim[i_truepart].p.pz, 2)), 0.5); //Momentum in y,z plane
+               double transverse_mom = pow((pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2)), 0.5); //Momentum in y,z plane
                double rad_curvature = transverse_mom/(0.3*B_field); //p = 0.3*B*r where p in GeV/c, B in T, r in m
-               double arclength = rad_curvature*2*asin((L_tot*100)/2*rad_curvature); //r*theta in m
+               double theta_xz = atan(_MCPStartPX->at(i_anapart)/_MCPStartPZ->at(i_anapart)); //helix is travelling in x dir as that is mag field dir
+               double pitch = 2*2*rad_curvature*tan(theta_xz); //distance between two turns of a helix
+               double helixlength = (length_track_x/pitch)*pow((pow(M_PI*2*rad_curvature, 2) + pow(pitch, 2)), 0.5); //L = height/pitch*sqrt((pi*diameter)**2 + pitch**2)
+//               double arclength = rad_curvature*2*asin((L_tot*100)/2*rad_curvature); //r*theta in m
 
                //Calculate dE/dX for this particle. This calculation is taken from garsoft/DetectorInfo/DetectorPropertiesStandard.cxx
                //First Calculate required kinematic quantities
@@ -605,7 +662,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                double gamma = pow((1+bg*bg), 0.5); //gamma
                double beta = bg/gamma; //beta (velocity)
                double mer = m_e/pdgmass; //electron mass/mass of particle
-               double tmax = 2.*m_e* bg*bg / (1. + 2.*gamma*mer + mer*mer);  // Maximum delta ray energy (MeV).
+               double tmax = 2.*1000*m_e* bg*bg / (1. + 2.*gamma*mer + mer*mer);  // Maximum delta ray energy (MeV).
                //Assume tcut = tmax
                double tcut = tmax;
                //Find density effect correction (delta). Sternheimer values set in header file
@@ -619,31 +676,37 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                 }
                
                //Calculate Stopping number, B
-               double B = 0.5 * std::log(2.*m_e*bg*bg*tcut / (1.e-12 * pow(excitationenergy, 0.5)))- 0.5*beta*beta*(1. + tcut / tmax) - 0.5*delta;
+               double B = 0.5 * std::log(2.*1000*m_e*bg*bg*tcut / (1.e-12 * pow(excitationenergy, 0.5)))- 0.5*beta*beta*(1. + tcut / tmax) - 0.5*delta;
                if(B<1.){B=1.;} //Don't let B become negative
 
                //Calculate dE/dX 
                double dedx = density*K_const*18*B / (39.981 * beta*beta); //18 is atmic number and 39.981 is atomic mass in g/mol
                
-               //Calculate energy loss 
-               double E_loss = dedx*arclength;
+               //Calculate energy loss over this length in GeV
+               double E_loss = dedx*helixlength*pow(10, -3);
                //Estimate number of hits
-               double N_hits = 5*(E_loss*3.788*pow(10,7));
+               double N_hits = std::abs((E_loss*3.788*pow(10,7))/(average_gain)); //5 electrons per ADC and 3.788e7 electrons produced per GeV
+               std::cout<<"n hits: "<<N_hits<<std::endl;
+
                //double N_hits = arclength*1000/hits_per_mm;
 //               double N_yz = (pow((pow(length_track_y, 2)+pow(length_track_z, 2)), 0.5))
                double sigmax = drift_velocity*adc_sampling_frequency;
                double sigmayz = pixel_spacing;              
-               double momres_x = sr->mc.nu[0].prim[i_truepart].p.px*(pow(720/(N_hits+4), 0.5)*(sigmax*sr->mc.nu[0].prim[i_truepart].p.px/(0.3*B_field*pow(length_track_x, 2))));
+               double momres_x = std::abs(sr->mc.nu[0].prim[i_truepart].p.px)*(pow(720/(N_hits+4), 0.5)*(sigmax*std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/(0.3*B_field*pow(length_track_x, 2))));
                double momres_yz = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz, 2))));
-               double momres_tot = (sr->mc.nu[0].prim[i_truepart].p.px/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_x + (transverse_mom/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_yz;
+               double momres_tot = (std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_x + (transverse_mom/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_yz;
                double momres_frac = momres_tot/sr->mc.nu[0].prim[i_truepart].p.Mag();
-//               std::cout<<"momres_frac: "<<momres_frac<<" momres_tot: "<<momres_tot<<" total momentum: "<<sr->mc.nu[0].prim[i_truepart].p.Mag()<<std::endl;
-               if(momres_frac > momentum_resolution_threshold){isaccepted++;}
-             }
+               std::cout<<"momres_x:"<<momres_x<<" momres_yz: "<<momres_yz<<" transverse mom: "<<transverse_mom<<std::endl;;
+               std::cout<<"momres_frac: "<<momres_frac<<" momres_tot: "<<momres_tot<<" total momentum: "<<sr->mc.nu[0].prim[i_truepart].p.Mag()<<std::endl;
+               if(momres_frac > momentum_resolution_threshold){isnotaccepted++;}
+               }
+               else{isnotaccepted++;}
+             } 
+             break;
            }
          }
        }
-       if(isaccepted > 0){duneobj->is_accepted[i] = 0;}
+       if(isnotaccepted > 0){duneobj->is_accepted[i] = 0;}
        else{duneobj->is_accepted[i] = 1;}
 //       std::cout<<"1st Secondary start pos x: "<<(double)(sr->mc.nu[0].sec[0].start_pos.X())<<" end pos x: "<<(double)(sr->mc.nu[0].sec[0].end_pos.X())<<std::endl;
 //     }
@@ -711,6 +774,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
     // fill modes
     _mode = sr->mc.nu[0].mode;
     _isCC = (int)(sr->mc.nu[0].iscc);
+    std::cout<<"mode: "<<_mode<<" IsCC: "<<_isCC<<std::endl;
     modes->Fill(_mode);
     //!!possible cc1pi exception might need to be 11
     int mode= TMath::Abs(_mode);       
@@ -883,7 +947,7 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
 	 KinematicValue = dunendgarmcSamples[iSample].is_accepted[iEvent]; 
 	 break;
    case kIsCC:
-         KinematicVAlue = dunendgarmcSamples[iSample].rw_isCC[iEvent];
+         KinematicValue = dunendgarmcSamples[iSample].rw_isCC[iEvent];
          break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;

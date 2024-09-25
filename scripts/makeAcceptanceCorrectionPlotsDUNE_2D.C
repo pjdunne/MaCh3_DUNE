@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile)
+void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
 {
   std::cout << "honk" << std::endl;
   gStyle->SetOptStat(0);
@@ -30,7 +30,16 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile)
    if(ipion == 0 && ithreshold > 0){continue;}
    if((ithreshold > 150) && (ithreshold % 50 != 0)){continue;}
 */
-   std::string filenamestart(inputfile);
+   std::vector<TString> inputfilelist;
+   inputfilelist.push_back(inputfile);
+   std::vector<TH2D*> histlist;
+   std::vector<std::string> histnames;
+   std::vector<std::string> x_axis;
+
+   if(inputfile2){inputfilelist.push_back(inputfile2);}
+     
+   for(int i_files =0; i_files<inputfilelist.size(); i_files++){
+   std::string filenamestart(inputfilelist[i_files]);
    std::string fullfile = filenamestart+".root";
    TFile* file = new TFile(fullfile.c_str());
    TList* list = file->GetListOfKeys();
@@ -52,7 +61,6 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile)
 
 //{"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
 
-  std::vector<std::string> x_axis;
 //   std::vector<std::string> plotvariables = {"TrueNeutrinoEnergy", "RecoNeutrinoEnergy", "TrueMinusRecoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "TrueYPos", "TrueZPos", "NMuons", "TrueMinusRecoEnergyRatio", "RecoLepEnergy"};
    int n_vars = plotvariables.size();
    for(int iplots =0; iplots<n_vars; iplots++){
@@ -112,6 +120,7 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile)
 
    std::vector<std::string> modenames = {"CCQE", "CCDIS", "CCRES", "CCMEC", "CCOTHER", "NC"};
    std::vector<int> modecolours = {900-1, 616-6,  kGreen+2, 860-5, 432-7, 880-1};
+   
    std::string histnamefull = "";
    for(int ivars=0; ivars<kinematicvariables.size(); ivars++){
      THStack* stack = new THStack("stack","");
@@ -121,14 +130,42 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile)
        int index = kinematicvariables[ivars][ikeynames].Last('_');
        int length = kinematicvariables[ivars][ikeynames].Length();
        TString fullname = kinematicvariables[ivars][ikeynames];
-//       TString name  = fullname.Remove(index, length);
+       TString name  = fullname.Remove(index, length);
 //       std::string histnamestart(name);
        histnamefull = fullname;
 
        TH2D* hist = (TH2D*)file->Get(kinematicvariables[ivars][ikeynames]);
+       histlist.push_back(hist);
+       histnames.push_back(histnamefull);
 //       TH2D* histrebin = (TH2D*)(hist->Rebin2D(1, 1, "histrebin"));
   
-       c0->cd(1);
+
+     }
+   }
+   }
+   for(int i_hists = 0; i_hists<histlist.size()+1; i_hists++){
+     if(i_hists<2){
+       std::string finalname = histnames[i_hists];
+       if(i_hists==0){finalname=finalname+"_AcceptedEvents";}
+       if(i_hists==1){finalname=finalname+"_AllEvents";}
+       c0->cd(i_hists);
+       histlist[i_hists]->Draw("COLZ");
+       histlist[i_hists]->SetTitle(finalname.c_str());
+       histlist[i_hists]->GetXaxis()->SetTitle(x_axis[0].c_str());
+       histlist[i_hists]->GetYaxis()->SetTitle(x_axis[1].c_str());
+       c0->Print("acceptancecorrectionvars_2d.ps");
+     }
+     if(i_hists==2){
+       TH2D* histratios = (TH2D*)histlist[0]->Clone();
+       histratios->GetXaxis()->SetTitle(x_axis[0].c_str());
+       histratios->GetYaxis()->SetTitle(x_axis[1].c_str());
+       histratios->SetTitle("Acceptance vs Q3 vs Q0");
+       histratios->Divide(histlist[1]);
+       c0->cd(i_hists);
+       histratios->Draw("COLZ");
+       c0->Print("acceptancecorrectionvars_2d.ps");
+     }
+/*       c0->cd(1);
        hist->Draw("COLZ");
        hist->SetTitle(histnamefull.c_str());
        hist->GetXaxis()->SetTitle(x_axis[0].c_str());
@@ -136,8 +173,9 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile)
 //     histrebin->SetMaximum(yaxismax);
 //     c0->Update();
        c0->Print("acceptancecorrectionvars_2d.ps");
+*/
      }
-   }
+   
    //}
    std::cout<<"HERE"<<std::endl;
    c0->Print("acceptancecorrectionvars_2d.ps]");

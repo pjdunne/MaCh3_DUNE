@@ -10,7 +10,7 @@ General:
   # NuFit 4.0 NH ####
   #OscParams: [0.310, 0.582, 0.0224, 7.39e-5, 2.525e-3, -2.498]
   Systematics:
-    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_2023_NDGAr_new.root"
+    XsecCovFile: "inputs/xsec_covariance_DUNE_systs_NDGAr_new_allparams.root"
     XsecCovName: "xsec_cov"
     XsecStepScale: 0.1
     XsecAtGen: false
@@ -18,7 +18,7 @@ General:
     OscCovName: "osc_cov"
     OscStepScale: 0.045
   Output:
-    FileName: "TestSigmaVariations_NDGAronly_newreco_ghep_allmodes_unweighted100k_caloreco_fdvcut_recoparticles_CC1mu.root"
+    FileName: "SigmaVariations_CC_NDGAr_AcceptanceCorrection.root"
 SigmaVariations:
   EvalXsec: true
   KinematicParsToPlot: ["RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "TrueYPos", "TrueZPos", "NMuons", "TrueMinusRecoEnergyRatio", "RecoLepEnergy"]

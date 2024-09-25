@@ -61,6 +61,7 @@ SampleBools:
   isnd: yes
   iselike: no
   iscalo_reco: yes
+  incl_geant: yes
 InputFiles:
   mtupleprefix: "inputs/DUNE_NDGAr_CAF_files/NDGAr_FHC_ger_"
   mtuplesuffix: "_numuselec.root"
@@ -78,6 +79,7 @@ SampleCuts:
   pixel_spacing: 6.0
   adc_sampling_frequency: 20.0
   drift_velocity: 3.011
+  average_gain: 500
 NSubSamples: 4
 DetID: 1
 SubSamples:

@@ -50,3 +50,10 @@ then
 fi
 ln -sf ${FILESDIR1}/NDGAr_100kCAFs/SplineOutputs/*root inputs/DUNE_NDGAr_spline_files
 
+if [ ! -d "$MACH3DIR/inputs/DUNE_NDGAr_AnaTrees" ]
+then
+  mkdir $MACH3DIR/inputs/DUNE_NDGAr_AnaTrees
+fi
+ln -sf ${FILESDIR1}/NDGAr_100kCAFs/AnaTreesOutputs/*root inputs/DUNE_NDGAr_AnaTrees
+
+

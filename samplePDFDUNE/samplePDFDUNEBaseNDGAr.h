@@ -217,6 +217,10 @@ public:
   TFile *_sampleFile;
   TTree *_data;
   TString _nutype;
+
+  TFile *_sampleFile_geant;
+  TTree *_data_geant;
+
   int _mode;
   float _pnu[50];
   double _wgtflx;
@@ -248,7 +252,21 @@ public:
   double _LepTheta;
   double _Q2;
 
-  //particle masses
+  //NK - adding geant vectors
+  std::vector<float> *_MCPStartX=0;
+  std::vector<float> *_MCPStartY=0;
+  std::vector<float> *_MCPStartZ=0;
+  std::vector<float> *_MCPEndX=0;
+  std::vector<float> *_MCPEndY=0;
+  std::vector<float> *_MCPEndZ=0;
+  std::vector<float> *_MCPStartPX=0;
+  std::vector<float> *_MCPStartPY=0;
+  std::vector<float> *_MCPStartPZ=0;
+  std::vector<float> *_MCPEndPX=0;
+  std::vector<float> *_MCPEndPY=0;
+  std::vector<float> *_MCPEndPZ=0;
+  std::vector<int> *_PDG = 0;
+  //particle masses in GeV
   double m_chargedpi = 0.13957039;
   double m_pi0 = 0.1349768;
   double m_e = 0.00051099895;
@@ -263,7 +281,9 @@ public:
   double sternheimer_X1 = 3.0000;
   double sternheimer_Cbar = 5.2146;
   double excitationenergy = 188.0; //excitation energy for electrons in argon gas in eV
-  double density = -0.00615*294.26 + 1.928;
+  double density = 0.0167; //in g/cm^3
+
+//  double density = -0.00615*294.26 + 1.928; //in g/cm^3
   //covarianceFlux *flux;
   //covarianceSkDet_joint *skdet_joint;
   
@@ -272,6 +292,7 @@ public:
   bool isND;
   bool iscc1pi;
 
+  bool incl_geant; //NK - Added so we can use GArAnaTrees
   bool iscalo_reco; //NK Added so we can easily change what energy reconstruction we are using
   float muonscore_threshold; //NK Added so we can optimise muon threshold
   float protondEdxscore;
@@ -283,7 +304,8 @@ public:
   float pixel_spacing;
   float adc_sampling_frequency;
   float drift_velocity;
-  float hits_per_mm;
+//  float hits_per_mm;
+  double average_gain; //in electrons per ADC
   // Note: the following 4 variables shouldn't be used any more! (From 14/1/2015 - KD). Just kept in for backwards compatibility in compiling, but they have no effect.
   bool do_flux_rw;
   bool do_xsec_rw;
