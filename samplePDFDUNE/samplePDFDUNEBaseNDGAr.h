@@ -144,7 +144,8 @@ struct dunendgarmc_base {
   double *rw_pi_energy;
   double *muon_pi_angle;
   double *pi_z_angle;
-  
+  double *rw_pi_min_energy; 
+
   double *rw_elep_true;
 
   int *nrecoparticles;
@@ -274,6 +275,12 @@ public:
   double m_p = 0.93827208816;
   double m_n = 0.9395654205;
 
+  double TPCFidLength;
+  double TPCFidRadius;
+
+  double TPC_centre_x =0.;
+  double TPC_centre_y = -150.;
+  double TPC_centre_z = 1486.;
   double K_const = 0.307075; //4 pi N_A r_e^2 m_e c^2 (MeV cm^2/mol)
   double sternheimer_A = 0.1956;
   double sternheimer_K = 3.0000;

@@ -87,6 +87,7 @@ enum KinematicTypes {
   kRecoQ3 = 48,
   kIsAccepted = 49,
   kIsCC = 50,
+  kPiTrueMinEnergy =51,
 
   kNKinematicParams
 };
@@ -144,6 +145,7 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("RecoQ0") != std::string::npos) {return kRecoQ0;}
   if (KinematicParameterStr.find("IsAccepted") != std::string::npos) {return kIsAccepted;} 
   if (KinematicParameterStr.find("IsCC") != std::string::npos) {return kIsCC;} 
+  if (KinematicParameterStr.find("PiTrueMinEnergy") != std::string::npos) {return kPiTrueMinEnergy;}
 
   return kNKinematicParams; 
 }
@@ -201,6 +203,7 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kRecoQ0) {return "RecoQ0";}
   if (KinematicParameter == kIsAccepted) {return "IsAccepted";}
   if (KinematicParameter == kIsCC) {return "IsCC";}
+  if (KinematicParameter == kPiTrueMinEnergy) {return "PiTrueMinEnergy";}
 
   return "NULL"; 
 }

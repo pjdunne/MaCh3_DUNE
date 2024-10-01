@@ -13,7 +13,7 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
 {
   std::cout << "honk" << std::endl;
   gStyle->SetOptStat(0);
-  TCanvas* c0 = new TCanvas("c0","c0",0,0,700,900);
+  TCanvas* c0 = new TCanvas("c0","c0",0,0,600,600);
   c0->Divide(1,2);
   TCanvas* c1 = new TCanvas("c1","c1",0,0,600,600);
 //  c1->Divide(1,2);
@@ -55,7 +55,7 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
 //  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "TrueNeutrinoEnergy", "TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "ChargedPionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
 
 //  std::vector<std::string> plotvariables = {"TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "TrueQ2", "TrueW"};
-  std::vector<std::string> plotvariables = {"TrueQ0", "TrueQ3"};
+  std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0"};
 //  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "RecoNeutrinoEnergy"};
 
 
@@ -150,6 +150,7 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
        if(i_hists==1){finalname=finalname+"_AllEvents";}
        c0->cd(i_hists);
        histlist[i_hists]->Draw("COLZ");
+       std::cout<<"draw here"<<std::endl;
        histlist[i_hists]->SetTitle(finalname.c_str());
        histlist[i_hists]->GetXaxis()->SetTitle(x_axis[0].c_str());
        histlist[i_hists]->GetYaxis()->SetTitle(x_axis[1].c_str());
@@ -157,10 +158,20 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
      }
      if(i_hists==2){
        TH2D* histratios = (TH2D*)histlist[0]->Clone();
+       std::cout<<"cloned"<<std::endl;
        histratios->GetXaxis()->SetTitle(x_axis[0].c_str());
        histratios->GetYaxis()->SetTitle(x_axis[1].c_str());
        histratios->SetTitle("Acceptance vs Q3 vs Q0");
        histratios->Divide(histlist[1]);
+       for(int i_x =0; i_x<histratios->GetNbinsX(); i_x++){
+         for(int i_y = 0; i_y<histratios->GetNbinsY(); i_y++){
+           int binnum = histratios->GetBin(i_x+1, i_y+1);
+           double numerator = histlist[0]->GetBinContent(binnum);
+           double denominator = histlist[1]->GetBinContent(binnum);
+           if(numerator == 0 && denominator != 0){histratios->SetBinContent(binnum, 1e-6);}
+         }
+       }
+       std::cout<<"divided"<<std::endl;
        c0->cd(i_hists);
        histratios->Draw("COLZ");
        c0->Print("acceptancecorrectionvars_2d.ps");

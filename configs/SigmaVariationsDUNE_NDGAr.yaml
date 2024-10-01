@@ -18,14 +18,20 @@ General:
     OscCovName: "osc_cov"
     OscStepScale: 0.045
   Output:
-    FileName: "SigmaVariations_CC_NDGAr_AcceptanceCorrection.root"
+    FileName: SigmaVariations_CC_NDGAr_NChargedPionsGreaterThan1.root
 SigmaVariations:
   EvalXsec: true
-  KinematicParsToPlot: ["RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV", "TrueXPos", "TrueYPos", "TrueZPos", "NMuons", "TrueMinusRecoEnergyRatio", "RecoLepEnergy"]
-#  PlotModes: ["all"]
-  PlotModes: ["ccqe", "ccdis", "ccres", "cccoh", "cccohel", "ccdiff", "ccnueel", "ccmec", "ccIMD", "ccglasres", "ccimdannihilation", "ccamnugamma", "ccibd"]
+Selections:
+#  KinematicParsToPlot: ["PionMultiplicity"]
+  KinematicParsToPlot: ["NChargedPions", "TrueNeutrinoEnergy", "PiTrueEnergy", "PiTrueMinEnergy"]
+#  KinematicParsToPlot: ["LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "MuonPiRecoAngle", "PiTrueEnergy", "MuonPiAngle", "PiRecoEnergy", "PiZRecoAngle", "PiTrueEnergy", "PiZAngle", "PiRecoEnergy","PiTrueEnergy"]
+  PlotModes: ["all"]
+#  PlotModes: ["ccqe", "ccdis", "ccres", "cccoh", "cccohel", "ccdiff", "ccnueel", "ccmec", "ccIMD", "ccglasres", "ccimdannihilation", "ccamnugamma", "ccibd"]
 #  PlotModes: ["ccqe", "ccdis", "ccres", "cccoh", "cccohel", "ccdiff", "ccnueel", "ccmec", "ccIMD", "ccglasres", "ccimdannihilation", "ccamnugamma", "ccibd", "ncqe", "ncdis", "ncres", "nccoh", "nccohel", "ncdiff", "ncnueel", "ncmec", "ncIMD", "ncglasres", "ncimdannihilation", "ncamnugamma", "ncibd"]
 #  PlotModes: ["kMaCh3_CCQE", "kMaCh3_CC_DIS", "kMaCh3_CC_RES", "kMaCh3_CC_MEC", "kMaCh3_CC_COHEL", "kMaCh3_NCQE", "kMaCh3_NC_DIS", "kMaCh3_NC_RES", "kMaCh3_NC_COH"]
 #  PlotModes: ["kMaCh3_CCQE", "kMaCh3_CC_DIS", "kMaCh3_CC_RES", "kMaCh3_CC_Diffractive", "kMaCh3_CC_Nue_EL", "kMaCh3_CC_IMD", "kMaCh3_CC_AMnuGamma", "kMaCh3_CC_MEC", "kMaCh3_CC_COHEL", "kMaCh3_CC_IBD", "kMaCh3_CC_GlashowRES", "kMaCh3_CC_IMDAnnihalation", "kMaCh3_NCQE", "kMaCh3_NC_DIS", "kMaCh3_NC_RES", "kMaCh3_NC_COH", "kMaCh3_NC_Diffractive", "kMaCh3_NC_Nue_EL", "kMaCh3_NC_IMD", "kMaCh3_NC_AMnuGamma", "kMaCh3_NC_MEC", "kMaCh3_NC_COHEL", "kMaCh3_NC_IBD", "kMaCh3_NC_GlashowRES", "kMaCh3_NC_IMDAnnihalation"]
-  StackByMode: true
+  StackByMode: False
   Weighted: 0
+  Efficiency: False
+  Purity: False
+  2DHist: False

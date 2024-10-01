@@ -66,6 +66,8 @@ int main(int argc, char * argv[]) {
   double FDPOT = fitMan->raw()["General"]["FDPOT"].as<double>(); 
   double NDPOT = fitMan->raw()["General"]["NDPOT"].as<double>(); 
 
+  std::vector<std::string> HistVariables = fitMan->raw()["Selections"]["KinematicParsToPlot"].as<std::vector<std::string>>();
+  std::vector<std::string> PlotModes = fitMan->raw()["Selections"]["PlotModes"].as<std::vector<std::string>>();
 
   // Asimov fit
   bool EvalXsec = fitMan->raw()["SigmaVariations"]["EvalXsec"].as<bool>();
@@ -207,12 +209,32 @@ int main(int argc, char * argv[]) {
 
 	SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
 	SamplePDFs[sample_i] -> reweight(osc->getPropPars());
+
+        std::string modename;
+        if(HistVariables.size() != 0){
+          for(int ihist=0; ihist<HistVariables.size(); ihist++){
+            for(int imode = 0; imode<PlotModes.size(); imode++){
+              int mode;
+              std::cout<<"ipdf: "<<sample_i<<std::endl;
+              if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;modename = "all";}
+              else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); modename = std::to_string(mode); std::cout<<"mode: "<<mode<<std::endl;}
+              //sprintf( houtname, "%s_xsec_par_%i_sig_%c%i_%s_mode_%s", sample_names[ipdf].c_str(), i, sign,abs(j), HistVariables[ihist].c_str(), modename.c_str());
+              TH1D * sample_unosc = (TH1D*)SamplePDFs[sample_i]->get1DVarHist(HistVariables[ihist], mode, -1, 1, NULL)->Clone(NameTString+HistVariables[ihist].c_str()+"_unosc");
+              //sample_unosc->Write();
+              unoscillated_hists.push_back(sample_unosc);
+              OutputFile->cd();
+              sample_unosc->Write(NameTString+HistVariables[ihist].c_str()+"_unosc");
+              delete sample_unosc;
+            }
+          }
+         }
+        else{
 	TH1D *sample_unosc = (TH1D*)SamplePDFs[sample_i] -> get1DHist() -> Clone(NameTString+"_unosc");
 	unoscillated_hists.push_back(sample_unosc);
 
 	OutputFile -> cd();
 	sample_unosc			-> Write(NameTString+"_unosc");
-
+        }
 	osc -> setParameters(oscpars);
 	osc -> acceptStep();
 
@@ -307,7 +329,22 @@ int main(int argc, char * argv[]) {
 		  xsec->setParameters(xsecpar);
 		  //Reweight prediction
 		  SamplePDFs[ipdf]->reweight(osc->getPropPars());
-
+                  std::string modename;
+                  if(HistVariables.size() != 0){
+                    for(int ihist=0; ihist<HistVariables.size(); ihist++){
+                      for(int imode = 0; imode<PlotModes.size(); imode++){
+                        int mode;
+                        std::cout<<"ipdf: "<<ipdf<<std::endl;
+                        if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;modename = "all";}
+                        else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); modename = std::to_string(mode); std::cout<<"mode: "<<mode<<std::endl;}
+              		sprintf( houtname, "%s_xsec_par_%i_sig_%c%i_%s_mode_%s", sample_names[ipdf].c_str(), i, sign,abs(j), HistVariables[ihist].c_str(), modename.c_str());
+                        TH1D * hist = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, 1, NULL)->Clone(houtname);
+                        hist->Write();
+                        delete hist;
+                      }
+                    }
+                  }
+                  else{
 		  sprintf( houtname, "%s_xsec_par_%i_sig_%c%i", sample_names[ipdf].c_str(), i, sign,abs(j));
 		  TH1D * hist = (TH1D*)SamplePDFs[ipdf]->get1DHist()->Clone(houtname);
 		  
@@ -336,7 +373,7 @@ int main(int argc, char * argv[]) {
 		  hist->Write();
 
 		  delete hist;
-
+                  }
 		}// loop over sigma values
 
 	  }//end of loop over pdfs

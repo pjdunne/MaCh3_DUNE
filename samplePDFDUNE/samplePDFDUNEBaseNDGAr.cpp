@@ -78,8 +78,10 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
   pixel_spacing = SampleManager->raw()["SampleCuts"]["pixel_spacing"].as<float>(); //NK pixel spacing in mm to find mom resolution in y,z plane
   adc_sampling_frequency = SampleManager->raw()["SampleCuts"]["adc_sampling_frequency"].as<float>(); //NK sampling frequency for ADC - needed to find timing resolution and spatial resolution in x dir in MHz
   drift_velocity = SampleManager->raw()["SampleCuts"]["drift_velocity"].as<float>(); //NK drift velocity of electrons in gas - needed to find timing resolution and spatial resolution in x dir in cm/microsecond
-  average_gain = SampleManager->raw()["SampleCuts"]["average_gain"].as<float>();
+//  average_gain = SampleManager->raw()["SampleCuts"]["average_gain"].as<float>();
 
+  TPCFidLength = SampleManager->raw()["SampleCuts"]["TPCFidLength"].as<double>();
+  TPCFidRadius = SampleManager->raw()["SampleCuts"]["TPCFidRadius"].as<double>();
 //  hits_per_mm = SampleManager->raw()["SampleCuts"]["hits_per_mm"].as<float>();
 
   //muonscore_threshold = 0.5;
@@ -418,6 +420,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   duneobj->rw_pi_pX = new double[duneobj->nEvents];
   duneobj->rw_pi_pT = new double[duneobj->nEvents];
   duneobj->rw_pi_pMag = new double[duneobj->nEvents];
+  duneobj->rw_pi_min_energy = new double[duneobj->nEvents];
 
   duneobj->rw_reco_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_y = new double[duneobj->nEvents];
@@ -441,13 +444,39 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   int num_nanenergy =0;
   int num_nanparticles =0;
 
+
+  int numCC = 0;
+  int numFDV = 0;
+  int numFDVandCC = 0;
+  // NK - Make the Pixel Grid using cm as TPC coordinates are in cm
+
+  std::vector<double> yboundarypositions;
+  std::vector<double> zboundarypositions;
+
+  float pixel_spacing_cm = pixel_spacing/10;
+  int numpixelrows = floor(TPCFidRadius*2/(pixel_spacing_cm)); //find number of pixels along y and z axis.
+  float pixelymin, pixelymax, pixelzmin, pixelzmax, centre_yboundary, centre_zboundary;
+  if(numpixelrows % 2 == 0){centre_yboundary = TPC_centre_y; centre_zboundary = TPC_centre_z;}
+  if(numpixelrows % 2 == 1){centre_yboundary = TPC_centre_y-(pixel_spacing_cm/2); centre_zboundary = TPC_centre_z-(pixel_spacing_cm/2);}
+
+  pixelymin = centre_yboundary - floor(numpixelrows/2)*pixel_spacing_cm;
+  pixelymax = centre_yboundary + floor(numpixelrows/2)*pixel_spacing_cm;
+  pixelzmin = centre_zboundary - floor(numpixelrows/2)*pixel_spacing_cm;
+  pixelzmax = centre_zboundary + floor(numpixelrows/2)*pixel_spacing_cm;
+
+  for(int i_pixel = 0; i_pixel<numpixelrows; i_pixel++){
+    yboundarypositions.push_back(pixelymin+i_pixel*pixel_spacing_cm);
+    zboundarypositions.push_back(pixelzmin+i_pixel*pixel_spacing_cm);
+  }
   //FILL DUNE STRUCT
   for (int i = 0; i < (duneobj->nEvents); ++i) // Loop through tree
     {
      _data->GetEntry(i);
-     double radius = pow((pow((sr->mc.nu[0].vtx.y+150),2) + pow((sr->mc.nu[0].vtx.z-1486),2)),0.5);
-     if(std::abs(sr->mc.nu[0].vtx.x)<=209.0 &&  radius<=227.02){
-       //std::cout<<"this event is within the fiducial volume"<<std::endl;
+     double radius = pow((pow((sr->mc.nu[0].vtx.y-TPC_centre_y),2) + pow((sr->mc.nu[0].vtx.z-TPC_centre_z),2)),0.5);
+//     std::cout<<"y vertex: "<<sr->mc.nu[0].vtx.y<<"z vertex: "<<sr->mc.nu[0].vtx.z<<" TPC_centre_y: "<<TPC_centre_y<<" TPC_centre_z: "<<TPC_centre_z<<" radius: "<<radius<<std::endl;
+//     std::cout<<"x vertex: "<<sr->mc.nu[0].vtx.x<<std::endl;
+     if(std::abs(sr->mc.nu[0].vtx.x)<=TPCFidLength &&  radius<=TPCFidRadius){
+//       std::cout<<"this event is within the fiducial volume"<<std::endl;
        num_in_fdv++;
        duneobj->in_fdv[i] = 1;
      }
@@ -475,8 +504,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
          duneobj->nrecoparticles[i] += (int)(sr->common.ixn.gsft[i_ixn].part.ngsft);
          int nanparticles = 0;
          if(nrecoparticles ==0){
-           double radius = pow((pow((sr->mc.nu[0].vtx.y+150.),2) + pow((sr->mc.nu[0].vtx.z-1486.),2)),0.5);
-           if(std::abs(sr->mc.nu[0].vtx.x)<=209.0 || radius<=227.02){
+           double radius = pow((pow((sr->mc.nu[0].vtx.y-TPC_centre_y),2) + pow((sr->mc.nu[0].vtx.z-TPC_centre_z),2)),0.5);
+           if(std::abs(sr->mc.nu[0].vtx.x)<=TPCFidLength || radius<=TPCFidRadius){
              //std::cout<<"within fd"<<std::endl;
              num_in_fdv_noreco++;
            }   
@@ -589,6 +618,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
      
 //     std::cout<<"npim: "<<duneobj->npim[i]<<" npi0: "<<duneobj->npi0[i]<<" npip: "<<duneobj->npip[i]<<std::endl;
      double pionenergymax = 0;
+     double pionenergymin;
      duneobj->rw_etrurec[i] = 0.0;
      int nprimpipm = 0;
      int nprimpizero =0;
@@ -602,6 +632,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
          if(std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 211){
              pdgmass = m_chargedpi;
              nprimpipm++;
+           if(nprimpipm == 1){pionenergymin = (double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass); duneobj->rw_pi_min_energy[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass);}
 //           std::cout<<"one pion"<<std::endl;
            if((double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass) > pionenergy_threshold){ 
              duneobj->rw_etrurec[i] += (double)(sr->mc.nu[0].prim[i_truepart].p.E);
@@ -613,6 +644,11 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                duneobj->rw_pi_pX[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.px);
                duneobj->rw_pi_pY[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.py);
                pionenergymax = duneobj->rw_pi_energy[i];
+             }
+             if((double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass)<pionenergymin && (double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass)>0){
+//               std::cout<<"energy above pionenergymin: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass)<<std::endl;
+               duneobj->rw_pi_min_energy[i] = (double)(sr->mc.nu[0].prim[i_truepart].p.E-pdgmass);
+               pionenergymin = duneobj->rw_pi_min_energy[i];
              }
            }
            else{
@@ -638,21 +674,22 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //         std::cout<<"pdg: "<<sr->mc.nu[0].prim[i_truepart].pdg<<std::endl;
 //         std::cout<<"mag pos: "<<(double)(sr->mc.nu[0].prim[i_truepart].start_pos.Mag())<<" mag mom: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())<<std::endl;
 //         if(!std::isnan((double)(sr->mc.nu[0].prim[i_truepart].start_pos.X()))){hasstart++;}
-         if(std::abs(_MCPStartX->at(i_anapart))>209.0 || std::abs(_MCPEndX->at(i_anapart))>209.0 || pow((pow(_MCPStartY->at(i_anapart)+150, 2)+pow(_MCPStartZ->at(i_anapart)-1486, 2)), 0.5)>227.0 || pow((pow(_MCPEndY->at(i_anapart)+150, 2)+pow(_MCPEndZ->at(i_anapart)-1486, 2)), 0.5)>227.0){
+         if((std::abs(_MCPEndX->at(i_anapart))+TPC_centre_x)>TPCFidLength || pow((pow(_MCPEndY->at(i_anapart)-TPC_centre_y, 2)+pow(_MCPEndZ->at(i_anapart)-TPC_centre_z, 2)), 0.5)>TPCFidRadius){
+           if((std::abs(_MCPStartX->at(i_anapart))+TPC_centre_x)<=TPCFidLength && pow((pow(_MCPStartY->at(i_anapart)-TPC_centre_y, 2)+pow(_MCPStartZ->at(i_anapart)-TPC_centre_z, 2)), 0.5)<=TPCFidRadius){
              if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 13) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 211) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 2212) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 11)){
                double length_track_x = _MCPEndX->at(i_anapart)-_MCPStartX->at(i_anapart); //in cm
                double length_track_y = _MCPEndY->at(i_anapart)-_MCPStartY->at(i_anapart); //in cm
                double length_track_z = _MCPEndZ->at(i_anapart)-_MCPStartZ->at(i_anapart); //in cm
 //               double N_x = length_track_x/(drift_velocity*adc_sampling_rate);
-               double L_yz = pow((pow(length_track_z, 2)+pow(length_track_y, 2)), 0.5);
+               double L_yz = pow((pow(length_track_z, 2)+pow(length_track_y, 2)), 0.5); //in cm
 //               double L_tot = pow((pow(length_track_z, 2)+pow(length_track_y, 2)+pow(length_track_x, 2)), 0.5);
 //length in cm
 //               double theta_track = atan(sr->mc.nu[0].prim[i_truepart].p.py/sr->mc.nu[0].prim[i_truepart].p.pz); //find angle of 
                double transverse_mom = pow((pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2)), 0.5); //Momentum in y,z plane
                double rad_curvature = transverse_mom/(0.3*B_field); //p = 0.3*B*r where p in GeV/c, B in T, r in m
                double theta_xz = atan(_MCPStartPX->at(i_anapart)/_MCPStartPZ->at(i_anapart)); //helix is travelling in x dir as that is mag field dir
-               double pitch = 2*2*rad_curvature*tan(theta_xz); //distance between two turns of a helix
-               double helixlength = (length_track_x/pitch)*pow((pow(M_PI*2*rad_curvature, 2) + pow(pitch, 2)), 0.5); //L = height/pitch*sqrt((pi*diameter)**2 + pitch**2)
+               double pitch = 2*2*rad_curvature*tan(theta_xz); //distance between two turns of a helix in m
+               double helixlength = ((length_track_x/100)/pitch)*pow((pow(M_PI*2*rad_curvature, 2) + pow(pitch, 2)), 0.5); //L = height/pitch*sqrt((pi*diameter)**2 + pitch**2)
 //               double arclength = rad_curvature*2*asin((L_tot*100)/2*rad_curvature); //r*theta in m
 
                //Calculate dE/dX for this particle. This calculation is taken from garsoft/DetectorInfo/DetectorPropertiesStandard.cxx
@@ -685,24 +722,89 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                //Calculate energy loss over this length in GeV
                double E_loss = dedx*helixlength*pow(10, -3);
                //Estimate number of hits
-               double N_hits = std::abs((E_loss*3.788*pow(10,7))/(average_gain)); //5 electrons per ADC and 3.788e7 electrons produced per GeV
-               std::cout<<"n hits: "<<N_hits<<std::endl;
+//               double N_hits = std::abs((E_loss*3.788*pow(10,7))/(average_gain)); //5 electrons per ADC and 3.788e7 electrons produced per GeV
+//               std::cout<<"n hits: "<<N_hits<<std::endl;
 
+               //find centre of circular path
+               //need to know if its a positive or negative charge
+               bool positivecharged =0;
+               float centre_circle_y;
+               float centre_circle_z;
+               if(_PDG->at(i_anapart) == 2212 || _PDG->at(i_anapart) == 211 || _PDG->at(i_anapart) == -13 || _PDG->at(i_anapart) == -11){ positivecharged = 1;}
+               if(positivecharged){
+                  centre_circle_y = _MCPStartY->at(i_anapart) - (rad_curvature*100*_MCPStartPZ->at(i_anapart)/transverse_mom); //Note minus sign here as cross product gives F in direction of ( -pz j + py k)
+                  centre_circle_z = _MCPStartZ->at(i_anapart) + (rad_curvature*100*_MCPStartPY->at(i_anapart)/transverse_mom);
+               }
+               else if(!positivecharged){
+                  centre_circle_y = _MCPStartY->at(i_anapart) + (rad_curvature*100*_MCPStartPZ->at(i_anapart)/transverse_mom); //Note minus sign here as cross product gives F in direction of ( -pz j + py k)
+                  centre_circle_z = _MCPStartZ->at(i_anapart) - (rad_curvature*100*_MCPStartPY->at(i_anapart)/transverse_mom);
+               }
+               
+               //use the pixel grid method to find number of pixels hit in a track.
+               int num_vertices =0; // number of vertices hit. Counting to avoid duplicating
+               int num_intersections =0;
+               //equation for circle = (y-y0)^2 + (z-z0)^2 = r^2
+//               std::cout<<"y pos boundary sizes: "<<yboundarypositions.size()<<" z pos boundary sizes: "<<zboundarypositions.size()<<std::endl;
+               for(int i_intersect = 1; i_intersect<=yboundarypositions.size(); i_intersect++){
+                 float quadratic_ineq_y= pow(rad_curvature*100, 2)-pow((yboundarypositions[i_intersect]-centre_circle_y), 2);
+//                 std::cout<<" quadratic_ineq_y: "<<quadratic_ineq_y<<std::endl;
+                 if(quadratic_ineq_y > 0){
+//                   std::cout<<"(centre_circle_z + pow(quadratic_ineq_y, 0.5): "<<(centre_circle_z + pow(quadratic_ineq_y, 0.5))<<" (centre_circle_z - pow(quadratic_ineq_y, 0.5): "<<(centre_circle_z + pow(quadratic_ineq_y, 0.5))<<std::endl;
+//                   std::cout<<"pixelzmin: "<<pixelzmin<<" pixelzmax: "<<pixelzmax<<std::endl;
+                   if(pixelzmin<(centre_circle_z + pow(quadratic_ineq_y, 0.5))<=pixelzmax){ //check that the z coord is also on pixel plane
+                     num_intersections++;
+                   }
+                   if(pixelzmin<(centre_circle_z - pow(quadratic_ineq_y, 0.5))<=pixelzmax){ //check that the z coord is also on pixel plane
+                     num_intersections++;
+                   }
+                   if((double)(fmod((centre_circle_z + (float)(pow(quadratic_ineq_y, 0.5)) - pixelzmin), pixel_spacing_cm)) == 0){ // this is the case when a vertex is crossed so to avoid double counting pixels
+                     num_vertices++;
+                   }
+                   else if((double)(fmod((centre_circle_z - (float)(pow(quadratic_ineq_y, 0.5)) - pixelzmin), pixel_spacing_cm)) == 0){ // this is the case when a vertex is crossed so to avoid double counting pixels
+                     num_vertices++;
+                   }
+                 }
+                 else if(quadratic_ineq_y == 0){ //when the pixel boundary is a tangent to the circle z = z0
+                    num_intersections++;
+                 }
+               }
+               for(int i_intersect = 1; i_intersect<=zboundarypositions.size(); i_intersect++){
+                 float quadratic_ineq_z= pow(rad_curvature*100, 2)-pow((zboundarypositions[i_intersect]-centre_circle_z), 2);
+//                 std::cout<<" quadratic_ineq_z: "<<quadratic_ineq_z<<std::endl;
+                 if(quadratic_ineq_z > 0){
+//                   std::cout<<"(centre_circle_y + pow(quadratic_ineq_z, 0.5): "<<(centre_circle_y + pow(quadratic_ineq_z, 0.5))<<" (centre_circle_y - pow(quadratic_ineq_z, 0.5): "<<(centre_circle_y - pow(quadratic_ineq_z, 0.5))<<std::endl;
+                   if(pixelymin<(centre_circle_y + pow(quadratic_ineq_z, 0.5))<=pixelymax){ //check that the z coord is also on pixel plane
+                     num_intersections = num_intersections++;
+                   }
+                   if(pixelymin<(centre_circle_y - pow(quadratic_ineq_z, 0.5))<=pixelymax){ //check that the z coord is also on pixel plane
+                     num_intersections = num_intersections++;
+                   }
+                   // already checked all vertices for duplicates before so no need to repeat that
+                 }
+                 else if(quadratic_ineq_z == 0){ //when the pixel boundary is a tangent to the circle y = y0
+                    num_intersections++;
+                 }
+               }
+               double N_hits = num_intersections - num_vertices + 1; //Add one for the pixel that it starts on
+//               std::cout<<"N_hits: "<<N_hits<<"num_intersections: "<<num_intersections<<std::endl;
+               //std::cout<<"helix length: "<<helixlength<<std::endl;
                //double N_hits = arclength*1000/hits_per_mm;
 //               double N_yz = (pow((pow(length_track_y, 2)+pow(length_track_z, 2)), 0.5))
-               double sigmax = drift_velocity*adc_sampling_frequency;
-               double sigmayz = pixel_spacing;              
-               double momres_x = std::abs(sr->mc.nu[0].prim[i_truepart].p.px)*(pow(720/(N_hits+4), 0.5)*(sigmax*std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/(0.3*B_field*pow(length_track_x, 2))));
-               double momres_yz = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz, 2))));
+               double sigmax = (drift_velocity/100)*(1/(adc_sampling_frequency));
+               double sigmayz = pixel_spacing/1000; //needs to be in m              
+               double momres_x = std::abs(sr->mc.nu[0].prim[i_truepart].p.px)*(pow(720/(N_hits+4), 0.5)*(sigmax*std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/(0.3*B_field*pow(length_track_x/100, 2))));
+               double momres_yz = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz/100, 2))));
                double momres_tot = (std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_x + (transverse_mom/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_yz;
                double momres_frac = momres_tot/sr->mc.nu[0].prim[i_truepart].p.Mag();
-               std::cout<<"momres_x:"<<momres_x<<" momres_yz: "<<momres_yz<<" transverse mom: "<<transverse_mom<<std::endl;;
-               std::cout<<"momres_frac: "<<momres_frac<<" momres_tot: "<<momres_tot<<" total momentum: "<<sr->mc.nu[0].prim[i_truepart].p.Mag()<<std::endl;
+               //std::cout<<"momres_x:"<<momres_x<<" momres_yz: "<<momres_yz<<" transverse mom: "<<transverse_mom<<std::endl;;
+               //std::cout<<"momres_frac: "<<momres_frac<<" momres_tot: "<<momres_tot<<" total momentum: "<<sr->mc.nu[0].prim[i_truepart].p.Mag()<<std::endl;
                if(momres_frac > momentum_resolution_threshold){isnotaccepted++;}
                }
                else{isnotaccepted++;}
-             } 
-             break;
+             }
+             else{isnotaccepted++;}
+           }
+           break;
            }
          }
        }
@@ -738,6 +840,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //     std::cout<<"true charged pi: "<<duneobj->npip[i]+duneobj->npim[i]<<" true pi0: "<<duneobj->npi0[i]<<" prefsi charged pi: "<<nprefsipipm<<" prim charged pi: "<<nprimpipm<<" prefsi pi0: "<<nprefsipizero<<" nprimpizero: "<<nprimpizero<<" true protons: "<<duneobj->nproton[i]<<" prefsi protons: "<<nprefsiproton<<" prim proton: "<<nprimproton<<" true neutrons: "<<duneobj->nneutron[i]<<" prefsi neutron: "<<nprefsineutron<<" prim neutron: "<<nprimneutron<<std::endl;
 //     std::cout<<"prefsi muon: "<<nprefsimuon<<" prim muon: "<<nprimmuon<<std::endl;
 //     std::cout<<"True NuE: "<<duneobj->rw_etru[i]<<"Reco NuE: "<<duneobj->rw_etrurec[i]<<" True Minus Reco: "<<(duneobj->rw_etru[i]-duneobj->rw_etrurec[i])<<" Ratio: "<<(duneobj->rw_etru[i]-duneobj->rw_etrurec[i])/duneobj->rw_etru[i]<<std::endl;
+
+//     if((duneobj->npim[i]+duneobj->npip[i]) >0){std::cout<<"Min Pion Energy: "<<duneobj->rw_pi_min_energy[i]<<std::endl;}
      duneobj->rw_lep_pT[i] = (double)(pow(pow(duneobj->rw_lep_pX[i], 2) + pow(duneobj->rw_lep_pY[i], 2), 0.5));
      duneobj->rw_pi_pT[i] = (double)(pow(pow(duneobj->rw_pi_pX[i], 2) + pow(duneobj->rw_pi_pY[i], 2), 0.5));
      duneobj->rw_reco_pi_pT[i] = (double)(pow(pow(duneobj->rw_reco_pi_pX[i], 2) + pow(duneobj->rw_reco_pi_pY[i], 2), 0.5));
@@ -758,8 +862,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
      duneobj->rw_vtx_y[i] = (double)(sr->mc.nu[0].vtx.y);
      duneobj->rw_vtx_z[i] = (double)(sr->mc.nu[0].vtx.z);
      
-     duneobj->rw_rad[i] = (double)(pow((pow((duneobj->rw_vtx_y[i]+150),2) + pow((duneobj->rw_vtx_z[i]-1486),2)),0.5)); 
-     duneobj->rw_reco_rad[i] = (double)(pow(pow((duneobj->rw_reco_vtx_y[i]+150),2) + pow((duneobj->rw_reco_vtx_z[i]-1486), 2), 0.5));
+     duneobj->rw_rad[i] = (double)(pow((pow((duneobj->rw_vtx_y[i]-TPC_centre_y),2) + pow((duneobj->rw_vtx_z[i]-TPC_centre_z),2)),0.5)); 
+     duneobj->rw_reco_rad[i] = (double)(pow(pow((duneobj->rw_reco_vtx_y[i]-TPC_centre_y),2) + pow((duneobj->rw_reco_vtx_z[i]-TPC_centre_z), 2), 0.5));
      duneobj->rw_elep_true[i] = (double)(sr->mc.nu[0].prim[0].p.E);
 
      //Assume everything is on Argon for now....
@@ -774,7 +878,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
     // fill modes
     _mode = sr->mc.nu[0].mode;
     _isCC = (int)(sr->mc.nu[0].iscc);
-    std::cout<<"mode: "<<_mode<<" IsCC: "<<_isCC<<std::endl;
+//    std::cout<<"mode: "<<_mode<<" IsCC: "<<_isCC<<std::endl;
     modes->Fill(_mode);
     //!!possible cc1pi exception might need to be 11
     int mode= TMath::Abs(_mode);       
@@ -783,7 +887,15 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
     duneobj->energyscale_w[i] = 1.0;
       
     duneobj->flux_w[i] = 1.0;
+    if(duneobj->rw_isCC[i] == 1 && duneobj->in_fdv[i] == 1){
+      numFDVandCC++;    
     }
+    if(duneobj->rw_isCC[i] == 1){numCC++;}
+    if(duneobj->in_fdv[i] == 1){numFDV++;}
+  }
+  std::cout<<"num events CC:"<<numCC<<std::endl;
+  std::cout<<"num evenys FDV: "<<numFDV<<std::endl;
+  std::cout<<"num in CC and FDV: "<<numFDVandCC<<std::endl;
   std::cout<<"num evts in fdv: "<<num_in_fdv<<std::endl;
   std::cout<<"num evts not in fdv: "<<num_notin_fdv<<std::endl;
   std::cout<<"num no reco particles in fdv"<< num_in_fdv_noreco<<std::endl;
@@ -949,6 +1061,9 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
    case kIsCC:
          KinematicValue = dunendgarmcSamples[iSample].rw_isCC[iEvent];
          break;
+   case kPiTrueMinEnergy:
+         KinematicValue = dunendgarmcSamples[iSample].rw_pi_min_energy[iEvent];
+         break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
 	 throw;
@@ -1094,10 +1209,11 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
     case kRecoNeutrinoEnergy:
     case kTrueNeutrinoEnergy:
     case kIdealNeutrinoRecoEnergy:
-         for(double ibins =0; ibins<10*10; ibins++){
+/*         for(double ibins =0; ibins<10*10; ibins++){
            double binval = ibins/10;
            binningVector.push_back(binval);
-         }
+         }*/
+         binningVector = {0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.};
 	 break;
     case kTrueQ2:
     case kTrueW:
@@ -1122,13 +1238,13 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
     case kRecoYPos:
     case kTrueYPos:
 	 for(double ibins =0; ibins<277*2; ibins++){
-           binningVector.push_back(ibins-277-150);
+           binningVector.push_back(ibins-277+TPC_centre_z);
          }
 	 break;
     case kRecoZPos:
     case kTrueZPos:
  	 for(double ibins =0; ibins<277*2; ibins++){
-           binningVector.push_back(ibins-277+1486);
+           binningVector.push_back(ibins-277+TPC_centre_z);
          }
 	 break;
     case kNChargedPions:
@@ -1214,9 +1330,19 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
     case kPiRecoMomentum:
     case kPiTrueEnergy:
     case kPiRecoEnergy:
-        for(double ibins =0; ibins<1.0*100; ibins = ibins+5){
-           binningVector.push_back((double)(ibins/100));
-        }
+        binningVector = {0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.75, 1.0};
+//        for(double ibins =0; ibins<1.0*100; ibins++){
+//           if(ibins>=10){binningVector.push_back((double)(ibins/100)); ibins = ibins+2;}
+//           if(ibins>=20){binningVector.push_back((double)(ibins/100)); ibins = ibins+5;}
+//           else{binningVector.push_back((double)(ibins/100));}
+//        }
+        break;
+    case kPiTrueMinEnergy:
+        binningVector = {0.0, 0.001, 0.01, 0.015, 0.02, 0.025, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.75, 1.0};
+//        for(double ibins =0; ibins<0.1*100; ibins++){
+//           binningVector.push_back((double)(ibins/100));
+//        }
+
         break;
     default:
          for(double ibins =0; ibins<10*5; ibins++){
@@ -1387,6 +1513,7 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
       }
 
       double Weight = getEventWeight(i,j);
+//      std::cout<<"First Weight: "<<Weight<<std::endl;
 	  if (WeightStyle==1) {
             Weight = 1.0;
             for (int iParam=0; iParam<MCSamples[i].ntotal_weight_pointers[j] ; ++iParam) {
@@ -1399,6 +1526,7 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
           if (WeightStyle != 0 && MCSamples[i].xsec_w[j] == 0.) continue;
           if (WeightStyle == 0){Weight = 1.0;}
 
+//      std::cout<<"Final Weight: "<<Weight<<std::endl;
 	  double Var1_Val;
           KinematicTypes Var1 = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicVar1));
 	  if (Var1==kPDFBinning) {
@@ -1407,6 +1535,8 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
 		Var1_Val = ReturnKinematicParameter(KinematicVar1,i,j);
 	  }
 	  if (Var1_Val!=__DEFAULT_RETURN_VAL__) {
+//                std::cout<<"filling here"<<std::endl;
+//                std::cout<<"Var1_Val: "<<Var1_Val<<" Weight: "<<Weight<<std::endl;
 		_h1DVar->Fill(Var1_Val,Weight);
 	  }
     }
