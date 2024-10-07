@@ -4,6 +4,7 @@
 #include "samplePDFDUNE/samplePDFDUNEBeamNDBase.h"
 #include "samplePDFDUNE/samplePDFDUNEBeamNDGarBase.h"
 #include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmNewCAFBase.h"
 
 void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*> &DUNEPdfs, covarianceXsec *&xsec, covarianceOsc *&osc){
 
@@ -103,6 +104,9 @@ void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*
     } else if (SampleType == "Atm") {
       samplePDFDUNEAtmBase* AtmSample = new samplePDFDUNEAtmBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
       FDBaseSample = (samplePDFFDBase*)AtmSample;
+    } else if (SampleType == "AtmNewCAF") {
+      samplePDFDUNEAtmNewCAFBase* AtmNewCAFSample = new samplePDFDUNEAtmNewCAFBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
+      FDBaseSample = (samplePDFFDBase*)AtmNewCAFSample;
     } else {
       std::cerr << "Invalid SampleType:" << SampleType << " defined in config:" << DUNESampleConfigs[Sample_i] << std::endl;
       throw;

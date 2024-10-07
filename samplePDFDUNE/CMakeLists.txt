@@ -1,5 +1,6 @@
 set(HEADERS
   samplePDFDUNEAtmBase.h
+  samplePDFDUNEAtmNewCAFBase.h
   samplePDFDUNEBeamFDBase.h
   samplePDFDUNEBeamNDBase.h
   samplePDFDUNEBeamNDGarBase.h
@@ -8,6 +9,7 @@ set(HEADERS
 
 add_library(SamplePDFDUNE SHARED
   samplePDFDUNEAtmBase.cpp
+  samplePDFDUNEAtmNewCAFBase.cpp
   samplePDFDUNEBeamFDBase.cpp
   samplePDFDUNEBeamNDBase.cpp
   samplePDFDUNEBeamNDGarBase.cpp
