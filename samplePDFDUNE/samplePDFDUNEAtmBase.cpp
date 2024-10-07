@@ -258,7 +258,7 @@ void samplePDFDUNEAtmBase::setupFDMC(int iSample) {
     
     //ETA - this is where the variables that you want to bin your samples in are defined
     //If you want to bin in different variables this is where you put it for now
-    switch(BinningOpt){
+    switch(nDimensions){
     case 0:
     case 1:
       //Just point to xvar to the address of the variable you want to bin in
@@ -275,7 +275,7 @@ void samplePDFDUNEAtmBase::setupFDMC(int iSample) {
       fdobj->y_var[iEvent] = &(duneobj->rw_theta[iEvent]);
       break;
     default:
-      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << BinningOpt << std::endl;
+      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << nDimensions << std::endl;
       throw;
       break;
     }

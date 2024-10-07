@@ -24,10 +24,11 @@ SelectionCuts:
     Bounds: [ -550.0, 550.0 ]
   - KinematicStr: "TrueZPos"
     Bounds: [ 50.0, 1244.0 ]
+  - KinematicStr: "CVNNue"
+    Bounds: [ 0.85, 999. ] 
 Binning:
-  BinningOpt: 1
+  XVarStr : "RecoNeutrinoEnergy" 
   XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
-  YVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
 SampleBools:
   isrhc: yes
   iselike: yes

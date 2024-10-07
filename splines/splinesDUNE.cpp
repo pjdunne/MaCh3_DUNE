@@ -5,6 +5,11 @@
 #include "TROOT.h"
 
 splinesDUNE::splinesDUNE(covarianceXsec* xsec_cov) : splineFDBase(xsec_cov) {
+  MACH3LOG_INFO("Created splinesDUNE object");
+}
+
+splinesDUNE::~splinesDUNE(){
+  MACH3LOG_INFO("Deleting splineSKBase object");
 }
 
 //****************************************
@@ -50,11 +55,12 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
       strcpy(SplineName, keyName);
 
       nb_splines += 1;
-      if(unique_spline_names.count(std::string(SplineName)) > 0){
-        if (std::string(SplineName).find("unknown") == std::string::npos)
-          std::cout << "Repeated entry for spline named: " << std::string(SplineName) << std::endl;
-	continue;
-      }
+	  if(unique_spline_names.count(std::string(SplineName)) > 0){
+		if (std::string(SplineName).find("unknown") == std::string::npos){
+		  //std::cout << "Repeated entry for spline named: " << std::string(SplineName) << std::endl;
+		  continue;
+		}
+	  }
       unique_spline_names.insert(std::string(SplineName));
 
       char *Syst;
@@ -77,26 +83,24 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
 
       // If the syst doesn't match any of the spline names then skip it
       if (SystNum == -1){
-	continue;
+		continue;
       }
-
-      //std::cout << "Reading spline for syst " << Syst << std::endl;
 
       int ModeNum = -1;
       Mode = strtok(NULL, "_");
-      for (unsigned int iMode = 0; iMode < SplineModeVecs[iSample][SystNum].size(); iMode++) {
+	  for (unsigned int iMode = 0; iMode < SplineModeVecs[iSample][SystNum].size(); iMode++) {
         if (strcmp(Mode, MaCh3mode_ToDUNEString((MaCh3_Mode)SplineModeVecs[iSample][SystNum][iMode]).c_str()) == 0) {
           ModeNum = iMode;
           break;
         }
       }
-      if (ModeNum == -1) {
-	//ETA - Turned this into an error
-        std::cout << "ERROR : Couldn't find mode for " << Mode << " in " << Syst << "(" << SystNum << "), this is not fine so check your splines, skipping!" << std::endl;
-	std::cout << "SplineName:" << Key->GetName() << std::endl;
-        std::cout<< "For all your mode debugging needs check "<<__FILE__<<" : "<<__LINE__<<std::endl;
-	throw;
-      }
+
+	  if (ModeNum == -1) {
+		//ETA - Turned this into an error
+		MACH3LOG_ERROR("Could not find mode {} for spline {}", Mode, Key->GetName());
+		MACH3LOG_ERROR("This is not ok, please check the spline file or the xsec systematic yaml file");
+		throw MaCh3Exception(__FILE__, __LINE__);
+	  }
 
       TSpline3 *Obj = (TSpline3 *)Key->ReadObj();
       TSpline3_red *Spline = new TSpline3_red(Obj);
@@ -180,7 +184,6 @@ std::vector< std::vector<int> > splinesDUNE::GetEventSplines(std::string SampleN
   std::vector<std::vector<int>> ReturnVec;
   int SampleIndex = -1;
   for (unsigned int iSample = 0; iSample < SampleNames.size(); iSample++) {
-    // std::cout << "Available sample -> " << SampleNames[iSample] << std::endl;
     if (SampleName == SampleNames[iSample]) {
       SampleIndex = iSample;
     }
@@ -188,28 +191,34 @@ std::vector< std::vector<int> > splinesDUNE::GetEventSplines(std::string SampleN
 
   if (SampleIndex == -1)
   {
-    std::cerr << "Sample name not found : "<<SampleName << std::endl;
-    std::cerr << __FILE__<<" : "<<__LINE__<<std::endl;
-    throw;
+	MACH3LOG_ERROR("Sample not found: {}", SampleName);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
 
   int nSplineSysts = (int)indexvec[SampleIndex][iOscChan].size();
   //ETA- this is already a MaCh3 mode
-  int Mode = MaCh3Mode_to_SplineMode(MaCh3_Mode(EventMode));
+  //int Mode = MaCh3Mode_to_SplineMode(MaCh3_Mode(EventMode));
+  int Mode = MaCh3_Mode(EventMode);
 
   int Var1Bin = SplineBinning[SampleIndex][iOscChan][0]->FindBin(Var1Val)-1;
   if (Var1Bin < 0 || Var1Bin >= SplineBinning[SampleIndex][iOscChan][0]->GetNbins()){
+	//Explicitly push back with an empty vector
+	ReturnVec.push_back(std::vector<int>());
     return ReturnVec;
   }
-  
+
   int Var2Bin = SplineBinning[SampleIndex][iOscChan][1]->FindBin(Var2Val)-1;
   if (Var2Bin < 0 || Var2Bin >= SplineBinning[SampleIndex][iOscChan][1]->GetNbins()){
+	//Explicitly push back with an empty vector
+	ReturnVec.push_back(std::vector<int>());
     return ReturnVec;
   }
 
   int Var3Bin = SplineBinning[SampleIndex][iOscChan][2]->FindBin(Var3Val)-1;
 
   if (Var3Bin < 0 || Var3Bin >= SplineBinning[SampleIndex][iOscChan][2]->GetNbins()){
+	//Explicitly push back with an empty vector
+	ReturnVec.push_back(std::vector<int>());
     return ReturnVec;
   }
 
@@ -218,7 +227,6 @@ std::vector< std::vector<int> > splinesDUNE::GetEventSplines(std::string SampleN
     int nSampleModes = (int)spline_modes.size();
 
     //ETA - look here at the length of spline_modes and what you're actually comparing against
-
     for(int iMode = 0; iMode<nSampleModes ; iMode++){
       if(Mode == spline_modes[iMode]){
         std::vector<int> event_vec(7);
@@ -234,8 +242,9 @@ std::vector< std::vector<int> > splinesDUNE::GetEventSplines(std::string SampleN
           ReturnVec.push_back(event_vec);
         }
       }
-    }   
+    }
   }
+
   return ReturnVec;
 }
 

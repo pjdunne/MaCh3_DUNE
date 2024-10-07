@@ -3,6 +3,7 @@ set(HEADERS
   samplePDFDUNEBeamFDBase.h
   samplePDFDUNEBeamNDBase.h
   samplePDFDUNEBeamNDGarBase.h
+  MaCh3DUNEFactory.h 
 )
 
 add_library(SamplePDFDUNE SHARED
@@ -10,6 +11,7 @@ add_library(SamplePDFDUNE SHARED
   samplePDFDUNEBeamFDBase.cpp
   samplePDFDUNEBeamNDBase.cpp
   samplePDFDUNEBeamNDGarBase.cpp
+  MaCh3DUNEFactory.cpp
 )
 
 set_target_properties(SamplePDFDUNE PROPERTIES

@@ -49,7 +49,7 @@ void samplePDFDUNEBeamNDGarBase::SetupWeightPointers() {
   }
 }
 
-void samplePDFDUNEBeamNDGarBase::setupExperimentMC(int iSample) {
+int samplePDFDUNEBeamNDGarBase::setupExperimentMC(int iSample) {
   const char *sampleFile = (mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str();
   dunemc_base *duneobj = &(dunendgarmcSamples[iSample]);
   int nutype = sample_nutype[iSample];
@@ -352,7 +352,7 @@ void samplePDFDUNEBeamNDGarBase::setupFDMC(int iSample) {
 
     //ETA - this is where the variables that you want to bin your samples in are defined
     //If you want to bin in different variables this is where you put it for now
-    switch(BinningOpt){
+    switch(nDimensions){
     case 0:
     case 1:
       //Just point to xvar to the address of the variable you want to bin in
@@ -369,7 +369,7 @@ void samplePDFDUNEBeamNDGarBase::setupFDMC(int iSample) {
       fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
       break;
     default:
-      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << BinningOpt << std::endl;
+      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << nDimensions << std::endl;
       throw;
       break;
     }

@@ -215,6 +215,111 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   return kNKinematicParams; 
 }
 
+// ETA - this is all getting a bit silly. We should make a map and load the string to map somewhere
+inline std::string ReturnStringFromKinematicType(KinematicTypes KinVar){
+  std::string KinematicString = "";
+ 
+  switch(KinVar){
+   case kRecoNeutrinoEnergy:
+     KinematicString = "RecoNeutrinoEnergy";
+	 break;
+   case kTrueNeutrinoEnergy:
+     KinematicString = "RecoNeutrinoEnergy";
+	 break;
+   case kTrueQ2:
+	 KinematicString = "TrueQ2";
+	 break;
+   case kRecoQ2:
+	 KinematicString = "RecoQ2";
+	 break;
+   case kTrueXPos:
+	 KinematicString= "TrueXPos";
+	 break;
+   case kTrueYPos:
+	 KinematicString= "TrueYPos";
+	 break;
+   case kTrueZPos:
+	 KinematicString= "TrueZPos";
+	 break;
+   case kCVNNumu:
+	 KinematicString = "CVNNumu";
+	 break;
+   case kCVNNue:
+	 KinematicString = "CVNNue";
+	 break;
+   case kIsCC:
+	 KinematicString = "IsCC";
+	 break;
+   case kRecoQ:
+	 KinematicString = "RecoQ";
+	 break;
+   case kRecoXPos:
+	 KinematicString = "RecoXPos";
+	 break;
+   case kRecoYPos:
+	 KinematicString = "RecoYPos";
+	 break;
+   case kRecoZPos:
+	 KinematicString = "RecoZPos";
+	 break;
+   case kTrueCosZ:
+	 KinematicString = "TrueCosZ";
+	 break;
+   case kTrueRad:
+	 KinematicString = "TrueRad";
+	 break;
+   case kRecoRad:
+	 KinematicString = "RecoRad";
+	 break;
+   case kTrueLepEnergy:
+	 KinematicString = "TrueLepEnergy";
+	 break;
+   case kRecoLepEnergy:
+	 KinematicString = "RecoLepEnergy";
+	 break;
+   case kM3Mode:
+	 KinematicString = "M3Mode";
+	 break;
+   case kOscChannel:
+	 KinematicString = "OscChannel";
+	 break;
+   case kLepPT:
+	 KinematicString = "LepPT";
+	 break;
+   case kLepPZ:
+	 KinematicString = "LepPZ";
+	 break;
+   case kTrueMinusRecoEnergyRatio:
+	 KinematicString = "TrueMinusRecoEnergyRatio";
+	 break;
+   case kTrueMinusRecoEnergy:
+	 KinematicString = "TrueMinusRecoEnergy";
+	 break;
+   case kNRecoMuons:
+	 KinematicString = "NRecoMuons";
+	 break;
+   case kNTrueMuons:
+	 KinematicString = "NTrueMuons";
+	 break;
+   case kInFDV:
+	 KinematicString = "InFDV";
+	 break;
+   case kPionMultiplicity:
+	 KinematicString = "PionMultiplicity";
+	 break;
+   case kNRecoParticles:
+	 KinematicString = "NRecoParticles";
+	 break;
+   case kNMuonsRecoOverTruth:
+	 KinematicString = "NMuonsRecoOverTruth";
+	 break;
+   default:
+    break;
+  }
+
+  return KinematicString;
+}
+
 // ********************************
 // ND Detector Systematic Functions
 // ********************************
@@ -1268,7 +1373,6 @@ inline std::string MaCh3mode_ToDUNEString(MaCh3_Mode i) {
 enum MaCh3_Spline_Modes {
 
   // ***************************
-
   // CCQE
   kMaCh3_Spline_CCQE              = 0,
   // 1 Kaon
