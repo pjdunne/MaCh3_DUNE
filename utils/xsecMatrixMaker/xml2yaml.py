@@ -28,11 +28,9 @@ def convert_parameter(param:"dict[str, str]") -> dict:
     if 'Spline' in yaml_param['Type']:
         yaml_param['SplineInformation'] = {}
         if 'fd_spline_name' in param:
-            yaml_param['SplineInformation']['FDSplineName'] = param['fd_spline_name']
+            yaml_param['SplineInformation']['SplineName'] = param['fd_spline_name']
         if 'fd_mode' in param:
             yaml_param['SplineInformation']['FDMode'] = list(map(int, param['fd_mode'][0]['value'].split()))
-        if 'nd_spline_name' in param:
-            yaml_param['SplineInformation']['NDSplineName'] = param['fd_spline_name']
 
     if 'kinematic_cut' in param:
         yaml_param['KinematicCuts'] = []
