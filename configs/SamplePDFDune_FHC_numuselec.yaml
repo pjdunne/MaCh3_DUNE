@@ -1,22 +1,5 @@
-# for each list specify:
-# isrhc = "true for rhc or false for fhc"; #default to false
-# mtupleprefix = "common part at beginning of path to mtuple files"
-# mtuplesuffix = "common part at end of path to mtuple files"
-# splineprefix = "common part at beginning of path to spline files"
-# splinesuffix = "common part at endof path to spline files"
-# up_bnd = "upper boundary on erec" #deault to 30.
-# isfitqun = true for fitqun variable samples false otherwise #default to true
-#Add samples to the sample list as shown below
-# {
-# 	name = "descriptive name for sample";
-# 	mtuplefile = "path to mtuple file";
-# 	splinefile  = "path to splinefile"; #!!NB MUST BE COMPATIBLE WITH BINNING OPTION SPECIFIED IN EXECUTABLE
-# 	samplevecno = which number in the skmcsamples array should this go in;
-# 	nutype = "nutype before oscillation";
-# 	oscnutype = "nutype after oscillation";
-# 	signal = true for signal samples;,
-# },
 SampleName: "FHC_numu"
+SampleType: "BeamFD"
 SelectionCuts:
   - KinematicStr: "TrueXPos"
     Bounds: [ -310.0, 310.0 ]
