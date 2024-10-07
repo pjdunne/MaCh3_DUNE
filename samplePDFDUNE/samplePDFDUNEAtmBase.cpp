@@ -23,12 +23,24 @@ void samplePDFDUNEAtmBase::Init() {
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
-
-  splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-  splineFile = (splineFDBase*)DUNESplines;
-  InitialiseSplineObject();
   
   std::cout << "-------------------------------------------------------------------" <<std::endl;
+}
+
+void samplePDFDUNEAtmBase::SetupSplines() {
+  ///@todo move all of the spline setup into core
+  if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
+    MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+    splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
+    splineFile = (splineFDBase*)DUNESplines;
+    InitialiseSplineObject();
+  }
+  else{
+    MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+    splineFile = nullptr;
+  }
+  
+  return;
 }
 
 void samplePDFDUNEAtmBase::SetupWeightPointers() {
@@ -183,60 +195,49 @@ int samplePDFDUNEAtmBase::setupExperimentMC(int iSample) {
   return duneobj->nEvents;
 }
 
-double samplePDFDUNEAtmBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
- KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
- double KinematicValue = -999;
+double* samplePDFDUNEAtmBase::ReturnKinematicParameterByReference(KinematicTypes KinPar, int iSample, int iEvent) {
+  double* KinematicValue;
+  
+  switch(KinPar){
+  case kTrueNeutrinoEnergy:
+    KinematicValue = &dunemcSamples[iSample].rw_etru[iEvent]; 
+    break;
+  case kTrueXPos:
+    KinematicValue = &dunemcSamples[iSample].rw_vtx_x[iEvent];
+    break;
+  case kTrueYPos:
+    KinematicValue = &dunemcSamples[iSample].rw_vtx_y[iEvent];
+    break;
+  case kTrueZPos:
+    KinematicValue = &dunemcSamples[iSample].rw_vtx_z[iEvent];
+    break;
+  case kTrueCosZ:
+    KinematicValue = &dunemcSamples[iSample].rw_truecz[iEvent];
+    break;
+  default:
+    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type '" << KinPar << "'" << std::endl;
+    throw;
+  }
+  
+  return KinematicValue;
+}
 
- switch(KinPar){
- case kTrueNeutrinoEnergy:
-   KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
-   break;
- case kTrueXPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
-   break;
- case kTrueYPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
-   break;
- case kTrueZPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
-   break;
- case kTrueCosZ:
-   KinematicValue = dunemcSamples[iSample].rw_truecz[iEvent];
-   break;
- default:
-   std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type '" << KinematicParameter << "'" << std::endl;
-   throw;
- }
- 
- return KinematicValue;
+double* samplePDFDUNEAtmBase::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
+  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
+  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
+}
+
+double* samplePDFDUNEAtmBase::ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent) {
+  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter));
+  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
 }
 
 double samplePDFDUNEAtmBase::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  double KinematicValue = -999;
+  return *ReturnKinematicParameterByReference(KinematicVariable, iSample, iEvent);
+}
 
-  switch(KinPar){
-  case kTrueNeutrinoEnergy:
-    KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
-    break;
-  case kTrueXPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
-    break;
-  case kTrueYPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
-    break;
-  case kTrueZPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
-    break;
-  case kTrueCosZ:
-    KinematicValue = dunemcSamples[iSample].rw_truecz[iEvent];
-    break;
-  default:
-    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-    throw;
-  }
-
-  return KinematicValue;
+double samplePDFDUNEAtmBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
+  return *ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
 }
 
 void samplePDFDUNEAtmBase::setupFDMC(int iSample) {

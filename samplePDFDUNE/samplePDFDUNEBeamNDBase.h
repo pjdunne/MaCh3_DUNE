@@ -31,9 +31,13 @@ public:
   void setupFDMC(int iSample);
 
   void SetupWeightPointers();
-
-  double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent);
+  void SetupSplines();
+  
+  double* ReturnKinematicParameterByReference(KinematicTypes KinPar, int iSample, int iEvent);
+  double* ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent);
+  double* ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent);
   double ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent);
+  double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
 
   //DB functions which could be initialised to do something which is non-trivial

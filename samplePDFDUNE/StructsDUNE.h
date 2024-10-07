@@ -102,7 +102,7 @@ struct dunemc_base {
   double *rw_vtx_y;
   double *rw_vtx_z;
   double dummy_y;
-  int *rw_reco_q;
+  double *rw_reco_q;
   double *reco_numu;
 
   double pot_s;

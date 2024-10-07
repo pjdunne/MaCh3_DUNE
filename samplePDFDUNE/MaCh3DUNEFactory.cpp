@@ -1,6 +1,9 @@
 #include "samplePDFDUNE/MaCh3DUNEFactory.h"
 
 #include "samplePDFDUNE/samplePDFDUNEBeamFDBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamNDBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamNDGarBase.h"
+#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 
 void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*> &DUNEPdfs, covarianceXsec *&xsec, covarianceOsc *&osc){
 
@@ -91,6 +94,15 @@ void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*
     if (SampleType == "BeamFD") {
       samplePDFDUNEBeamFDBase* BeamFDSample = new samplePDFDUNEBeamFDBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
       FDBaseSample = (samplePDFFDBase*)BeamFDSample;
+    } else if (SampleType == "BeamND") {
+      samplePDFDUNEBeamNDBase* BeamNDSample = new samplePDFDUNEBeamNDBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
+      FDBaseSample = (samplePDFFDBase*)BeamNDSample;
+    } else if (SampleType == "BeamNDGar") {
+      samplePDFDUNEBeamNDGarBase* BeamNDGarSample = new samplePDFDUNEBeamNDGarBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
+      FDBaseSample = (samplePDFFDBase*)BeamNDGarSample;
+    } else if (SampleType == "Atm") {
+      samplePDFDUNEAtmBase* AtmSample = new samplePDFDUNEAtmBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
+      FDBaseSample = (samplePDFFDBase*)AtmSample;
     } else {
       std::cerr << "Invalid SampleType:" << SampleType << " defined in config:" << DUNESampleConfigs[Sample_i] << std::endl;
       throw;
