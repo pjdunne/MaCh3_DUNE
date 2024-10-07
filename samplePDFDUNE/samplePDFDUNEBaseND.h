@@ -50,12 +50,29 @@ struct dunendmc_base {
 
   // histo pdf bins
   double *rw_erec;
+  double *rw_erec_shifted;
+  double *rw_erec_had;
+  double *rw_erec_lep;
+  double *rw_yrec;
+
+  double *rw_eRecoP;
+  double *rw_eRecoPip;
+  double *rw_eRecoPim;
+  double *rw_eRecoPi0;
+  double *rw_eRecoN;
+
+  double *rw_LepE;
+  double *rw_eP;
+  double *rw_ePip;
+  double *rw_ePim;
+  double *rw_ePi0;
+  double *rw_eN;
+
   double *rw_etru;
-  double *rw_elep_reco;
   double *rw_mom;
   double *rw_theta;
   double *rw_Q2;
-  double *rw_yrec;
+
   double *rw_pdf_bin_1d; //global bin in the PDF so we can do a faster fill1Dhist 
   double *rw_lower_erec_1d; // lower to check if Eb has moved the erec bin
   double *rw_upper_erec_1d; // upper to check if Eb has moved the erec bin
@@ -73,6 +90,7 @@ struct dunendmc_base {
   double *rw_vtx_x;
   double *rw_vtx_y;
   double *rw_vtx_z;
+  int *rw_reco_q;
   double dummy_y;
 
   double *reco_numu;
@@ -92,6 +110,7 @@ struct dunendmc_base {
   double *energyscale_w;
   //float *relRPA_w;
 
+
 };
 
 class samplePDFDUNEBaseND : virtual public samplePDFFDBase
@@ -104,6 +123,7 @@ public:
 
   void setupSplines(fdmc_base *fdobj, const char *splineFile, int nutype, int signal);
 
+  void setNDCovMatrix(TMatrixDSym *cov);
  protected:
   void init(double pot, std::string mc_version, covarianceXsec *xsec_cov);
   void setupDUNEMC(const char *sampleInputFile, dunendmc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats=false);
@@ -125,7 +145,6 @@ public:
   double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
 
-
   //Likelihood
   double getCovLikelihood();
   double getDiscVar(int sample , int event , int varindx);
@@ -133,6 +152,8 @@ public:
   int getNMCSamples();
   int getNEventsInSample(int sample);
 
+  //Apply shifts from functional parameters
+  void applyShifts(int iSample, int iEvent);
 
   // dunendmc
   std::vector<struct dunendmc_base> dunendmcSamples;
@@ -142,7 +163,7 @@ public:
   TTree *_data;
   TString _nutype;
   int _mode;
-  float _pnu[50];
+  double _pnu[50];
   double _wgtflx;
   double _wgtosc;
   int _ipnu;
@@ -150,11 +171,24 @@ public:
   // dunendmc Variables
   double _ev;
   double _erec;
-  double _erec_nue;
-  double _elep_reco;
-  double _LepNuAngle;
+  double _erec_lep;
+  double _erec_had;
   int _reco_numu;
   int _reco_nue;
+
+  double _eRecoP;
+  double _eRecoPip;
+  double _eRecoPim;
+  double _eRecoPi0;
+  double _eRecoN;
+
+  double _LepNuAngle;
+  double _LepE;
+  double _eP;
+  double _ePip;
+  double _ePim;
+  double _ePi0;
+  double _eN;
   double _BeRPA_cvwgt;
   int _isCC;
   int _nuPDGunosc;
@@ -167,6 +201,7 @@ public:
   double _vtx_z;
   double _LepTheta;
   double _Q2;
+  int _reco_q;
 
 
 
@@ -204,20 +239,55 @@ public:
   // Using the smarter xsec covariance matrix reader?
   bool DoItSmart;
 
+  //Positions of ND Detector systematics
+  double tot_escale_nd_pos;
+  double tot_escale_sqrt_nd_pos;
+  double tot_escale_invsqrt_nd_pos;
+  double had_escale_nd_pos;
+  double had_escale_sqrt_nd_pos;
+  double had_escale_invsqrt_nd_pos;
+  double mu_escale_nd_pos;
+  double mu_escale_sqrt_nd_pos;
+  double mu_escale_invsqrt_nd_pos;
+  double n_escale_nd_pos;
+  double n_escale_sqrt_nd_pos;
+  double n_escale_invsqrt_nd_pos;
+  double em_escale_nd_pos;
+  double em_escale_sqrt_nd_pos;
+  double em_escale_invsqrt_nd_pos;
+  double had_res_nd_pos;
+  double mu_res_nd_pos;
+  double n_res_nd_pos;
+  double em_res_nd_pos;
+
+  // The ND detector covariance matrix
+  TMatrixDSym *NDCovMatrix;
+  
+  //Temp ND detector covariance with added stats error
+  TMatrixDSym *tempNDCovMatrix;
+
+  // The inverse ND detector covariance matrix
+  TMatrixDSym *NDInvCovMatrix;
+
+
+  double **NDInvertCovMatrix;
+
+  std::vector<const double*> NDDetectorSystPointers;
+  int nNDDetectorSystPointers;
+
   // Parameters used in the DoItSmart xsec setup
   // The old version hard-codes these instead
   std::vector<int> normParsModes;
   std::vector< std::vector<int> > normParsTarget;
   std::vector< std::vector<int> > normParsPDG;
   std::vector<int> normParsIndex;
-  int nFuncParams;
-  std::vector<int> funcParsIndex;
-  std::vector<std::string> funcParsNames;
+  //int nFuncParams;
+  //std::vector<int> funcParsIndex;
+  //std::vector<std::string> funcParsNames;
   // spline params (don't technically need, just included for print-screen sanity check purposes)
   int nSplineParams;
   std::vector<int> splineParsIndex;
   std::vector<std::string> splineParsNames;
-
 
  private:
   void calcXsecNormsBins(dunendmc_base* dunendmc);

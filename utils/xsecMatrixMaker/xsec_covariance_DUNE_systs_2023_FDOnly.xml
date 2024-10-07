@@ -107,6 +107,23 @@ BeRPA_A : Has CV weights but still has a generated value of 0
   <parameter name="EMResFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.02" renorm="0" type="function" detid="24" stepscale="1.0">
   </parameter>
 
+<!-- FD CVN Selection -->
+  <parameter name="CVNNumuFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.01" renorm="0" type="function" detid="24" stepscale="0.8">
+  </parameter>
+
+  <parameter name="CVNNueFD" nom="0.0" prior="0.0" lb="-9999" ub="9999" error="0.01" renorm="0" type="function" detid="24" stepscale="0.8">
+  </parameter>
+
+<!-- FD Fiducial Volume  -->
+  <parameter name="NumuFVFD" nom="1" prior="1" lb="-9999" ub="9999" error="0.01414" renorm="0" type="norm" detid="24" stepscale="0.8">
+	<!-- <correlation par="NueFVFD">0.5</correlation> -->
+    <kinematic_cut var="CVNNumu">0.5 999</kinematic_cut>
+  </parameter>
+
+  <parameter name="NueFVFD" nom="1" prior="1" lb="-9999" ub="9999" error="0.01414" renorm="0" type="norm" detid="24" stepscale="0.8">
+	<!-- <correlation par="NumuFVFD">0.5</correlation> -->
+    <kinematic_cut var="CVNNue">0.85 999</kinematic_cut>
+  </parameter>
 
 
 <!-- ### Cross-section Parameters #### -->
