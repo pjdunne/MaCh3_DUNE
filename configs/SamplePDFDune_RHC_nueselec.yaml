@@ -37,8 +37,6 @@ InputFiles:
   mtuplesuffix: "_nueselec.root"
   splineprefix: "inputs/DUNE_spline_files/FD_RHC_ger_"
   splinesuffix: "_nueselec_splines.root"
-SampleCuts:
-  up_bnd: 30.
 DetID: 24
 NSubSamples: 12
 SubSamples:
