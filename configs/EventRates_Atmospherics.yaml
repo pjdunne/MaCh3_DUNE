@@ -1,8 +1,8 @@
 General:
   OutputFile: "DuneEventRates.root"
 
-  DUNESamples: ["configs/Samples/AtmSample_numuselec.yaml"]
-  DUNESamplesPOT: [1.]
+  DUNESamples: ["configs/Samples/AtmSample_numuselec.yaml","configs/Samples/AtmSample_nueselec.yaml"]
+  DUNESamplesPOT: [1.,1.]
 
   #Nu-FIT
   #OscillationParameters: [0.310, 0.582, 0.224, 7.39E-5, 2.5254E-3, -2.498]
@@ -14,7 +14,7 @@ General:
   #OscillationParameters: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   
   Systematics:
-    XsecCovFile: ["inputs/xsec_covariance_DUNE_systs_2022a_FD_v3_flux.yaml", "inputs/xsec_covariance_DUNE_systs_2022a_FD_v3_xsec.yaml"]
+    XsecCovFile: ["inputs/xsec_covariance_DUNE_systs_2022a_FD_v3.yaml"]
     XsecCovName: "xsec_cov"
     XsecStepScale: 0.1
     XsecAtGen: false 

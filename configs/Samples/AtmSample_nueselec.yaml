@@ -1,5 +1,5 @@
 SampleName: "nueselec"
-SampleType: "AtmNewCAF"
+SampleType: "Atm"
 # SelectionCuts:
 #   - KinematicStr: "TrueXPos"
 #     Bounds: [ -310.0, 310.0 ]

@@ -6,5 +6,4 @@ logs/
 jupyter_env
 .history
 Doc
-inputs/ATM_CAF_files
-inputs/ATM_spline_files_test
+inputs/Atmospherics/CAFs
