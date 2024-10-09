@@ -1,7 +1,6 @@
 add_custom_target(MaCh3DUNEApps)
 
 foreach(app
-	test
 	EventRatesDUNEBeam
 	jointFitDUNEBeam
 )

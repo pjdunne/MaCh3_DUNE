@@ -4,6 +4,6 @@
 #include "manager/manager.h"
 
 // Include the samplePDFs
-#include "samplePDFDUNE/samplePDFDUNEBeamFDBase.h"
+#include "samplePDF/samplePDFFDBase.h"
 
-void MakeMaCh3DuneBeamInstance(manager *fitMan, std::vector<samplePDFDUNEBeamFDBase*> &sample_vec,  covarianceXsec *&xsec, covarianceOsc *&osc);
+void MakeMaCh3DuneBeamInstance(manager *fitMan, std::vector<samplePDFFDBase*> &sample_vec,  covarianceXsec *&xsec, covarianceOsc *&osc);
