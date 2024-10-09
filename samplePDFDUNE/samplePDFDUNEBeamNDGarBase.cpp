@@ -9,11 +9,6 @@
 #include "TLeaf.h"
 
 samplePDFDUNEBeamNDGarBase::samplePDFDUNEBeamNDGarBase(double pot_, std::string mc_version_, covarianceXsec* XsecCov_) : samplePDFFDBase(pot_, mc_version_, XsecCov_) {
-  // create dunendgarmc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunendgarmcSamples.push_back(obj);
-  }
   
   Initialise();
 }
@@ -22,16 +17,31 @@ samplePDFDUNEBeamNDGarBase::~samplePDFDUNEBeamNDGarBase() {
 }
 
 void samplePDFDUNEBeamNDGarBase::Init() {
-  IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
-  SampleDetID = SampleManager->raw()["DetID"].as<int>();
-  iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
-  muonscore_threshold = SampleManager->raw()["SampleCuts"]["muonscore_threshold"].as<float>(); //NK determine what muon score threshold to use
 
-  splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-  splineFile = (splineFDBase*)DUNESplines;
-  InitialiseSplineObject();
-  
-  std::cout << "-------------------------------------------------------------------" <<std::endl;
+  // create dunendgarmc storage
+  for (int i=0;i<nSamples;i++) {
+    struct dunemc_base obj = dunemc_base();
+    dunendgarmcSamples.push_back(obj);
+  }
+
+  iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
+}
+
+void samplePDFDUNEBeamNDGarBase::SetupSplines() {
+
+  ///@todo move all of the spline setup into core
+  if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
+	MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+	splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
+	splineFile = (splineFDBase*)DUNESplines;
+	InitialiseSplineObject();
+  }
+  else{
+	MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+	splineFile = nullptr;
+  }
+
+  return;
 }
 
 void samplePDFDUNEBeamNDGarBase::SetupWeightPointers() {

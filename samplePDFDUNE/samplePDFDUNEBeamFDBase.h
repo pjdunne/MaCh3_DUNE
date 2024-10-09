@@ -52,6 +52,8 @@ public:
   const double* ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent);
   const double* ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent); 
 
+  inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
+  inline std::string ReturnStringFromKinematicParameter(int KinematicParameterStr);
   //DB functions which could be initialised to do something which is non-trivial
   double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
   void applyShifts(int iSample, int iEvent);

@@ -30,6 +30,7 @@ public:
   void Init();
   int setupExperimentMC(int iSample);
   void setupFDMC(int iSample);
+  void SetupSplines();
 
   void SetupWeightPointers();
 

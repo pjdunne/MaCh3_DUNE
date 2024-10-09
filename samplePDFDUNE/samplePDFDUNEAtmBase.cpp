@@ -7,11 +7,6 @@
 #include "manager/manager.h"
 
 samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
-  // create dunemc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunemcSamples.push_back(obj);
-  }
 
   Initialise();
 }
@@ -20,9 +15,14 @@ samplePDFDUNEAtmBase::~samplePDFDUNEAtmBase() {
 }
 
 void samplePDFDUNEAtmBase::Init() {
-  IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
-  SampleDetID = SampleManager->raw()["DetID"].as<int>();
+
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
+
+  // create dunemc storage
+  for (int i=0;i<nSamples;i++) {
+    struct dunemc_base obj = dunemc_base();
+    dunemcSamples.push_back(obj);
+  }
 
   splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
   splineFile = (splineFDBase*)DUNESplines;
@@ -183,6 +183,18 @@ int samplePDFDUNEAtmBase::setupExperimentMC(int iSample) {
   return duneobj->nEvents;
 }
 
+inline int samplePDFDUNEAtmBase::ReturnKinematicParameterFromString(std::string KinematicStr) {
+
+  MACH3LOG_ERROR("samplePDFDUNEAtmBase::ReturnKinematicParameterFromString unsupported right now!");
+  throw MaCh3Exception(__FILE__, __LINE__);
+}
+
+inline std::string samplePDFDUNEAtmBase::ReturnStringFromKinematicParameter(int KinematicParameter) {
+
+  MACH3LOG_ERROR("samplePDFDUNEAtmBase::ReturnStringFromKinematicParameter unsupported right now!");
+  throw MaCh3Exception(__FILE__, __LINE__);
+}
+
 double samplePDFDUNEAtmBase::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
  double KinematicValue = -999;
@@ -254,7 +266,7 @@ void samplePDFDUNEAtmBase::setupFDMC(int iSample) {
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
     fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
-    fdobj->rw_truecz[iEvent] = duneobj->rw_truecz[iEvent];
+    fdobj->rw_truecz[iEvent] = &(duneobj->rw_truecz[iEvent]);
     
     //ETA - this is where the variables that you want to bin your samples in are defined
     //If you want to bin in different variables this is where you put it for now

@@ -39,6 +39,8 @@ public:
   double ReturnKinematicParameter (std::string KinematicParameter, int iSample, int iEvent) override;
   double ReturnKinematicParameter (double KinematicVariable, int iSample, int iEvent) override;
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
+  inline int ReturnKinematicParameterFromString(std::string KinematicStr);
+  inline std::string ReturnStringFromKinematicParameter(int KinematicVariable);
 
   // dunemc
   std::vector<struct dunemc_base> dunemcSamples;

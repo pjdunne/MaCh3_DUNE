@@ -8,11 +8,7 @@
 #include "manager/manager.h"
 
 samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
-  // create dunemc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunemcSamples.push_back(obj);
-  }
+
 
   pot = pot_;
   
@@ -23,27 +19,8 @@ samplePDFDUNEBeamFDBase::~samplePDFDUNEBeamFDBase() {
 }
 
 void samplePDFDUNEBeamFDBase::Init() {
-  IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
-  SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
-
-  double low_bound = 0;
-  double up_bound = 0;
-  double KinematicParamter = 0;
-  std::vector<double> SelectionVec;
-  //Now grab the selection cuts from the manager
-  for ( auto const &SelectionCuts : SampleManager->raw()["SelectionCuts"]) {
-	SelectionStr.push_back(SelectionCuts["KinematicStr"].as<std::string>());
-	SelectionBounds.push_back(SelectionCuts["Bounds"].as<std::vector<double>>());
-	low_bound = SelectionBounds.back().at(0);
-	up_bound = SelectionBounds.back().at(1);
-	KinematicParamter = static_cast<double>(ReturnKinematicParameterFromString(SelectionCuts["KinematicStr"].as<std::string>())); 
-	MACH3LOG_INFO("Adding cut on {} with bounds {} to {}", SelectionCuts["KinematicStr"].as<std::string>(), SelectionBounds.back().at(0), SelectionBounds.back().at(1));
-	SelectionVec = {KinematicParamter, low_bound, up_bound};	
-	StoredSelection.push_back(SelectionVec);
-  }
-  NSelections = SelectionStr.size();
-  
+ 
   tot_escale_fd_pos = -999;
   tot_escale_sqrt_fd_pos = -999;
   tot_escale_invsqrt_fd_pos = -999;
@@ -65,6 +42,12 @@ void samplePDFDUNEBeamFDBase::Init() {
   em_res_fd_pos = -999;
   cvn_numu_fd_pos = -999;
   cvn_nue_fd_pos = -999;
+
+  // create dunemc storage
+  for (int i=0;i<nSamples;i++) {
+    struct dunemc_base obj = dunemc_base();
+    dunemcSamples.push_back(obj);
+  }
 
   nFDDetectorSystPointers = funcParsIndex.size();
   std::unordered_map<std::string, const double*> FDDetectorSystPointersMap;
@@ -493,7 +476,7 @@ TH1D* samplePDFDUNEBeamFDBase::get1DVarHist(KinematicTypes Var1,std::vector< std
   }
 
   TH1D* _h1DVar;
-  std::vector<double> xBinEdges = ReturnKinematicParameterBinning(ReturnStringFromKinematicType(Var1));
+  std::vector<double> xBinEdges = ReturnKinematicParameterBinning(ReturnStringFromKinematicParameter(Var1));
   _h1DVar = new TH1D("", "", xBinEdges.size()-1, xBinEdges.data());
 
   //This should be the same as FillArray in core basically, except that
@@ -621,6 +604,7 @@ double samplePDFDUNEBeamFDBase::ReturnKinematicParameter(std::string KinematicPa
  return KinematicValue;
 }
 
+
 const double* samplePDFDUNEBeamFDBase::ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent) {
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
  double* KinematicValue;
@@ -655,6 +639,43 @@ const double* samplePDFDUNEBeamFDBase::ReturnKinematicParameterByReference(std::
  return KinematicValue;
 }
 
+int samplePDFDUNEBeamFDBase::ReturnKinematicParameterFromString(std::string KinematicParameterStr){
+
+  if (KinematicParameterStr.find("TrueNeutrinoEnergy") != std::string::npos) {return kTrueNeutrinoEnergy;}
+  if (KinematicParameterStr.find("RecoNeutrinoEnergy") != std::string::npos) {return kRecoNeutrinoEnergy;}
+  if (KinematicParameterStr.find("TrueQ2") != std::string::npos) {return kTrueQ2;}
+  if (KinematicParameterStr.find("RecoQ2") != std::string::npos) {return kRecoQ2;}
+  if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
+  if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
+  if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
+  if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
+  if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
+  if (KinematicParameterStr.find("IsCC") != std::string::npos) {return kIsCC;}
+  if (KinematicParameterStr.find("RecoQ") != std::string::npos) {return kRecoQ;}
+  if (KinematicParameterStr.find("TrueCosZ") != std::string::npos) {return kTrueCosZ;}
+  if (KinematicParameterStr.find("TrueRad") != std::string::npos) {return kTrueRad;}
+  if (KinematicParameterStr.find("PionMultiplicity") != std::string::npos) {return kPionMultiplicity;}
+  if (KinematicParameterStr.find("NRecoParticles") != std::string::npos) {return kNRecoParticles;}
+  if (KinematicParameterStr.find("InFDV") != std::string::npos) {return kInFDV;}
+  if (KinematicParameterStr.find("TrueMinusRecoEnergyRatio") != std::string::npos) {return kTrueMinusRecoEnergyRatio;}
+  if (KinematicParameterStr.find("TrueMinusRecoEnergy") != std::string::npos) {return kTrueMinusRecoEnergy;}
+  if (KinematicParameterStr.find("NRecoMuons") != std::string::npos) {return kNRecoMuons;}
+  if (KinematicParameterStr.find("NTrueMuons") != std::string::npos) {return kNTrueMuons;}
+  if (KinematicParameterStr.find("NMuonsRecoOverTruth") != std::string::npos) {return kNMuonsRecoOverTruth;}
+  if (KinematicParameterStr.find("TrueLepEnergy") != std::string::npos) {return kTrueLepEnergy;}
+  if (KinematicParameterStr.find("RecoLepEnergy") != std::string::npos) {return kRecoLepEnergy;}
+  if (KinematicParameterStr.find("RecoXPos") != std::string::npos) {return kRecoXPos;}
+  if (KinematicParameterStr.find("RecoYPos") != std::string::npos) {return kRecoYPos;}
+  if (KinematicParameterStr.find("RecoZPos") != std::string::npos) {return kRecoZPos;}
+  if (KinematicParameterStr.find("RecoRad") != std::string::npos) {return kRecoRad;}
+  if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
+  if (KinematicParameterStr.find("OscChannel") != std::string::npos) {return kOscChannel;}
+  if (KinematicParameterStr.find("LepPT") != std::string::npos) {return kLepPT;}
+  if (KinematicParameterStr.find("LepPZ") != std::string::npos) {return kLepPZ;}
+  return kNKinematicParams; 
+
+}
+
 const double* samplePDFDUNEBeamFDBase::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
   KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
   double* KinematicValue;
@@ -687,6 +708,110 @@ const double* samplePDFDUNEBeamFDBase::ReturnKinematicParameterByReference(doubl
   }
   
   return KinematicValue;
+}
+
+inline std::string samplePDFDUNEBeamFDBase::ReturnStringFromKinematicParameter(int KinematicParameter) {
+  std::string KinematicString = "";
+ 
+  switch(KinematicParameter){
+   case kRecoNeutrinoEnergy:
+     KinematicString = "RecoNeutrinoEnergy";
+	 break;
+   case kTrueNeutrinoEnergy:
+     KinematicString = "RecoNeutrinoEnergy";
+	 break;
+   case kTrueQ2:
+	 KinematicString = "TrueQ2";
+	 break;
+   case kRecoQ2:
+	 KinematicString = "RecoQ2";
+	 break;
+   case kTrueXPos:
+	 KinematicString= "TrueXPos";
+	 break;
+   case kTrueYPos:
+	 KinematicString= "TrueYPos";
+	 break;
+   case kTrueZPos:
+	 KinematicString= "TrueZPos";
+	 break;
+   case kCVNNumu:
+	 KinematicString = "CVNNumu";
+	 break;
+   case kCVNNue:
+	 KinematicString = "CVNNue";
+	 break;
+   case kIsCC:
+	 KinematicString = "IsCC";
+	 break;
+   case kRecoQ:
+	 KinematicString = "RecoQ";
+	 break;
+   case kRecoXPos:
+	 KinematicString = "RecoXPos";
+	 break;
+   case kRecoYPos:
+	 KinematicString = "RecoYPos";
+	 break;
+   case kRecoZPos:
+	 KinematicString = "RecoZPos";
+	 break;
+   case kTrueCosZ:
+	 KinematicString = "TrueCosZ";
+	 break;
+   case kTrueRad:
+	 KinematicString = "TrueRad";
+	 break;
+   case kRecoRad:
+	 KinematicString = "RecoRad";
+	 break;
+   case kTrueLepEnergy:
+	 KinematicString = "TrueLepEnergy";
+	 break;
+   case kRecoLepEnergy:
+	 KinematicString = "RecoLepEnergy";
+	 break;
+   case kM3Mode:
+	 KinematicString = "M3Mode";
+	 break;
+   case kOscChannel:
+	 KinematicString = "OscChannel";
+	 break;
+   case kLepPT:
+	 KinematicString = "LepPT";
+	 break;
+   case kLepPZ:
+	 KinematicString = "LepPZ";
+	 break;
+   case kTrueMinusRecoEnergyRatio:
+	 KinematicString = "TrueMinusRecoEnergyRatio";
+	 break;
+   case kTrueMinusRecoEnergy:
+	 KinematicString = "TrueMinusRecoEnergy";
+	 break;
+   case kNRecoMuons:
+	 KinematicString = "NRecoMuons";
+	 break;
+   case kNTrueMuons:
+	 KinematicString = "NTrueMuons";
+	 break;
+   case kInFDV:
+	 KinematicString = "InFDV";
+	 break;
+   case kPionMultiplicity:
+	 KinematicString = "PionMultiplicity";
+	 break;
+   case kNRecoParticles:
+	 KinematicString = "NRecoParticles";
+	 break;
+   case kNMuonsRecoOverTruth:
+	 KinematicString = "NMuonsRecoOverTruth";
+	 break;
+   default:
+    break;
+  }
+
+  return KinematicString;
 }
 
 void samplePDFDUNEBeamFDBase::setupFDMC(int iSample) {
