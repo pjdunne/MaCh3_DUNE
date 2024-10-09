@@ -157,12 +157,12 @@ void samplePDFDUNEBeamNDBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendmcSamples.size(); ++i) {
     for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
-      MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
       MCSamples[i].total_weight_pointers[j][0] = &(dunendmcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunendmcSamples[i].norm_s);
-      MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
+      MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
       MCSamples[i].total_weight_pointers[j][3] = &(dunendmcSamples[i].rw_berpaacvwgt[j]);
-      MCSamples[i].total_weight_pointers[j][4] = &(MCSamples[i].flux_w[j]);
+      MCSamples[i].total_weight_pointers[j][4] = &(dunendmcSamples[i].flux_w[j]);
       MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
     }
   }
@@ -366,7 +366,6 @@ void samplePDFDUNEBeamNDBase::setupFDMC(int iSample) {
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
     
     //ETA - this is where the variables that you want to bin your samples in are defined
     //If you want to bin in different variables this is where you put it for now

@@ -178,10 +178,10 @@ void samplePDFDUNEBeamFDBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
-      MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
       MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].norm_s);
-      MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
+      MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
       MCSamples[i].total_weight_pointers[j][3] = &(dunemcSamples[i].rw_berpaacvwgt[j]);
       MCSamples[i].total_weight_pointers[j][4] = &(dunemcSamples[i].flux_w[j]);
       MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
@@ -492,13 +492,9 @@ TH1D* samplePDFDUNEBeamFDBase::get1DVarHist(KinematicTypes Var1,std::vector< std
 		continue;
       }
 
-      if(MCSamples[i].isNC[j]) { //DB Abstract check on MaCh3Modes to determine which apply to neutral current
-        MCSamples[i].osc_w[j] = 1.;
-      }
-
       double Weight = GetEventWeight(i,j);
 	  if (WeightStyle==1) {
-        Weight = MCSamples[i].osc_w[j] * dunemcSamples[i].pot_s * dunemcSamples[i].norm_s * dunemcSamples[i].flux_w[j];
+	    Weight = *(MCSamples[i].osc_w_pointer[j]) * dunemcSamples[i].pot_s * dunemcSamples[i].norm_s * dunemcSamples[i].flux_w[j];
 	  }
 
 	  //ETA - not sure about this
@@ -828,7 +824,6 @@ void samplePDFDUNEBeamFDBase::setupFDMC(int iSample) {
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];    
   }
 }
  

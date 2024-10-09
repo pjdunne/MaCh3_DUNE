@@ -31,9 +31,9 @@ void samplePDFDUNEAtmBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 3;
-      MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
-      MCSamples[i].total_weight_pointers[j][0] = &(MCSamples[i].osc_w[j]);
-      MCSamples[i].total_weight_pointers[j][1] = &(MCSamples[i].flux_w[j]);
+      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j][0] = MCSamples[i].osc_w_pointer[j];
+      MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].flux_w[j]);
       MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].xsec_w[j]);
     }
   }
@@ -125,7 +125,6 @@ void samplePDFDUNEAtmBase::setupFDMC(int iSample) {
     
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->rw_truecz[iEvent] = &(duneobj->rw_truecz[iEvent]);
-    fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];
   }
 }
 

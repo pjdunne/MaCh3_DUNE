@@ -109,9 +109,7 @@ void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*
     }
 
     FDBaseSample->UseNonDoubledAngles(true);
-    FDBaseSample->SetXsecCov(xsec);
     FDBaseSample->SetOscCov(osc);
-    FDBaseSample->SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
 
     // Pure for debugging, lets us set which weights we don't want via the manager
 #if DEBUG_DUNE_WEIGHTS==1
