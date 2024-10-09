@@ -38,7 +38,7 @@ void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*
   std::cout << "cov xsec setup" << std::endl;
   std::cout << "------------------------------" << std::endl;
   
-  std::string  OscMatrixFile = FitManager->raw()["General"]["Systematics"]["OscCovFile"].as<std::string>(); 
+  std::vector<std::string> OscMatrixFile = FitManager->raw()["General"]["Systematics"]["OscCovFile"].as<std::vector<std::string>>();
   std::string  OscMatrixName = FitManager->raw()["General"]["Systematics"]["OscCovName"].as<std::string>(); 
   std::vector<double> oscpars = FitManager->raw()["General"]["OscillationParameters"].as<std::vector<double>>();
   std::cout << "Oscillation Parameters: { ";
@@ -47,7 +47,7 @@ void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*
   }
   std::cout << "}" << std::endl;
   
-  osc = new covarianceOsc(OscMatrixName.c_str(), OscMatrixFile.c_str());
+  osc = new covarianceOsc(OscMatrixFile,OscMatrixName.c_str());
   osc->setName("osc_cov");
   std::cout << "Osc cov setup " << std::endl;
   std::cout << "------------------------------" << std::endl;

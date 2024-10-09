@@ -18,7 +18,7 @@ General:
     XsecCovName: "xsec_cov"
     XsecStepScale: 0.1
     XsecAtGen: false 
-    OscCovFile: "inputs/osc_covariance_DUNE_PDG2021_v1.root"
+    OscCovFile: ["inputs/OscCov_PDG2021_v2.yaml"]
     OscCovName: "osc_cov"
 
   Fitter:
