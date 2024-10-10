@@ -7,12 +7,6 @@
 #include "TError.h"
 
 samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
-  // create dunemc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunemcSamples.push_back(obj);
-  }
-
   Initialise();
 }
 
@@ -20,6 +14,11 @@ samplePDFDUNEAtmBase::~samplePDFDUNEAtmBase() {
 }
 
 void samplePDFDUNEAtmBase::Init() {
+  for (int i=0;i<nSamples;i++) {
+    struct dunemc_base obj = dunemc_base();
+    dunemcSamples.push_back(obj);
+  }
+  
   IsELike = SampleManager->raw()["SampleBools"]["IsELike"].as<bool>();
 }
 
@@ -47,7 +46,12 @@ int samplePDFDUNEAtmBase::setupExperimentMC(int iSample) {
   dunemc_base* duneobj = &dunemcSamples[iSample];
 
   std::string FileName = (mtupleprefix+mtuple_files[iSample]+mtuplesuffix);
+  std::cout << "Reading File:" << FileName << std::endl;
   TFile* File = TFile::Open(FileName.c_str());
+  if (!File || File->IsZombie()) {
+    std::cerr << "Did not find File:" << FileName << std::endl;
+    throw;
+  }
   TTree* Tree = File->Get<TTree>("cafTree");
   if (!Tree){
     std::cerr << "Did not find Tree::cafTree in File:" << FileName << std::endl;
@@ -77,6 +81,10 @@ int samplePDFDUNEAtmBase::setupExperimentMC(int iSample) {
  
   for (int iEvent=0;iEvent<duneobj->nEvents;iEvent++) {
     Tree->GetEntry(iEvent);
+
+    if ((iEvent % (duneobj->nEvents/10))==0) {
+      std::cout << "\tProcessing event: " << iEvent << "/" << duneobj->nEvents << std::endl;
+    }
 
     duneobj->mode[iEvent] = SIMBMode_ToMaCh3Mode(sr->mc.nu[0].mode,sr->mc.nu[0].iscc);
     duneobj->rw_isCC[iEvent] = sr->mc.nu[0].iscc;
@@ -135,8 +143,17 @@ double* samplePDFDUNEAtmBase::ReturnKinematicParameterByReference(KinematicTypes
   case kTrueNeutrinoEnergy:
     KinematicValue = &(dunemcSamples[iSample].rw_etru[iEvent]);
     break;
+  case kRecoNeutrinoEnergy:
+    KinematicValue = &(dunemcSamples[iSample].rw_erec[iEvent]);
+    break;
+  case kTrueCosZ:
+    KinematicValue = &(dunemcSamples[iSample].rw_truecz[iEvent]);
+    break;
+  case kRecoCosZ:
+    KinematicValue = &(dunemcSamples[iSample].rw_theta[iEvent]);
+    break;
   default:
-    std::cerr << "Unknown KinPar" << std::endl;
+    std::cerr << "Unknown KinPar:" << KinPar << std::endl;
     throw;
   }
   
@@ -165,7 +182,18 @@ std::vector<double> samplePDFDUNEAtmBase::ReturnKinematicParameterBinning(std::s
 }
 
 int samplePDFDUNEAtmBase::ReturnKinematicParameterFromString(std::string KinematicParameterStr) {
-  return -1;
+  int ReturnVal;
+
+  if (KinematicParameterStr == "TrueNeutrinoEnergy") {ReturnVal = kTrueNeutrinoEnergy;}
+  else if (KinematicParameterStr == "RecoNeutrinoEnergy") {ReturnVal = kRecoNeutrinoEnergy;}
+  else if (KinematicParameterStr == "TrueCosineZ") {ReturnVal = kTrueCosZ;}
+  else if (KinematicParameterStr == "RecoCosineZ") {ReturnVal = kRecoCosZ;}
+  else {
+    std::cerr << "KinematicParameterStr: " << KinematicParameterStr << " not found" << std::endl;
+    throw;
+  }
+  
+  return ReturnVal;
 }
 
 std::string samplePDFDUNEAtmBase::ReturnStringFromKinematicParameter(int KinematicParameter) {

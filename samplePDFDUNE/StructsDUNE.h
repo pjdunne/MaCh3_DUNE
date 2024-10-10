@@ -176,6 +176,7 @@ enum KinematicTypes {
   kLepPT = 30,
   kLepPZ = 31,
   kTrueRad = 32,
+  kRecoCosZ = 33,
   kNKinematicParams
 };
 
