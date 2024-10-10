@@ -9,9 +9,9 @@
 
 samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
 
-
   pot = pot_;
   
+  //Call insitialise in samplePDFFDBase
   Initialise();
 }
 
@@ -19,7 +19,12 @@ samplePDFDUNEBeamFDBase::~samplePDFDUNEBeamFDBase() {
 }
 
 void samplePDFDUNEBeamFDBase::Init() {
-  iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
+  if (CheckNodeExists(SampleManager->raw(), "DUNESampleBools", "iselike" )) {
+	iselike = SampleManager->raw()["DUNESampleBools"]["iselike"].as<bool>();
+  } else{
+    MACH3LOG_ERROR("Did not find DUNESampleBools:iselike in {}, please add this", SampleManager->GetFileName());
+	throw MaCh3Exception(__FILE__, __LINE__);
+  }
  
   tot_escale_fd_pos = -999;
   tot_escale_sqrt_fd_pos = -999;
@@ -56,7 +61,6 @@ void samplePDFDUNEBeamFDBase::Init() {
   for(auto FuncPar_i  = 0 ; FuncPar_i < funcParsIndex.size() ; ++FuncPar_i){
 	FDDetectorSystPointersMap.insert(std::pair<std::string, const double*>(funcParsNames.at(FuncPar_i), XsecCov->retPointer(funcParsIndex.at(FuncPar_i))));
   }
-
 
   /*
   int func_it = 0;
