@@ -120,6 +120,10 @@ int samplePDFDUNEAtmBase::setupExperimentMC(int iSample) {
 void samplePDFDUNEAtmBase::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
   fdmc_base *fdobj = &(MCSamples[iSample]);  
+
+  //a bit of a hack, make sure that this is only set if you're an atmoshperic object
+  //i.e. this doesn't live in samplePDFFDBase
+  fdobj->rw_truecz = new const double*[fdobj->nEvents];
   
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
