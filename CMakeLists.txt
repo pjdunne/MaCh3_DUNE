@@ -74,7 +74,7 @@ find_package(MaCh3)
 if(NOT MaCh3_FOUND)
   CPMFindPackage(
       NAME MaCh3
-      GIT_TAG "feature_FDConstructorCleanup"
+      GIT_TAG "feature_OscClassMagic"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()

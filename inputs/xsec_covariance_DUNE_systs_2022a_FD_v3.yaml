@@ -13,6 +13,7 @@ Systematics:
     ParameterBounds:
     - 0.0
     - 9999.0
+    ParameterGroup: Xsec
     ParameterValues:
       Generated: 1.0
       PreFitValue: 1.0

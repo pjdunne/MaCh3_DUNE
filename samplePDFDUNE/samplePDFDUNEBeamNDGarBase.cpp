@@ -48,12 +48,12 @@ void samplePDFDUNEBeamNDGarBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendgarmcSamples.size(); ++i) {
     for (int j = 0; j < dunendgarmcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
-      MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
       MCSamples[i].total_weight_pointers[j][0] = &(dunendgarmcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunendgarmcSamples[i].norm_s);
-      MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
+      MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
       MCSamples[i].total_weight_pointers[j][3] = &(dunendgarmcSamples[i].rw_berpaacvwgt[j]);
-      MCSamples[i].total_weight_pointers[j][4] = &(MCSamples[i].flux_w[j]);
+      MCSamples[i].total_weight_pointers[j][4] = &(dunendgarmcSamples[i].flux_w[j]);
       MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
     }
   }

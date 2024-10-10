@@ -54,7 +54,6 @@ int main(int argc, char * argv[]) {
     sample_names.push_back(name);
     TString NameTString = TString(name.c_str());
     
-    DUNEPdfs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
     osc->setParameters();
     DUNEPdfs[sample_i] -> reweight();
     TH1D *SampleHistogram = (TH1D*)DUNEPdfs[sample_i] -> get1DHist() -> Clone(NameTString+"_unosc");

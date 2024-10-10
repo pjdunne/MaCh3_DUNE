@@ -125,7 +125,6 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
 	DUNEPdfs.back()->SetXsecCov(xsec);
 	DUNEPdfs.back()->SetOscCov(osc);
 	DUNEPdfs.back()->SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
-
 	// Pure for debugging, lets us set which weights we don't want via the manager
 #if DEBUG_DUNE_WEIGHTS==1
 	DUNEPdfs.back()->setWeightSwitchOffVector(FitManager->getWeightSwitchOffVector());

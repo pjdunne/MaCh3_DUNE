@@ -182,10 +182,10 @@ void samplePDFDUNEBeamFDBase::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
-      MCSamples[i].total_weight_pointers[j] = new double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
       MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].norm_s);
-      MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].osc_w[j]);
+      MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
       MCSamples[i].total_weight_pointers[j][3] = &(dunemcSamples[i].rw_berpaacvwgt[j]);
       MCSamples[i].total_weight_pointers[j][4] = &(dunemcSamples[i].flux_w[j]);
       MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
@@ -496,13 +496,9 @@ TH1D* samplePDFDUNEBeamFDBase::get1DVarHist(KinematicTypes Var1,std::vector< std
 		continue;
       }
 
-      if(MCSamples[i].isNC[j]) { //DB Abstract check on MaCh3Modes to determine which apply to neutral current
-        MCSamples[i].osc_w[j] = 1.;
-      }
-
       double Weight = GetEventWeight(i,j);
 	  if (WeightStyle==1) {
-        Weight = MCSamples[i].osc_w[j] * dunemcSamples[i].pot_s * dunemcSamples[i].norm_s * dunemcSamples[i].flux_w[j];
+	    Weight = *(MCSamples[i].osc_w_pointer[j]) * dunemcSamples[i].pot_s * dunemcSamples[i].norm_s * dunemcSamples[i].flux_w[j];
 	  }
 
 	  //ETA - not sure about this
@@ -647,36 +643,12 @@ int samplePDFDUNEBeamFDBase::ReturnKinematicParameterFromString(std::string Kine
 
   if (KinematicParameterStr.find("TrueNeutrinoEnergy") != std::string::npos) {return kTrueNeutrinoEnergy;}
   if (KinematicParameterStr.find("RecoNeutrinoEnergy") != std::string::npos) {return kRecoNeutrinoEnergy;}
-  if (KinematicParameterStr.find("TrueQ2") != std::string::npos) {return kTrueQ2;}
-  if (KinematicParameterStr.find("RecoQ2") != std::string::npos) {return kRecoQ2;}
   if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
   if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
   if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
   if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
   if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
-  if (KinematicParameterStr.find("IsCC") != std::string::npos) {return kIsCC;}
-  if (KinematicParameterStr.find("RecoQ") != std::string::npos) {return kRecoQ;}
-  if (KinematicParameterStr.find("TrueCosZ") != std::string::npos) {return kTrueCosZ;}
-  if (KinematicParameterStr.find("TrueRad") != std::string::npos) {return kTrueRad;}
-  if (KinematicParameterStr.find("PionMultiplicity") != std::string::npos) {return kPionMultiplicity;}
-  if (KinematicParameterStr.find("NRecoParticles") != std::string::npos) {return kNRecoParticles;}
-  if (KinematicParameterStr.find("InFDV") != std::string::npos) {return kInFDV;}
-  if (KinematicParameterStr.find("TrueMinusRecoEnergyRatio") != std::string::npos) {return kTrueMinusRecoEnergyRatio;}
-  if (KinematicParameterStr.find("TrueMinusRecoEnergy") != std::string::npos) {return kTrueMinusRecoEnergy;}
-  if (KinematicParameterStr.find("NRecoMuons") != std::string::npos) {return kNRecoMuons;}
-  if (KinematicParameterStr.find("NTrueMuons") != std::string::npos) {return kNTrueMuons;}
-  if (KinematicParameterStr.find("NMuonsRecoOverTruth") != std::string::npos) {return kNMuonsRecoOverTruth;}
-  if (KinematicParameterStr.find("TrueLepEnergy") != std::string::npos) {return kTrueLepEnergy;}
-  if (KinematicParameterStr.find("RecoLepEnergy") != std::string::npos) {return kRecoLepEnergy;}
-  if (KinematicParameterStr.find("RecoXPos") != std::string::npos) {return kRecoXPos;}
-  if (KinematicParameterStr.find("RecoYPos") != std::string::npos) {return kRecoYPos;}
-  if (KinematicParameterStr.find("RecoZPos") != std::string::npos) {return kRecoZPos;}
-  if (KinematicParameterStr.find("RecoRad") != std::string::npos) {return kRecoRad;}
   if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
-  if (KinematicParameterStr.find("OscChannel") != std::string::npos) {return kOscChannel;}
-  if (KinematicParameterStr.find("LepPT") != std::string::npos) {return kLepPT;}
-  if (KinematicParameterStr.find("LepPZ") != std::string::npos) {return kLepPZ;}
-  return kNKinematicParams; 
 
 }
 
@@ -689,8 +661,8 @@ const double* samplePDFDUNEBeamFDBase::ReturnKinematicParameterByReference(doubl
     KinematicValue = &dunemcSamples[iSample].rw_etru[iEvent]; 
     break;
   case kRecoNeutrinoEnergy:
-	KinematicValue = &dunemcSamples[iSample].rw_erec_shifted[iEvent];
-	break;
+    KinematicValue = &dunemcSamples[iSample].rw_erec_shifted[iEvent];
+    break;
   case kTrueXPos:
     KinematicValue = &dunemcSamples[iSample].rw_vtx_x[iEvent];
     break;
@@ -724,12 +696,6 @@ inline std::string samplePDFDUNEBeamFDBase::ReturnStringFromKinematicParameter(i
    case kTrueNeutrinoEnergy:
      KinematicString = "RecoNeutrinoEnergy";
 	 break;
-   case kTrueQ2:
-	 KinematicString = "TrueQ2";
-	 break;
-   case kRecoQ2:
-	 KinematicString = "RecoQ2";
-	 break;
    case kTrueXPos:
 	 KinematicString= "TrueXPos";
 	 break;
@@ -745,71 +711,8 @@ inline std::string samplePDFDUNEBeamFDBase::ReturnStringFromKinematicParameter(i
    case kCVNNue:
 	 KinematicString = "CVNNue";
 	 break;
-   case kIsCC:
-	 KinematicString = "IsCC";
-	 break;
-   case kRecoQ:
-	 KinematicString = "RecoQ";
-	 break;
-   case kRecoXPos:
-	 KinematicString = "RecoXPos";
-	 break;
-   case kRecoYPos:
-	 KinematicString = "RecoYPos";
-	 break;
-   case kRecoZPos:
-	 KinematicString = "RecoZPos";
-	 break;
-   case kTrueCosZ:
-	 KinematicString = "TrueCosZ";
-	 break;
-   case kTrueRad:
-	 KinematicString = "TrueRad";
-	 break;
-   case kRecoRad:
-	 KinematicString = "RecoRad";
-	 break;
-   case kTrueLepEnergy:
-	 KinematicString = "TrueLepEnergy";
-	 break;
-   case kRecoLepEnergy:
-	 KinematicString = "RecoLepEnergy";
-	 break;
    case kM3Mode:
 	 KinematicString = "M3Mode";
-	 break;
-   case kOscChannel:
-	 KinematicString = "OscChannel";
-	 break;
-   case kLepPT:
-	 KinematicString = "LepPT";
-	 break;
-   case kLepPZ:
-	 KinematicString = "LepPZ";
-	 break;
-   case kTrueMinusRecoEnergyRatio:
-	 KinematicString = "TrueMinusRecoEnergyRatio";
-	 break;
-   case kTrueMinusRecoEnergy:
-	 KinematicString = "TrueMinusRecoEnergy";
-	 break;
-   case kNRecoMuons:
-	 KinematicString = "NRecoMuons";
-	 break;
-   case kNTrueMuons:
-	 KinematicString = "NTrueMuons";
-	 break;
-   case kInFDV:
-	 KinematicString = "InFDV";
-	 break;
-   case kPionMultiplicity:
-	 KinematicString = "PionMultiplicity";
-	 break;
-   case kNRecoParticles:
-	 KinematicString = "NRecoParticles";
-	 break;
-   case kNMuonsRecoOverTruth:
-	 KinematicString = "NMuonsRecoOverTruth";
 	 break;
    default:
     break;
@@ -832,7 +735,6 @@ void samplePDFDUNEBeamFDBase::setupFDMC(int iSample) {
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    fdobj->flux_w[iEvent] = duneobj->flux_w[iEvent];    
   }
 }
  

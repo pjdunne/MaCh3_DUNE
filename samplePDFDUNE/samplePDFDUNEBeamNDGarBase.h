@@ -26,6 +26,8 @@ public:
   samplePDFDUNEBeamNDGarBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBeamNDGarBase();
 
+  enum KinematicTypes {kTrueNeutrinoEnergy, kRecoNeutrinoEnergy, kTrueXPos, kTrueYPos, kTrueZPos, kTrueRad, kNMuonsRecoOverTruth, kRecoLepEnergy, kTrueLepEnergy, kRecoXPos, kRecoYPos, kRecoZPos, kRecoRad, kLepPT, kLepPZ, kPionMultiplicity, kNRecoParticles, kInFDV, kTrueMinusRecoEnergyRatio, kTrueMinusRecoEnergy, kNTrueMuons, kNRecoMuons};
+  
  protected:
   void Init();
   int setupExperimentMC(int iSample);

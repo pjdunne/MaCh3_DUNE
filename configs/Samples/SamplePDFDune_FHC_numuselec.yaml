@@ -20,6 +20,8 @@ InputFiles:
   splineprefix: "inputs/DUNE_spline_files/FD_FHC_ger_"
   splinesuffix: "_numuselec_splines.root"
 DetID: 24
+NuOsc:
+  NuOscConfigFile: "configs/CUDAProb3Linear.yaml"
 NSubSamples: 12
 SubSamples:
   - name: "FHC_numu_x_numu"
