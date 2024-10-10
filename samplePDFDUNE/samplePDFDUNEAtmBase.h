@@ -14,6 +14,8 @@ public:
   samplePDFDUNEAtmBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEAtmBase();
 
+  enum KinematicTypes{kTrueNeutrinoEnergy,kRecoNeutrinoEnergy,kTrueCosZ,kRecoCosZ};
+  
  protected:
   void Init();
   int setupExperimentMC(int iSample);
