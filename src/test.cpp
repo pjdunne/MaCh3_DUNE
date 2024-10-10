@@ -38,20 +38,20 @@ int main(int argc, char * argv[]) {
   std::cout << "==============================================================================" << std::endl;
 
   std::string OscillatorCfgName = FitManager->raw()["General"]["OscillatorConfigName"].as<std::string>();
-  Oscillator* Oscill = new Oscillator(OscillatorCfgName);
+  //Oscillator* Oscill = new Oscillator(OscillatorCfgName);
 
   std::cout << "==============================================================================" << std::endl;
 
-  samplePDFDUNEBeamFDBase *numu_FD_pdf = new samplePDFDUNEBeamFDBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
-  samplePDFDUNEBeamNDBase *numu_ND_pdf = new samplePDFDUNEBeamNDBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
-  samplePDFDUNEBeamNDGarBase *numu_NDGar_pdf = new samplePDFDUNEBeamNDGarBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
-  numu_FD_pdf->SetOscillator(Oscill);
+  samplePDFDUNEBeamFDBase *numu_FD_pdf = new samplePDFDUNEBeamFDBase(1.3628319e+23, "configs/SamplePDFDune_FHC_numuselec.yaml", Xsec);
+  //samplePDFDUNEBeamNDBase *numu_ND_pdf = new samplePDFDUNEBeamNDBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
+  //samplePDFDUNEBeamNDGarBase *numu_NDGar_pdf = new samplePDFDUNEBeamNDGarBase(1.3628319e+23, "configs/AtmSample_numuselec.yaml", Xsec);
+  //numu_FD_pdf->SetOscillator(Oscill);
+  numu_FD_pdf->SetOscCov(Osc);
+  numu_FD_pdf->SetupOscCalc(Osc->GetPathLength(), Osc->GetDensity());
   
   std::cout << "==============================================================================" << std::endl;
   
-  numu_FD_pdf->reweight(Osc->getPropPars());
-  TH2D *numu_FD_asimov = (TH2D*)numu_FD_pdf->get2DHist()->Clone("numu_asimov");
+  numu_FD_pdf->reweight();
+  TH2D *numu_FD_asimov = (TH2D*)numu_FD_pdf->get1DHist()->Clone("numu_asimov");
   std::cout << numu_FD_asimov->Integral()/1. << std::endl;
 }
-
-

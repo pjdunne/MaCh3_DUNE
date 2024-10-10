@@ -138,8 +138,6 @@ int main(int argc, char **argv)
   std::map<TString,std::vector<double> > parstarts;
   int lastStep = 0;
 
- 
-
   if(fitMan->raw()["General"]["StartFromPos"].as<bool>()) {//Start from values at the end of an already run chain
     //Read in paramter names and values from file
     std::cout << "MCMC getting starting position from " << fitMan->raw()["General"]["PosFileName"].as<std::string>() << std::endl;
@@ -256,7 +254,6 @@ int main(int argc, char **argv)
   // set nominal
   xsec->setParameters();
 
-
   numu_pdf->reweight(osc->getPropPars());
   TH1D *numu_asimov = (TH1D*)numu_pdf->get1DHist()->Clone("numu_asimov");
   nue_pdf->reweight(osc->getPropPars());
@@ -282,7 +279,6 @@ int main(int argc, char **argv)
 
 
   //###########################################################################################################
-
   // Back to actual nominal for fit
   // If starting from end values of a previous chain set everything to the values from there
   // and do acceptStep() to update fParCurr with these values

@@ -179,44 +179,9 @@ enum KinematicTypes {
   kNKinematicParams
 };
 
-inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr){
-
-  if (KinematicParameterStr.find("TrueNeutrinoEnergy") != std::string::npos) {return kTrueNeutrinoEnergy;}
-  if (KinematicParameterStr.find("RecoNeutrinoEnergy") != std::string::npos) {return kRecoNeutrinoEnergy;}
-  if (KinematicParameterStr.find("TrueQ2") != std::string::npos) {return kTrueQ2;}
-  if (KinematicParameterStr.find("RecoQ2") != std::string::npos) {return kRecoQ2;}
-  if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
-  if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
-  if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
-  if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
-  if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
-  if (KinematicParameterStr.find("IsCC") != std::string::npos) {return kIsCC;}
-  if (KinematicParameterStr.find("RecoQ") != std::string::npos) {return kRecoQ;}
-  if (KinematicParameterStr.find("TrueCosZ") != std::string::npos) {return kTrueCosZ;}
-  if (KinematicParameterStr.find("TrueRad") != std::string::npos) {return kTrueRad;}
-  if (KinematicParameterStr.find("PionMultiplicity") != std::string::npos) {return kPionMultiplicity;}
-  if (KinematicParameterStr.find("NRecoParticles") != std::string::npos) {return kNRecoParticles;}
-  if (KinematicParameterStr.find("InFDV") != std::string::npos) {return kInFDV;}
-  if (KinematicParameterStr.find("TrueMinusRecoEnergyRatio") != std::string::npos) {return kTrueMinusRecoEnergyRatio;}
-  if (KinematicParameterStr.find("TrueMinusRecoEnergy") != std::string::npos) {return kTrueMinusRecoEnergy;}
-  if (KinematicParameterStr.find("NRecoMuons") != std::string::npos) {return kNRecoMuons;}
-  if (KinematicParameterStr.find("NTrueMuons") != std::string::npos) {return kNTrueMuons;}
-  if (KinematicParameterStr.find("NMuonsRecoOverTruth") != std::string::npos) {return kNMuonsRecoOverTruth;}
-  if (KinematicParameterStr.find("TrueLepEnergy") != std::string::npos) {return kTrueLepEnergy;}
-  if (KinematicParameterStr.find("RecoLepEnergy") != std::string::npos) {return kRecoLepEnergy;}
-  if (KinematicParameterStr.find("RecoXPos") != std::string::npos) {return kRecoXPos;}
-  if (KinematicParameterStr.find("RecoYPos") != std::string::npos) {return kRecoYPos;}
-  if (KinematicParameterStr.find("RecoZPos") != std::string::npos) {return kRecoZPos;}
-  if (KinematicParameterStr.find("RecoRad") != std::string::npos) {return kRecoRad;}
-  if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
-  if (KinematicParameterStr.find("OscChannel") != std::string::npos) {return kOscChannel;}
-  if (KinematicParameterStr.find("LepPT") != std::string::npos) {return kLepPT;}
-  if (KinematicParameterStr.find("LepPZ") != std::string::npos) {return kLepPZ;}
-  return kNKinematicParams; 
-}
 
 // ETA - this is all getting a bit silly. We should make a map and load the string to map somewhere
-inline std::string ReturnStringFromKinematicType(KinematicTypes KinVar){
+/*inline std::string ReturnStringFromKinematicType(KinematicTypes KinVar){
   std::string KinematicString = "";
  
   switch(KinVar){
@@ -319,6 +284,7 @@ inline std::string ReturnStringFromKinematicType(KinematicTypes KinVar){
 
   return KinematicString;
 }
+*/
 
 // ********************************
 // ND Detector Systematic Functions
@@ -1261,14 +1227,6 @@ inline int GENIEMode_ToMaCh3Mode(int GENIE_mode, int isCC) {
   }
 
   return ReturnMode;
-};
-
-// *****************
-// Enum for detector, used in flux->getBin
-enum Detector_enum {
-  // *****************
-  kND280 = 0,
-  kSK = 1
 };
 
 // *******************************

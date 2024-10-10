@@ -1,5 +1,11 @@
 #!/bin/bash
 #################################################################
+source ./build/bin/setup.MaCh3DUNE.sh
+source ../MaCh3_core_dev/build/bin/setup.MaCh3.sh
+./build/bin/setup.SRProxy.sh 
+./build/bin/setup.duneanaobj.sh
+export LD_LIBRARY_PATH=${PWD}/build/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${PWD}/build/_deps/yaml-cpp-build:${LD_LIBRARY_PATH}
 
 # Cuda directory
 #   Unset if you don't have a CUDA GPU

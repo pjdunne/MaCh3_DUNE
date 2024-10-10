@@ -12,8 +12,7 @@ SelectionCuts:
 Binning:
   XVarStr: "RecoNeutrinoEnergy" 
   XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
-SampleBools:
-  IsRHC: yes
+DUNESampleBools:
   iselike: no
 InputFiles:
   mtupleprefix: "inputs/DUNE_CAF_files/FD_RHC_ger_"

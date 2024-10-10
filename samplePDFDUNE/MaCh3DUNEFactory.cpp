@@ -5,51 +5,80 @@
 #include "samplePDFDUNE/samplePDFDUNEBeamNDGarBase.h"
 #include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 
-void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*> &DUNEPdfs, covarianceXsec *&xsec, covarianceOsc *&osc){
+samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, double POT, std::string SampleConfig, covarianceXsec* &xsec) {
+
+  samplePDFFDBase *FDBaseSample;
+  if (SampleType == "BeamFD") {
+	FDBaseSample = new samplePDFDUNEBeamFDBase(POT, SampleConfig, xsec);
+  } else if (SampleType == "BeamND") {
+    FDBaseSample = new samplePDFDUNEBeamNDBase(POT, SampleConfig, xsec);
+  } else if (SampleType == "BeamNDGar") {
+	FDBaseSample = new samplePDFDUNEBeamNDGarBase(POT, SampleConfig, xsec);
+  } else if (SampleType == "Atm") {
+	FDBaseSample = new samplePDFDUNEAtmBase(POT, SampleConfig, xsec);
+  } else {
+	MACH3LOG_ERROR("Invalid SampleType: {} defined in {}", SampleType, SampleConfig);
+	throw MaCh3Exception(__FILE__, __LINE__);
+  } 
+
+  return FDBaseSample;
+}
+
+void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &DUNEPdfs, covarianceXsec *&xsec, covarianceOsc *&osc){
 
   // there's a check inside the manager class that does this; left here for demonstrative purposes
   if (FitManager == nullptr) {
-    std::cerr << "Didn't find a good config in input configuration" << std::endl;
-    throw;
+	MACH3LOG_ERROR("Didn't find a good config in input configuration");
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   //Check that you have specified some DUNE samples
   if(!FitManager->raw()["General"]["DUNESamples"]){
-    std::cerr << "You didn't specify any DUNESample configs to create samples from. Please add General:DUNESamples to your config" << std::endl;
-    throw;
+    MACH3LOG_ERROR("You didn't specify any DUNESample configs to create samples from. Please add General:DUNESamples to your config");
+	throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   //Check that you have specified some DUNE samples
   if(!FitManager->raw()["General"]["DUNESamplesPOT"]){
-    std::cerr << "You didn't specify the POT for each DUNE sample configs to create samples from. Please add General:DUNESamplesPOT to your config" << std::endl;
-    throw;
+    MACH3LOG_ERROR("You didn't specify the POT for each DUNE sample configs to create samples from. Please add General:DUNESamplesPOT to your config");
+	throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   // Get inputted systematic parameters covariance matrices
-  std::vector<std::string> xsecCovMatrixFile = FitManager->raw()["General"]["Systematics"]["XsecCovFile"].as<std::vector<std::string>>();
+  std::vector<std::string> xsecCovMatrixFile;
+  if (CheckNodeExists(FitManager->raw(), "General", "Systematics", "XsecCovFile") ){
+   	xsecCovMatrixFile = FitManager->raw()["General"]["Systematics"]["XsecCovFile"].as<std::vector<std::string>>();
+  } else {
+    MACH3LOG_ERROR("Require General:Systematics:XsecCovFile node in {}, please add this to the file!", FitManager->GetFileName());
+	throw MaCh3Exception(__FILE__, __LINE__);
+  }
   
   // Setup the covariance matrices
   if(xsec == nullptr){
     xsec = new covarianceXsec(xsecCovMatrixFile, "xsec_cov");
   }
   else{
-    std::cout << "covariance Xsec has already been created so I am not re-initialising the object" << std::endl; 
+    MACH3LOG_INFO("covariance Xsec has already been created so I am not re-initialising the object"); 
   }
-  std::cout << "cov xsec setup" << std::endl;
+
+  MACH3LOG_INFO("cov xsec setup");
   std::cout << "------------------------------" << std::endl;
   
   std::vector<std::string> OscMatrixFile = FitManager->raw()["General"]["Systematics"]["OscCovFile"].as<std::vector<std::string>>();
   std::string  OscMatrixName = FitManager->raw()["General"]["Systematics"]["OscCovName"].as<std::string>(); 
   std::vector<double> oscpars = FitManager->raw()["General"]["OscillationParameters"].as<std::vector<double>>();
-  std::cout << "Oscillation Parameters: { ";
+  std::string OscPars = "";
+
   for (unsigned int i=0;i<oscpars.size();i++) {
-    std::cout << oscpars[i] << " ";
+    OscPars+=std::to_string(oscpars[i]);
+	OscPars+=", ";
   }
-  std::cout << "}" << std::endl;
+  MACH3LOG_INFO("Oscillation Parameters being used: {} ", OscPars);
+
   
   osc = new covarianceOsc(OscMatrixFile,OscMatrixName.c_str());
   osc->setName("osc_cov");
-  std::cout << "Osc cov setup " << std::endl;
+  MACH3LOG_INFO("Osc cov setup");
   std::cout << "------------------------------" << std::endl;
   
   // ==========================================================
@@ -66,7 +95,7 @@ void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*
       xsec->toggleFixParameter(XsecFixParams.at(j));
     }
   }
-  std::cout << "xsec parameters loop done" << std::endl;
+  MACH3LOG_INFO("xsec parameters loop done");
   
   // Fill the parameter values with their nominal values
   // should _ALWAYS_ be done before overriding with fix or flat
@@ -76,13 +105,13 @@ void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*
   //####################################################################################
   //Create samplePDFDUNEBase Objs
   std::cout << "-------------------------------------------------------------------" << std::endl;
-  std::cout << "Loading T2K samples.." << "\n" << std::endl;
+  MACH3LOG_INFO("Loading DUNE samples..");
   std::vector<std::string> DUNESampleConfigs = FitManager->raw()["General"]["DUNESamples"].as<std::vector<std::string>>();
   std::vector<double> DUNESamplePOTs = FitManager->raw()["General"]["DUNESamplesPOT"].as<std::vector<double>>();
   
   if(DUNESampleConfigs.size() != DUNESamplePOTs.size()){
-    std::cerr << "Size of DUNESamples and DUNESamplesPOT is not the same and they need to be!" << std::endl;
-    throw;
+    MACH3LOG_ERROR("Size of DUNESamples and DUNESamplesPOT is not the same and they need to be!");
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   for(unsigned int Sample_i = 0 ; Sample_i < DUNESampleConfigs.size() ; Sample_i++){
@@ -90,36 +119,18 @@ void MakeMaCh3DuneBeamInstance(manager *FitManager, std::vector<samplePDFFDBase*
     manager* tempSampleManager = new manager(DUNESampleConfigs[Sample_i].c_str());
     std::string SampleType = tempSampleManager->raw()["SampleType"].as<std::string>();
 
-    samplePDFFDBase* FDBaseSample;
-    if (SampleType == "BeamFD") {
-      samplePDFDUNEBeamFDBase* BeamFDSample = new samplePDFDUNEBeamFDBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
-      FDBaseSample = (samplePDFFDBase*)BeamFDSample;
-    } else if (SampleType == "BeamND") {
-      samplePDFDUNEBeamNDBase* BeamNDSample = new samplePDFDUNEBeamNDBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
-      FDBaseSample = (samplePDFFDBase*)BeamNDSample;
-    } else if (SampleType == "BeamNDGar") {
-      samplePDFDUNEBeamNDGarBase* BeamNDGarSample = new samplePDFDUNEBeamNDGarBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
-      FDBaseSample = (samplePDFFDBase*)BeamNDGarSample;
-    } else if (SampleType == "Atm") {
-      samplePDFDUNEAtmBase* AtmSample = new samplePDFDUNEAtmBase(DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i].c_str(), xsec);
-      FDBaseSample = (samplePDFFDBase*)AtmSample;
-    } else {
-      std::cerr << "Invalid SampleType:" << SampleType << " defined in config:" << DUNESampleConfigs[Sample_i] << std::endl;
-      throw;
-    }
+	DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i], xsec));
 
-    FDBaseSample->UseNonDoubledAngles(true);
-    FDBaseSample->SetXsecCov(xsec);
-    FDBaseSample->SetOscCov(osc);
-    FDBaseSample->SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
+	DUNEPdfs.back()->UseNonDoubledAngles(true);
+	DUNEPdfs.back()->SetXsecCov(xsec);
+	DUNEPdfs.back()->SetOscCov(osc);
+	DUNEPdfs.back()->SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
 
-    // Pure for debugging, lets us set which weights we don't want via the manager
+	// Pure for debugging, lets us set which weights we don't want via the manager
 #if DEBUG_DUNE_WEIGHTS==1
-    FDBaseSample->setWeightSwitchOffVector(FitManager->getWeightSwitchOffVector());
-    FDBaseSample->setXsecWeightSwitchOffVector(FitManager->getXsecWeightSwitchOffVector());
+	DUNEPdfs.back()->setWeightSwitchOffVector(FitManager->getWeightSwitchOffVector());
+	DUNEPdfs.back()->setXsecWeightSwitchOffVector(FitManager->getXsecWeightSwitchOffVector());
 #endif
-
-    DUNEPdfs.push_back(FDBaseSample);
   }
   
   return;

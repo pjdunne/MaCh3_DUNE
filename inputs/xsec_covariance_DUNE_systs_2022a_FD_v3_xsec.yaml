@@ -18,6 +18,7 @@ Systematics:
     StepScale:
       MCMC: 0.4
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -38,6 +39,7 @@ Systematics:
     StepScale:
       MCMC: 0.2
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -58,6 +60,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 0.09
@@ -78,6 +81,7 @@ Systematics:
     StepScale:
       MCMC: 0.4
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -98,6 +102,7 @@ Systematics:
     StepScale:
       MCMC: 0.4
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -118,6 +123,7 @@ Systematics:
     StepScale:
       MCMC: 0.4
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -138,6 +144,7 @@ Systematics:
     StepScale:
       MCMC: 0.8
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -159,6 +166,7 @@ Systematics:
     StepScale:
       MCMC: 0.1
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -180,6 +188,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -201,6 +210,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -222,6 +232,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -243,6 +254,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -266,6 +278,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -289,6 +302,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -312,6 +326,7 @@ Systematics:
     StepScale:
       MCMC: 0.7
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -335,6 +350,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -358,6 +374,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -383,6 +400,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -408,6 +426,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -433,6 +452,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -458,6 +478,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -483,6 +504,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -504,6 +526,7 @@ Systematics:
     StepScale:
       MCMC: 0.5
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -525,6 +548,7 @@ Systematics:
     StepScale:
       MCMC: 0.2
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -546,6 +570,7 @@ Systematics:
     StepScale:
       MCMC: 0.2
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -567,6 +592,7 @@ Systematics:
     StepScale:
       MCMC: 0.2
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -588,6 +614,7 @@ Systematics:
     StepScale:
       MCMC: 0.1
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -609,6 +636,7 @@ Systematics:
     StepScale:
       MCMC: 0.1
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -629,6 +657,7 @@ Systematics:
     StepScale:
       MCMC: 0.5
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -649,6 +678,7 @@ Systematics:
     StepScale:
       MCMC: 0.3
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -669,6 +699,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -689,6 +720,7 @@ Systematics:
     StepScale:
       MCMC: 0.4
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 0.02
@@ -709,6 +741,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -729,6 +762,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -749,6 +783,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -769,6 +804,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -789,6 +825,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -809,6 +846,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -829,6 +867,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -849,6 +888,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -869,6 +909,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -889,6 +930,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -909,6 +951,7 @@ Systematics:
     StepScale:
       MCMC: 0.4
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -929,6 +972,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -949,6 +993,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -969,6 +1014,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -989,6 +1035,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1009,6 +1056,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1029,6 +1077,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1049,6 +1098,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1069,6 +1119,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1089,6 +1140,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1109,6 +1161,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1129,6 +1182,7 @@ Systematics:
     StepScale:
       MCMC: 0.6
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1148,6 +1202,7 @@ Systematics:
     StepScale:
       MCMC: 0.1
     Type: Spline
+    ParameterGroup: Xsec
 - Systematic:
     DetID: 25
     Error: 1.0
@@ -1167,3 +1222,4 @@ Systematics:
     StepScale:
       MCMC: 0.1
     Type: Spline
+    ParameterGroup: Xsec

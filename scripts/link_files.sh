@@ -4,13 +4,13 @@
 
 MACH3DIR=`pwd`
 #FILESDIR=/vols/t2k/users/ljw20/data/DUNE_2021/DUNE_2021_splines_tdr_v8
-FILESDIR=/vols/dune/ea2817/DUNE_inputs/CAF_files_for_FD_TDR
+FILESDIR=/vols/dune/ljw20/
 
 if [ ! -d "$MACH3DIR/inputs/DUNE_CAF_files" ]
 then
   mkdir $MACH3DIR/inputs/DUNE_CAF_files
 fi
-ln -sf ${FILESDIR}/CAFs/*root inputs/DUNE_CAF_files
+ln -sf ${FILESDIR}/DUNE_2023_FD_CAFs/*root inputs/DUNE_CAF_files
 
 
 
@@ -19,4 +19,4 @@ then
   mkdir $MACH3DIR/inputs/DUNE_spline_files
 fi
 
-ln -sf /vols/t2k/users/ljw20/data/DUNE_2021/DUNE_2021_splines/*root inputs/DUNE_spline_files
+ln -sf ${FILESDIR}/DUNE_2023_FD_splines/*root inputs/DUNE_spline_files
