@@ -15,8 +15,38 @@
 #include "samplePDFDUNE/MaCh3DUNEFactory.h"
 #include "samplePDFDUNE/samplePDFDUNEBeamFDBase.h"
 
-void Write1DHistogramsToFile(manager* &Manager, std::vector<TH1D*> Histograms) {
+void Write1DHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histograms) {
 
+  // Now write out the saved hsitograms to file 
+  auto OutputFile = std::unique_ptr<TFile>(new TFile(OutFileName.c_str(), "RECREATE"));
+  OutputFile->cd();
+  for(auto Hist : Histograms){
+    Hist->Write();
+  }
+  OutputFile->Close();
+
+  return;
+}
+
+void Write1DHistogramsToPdf(std::string OutFileName, std::vector<TH1D*> Histograms) {
+
+  // Now write out the saved hsitograms to file 
+
+
+  //Remove root from end of file
+  OutFileName.erase(OutFileName.find('.'));
+  OutFileName+=".pdf";
+
+  auto c1 = std::unique_ptr<TCanvas>(new TCanvas("c1", "c1", 800, 600));
+  c1->cd();
+  c1->Print(std::string(OutFileName+"[").c_str());
+  for(auto Hist : Histograms){
+    Hist->Draw("HIST");
+	c1->Print(OutFileName.c_str());
+  }
+  c1->Print(std::string(OutFileName+"]").c_str());
+
+  return;
 }
 
 int main(int argc, char * argv[]) {
@@ -25,7 +55,7 @@ int main(int argc, char * argv[]) {
     return 1;
   }
 
-  manager *fitMan = new manager(argv[1]);
+  auto fitMan = std::unique_ptr<manager>(new manager(argv[1]));
 
   covarianceXsec* xsec = nullptr;
   covarianceOsc* osc = nullptr;
@@ -34,7 +64,7 @@ int main(int argc, char * argv[]) {
   //Create samplePDFFD objects
   
   std::vector<samplePDFFDBase*> DUNEPdfs;
-  MakeMaCh3DuneInstance(fitMan, DUNEPdfs, xsec, osc); 
+  MakeMaCh3DuneInstance(fitMan.get(), DUNEPdfs, xsec, osc); 
 
 
   std::vector<TH1D*> DUNEHists;
@@ -47,13 +77,8 @@ int main(int argc, char * argv[]) {
 
   }
 
-  // Now write out the saved hsitograms to file 
   std::string OutFileName = GetFromManager<std::string>(fitMan->raw()["General"]["OutputFile"], "EventRatesOutput.root");
 
-  auto OutputFile = std::unique_ptr<TFile>(new TFile(OutFileName.c_str(), "RECREATE"));
-  OutputFile->cd();
-  for(auto Hists : DUNEHists){
-    Hists->Write();
-  }
-  OutputFile->Close();
+  Write1DHistogramsToFile(OutFileName, DUNEHists); 
+  Write1DHistogramsToPdf(OutFileName, DUNEHists);
 }
