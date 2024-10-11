@@ -6,7 +6,7 @@
 //ROOT includes
 #include "TError.h"
 
-samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
+samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
   Initialise();
 }
 
@@ -45,7 +45,7 @@ int samplePDFDUNEAtmBase::setupExperimentMC(int iSample) {
   caf::StandardRecord* sr = new caf::StandardRecord();
   dunemc_base* duneobj = &dunemcSamples[iSample];
 
-  std::string FileName = (mtupleprefix+mtuple_files[iSample]+mtuplesuffix);
+  std::string FileName = mtuple_files[iSample];
   std::cout << "Reading File:" << FileName << std::endl;
   TFile* File = TFile::Open(FileName.c_str());
   if (!File || File->IsZombie()) {

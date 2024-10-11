@@ -7,10 +7,7 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
-
-  pot = pot_;
-  
+samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
   //Call insitialise in samplePDFFDBase
   Initialise();
 }
@@ -23,6 +20,13 @@ void samplePDFDUNEBeamFDBase::Init() {
 	iselike = SampleManager->raw()["DUNESampleBools"]["iselike"].as<bool>();
   } else{
     MACH3LOG_ERROR("Did not find DUNESampleBools:iselike in {}, please add this", SampleManager->GetFileName());
+	throw MaCh3Exception(__FILE__, __LINE__);
+  }
+
+  if (CheckNodeExists(SampleManager->raw(), "POT")) {
+    pot = SampleManager->raw()["POT"].as<double>();
+  } else{
+    MACH3LOG_ERROR("POT not defined in {}, please add this!", SampleManager->GetFileName());
 	throw MaCh3Exception(__FILE__, __LINE__);
   }
  
@@ -202,7 +206,7 @@ int samplePDFDUNEBeamFDBase::setupExperimentMC(int iSample) {
   bool signal = sample_signal[iSample];
   
   std::cout << "-------------------------------------------------------------------" << std::endl;
-  std::cout << "input file: " << sampleFile << std::endl;
+  MACH3LOG_INFO("input file: {}", sampleFile);
   
   _sampleFile = new TFile(sampleFile, "READ");
   _data = (TTree*)_sampleFile->Get("caf");

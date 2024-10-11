@@ -7,7 +7,7 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamNDBase::samplePDFDUNEBeamNDBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
+samplePDFDUNEBeamNDBase::samplePDFDUNEBeamNDBase(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
   // create dunendmc storage
   for (int i=0;i<nSamples;i++) {
     struct dunemc_base obj = dunemc_base();

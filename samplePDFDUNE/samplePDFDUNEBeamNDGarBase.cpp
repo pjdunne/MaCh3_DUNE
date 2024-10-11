@@ -8,8 +8,7 @@
 #include "manager/manager.h"
 #include "TLeaf.h"
 
-samplePDFDUNEBeamNDGarBase::samplePDFDUNEBeamNDGarBase(double pot_, std::string mc_version_, covarianceXsec* XsecCov_) : samplePDFFDBase(pot_, mc_version_, XsecCov_) {
-  
+samplePDFDUNEBeamNDGarBase::samplePDFDUNEBeamNDGarBase(std::string mc_version_, covarianceXsec* XsecCov_) : samplePDFFDBase(mc_version_, XsecCov_) {
   Initialise();
 }
 

@@ -22,7 +22,7 @@
 class samplePDFDUNEBeamNDBase : virtual public samplePDFFDBase
 {
 public:
-  samplePDFDUNEBeamNDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
+  samplePDFDUNEBeamNDBase(std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBeamNDBase();
 
   enum KinematicTypes {kTrueNeutrinoEnergy,kRecoQ};
@@ -54,6 +54,8 @@ public:
   TTree *_data;
   TString _nutype;
   int _mode;
+
+  double pot;
 
   // dunendmc Variables
   double _ev;

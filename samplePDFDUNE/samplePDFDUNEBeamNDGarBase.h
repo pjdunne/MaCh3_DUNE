@@ -23,7 +23,7 @@
 class samplePDFDUNEBeamNDGarBase : virtual public samplePDFFDBase
 {
 public:
-  samplePDFDUNEBeamNDGarBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
+  samplePDFDUNEBeamNDGarBase(std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBeamNDGarBase();
 
   enum KinematicTypes {kTrueNeutrinoEnergy, kRecoNeutrinoEnergy, kTrueXPos, kTrueYPos, kTrueZPos, kTrueRad, kNMuonsRecoOverTruth, kRecoLepEnergy, kTrueLepEnergy, kRecoXPos, kRecoYPos, kRecoZPos, kRecoRad, kLepPT, kLepPZ, kPionMultiplicity, kNRecoParticles, kInFDV, kTrueMinusRecoEnergyRatio, kTrueMinusRecoEnergy, kNTrueMuons, kNRecoMuons};
@@ -57,6 +57,8 @@ public:
   TTree *_data;
   TString _nutype;
   int _mode;
+
+  double pot;
 
   // dunendgarmc Variables
   double _ev;
