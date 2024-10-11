@@ -2,7 +2,6 @@ General:
   OutputFile: "DuneEventRates.root"
 
   DUNESamples: ["configs/Samples/AtmSample_numuselec.yaml","configs/Samples/AtmSample_nueselec.yaml"]
-  DUNESamplesPOT: [1.,1.]
 
   #Nu-FIT
   #OscillationParameters: [0.310, 0.582, 0.224, 7.39E-5, 2.5254E-3, -2.498, 1300, 2.5]
