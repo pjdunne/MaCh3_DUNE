@@ -33,7 +33,7 @@ int main(int argc, char * argv[]) {
   //Create samplePDFSKBase Objs
   std::cout << "Loading T2K samples.." << "\n" << std::endl;
   std::vector<samplePDFFDBase*> DUNEPdfs;
-  MakeMaCh3DuneBeamInstance(FitManager, DUNEPdfs, xsec, osc); 
+  MakeMaCh3DuneInstance(FitManager, DUNEPdfs, xsec, osc); 
   //Setup the cross-section parameters
   //This should get the prior values.
   std::vector<double> XsecParVals = xsec->getNominalArray();

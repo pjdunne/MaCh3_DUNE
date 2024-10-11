@@ -22,7 +22,7 @@
 class samplePDFDUNEBeamFDBase : virtual public samplePDFFDBase
 {
 public:
-  samplePDFDUNEBeamFDBase(double pot, std::string mc_version, covarianceXsec* xsec_cov);
+  samplePDFDUNEBeamFDBase(std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBeamFDBase();
 
   enum KinematicTypes {kTrueNeutrinoEnergy,kRecoNeutrinoEnergy,kTrueXPos,kTrueYPos,kTrueZPos,kCVNNumu,kCVNNue,kM3Mode,kOscChannel};

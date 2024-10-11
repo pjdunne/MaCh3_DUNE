@@ -5,22 +5,22 @@
 #include "samplePDFDUNE/samplePDFDUNEBeamNDGarBase.h"
 #include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
 
-samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, double POT, std::string SampleConfig, covarianceXsec* &xsec) {
+samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string SampleConfig, covarianceXsec* &xsec) {
 
   samplePDFFDBase *FDBaseSample;
   if (SampleType == "BeamFD") {
-	FDBaseSample = new samplePDFDUNEBeamFDBase(POT, SampleConfig, xsec);
+    FDBaseSample = new samplePDFDUNEBeamFDBase(SampleConfig, xsec);
   } else if (SampleType == "BeamND") {
-    FDBaseSample = new samplePDFDUNEBeamNDBase(POT, SampleConfig, xsec);
+    FDBaseSample = new samplePDFDUNEBeamNDBase(SampleConfig, xsec);
   } else if (SampleType == "BeamNDGar") {
-	FDBaseSample = new samplePDFDUNEBeamNDGarBase(POT, SampleConfig, xsec);
+    FDBaseSample = new samplePDFDUNEBeamNDGarBase(SampleConfig, xsec);
   } else if (SampleType == "Atm") {
-	FDBaseSample = new samplePDFDUNEAtmBase(POT, SampleConfig, xsec);
+    FDBaseSample = new samplePDFDUNEAtmBase(SampleConfig, xsec);
   } else {
-	MACH3LOG_ERROR("Invalid SampleType: {} defined in {}", SampleType, SampleConfig);
-	throw MaCh3Exception(__FILE__, __LINE__);
+    MACH3LOG_ERROR("Invalid SampleType: {} defined in {}", SampleType, SampleConfig);
+    throw MaCh3Exception(__FILE__, __LINE__);
   } 
-
+  
   return FDBaseSample;
 }
 
@@ -107,28 +107,21 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   std::cout << "-------------------------------------------------------------------" << std::endl;
   MACH3LOG_INFO("Loading DUNE samples..");
   std::vector<std::string> DUNESampleConfigs = FitManager->raw()["General"]["DUNESamples"].as<std::vector<std::string>>();
-  std::vector<double> DUNESamplePOTs = FitManager->raw()["General"]["DUNESamplesPOT"].as<std::vector<double>>();
-  
-  if(DUNESampleConfigs.size() != DUNESamplePOTs.size()){
-    MACH3LOG_ERROR("Size of DUNESamples and DUNESamplesPOT is not the same and they need to be!");
-    throw MaCh3Exception(__FILE__, __LINE__);
-  }
   
   for(unsigned int Sample_i = 0 ; Sample_i < DUNESampleConfigs.size() ; Sample_i++){
 
     manager* tempSampleManager = new manager(DUNESampleConfigs[Sample_i].c_str());
     std::string SampleType = tempSampleManager->raw()["SampleType"].as<std::string>();
-
-	DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESamplePOTs[Sample_i], DUNESampleConfigs[Sample_i], xsec));
-
-	DUNEPdfs.back()->UseNonDoubledAngles(true);
-	DUNEPdfs.back()->SetXsecCov(xsec);
-	DUNEPdfs.back()->SetOscCov(osc);
-	DUNEPdfs.back()->SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
-	// Pure for debugging, lets us set which weights we don't want via the manager
+    
+    DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESampleConfigs[Sample_i], xsec));
+    
+    DUNEPdfs.back()->UseNonDoubledAngles(true);
+    DUNEPdfs.back()->SetXsecCov(xsec);
+    DUNEPdfs.back()->SetOscCov(osc);
+    // Pure for debugging, lets us set which weights we don't want via the manager
 #if DEBUG_DUNE_WEIGHTS==1
-	DUNEPdfs.back()->setWeightSwitchOffVector(FitManager->getWeightSwitchOffVector());
-	DUNEPdfs.back()->setXsecWeightSwitchOffVector(FitManager->getXsecWeightSwitchOffVector());
+    DUNEPdfs.back()->setWeightSwitchOffVector(FitManager->getWeightSwitchOffVector());
+    DUNEPdfs.back()->setXsecWeightSwitchOffVector(FitManager->getXsecWeightSwitchOffVector());
 #endif
   }
   

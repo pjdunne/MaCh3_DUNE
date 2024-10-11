@@ -6,7 +6,7 @@
 //ROOT includes
 #include "TError.h"
 
-samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
+samplePDFDUNEAtmBase::samplePDFDUNEAtmBase(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
   Initialise();
 }
 

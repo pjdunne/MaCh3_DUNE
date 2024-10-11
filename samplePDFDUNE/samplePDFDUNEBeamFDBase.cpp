@@ -7,10 +7,7 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(double pot_, std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(pot_, mc_version_, xsec_cov_) {
-
-  pot = pot_;
-  
+samplePDFDUNEBeamFDBase::samplePDFDUNEBeamFDBase(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
   //Call insitialise in samplePDFFDBase
   Initialise();
 }
