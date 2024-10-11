@@ -38,12 +38,6 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
 	throw MaCh3Exception(__FILE__, __LINE__);
   }
   
-  //Check that you have specified some DUNE samples
-  if(!FitManager->raw()["General"]["DUNESamplesPOT"]){
-    MACH3LOG_ERROR("You didn't specify the POT for each DUNE sample configs to create samples from. Please add General:DUNESamplesPOT to your config");
-	throw MaCh3Exception(__FILE__, __LINE__);
-  }
-  
   // Get inputted systematic parameters covariance matrices
   std::vector<std::string> xsecCovMatrixFile;
   if (CheckNodeExists(FitManager->raw(), "General", "Systematics", "XsecCovFile") ){

@@ -45,7 +45,7 @@ int samplePDFDUNEAtmBase::setupExperimentMC(int iSample) {
   caf::StandardRecord* sr = new caf::StandardRecord();
   dunemc_base* duneobj = &dunemcSamples[iSample];
 
-  std::string FileName = (mtupleprefix+mtuple_files[iSample]+mtuplesuffix);
+  std::string FileName = mtuple_files[iSample];
   std::cout << "Reading File:" << FileName << std::endl;
   TFile* File = TFile::Open(FileName.c_str());
   if (!File || File->IsZombie()) {
