@@ -13,7 +13,6 @@
 #include <TMath.h>
 
 #include "samplePDFDUNE/MaCh3DUNEFactory.h"
-#include "samplePDFDUNE/samplePDFDUNEBeamFDBase.h"
 
 void Write1DHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histograms) {
 

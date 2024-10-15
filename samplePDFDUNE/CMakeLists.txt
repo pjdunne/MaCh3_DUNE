@@ -1,16 +1,16 @@
 set(HEADERS
-  samplePDFDUNEAtmBase.h
-  samplePDFDUNEBeamFDBase.h
-  samplePDFDUNEBeamNDBase.h
-  samplePDFDUNEBeamNDGarBase.h
+  samplePDFDUNEAtm.h
+  samplePDFDUNEBeamFD.h
+  samplePDFDUNEBeamND.h
+  samplePDFDUNEBeamNDGar.h
   MaCh3DUNEFactory.h 
 )
 
 add_library(SamplePDFDUNE SHARED
-  samplePDFDUNEAtmBase.cpp
-  samplePDFDUNEBeamFDBase.cpp
-  samplePDFDUNEBeamNDBase.cpp
-  samplePDFDUNEBeamNDGarBase.cpp
+  samplePDFDUNEAtm.cpp
+  samplePDFDUNEBeamFD.cpp
+  samplePDFDUNEBeamND.cpp
+  samplePDFDUNEBeamNDGar.cpp
   MaCh3DUNEFactory.cpp
 )
 
