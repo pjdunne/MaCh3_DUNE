@@ -587,89 +587,89 @@ void makePlot(TString ReducedChain, int hierarchy, bool doRC = false, bool LogY 
   if(levSigs) {
       if(hierarchy == 1) {
         if(LogY) {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_NH_LogY.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_NH_LogY.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_NH_LogY.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_NH_LogY.pdf"); 
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_NH_LogY.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_NH_LogY.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_NH_LogY.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_NH_LogY.pdf"); 
         }
         else {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_NH.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_NH.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_NH.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_NH.pdf");
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_NH.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_NH.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_NH.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_NH.pdf");
         }
       }
       if(hierarchy == 0) {
         if(LogY) {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_both_LogY.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_both_LogY.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_both_LogY.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_both_LogY.pdf"); 
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_both_LogY.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_both_LogY.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_both_LogY.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_both_LogY.pdf"); 
         }
         else {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_both.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_both.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_both.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_both.pdf");
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_both.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_both.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_both.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_both.pdf");
         }
       }
       if(hierarchy == -1) {
         if(LogY) {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_IH_LogY.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_IH_LogY.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_IH_LogY.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_IH_LogY.pdf"); 
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_IH_LogY.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_IH_LogY.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_IH_LogY.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_IH_LogY.pdf"); 
         }
         else {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_IH.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_IH.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_IH.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_IH.pdf");
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_IH.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_IH.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_IH.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_IH.pdf");
         }
       }
   }
   else {
       if(hierarchy == 1) {
         if(LogY) {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_NH_LogY_perc.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_NH_LogY_perc.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_NH_LogY_perc.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_NH_LogY_perc.pdf"); 
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_NH_LogY_perc.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_NH_LogY_perc.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_NH_LogY_perc.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_NH_LogY_perc.pdf"); 
         }
         else {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_NH_perc.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_NH_perc.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_NH_perc.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_NH_perc.pdf");
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_NH_perc.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_NH_perc.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_NH_perc.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_NH_perc.pdf");
         }
       }
       if(hierarchy == 0) {
         if(LogY) {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_both_LogY_perc.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_both_LogY_perc.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_both_LogY_perc.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_both_LogY_perc.pdf"); 
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_both_LogY_perc.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_both_LogY_perc.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_both_LogY_perc.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_both_LogY_perc.pdf"); 
         }
         else {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_both_perc.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_both_perc.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_both_perc.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_both_perc.pdf");
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_both_perc.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_both_perc.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_both_perc.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_both_perc.pdf");
           //dm2_c->Print("thContours/creds_1D_dm2_both.root");
         }
       }
       if(hierarchy == -1) {
         if(LogY) {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_IH_LogY_perc.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_IH_LogY_perc.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_IH_LogY_perc.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_IH_LogY_perc.pdf"); 
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_IH_LogY_perc.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_IH_LogY_perc.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_IH_LogY_perc.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_IH_LogY_perc.pdf"); 
         }
         else {
-          delta_cp_c->Print("Contours1D/creds_1D_delta_cp_IH_perc.pdf");
-          th23_c->Print("Contours1D/creds_1D_th23_IH_perc.pdf");
-          th13_c->Print("Contours1D/creds_1D_th13_IH_perc.pdf");
-          dm2_c->Print("Contours1D/creds_1D_dm2_IH_perc.pdf");
+          delta_cp_c->Print("ContoursJoint1D/creds_1D_delta_cp_IH_perc.pdf");
+          th23_c->Print("ContoursJoint1D/creds_1D_th23_IH_perc.pdf");
+          th13_c->Print("ContoursJoint1D/creds_1D_th13_IH_perc.pdf");
+          dm2_c->Print("ContoursJoint1D/creds_1D_dm2_IH_perc.pdf");
         }
       }
   }

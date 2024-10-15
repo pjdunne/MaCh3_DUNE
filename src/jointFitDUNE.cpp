@@ -10,7 +10,12 @@
 #include <TApplication.h>
 #include <TStopwatch.h>
 
+<<<<<<< HEAD
 #include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
+=======
+#include "samplePDFDUNE/samplePDFDUNEBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBaseND.h"
+>>>>>>> origin/develop
 #include "mcmc/mcmc.h"
 
 int main(int argc, char **argv)
@@ -23,9 +28,9 @@ int main(int argc, char **argv)
   #endif
 
   #ifdef CPU_ONLY
-    std::cout << "GPU OSC CALC IS ON" << std::endl;
-  #else
     std::cout << "ONLY CPU OSC CALC" << std::endl;
+  #else
+    std::cout << "GPU OSC CALC IS ON" << std::endl;
   #endif
 
   // Read config
@@ -35,20 +40,12 @@ int main(int argc, char **argv)
   std::string  XsecMatrixName = fitMan->raw()["General"]["Systematics"]["XsecCovName"].as<std::string>();
   std::string  OscMatrixFile = fitMan->raw()["General"]["Systematics"]["OscCovFile"].as<std::string>(); 
   std::string  OscMatrixName = fitMan->raw()["General"]["Systematics"]["OscCovName"].as<std::string>();
- 
-  std::string Outfile = fitMan->raw()["General"]["Output"]["FileName"].as<std::string>();
-
-  // Bool about whether or not to use the near detector
-  // If you're doing a stats-only fit or if you're using the BANFF matrix, you don't want to use
-  // the near detector. (In the case of a BANFF matrix fit, using the ND will do absolutely nothing.
-  // In the case of a stats-only fit it will add a constant value to the LLH, which won't affect
-  // the fit results. In both cases it takes about an hour to load the data/MC and set up the ND
-  // class, so that's just a massive waste of time and let's not do it).
+  double FDPOT = fitMan->raw()["General"]["FDPOT"].as<double>(); 
+  double NDPOT = fitMan->raw()["General"]["NDPOT"].as<double>(); 
   
   //###########################################################################################################
   // Covariance Objects
 
-  //covarianceNDDet_2019Poly* det;
   covarianceXsec *xsec;
   covarianceOsc *osc;
 
@@ -57,16 +54,11 @@ int main(int argc, char **argv)
 
   // Setting flat priors based on XSECPARAMFLAT list in configuration file 
 
-  bool statsonly = false;
+  bool statonly = fitMan->raw()["MCMC"]["StatOnly"].as<bool>();;
 
-  //std::vector<double> oscpars{0.307,0.528,0.0218,7.53e-5, 2.509e-3,-1.601}; // Asimov A
-  std::vector<double> oscpars{0.310,0.582,0.0224,7.39e-5,2.525e-3,-2.498}; //NuFit 4.0 NH
-  //
-  // set up oscillation parameters (init params are in constructor)
+  std::vector<double> oscpars = fitMan->raw()["General"]["OscParams"].as<std::vector<double>>();
+
   osc = new covarianceOsc(OscMatrixName.c_str(), OscMatrixFile.c_str());
-
-  // oscpars from manager in order:
-  // sin2th_12, sin2th_23, sin2th_13, delm2_12, delm2_23, delta_cp
 
   if (!(oscpars.size()==6 || oscpars.size()==7))
     {
@@ -75,16 +67,12 @@ int main(int argc, char **argv)
       exit(1);
     }
 
-  // Add beta (if set in config file)
-
   std::cout<<"Using these oscillation parameters: ";
   for(unsigned ipar=0;ipar<oscpars.size();ipar++)
     std::cout<<" "<<oscpars.at(ipar);
   std::cout << std::endl;
 
   osc->setFlipDeltaM23(true);
-
-  // Ask config file whether to use reactor constraint
 
   // Use prior for 12 parameters only
   //osc->setEvalLikelihood(0,false);
@@ -99,14 +87,14 @@ int main(int argc, char **argv)
 
 
   xsec->setStepScale(fitMan->raw()["General"]["Systematics"]["XsecStepScale"].as<double>());
-  osc->setStepScale(0.045);
+  osc->setStepScale(fitMan->raw()["General"]["Systematics"]["OscStepScale"].as<double>());
 
-  //###########################################################################################################
-  // SK Samples
+  bool addFD = fitMan->raw()["General"]["IncludeFD"].as<bool>();
+  bool addND = fitMan->raw()["General"]["IncludeND"].as<bool>();
 
-  // Hardcoded binning_opt = 2 (erec-theta nue binning)
-  std::cout << "Fitting electorn rings in Erec-theta. " << std::endl ;
+  if (!addFD && !addND) {std::cerr << "[ERROR:] You've chosen NOT to include FD or ND samples in the config file... you need to add something!" << std::endl; throw;}
 
+<<<<<<< HEAD
   // make PDFs
   bool domaqeh=true;
   std::cout << "I AM CPU" << std::endl;
@@ -125,11 +113,35 @@ int main(int argc, char **argv)
     pdfs[ipdf]->UseNonDoubledAngles(true);
     pdfs[ipdf] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
   }
+=======
+
+  std::vector<samplePDFFDBase*> SamplePDFs;
+>>>>>>> origin/develop
   
-  // tell PDF where covariances are
-  //for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-    //pdfs[ipdf]->setXsecCov(xsec);
-  //}
+  if(addFD) { 
+    samplePDFDUNEBase *numu_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_numuselec.yaml", xsec);
+    SamplePDFs.push_back(numu_pdf);
+    samplePDFDUNEBase *nue_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_FHC_nueselec.yaml", xsec);
+    SamplePDFs.push_back(nue_pdf);
+    samplePDFDUNEBase *numubar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_numuselec.yaml", xsec);
+    SamplePDFs.push_back(numubar_pdf);
+    samplePDFDUNEBase *nuebar_pdf = new samplePDFDUNEBase(FDPOT, "configs/SamplePDFDune_RHC_nueselec.yaml", xsec);
+    SamplePDFs.push_back(nuebar_pdf);
+  }
+ 
+  if(addND) {
+    samplePDFDUNEBaseND * numu_cc_nd_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_FHC_CCnumuselec.yaml", xsec);
+    SamplePDFs.push_back(numu_cc_nd_pdf);
+    samplePDFDUNEBaseND * numubar_cc_nd_pdf = new samplePDFDUNEBaseND(NDPOT, "configs/SamplePDFDuneND_RHC_CCnumuselec.yaml", xsec);
+    SamplePDFs.push_back(numubar_cc_nd_pdf);
+  }
+
+
+  for(unsigned sample_i=0; sample_i < SamplePDFs.size() ; ++sample_i) {
+    SamplePDFs[sample_i] -> useNonDoubledAngles(true);
+    SamplePDFs[sample_i] -> SetupOscCalc(osc->GetPathLength(), osc->GetDensity());
+  }
+
 
   //###########################################################################################################
   // Set covariance objects equal to output of previous chain
@@ -138,10 +150,16 @@ int main(int argc, char **argv)
   std::map<TString,std::vector<double> > parstarts;
   int lastStep = 0;
 
+<<<<<<< HEAD
   if(fitMan->raw()["General"]["StartFromPos"].as<bool>()) {//Start from values at the end of an already run chain
+=======
+ 
+  //Start from values at the end of an already run chain
+  if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+>>>>>>> origin/develop
     //Read in paramter names and values from file
-    std::cout << "MCMC getting starting position from " << fitMan->raw()["General"]["PosFileName"].as<std::string>() << std::endl;
-    TFile *infile = new TFile(fitMan->raw()["General"]["PosFileName"].as<std::string>().c_str(), "READ");
+    std::cout << "MCMC getting starting position from " << fitMan->raw()["MCMC"]["PosFileName"].as<std::string>() << std::endl;
+    TFile *infile = new TFile(fitMan->raw()["MCMC"]["PosFileName"].as<std::string>().c_str(), "READ");
     TTree *posts = (TTree*)infile->Get("posteriors");
     TObjArray* brlis = (TObjArray*)posts->GetListOfBranches();
     int nbr = brlis->GetEntries();
@@ -212,48 +230,40 @@ int main(int argc, char **argv)
   //###########################################################################################################
   // Apply reweight and find event rates
 
-  std::vector<double> CAFana_default_edges = get_default_CAFana_bins();
-  for(unsigned ipdf=0;ipdf<pdfs.size();ipdf++){
-    //pdfs[ipdf]->useBinnedOscReweighting(true, CAFana_default_edges.size()-1, &CAFana_default_edges[0]);
-    pdfs[ipdf]->reweight(osc->getPropPars());     // Get nominal predictions
+  std::cout << "Nominal Oscillated Event rates: " << std::endl;
+
+  for(unsigned sample_i=0; sample_i < SamplePDFs.size() ; ++sample_i) {
+    SamplePDFs[sample_i] -> reweight(osc->getPropPars()); // Get Nominal Predictions 
+
+	std::string name = SamplePDFs[sample_i] -> GetSampleName();
+    TString NameTString = TString(name.c_str());
+
+	if (SamplePDFs[sample_i] -> GetBinningOpt() == 1) {
+      TH1D *Nominal_1D = (TH1D*)SamplePDFs[sample_i]->get1DHist()->Clone(NameTString+"_nominal");
+      std::cout << name.c_str() << ": " << Nominal_1D->Integral() << std::endl;
+	}
+      
+	else if (SamplePDFs[sample_i] -> GetBinningOpt() == 2) {
+      TH2D *Nominal_2D = (TH2D*)SamplePDFs[sample_i]->get2DHist()->Clone(NameTString+"_nominal");
+      std::cout << name.c_str() << ": " << Nominal_2D->Integral() << std::endl;
+	}
+
+	else {
+	  std::cerr << "[ERROR:] Unknown binning option for sample, don't know whether to make 1D or 2D hist! : " << name.c_str() << " : " << SamplePDFs[sample_i] -> GetBinningOpt() << std::endl; throw;
+	}
+
   }
 
-  TH1D *numu_nominal = (TH1D*)numu_pdf->get1DHist()->Clone("numu_nominal");
-  TH1D *numubar_nominal = (TH1D*)numubar_pdf->get1DHist()->Clone("numubar_nominal");
-  TH1D *nue_nominal = (TH1D*)nue_pdf->get1DHist()->Clone("nue_nominal");
-  TH1D *nuebar_nominal = (TH1D*)nuebar_pdf->get1DHist()->Clone("nuebar_nominal");
-
-  std::cout << "Nominal event rates: " << std::endl;
-  std::cout << "numu: " << numu_nominal->Integral() << std::endl;
-  std::cout << "numu-bar: " << numubar_nominal->Integral() << std::endl;
-  std::cout << "nue: " << nue_nominal->Integral() << std::endl;
-  std::cout << "nue-bar: " << nuebar_nominal->Integral() << std::endl;
-
-  // Check what type of fit you are doing
-  std::vector<double> *numudat = 0;
-  std::vector<double> *numubardat = 0;
-  std::vector<std::vector<double> > *nuedat = 0;
-  std::vector<std::vector<double> > *nuebardat = 0;
-
-    
-  //###########################################################################################################
-  // Determine the type of fit we want to do
-
-  TH1D *numu_data;
-  TH1D *numubar_data;
-  TH1D *nue_data;
-  TH1D *nuebar_data;
-
-
-  
-  // APPLY BANFF TUNING TO ASIMOV INPUT (Don't apply as a prior for fit, just use for Asimov "data")
-  // Note: this is hardcoded for BANFF 2017b
 
   std::cout << "-----------------------" << std::endl; 
 
-  // set nominal
+  // Set to Asimov values
+  // If wanting to do an Asimov fit to non-nominal values of xsec params set them here!
+  // e.g. xsecpar[i] = ....
+
   xsec->setParameters();
 
+<<<<<<< HEAD
   numu_pdf->reweight(osc->getPropPars());
   TH1D *numu_asimov = (TH1D*)numu_pdf->get1DHist()->Clone("numu_asimov");
   nue_pdf->reweight(osc->getPropPars());
@@ -262,28 +272,41 @@ int main(int argc, char **argv)
   TH1D *numubar_asimov = (TH1D*)numubar_pdf->get1DHist()->Clone("numubar_asimov");
   nuebar_pdf->reweight(osc->getPropPars());
   TH1D *nuebar_asimov = (TH1D*)nuebar_pdf->get1DHist()->Clone("nuebar_asimov");
+=======
 
-  // Print event rates to check
-  std::cout << "-------- SK event rates for Asimov fit (Asimov fake data) ------------" << std::endl;
-  std::cout << "FHC 1Rmu:   " << numu_asimov->Integral() << std::endl;
-  std::cout << "FHC 1Re:    " << nue_asimov->Integral() << std::endl;
-  std::cout << "RHC 1Rmu:   " << numubar_asimov->Integral() << std::endl;
-  std::cout << "RHC 1Re:    " << nuebar_asimov->Integral() << std::endl;
+  // Print Asimov event rates to check
+  std::cout << "-------- Event rates for Asimov Data  ------------" << std::endl;
+>>>>>>> origin/develop
 
-  numu_pdf->addData(numu_asimov); 
-  nue_pdf->addData(nue_asimov); 
-  numubar_pdf->addData(numubar_asimov);  
-  nuebar_pdf->addData(nuebar_asimov); 
+  for(unsigned sample_i=0; sample_i < SamplePDFs.size() ; ++sample_i) {
+    SamplePDFs[sample_i] -> reweight(osc->getPropPars()); // Get Nominal Predictions 
 
-  
+	std::string name = SamplePDFs[sample_i] -> GetSampleName();
+    TString NameTString = TString(name.c_str());
 
+	if (SamplePDFs[sample_i] -> GetBinningOpt() == 1) {
+      TH1D *Asimov_1D = (TH1D*)SamplePDFs[sample_i]->get1DHist()->Clone(NameTString+"_asimov");
+      std::cout << name.c_str() << ": " << Asimov_1D->Integral() << std::endl;
+      SamplePDFs[sample_i] -> addData(Asimov_1D); 
+	}
+      
+	if (SamplePDFs[sample_i] -> GetBinningOpt() == 2) {
+      TH2D *Asimov_2D = (TH2D*)SamplePDFs[sample_i]->get2DHist()->Clone(NameTString+"_asimov");
+      std::cout << name.c_str() << ": " << Asimov_2D->Integral() << std::endl;
+      SamplePDFs[sample_i] -> addData(Asimov_2D); 
+	}
+
+  }
 
   //###########################################################################################################
   // Back to actual nominal for fit
   // If starting from end values of a previous chain set everything to the values from there
   // and do acceptStep() to update fParCurr with these values
   //
-  if(fitMan->raw()["General"]["StartFromPos"].as<bool>()) {
+  
+  if(fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+    osc->setParameters(oscparstarts);
+    osc->acceptStep();
     if(parstarts.find("xsec")!=parstarts.end()) {
       xsec->setParameters(parstarts["xsec"]);
       xsec->acceptStep();
@@ -299,29 +322,29 @@ int main(int argc, char **argv)
 
   mcmc *markovChain = new mcmc(fitMan);
 
-  //numu_fds->Write();
-
   // set up
-  int NSteps = fitMan->raw()["General"]["NSTEPS"].as<int>(); 
+  int NSteps = fitMan->raw()["MCMC"]["NSTEPS"].as<int>(); 
   markovChain->setChainLength(NSteps);
-  markovChain->addOscHandler(osc, osc);
+  markovChain->addOscHandler(osc);
   if(lastStep > 0) markovChain->setInitialStepNumber(lastStep+1);
 
   // add samples
-  markovChain->addSamplePDF(numu_pdf);
-  markovChain->addSamplePDF(numubar_pdf);
-  markovChain->addSamplePDF(nue_pdf);
-  markovChain->addSamplePDF(nuebar_pdf);
 
-  //start chain from random position
-  xsec->throwParameters();
-  osc->throwParameters();
+  for(unsigned sample_i=0; sample_i < SamplePDFs.size() ; ++sample_i) {
+    markovChain->addSamplePDF(SamplePDFs[sample_i]);
+  }
+
+  if(!fitMan->raw()["MCMC"]["StartFromPos"].as<bool>()) {
+    //start chain from random position unless starting from a previous chain
+    xsec->proposeStep();
+    osc->proposeStep();
+  }
 
   // add systematic objects
-  if (!statsonly) {
+  if (!statonly) {
     markovChain->addSystObj(xsec);
   }
-  else {std::cout << "STATS ONLY!" << std::endl;}
+  else {std::cout << "STAT ONLY!" << std::endl;}
   
   // run!
   markovChain->runMCMC();

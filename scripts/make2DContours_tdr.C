@@ -100,15 +100,14 @@ double* getInterval2D(TH2D *hist, double &p68, double &p90, double &p95, double 
 // app = true for appearance contours, false for disappearance
 // levOpt = 0 --> 1,2,3sigma; levOpt = 1 --> 68%,90%,99%
 void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=false, bool RC=false, int levOpt=0) {
-  
+
   bool drawAsimovPoint = true;
 
-  /* //Asimov A
-  double asim_dcp = -1.601;
-  double asim_th13 = 0.0218;
-  double asim_th23 = 0.528;
-  double asim_dm2 = 2.509e-3;
- */
+  // Asimov A
+  //double asim_dcp = -1.601;
+  //double asim_th13 = 0.0218;
+  //double asim_th23 = 0.528;
+  //double asim_dm2 = 2.509e-3;
 
   //NuFit 4.0 NH
   double asim_dcp = -2.498;
@@ -120,10 +119,10 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   gStyle->SetPadTickY(1);
   gStyle->SetTextFont(42);
   gStyle->SetTextSize(0.08);
-  gStyle->SetNumberContours(255);
 
   TGraph* g_asim_dcp_th13 = new TGraph(1);
-  g_asim_dcp_th13->SetPoint(0,asim_th13,asim_dcp);
+  //g_asim_dcp_th13->SetPoint(0,asim_th13,asim_th23);  //th13 vs th23
+  g_asim_dcp_th13->SetPoint(0,asim_th13,asim_dcp); // th13 vs dcp
   TGraph* g_asim_dm2_th23 = new TGraph(1);
   g_asim_dm2_th23->SetPoint(0,asim_th23,asim_dm2);
   TGraph* g_asim_dcp_th23 = new TGraph(1);
@@ -135,13 +134,39 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   TFile* f_DUNE = new TFile(ReducedChain);
   TTree* t_DUNE = (TTree*)f_DUNE->Get("osc_posteriors");
 
+  TFile* f_tdr = new TFile("asimov_deltapi-ssth23_fd7year_allsyst_nopen_asimov0_hie1.root");
+
   TH2D* h_dcp_th13_DUNE;
   TH2D* h_dcp_th23_DUNE;
   TH2D* h_dm32_th23_DUNE;
 
-  h_dcp_th13_DUNE = new TH2D("h_dcp_th13_DUNE","DUNE FD ;sin^{2}#theta_{13};#delta_{CP}",100,0.01,0.05,120,-1.*TMath::Pi(),TMath::Pi());
-  h_dcp_th23_DUNE = new TH2D("h_dcp_th23_DUNE","DUNE FD ;sin^{2}#theta_{23};#delta_{CP}",80,0.4,0.6,120,-1.*TMath::Pi(),TMath::Pi());
-  h_dm32_th23_DUNE = new TH2D("h_dm32_th23_DUNE","DUNE FD ;sin^{2}#theta_{23};#Delta m^{2}_{32}",100,0.4,0.6,300,-0.003,0.003);
+  //Theta 13 vs scp
+  h_dcp_th13_DUNE = new TH2D("h_dcp_th13_DUNE","DUNE FD ;sin^{2}#theta_{13};#delta_{CP}",100,0.01,0.05,100,-1.*TMath::Pi(),TMath::Pi());
+
+  
+  //Theta13 vs Theta 23
+  //h_dcp_th13_DUNE = new TH2D("h_dcp_th13_DUNE","DUNE FD ;sin^{2}#theta_{13};sin^{2}#theta_{23}",100,0.01,0.05,100,0.4,0.65);
+  
+
+  TH2D* hh = (TH2D*)f_tdr->Get("deltapi_ssth23");
+  double maxvalue = hh->GetBinContent(hh->GetMaximumBin());
+  h_dcp_th23_DUNE = new TH2D("h_dcp_th23_DUNE", "DUNE FD ;sin^{2}#theta_{23};#delta_{CP}", hh->GetNbinsY(), hh->GetYaxis()->GetXmin(), hh->GetYaxis()->GetXmax(), hh->GetNbinsX(), hh->GetXaxis()->GetXmin()*TMath::Pi(), hh->GetXaxis()->GetXmax()*TMath::Pi());
+  std::cout << " X bins = " << hh->GetNbinsX() << std::endl;
+  std::cout << " Y bins = " << hh->GetNbinsY() << std::endl;
+
+  for (int i = 0; i < hh->GetNbinsX(); i++)
+  {
+	for (int j = 0; j < hh->GetNbinsY(); j++)
+	{
+      double log = maxvalue * TMath::Exp(-hh->GetBinContent(i, j)/2);
+      h_dcp_th23_DUNE->SetBinContent(j , i, log);
+	}
+  }
+
+  h_dcp_th23_DUNE->Rebin2D();
+  //h_dcp_th23_DUNE = new TH2D("h_dcp_th23_DUNE","DUNE FD ;sin^{2}#theta_{23};#delta_{CP}",40,0.4,0.6,60,-1.*TMath::Pi(),TMath::Pi());
+
+  h_dm32_th23_DUNE = new TH2D("h_dm32_th23_DUNE","DUNE FD ;sin^{2}#theta_{23};#Delta m^{2}_{32}",100,0.4,0.7,300,-0.003,0.003);
 
   h_dcp_th13_DUNE->GetXaxis()->SetTitleFont(132);
   h_dcp_th13_DUNE->GetXaxis()->SetTitleOffset(0.9);
@@ -183,19 +208,20 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
 
     if(hierarchy==1) { // normal hiearchy --> dm32 > 0.
       t_DUNE->Draw("dcp:theta13>>h_dcp_th13_DUNE","(dm23>0.)*(step>80000)");
-      t_DUNE->Draw("dcp:theta23>>h_dcp_th23_DUNE","(dm23>0.)*(step>80000)");
+      //t_DUNE->Draw("dcp:theta23>>h_dcp_th23_DUNE","(dm23>0.)*(step>80000)");
       t_DUNE->Draw("dm23:theta23>>h_dm32_th23_DUNE","(dm23>0.)*(step>80000)");
       hlab->AddText("NH only");
     }
     else if(hierarchy==0) {
-      t_DUNE->Draw("dcp:theta13>>h_dcp_th13_DUNE","step>80000");
-      t_DUNE->Draw("dcp:theta23>>h_dcp_th23_DUNE","step>80000");
+      t_DUNE->Draw("dcp:theta13>>h_dcp_th13_DUNE","step>80000"); //th13 vs dcp
+      //t_DUNE->Draw("theta23:theta13>>h_dcp_th13_DUNE","step>80000"); //th13 vs th23
+      //t_DUNE->Draw("dcp:theta23>>h_dcp_th23_DUNE","step>80000");
       t_DUNE->Draw("dm23:theta23>>h_dm32_th23_DUNE","step>80000");
       //hlab->AddText("NH+IH");
     }
     else if(hierarchy==-1) { // inverted hiearchy --> dm32 < 0.
       t_DUNE->Draw("dcp:theta13>>h_dcp_th13_DUNE","(dm23<0.)*(step>80000)");
-      t_DUNE->Draw("dcp:theta23>>h_dcp_th23_DUNE","(dm23<0.)*(step>80000)");
+      //t_DUNE->Draw("dcp:theta23>>h_dcp_th23_DUNE","(dm23<0.)*(step>80000)");
       t_DUNE->Draw("dm23:theta23>>h_dm32_th23_DUNE","(dm23<0.)*(step>80000)");
       hlab->AddText("IH only");
     }
@@ -333,7 +359,7 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   hlab->SetBorderSize(0);
 
   if(!app && hierarchy==0) leg = new TLegend(0.65,0.53,0.95,0.93);
-  else if(!app && hierarchy!=0) leg = new TLegend(0.40,0.6,0.84,0.8);
+  else if(!app && hierarchy!=0) leg = new TLegend(0.50,0.6,0.94,0.8);
   else leg = new TLegend(0.50,0.55,0.95,0.75);
   //TLegend* leg = new TLegend(0.7,0.35,1.2,0.65);
   leg->SetFillStyle(0);
@@ -343,7 +369,7 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   leg->SetTextSize(0.04);
   gStyle->SetLegendBorderSize(0);
   //leg->SetHeader("DUNE Credible Regions");
-  leg->SetHeader("BURN-IN = 80000");
+  leg->SetHeader("DUNE TDR 7-year nominal exposure NuFit 4.0");
   TH2D* solid = new TH2D("solid","solid",10,-0.05,0.05,10,0.3,0.7);
   TH2D* dashed = new TH2D("dashed","dashed",10,-0.05,0.05,10,0.3,0.7);
   solid->SetLineColor(kBlack);
@@ -413,12 +439,9 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
     leg->Draw("same");
   }
   else {
-    //if(!app && hierarchy==1) h_dcp_th13_cont_1sig_DUNE->GetYaxis()->SetRangeUser(0.0023,0.0028);
-    if(!app && hierarchy==1) h_dm32_th23_DUNE->GetYaxis()->SetRangeUser(0.0024,0.0027);
+    if(!app && hierarchy==1) h_dcp_th13_cont_1sig_DUNE->GetYaxis()->SetRangeUser(0.0023,0.0028);
     else if(!app && hierarchy==-1) h_dcp_th13_cont_1sig_DUNE->GetYaxis()->SetRangeUser(-0.0028,-0.0023);
-    h_dcp_th13_DUNE->GetXaxis()->SetNdivisions(505);
-    h_dcp_th13_DUNE->GetXaxis()->SetNoExponent(false);
-    h_dcp_th13_DUNE->Draw("colz same");
+    //h_dcp_th23_DUNE->Draw("colz same");
     h_dcp_th13_cont_1sig_DUNE->Draw("cont3 same");
     h_dcp_th13_cont_2sig_DUNE->Draw("cont3 same");
     h_dcp_th13_cont_3sig_DUNE->Draw("cont3 same");
@@ -436,36 +459,36 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   if(levOpt==1) {
     if(RC) {
       if(app && th23dcp) {
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dcpth23_NH_wRC_perc.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dcpth23_both_wRC_perc.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dcpth23_IH_wRC_perc.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth23_NH_wRC_perc.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth23_both_wRC_perc.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth23_IH_wRC_perc.pdf");
       }
       else if (app == true && th23dcp == false){
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dcpth13_NH_wRC_perc.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dcpth13_both_wRC_perc.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dcpth13_IH_wRC_perc.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth13_NH_wRC_perc.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth13_both_wRC_perc.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth13_IH_wRC_perc.pdf");
       }
       else {
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dm2th23_NH_wRC_perc.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dm2th23_both_wRC_perc.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dm2th23_IH_wRC_perc.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dm2th23_NH_wRC_perc.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dm2th23_both_wRC_perc.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dm2th23_IH_wRC_perc.pdf");
       }
     }
     else {
       if(app && th23dcp) {
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dcpth23_NH_perc.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dcpth23_both_perc.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dcpth23_IH_perc.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth23_NH_perc.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth23_both_perc.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth23_IH_perc.pdf");
       }
       else if (app == true && th23dcp == false ){
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dcpth13_NH_perc.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dcpth13_both_perc.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dcpth13_IH_perc.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth13_NH_perc.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth13_both_perc.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth13_IH_perc.pdf");
       }
       else {
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dm2th23_NH_perc.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dm2th23_both_perc.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dm2th23_IH_perc.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dm2th23_NH_perc.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dm2th23_both_perc.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dm2th23_IH_perc.pdf");
       }
     }
   }
@@ -473,36 +496,37 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
   else {
     if(RC) {
       if(app && th23dcp) {
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dcpth23_NH_wRC_sigs.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dcpth23_both_wRC_sigs.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dcpth23_IH_wRC_sigs.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth23_NH_wRC_sigs.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth23_both_wRC_sigs.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth23_IH_wRC_sigs.pdf");
       }
       else if (app == true && th23dcp == false){
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dcpth13_NH_wRC_sigs.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dcpth13_both_wRC_sigs.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dcpth13_IH_wRC_sigs.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth13_NH_wRC_sigs.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth13_both_wRC_sigs.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth13_IH_wRC_sigs.pdf");
       }
       else {
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dm2th23_NH_wRC_sigs.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dm2th23_both_wRC_sigs.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dm2th23_IH_wRC_sigs.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dm2th23_NH_wRC_sigs.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dm2th23_both_wRC_sigs.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dm2th23_IH_wRC_sigs.pdf");
       }
     }
     else {
       if(app && th23dcp) {
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dcpth23_NH_sigs.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dcpth23_both_sigs_12.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dcpth23_IH_sigs.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth23_NH_sigs.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth23_both_sigs.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth23_IH_sigs.pdf");
       }
       else if (app == true && th23dcp == false){
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dcpth13_NH_sigs.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dcpth13_both_sigs.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dcpth13_IH_sigs.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dcpth13_NH_sigs.pdf");
+        //else if(hierarchy == 0) c->Print("Contours2D/DUNE_th23th13_both_sigs.pdf"); //th13 vs th23
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dcpth13_both_sigs.pdf"); //th13 vs dcp
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dcpth13_IH_sigs.pdf");
       }
       else {
-        if(hierarchy == 1) c->Print("ContoursJoint2D/DUNE_dm2th23_NH_sigs.pdf");
-        else if(hierarchy == 0) c->Print("ContoursJoint2D/DUNE_dm2th23_both_sigs.pdf");
-        else if(hierarchy == -1) c->Print("ContoursJoint2D/DUNE_dm2th23_IH_sigs.pdf");
+        if(hierarchy == 1) c->Print("Contours2D/DUNE_dm2th23_NH_sigs.pdf");
+        else if(hierarchy == 0) c->Print("Contours2D/DUNE_dm2th23_both_sigs.pdf");
+        else if(hierarchy == -1) c->Print("Contours2D/DUNE_dm2th23_IH_sigs.pdf");
       }
     }
   }
@@ -513,18 +537,18 @@ void makePlot(TString ReducedChain, int hierarchy,bool app=true, bool th23dcp=fa
 
 }
 
-void make2DContours(TString ReducedChain) {
-//void makePlot(int hierarchy, bool app=true, bool th23dcp = false, bool RC=false, int levOpt=0) {
+void make2DContours_tdr(TString ReducedChain) {
+//void makePlot(int hierarchy,bool app=true, bool th23dcp = false, bool RC=false, int levOpt=0) {
 
   //Appearance = th13_dcp
   //makePlot(ReducedChain,0,true,false,1);
-  makePlot(ReducedChain,0,true,false);
+  //makePlot(ReducedChain,0,true,false);
 
   //Dissappearance = th23_dm32
-  //makePlot(ReducedChain,0,false,false,1);
+  //makePlot(ReducedChain,0,false,false);
   //makePlot(ReducedChain,1,false,false);
 
   // th23dCP plots
   //makePlot(ReducedChain,0,true,true,false,1);
-  //makePlot(ReducedChain,0,true,true,false);
+  makePlot(ReducedChain,0,true,true,false);
 }
