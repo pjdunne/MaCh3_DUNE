@@ -1,27 +1,27 @@
 #include "samplePDFDUNE/MaCh3DUNEFactory.h"
 
-#include "samplePDFDUNE/samplePDFDUNEBeamFDBase.h"
-#include "samplePDFDUNE/samplePDFDUNEBeamNDBase.h"
-#include "samplePDFDUNE/samplePDFDUNEBeamNDGarBase.h"
-#include "samplePDFDUNE/samplePDFDUNEAtmBase.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamFD.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamND.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamNDGar.h"
+#include "samplePDFDUNE/samplePDFDUNEAtm.h"
 
 samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string SampleConfig, covarianceXsec* &xsec) {
 
-  samplePDFFDBase *FDBaseSample;
+  samplePDFFDBase *FDSample;
   if (SampleType == "BeamFD") {
-    FDBaseSample = new samplePDFDUNEBeamFDBase(SampleConfig, xsec);
+    FDSample = new samplePDFDUNEBeamFD(SampleConfig, xsec);
   } else if (SampleType == "BeamND") {
-    FDBaseSample = new samplePDFDUNEBeamNDBase(SampleConfig, xsec);
+    FDSample = new samplePDFDUNEBeamND(SampleConfig, xsec);
   } else if (SampleType == "BeamNDGar") {
-    FDBaseSample = new samplePDFDUNEBeamNDGarBase(SampleConfig, xsec);
+    FDSample = new samplePDFDUNEBeamNDGar(SampleConfig, xsec);
   } else if (SampleType == "Atm") {
-    FDBaseSample = new samplePDFDUNEAtmBase(SampleConfig, xsec);
+    FDSample = new samplePDFDUNEAtm(SampleConfig, xsec);
   } else {
     MACH3LOG_ERROR("Invalid SampleType: {} defined in {}", SampleType, SampleConfig);
     throw MaCh3Exception(__FILE__, __LINE__);
   } 
   
-  return FDBaseSample;
+  return FDSample;
 }
 
 void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &DUNEPdfs, covarianceXsec *&xsec, covarianceOsc *&osc){
@@ -97,7 +97,7 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   osc->setParameters(oscpars); 
   
   //####################################################################################
-  //Create samplePDFDUNEBase Objs
+  //Create samplePDFDUNE Objs
   std::cout << "-------------------------------------------------------------------" << std::endl;
   MACH3LOG_INFO("Loading DUNE samples..");
   std::vector<std::string> DUNESampleConfigs = FitManager->raw()["General"]["DUNESamples"].as<std::vector<std::string>>();
