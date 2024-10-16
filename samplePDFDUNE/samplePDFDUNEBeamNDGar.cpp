@@ -90,47 +90,47 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
   std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
   // allocate memory for dunendgarmc variables
-  duneobj->rw_yrec = new double[duneobj->nEvents];
-  duneobj->rw_elep_reco = new double[duneobj->nEvents];
-  duneobj->rw_etru = new double[duneobj->nEvents];
-  duneobj->rw_erec = new double[duneobj->nEvents];
-  duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->rw_isCC = new int[duneobj->nEvents];
-  duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
-  duneobj->rw_nuPDG = new int[duneobj->nEvents];
-  duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
+  duneobj->rw_yrec.resize(duneobj->nEvents);
+  duneobj->rw_elep_reco.resize(duneobj->nEvents);
+  duneobj->rw_etru.resize(duneobj->nEvents);
+  duneobj->rw_erec.resize(duneobj->nEvents);
+  duneobj->flux_w.resize(duneobj->nEvents);
+  duneobj->rw_isCC.resize(duneobj->nEvents);
+  duneobj->rw_nuPDGunosc.resize(duneobj->nEvents);
+  duneobj->rw_nuPDG.resize(duneobj->nEvents);
+  duneobj->rw_berpaacvwgt.resize(duneobj->nEvents); 
 
-  duneobj->mode = new int[duneobj->nEvents];
+  duneobj->mode.resize(duneobj->nEvents);
 
-  duneobj->nproton = new int[duneobj->nEvents];
-  duneobj->nneutron = new int[duneobj->nEvents];
-  duneobj->npip = new int[duneobj->nEvents];
-  duneobj->npim = new int[duneobj->nEvents];
-  duneobj->npi0 = new int[duneobj->nEvents];
+  duneobj->nproton.resize(duneobj->nEvents);
+  duneobj->nneutron.resize(duneobj->nEvents);
+  duneobj->npip.resize(duneobj->nEvents);
+  duneobj->npim.resize(duneobj->nEvents);
+  duneobj->npi0.resize(duneobj->nEvents);
 
-  duneobj->nrecomuon = new int[duneobj->nEvents];
-  duneobj->ntruemuon = new int[duneobj->nEvents];
-  duneobj->nmuonsratio = new double[duneobj->nEvents];
-  duneobj->ntruemuonprim = new int[duneobj->nEvents];
+  duneobj->nrecomuon.resize(duneobj->nEvents);
+  duneobj->ntruemuon.resize(duneobj->nEvents);
+  duneobj->nmuonsratio.resize(duneobj->nEvents);
+  duneobj->ntruemuonprim.resize(duneobj->nEvents);
 
-  duneobj->nrecoparticles = new int[duneobj->nEvents];
+  duneobj->nrecoparticles.resize(duneobj->nEvents);
   duneobj->in_fdv = new bool[duneobj->nEvents];
-  duneobj->rw_elep_true = new double[duneobj->nEvents];
+  duneobj->rw_elep_true.resize(duneobj->nEvents);
 
-  duneobj->rw_vtx_x = new double[duneobj->nEvents];
-  duneobj->rw_vtx_y = new double[duneobj->nEvents];
-  duneobj->rw_vtx_z = new double[duneobj->nEvents];
-  duneobj->rw_rad = new double[duneobj->nEvents];
+  duneobj->rw_vtx_x.resize(duneobj->nEvents);
+  duneobj->rw_vtx_y.resize(duneobj->nEvents);
+  duneobj->rw_vtx_z.resize(duneobj->nEvents);
+  duneobj->rw_rad.resize(duneobj->nEvents);
 
-  duneobj->rw_lep_pT = new double[duneobj->nEvents];
-  duneobj->rw_lep_pZ = new double[duneobj->nEvents];
+  duneobj->rw_lep_pT.resize(duneobj->nEvents);
+  duneobj->rw_lep_pZ.resize(duneobj->nEvents);
 
-  duneobj->rw_reco_vtx_x = new double[duneobj->nEvents];
-  duneobj->rw_reco_vtx_y = new double[duneobj->nEvents];
-  duneobj->rw_reco_vtx_z = new double[duneobj->nEvents];
-  duneobj->rw_reco_rad = new double[duneobj->nEvents];
+  duneobj->rw_reco_vtx_x.resize(duneobj->nEvents);
+  duneobj->rw_reco_vtx_y.resize(duneobj->nEvents);
+  duneobj->rw_reco_vtx_z.resize(duneobj->nEvents);
+  duneobj->rw_reco_rad.resize(duneobj->nEvents);
 
-  duneobj->Target = new int[duneobj->nEvents];
+  duneobj->Target.resize(duneobj->nEvents);
 
   int num_no_ixns =0;
   int num_no_recparticles = 0;

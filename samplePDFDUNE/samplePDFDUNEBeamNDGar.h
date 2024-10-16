@@ -51,7 +51,7 @@ public:
   std::string ReturnStringFromKinematicParameter(int KinematicParameter);
   
   // dunendmc
-  std::vector<struct dunemc_base> dunendgarmcSamples;
+  std::vector<dunemc_base> dunendgarmcSamples;
 
   TFile *_sampleFile;
   TTree *_data;

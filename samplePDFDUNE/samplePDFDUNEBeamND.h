@@ -48,7 +48,7 @@ public:
   double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
   void applyShifts(int iSample, int iEvent);
 
-  std::vector<struct dunemc_base> dunendmcSamples;
+  std::vector<dunemc_base> dunendmcSamples;
 
   TFile *_sampleFile;
   TTree *_data;

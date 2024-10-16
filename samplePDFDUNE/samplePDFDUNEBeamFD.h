@@ -55,7 +55,7 @@ public:
   void applyShifts(int iSample, int iEvent);
 
   // dunemc
-  std::vector<struct dunemc_base> dunemcSamples;
+  std::vector<dunemc_base> dunemcSamples;
 
   double pot;
 

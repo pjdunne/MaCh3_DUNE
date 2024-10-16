@@ -69,15 +69,15 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   duneobj->oscnutype = sample_oscnutype[iSample];
   duneobj->signal = sample_signal[iSample];
   
-  duneobj->mode = new int[duneobj->nEvents];
-  duneobj->rw_isCC = new int[duneobj->nEvents];
-  duneobj->Target = new int[duneobj->nEvents];
+  duneobj->mode.resize(duneobj->nEvents);
+  duneobj->rw_isCC.resize(duneobj->nEvents);
+  duneobj->Target.resize(duneobj->nEvents);
   
-  duneobj->rw_etru = new double[duneobj->nEvents];
-  duneobj->rw_truecz = new double[duneobj->nEvents];
-  duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->rw_erec = new double[duneobj->nEvents];
-  duneobj->rw_theta = new double[duneobj->nEvents];
+  duneobj->rw_etru.resize(duneobj->nEvents);
+  duneobj->rw_truecz.resize(duneobj->nEvents);
+  duneobj->flux_w.resize(duneobj->nEvents);
+  duneobj->rw_erec.resize(duneobj->nEvents);
+  duneobj->rw_theta.resize(duneobj->nEvents);
  
   for (int iEvent=0;iEvent<duneobj->nEvents;iEvent++) {
     Tree->GetEntry(iEvent);

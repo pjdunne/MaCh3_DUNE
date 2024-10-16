@@ -305,85 +305,89 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
   // allocate memory for dunemc variables
-  duneobj->rw_cvnnumu = new double[duneobj->nEvents];
-  duneobj->rw_cvnnue = new double[duneobj->nEvents];
-  duneobj->rw_cvnnumu_shifted = new double[duneobj->nEvents];
-  duneobj->rw_cvnnue_shifted = new double[duneobj->nEvents];
-  duneobj->rw_etru = new double[duneobj->nEvents];
-  duneobj->rw_erec = new double[duneobj->nEvents];
-  duneobj->rw_erec_shifted = new double[duneobj->nEvents];
-  duneobj->rw_erec_had = new double[duneobj->nEvents];
-  duneobj->rw_erec_lep = new double[duneobj->nEvents];
+  duneobj->rw_cvnnumu.resize(duneobj->nEvents);
+  duneobj->rw_cvnnue.resize(duneobj->nEvents);
+  duneobj->rw_cvnnumu_shifted.resize(duneobj->nEvents);
+  duneobj->rw_cvnnue_shifted.resize(duneobj->nEvents);
+  duneobj->rw_etru.resize(duneobj->nEvents);
+  duneobj->rw_erec.resize(duneobj->nEvents);
+  duneobj->rw_erec_shifted.resize(duneobj->nEvents);
+  duneobj->rw_erec_had.resize(duneobj->nEvents);
+  duneobj->rw_erec_lep.resize(duneobj->nEvents);
 
-  duneobj->rw_eRecoP = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPip = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPim = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPi0 = new double[duneobj->nEvents];
-  duneobj->rw_eRecoN = new double[duneobj->nEvents];
+  duneobj->rw_eRecoP.resize(duneobj->nEvents);
+  duneobj->rw_eRecoPip.resize(duneobj->nEvents);
+  duneobj->rw_eRecoPim.resize(duneobj->nEvents);
+  duneobj->rw_eRecoPi0.resize(duneobj->nEvents);
+  duneobj->rw_eRecoN.resize(duneobj->nEvents);
 
-  duneobj->rw_LepE = new double[duneobj->nEvents];
-  duneobj->rw_eP = new double[duneobj->nEvents];
-  duneobj->rw_ePip = new double[duneobj->nEvents];
-  duneobj->rw_ePim = new double[duneobj->nEvents];
-  duneobj->rw_ePi0 = new double[duneobj->nEvents];
-  duneobj->rw_eN = new double[duneobj->nEvents];
+  duneobj->rw_LepE.resize(duneobj->nEvents);
+  duneobj->rw_eP.resize(duneobj->nEvents);
+  duneobj->rw_ePip.resize(duneobj->nEvents);
+  duneobj->rw_ePim.resize(duneobj->nEvents);
+  duneobj->rw_ePi0.resize(duneobj->nEvents);
+  duneobj->rw_eN.resize(duneobj->nEvents);
 
-  duneobj->rw_theta = new double[duneobj->nEvents];
-  duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->rw_isCC = new int[duneobj->nEvents];
-  duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
-  duneobj->rw_nuPDG = new int[duneobj->nEvents];
-  duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
-  duneobj->rw_vtx_x = new double[duneobj->nEvents];
-  duneobj->rw_vtx_y = new double[duneobj->nEvents];
-  duneobj->rw_vtx_z = new double[duneobj->nEvents];
+  duneobj->rw_theta.resize(duneobj->nEvents);
+  duneobj->flux_w.resize(duneobj->nEvents);
+  duneobj->rw_isCC.resize(duneobj->nEvents);
+  duneobj->rw_nuPDGunosc.resize(duneobj->nEvents);
+  duneobj->rw_nuPDG.resize(duneobj->nEvents);
+  duneobj->rw_berpaacvwgt.resize(duneobj->nEvents); 
+  duneobj->rw_vtx_x.resize(duneobj->nEvents);
+  duneobj->rw_vtx_y.resize(duneobj->nEvents);
+  duneobj->rw_vtx_z.resize(duneobj->nEvents);
 
-  duneobj->mode = new int[duneobj->nEvents];
-  duneobj->Target = new int[duneobj->nEvents];
+  duneobj->global_bin_number.resize(duneobj->nEvents);
+
+  duneobj->mode.resize(duneobj->nEvents);
+  duneobj->Target.resize(duneobj->nEvents);
 
   _data->GetEntry(0);
 
   //FILL DUNE STRUCT
   for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
     _data->GetEntry(i);
-    duneobj->rw_cvnnumu[i] = (double)_cvnnumu;
-    duneobj->rw_cvnnue[i] = (double)_cvnnue;
-    duneobj->rw_cvnnumu_shifted[i] = (double)_cvnnumu; 
-    duneobj->rw_cvnnue_shifted[i] = (double)_cvnnue;
+    duneobj->rw_cvnnumu[i] = _cvnnumu;
+    duneobj->rw_cvnnue[i] = _cvnnue;
+    duneobj->rw_cvnnumu_shifted[i] = _cvnnumu; 
+    duneobj->rw_cvnnue_shifted[i] = _cvnnue;
     if (iselike) {
-      duneobj->rw_erec[i] = (double)_erec_nue;
-      duneobj->rw_erec_shifted[i] = (double)_erec_nue; 
-      duneobj->rw_erec_had[i] = (double)_erec_had_nue;
-      duneobj->rw_erec_lep[i] = (double)_erec_lep_nue;
+      duneobj->rw_erec[i] = _erec_nue;
+      duneobj->rw_erec_shifted[i] = _erec_nue; 
+      duneobj->rw_erec_had[i] = _erec_had_nue;
+      duneobj->rw_erec_lep[i] = _erec_lep_nue;
     } else {
-      duneobj->rw_erec[i] = (double)_erec; 
-      duneobj->rw_erec_shifted[i] = (double)_erec; 
-      duneobj->rw_erec_had[i] = (double)_erec_had; 
-      duneobj->rw_erec_lep[i] = (double)_erec_lep; 
+      duneobj->rw_erec[i] = _erec; 
+      duneobj->rw_erec_shifted[i] = _erec; 
+      duneobj->rw_erec_had[i] = _erec_had; 
+      duneobj->rw_erec_lep[i] = _erec_lep; 
     }
     
-    duneobj->rw_eRecoP[i] = (double)_eRecoP; 
-    duneobj->rw_eRecoPip[i] = (double)_eRecoPip; 
-    duneobj->rw_eRecoPim[i] = (double)_eRecoPim; 
-    duneobj->rw_eRecoPi0[i] = (double)_eRecoPi0; 
-    duneobj->rw_eRecoN[i] = (double)_eRecoN; 
+    duneobj->rw_eRecoP[i] = _eRecoP; 
+    duneobj->rw_eRecoPip[i] = _eRecoPip; 
+    duneobj->rw_eRecoPim[i] = _eRecoPim; 
+    duneobj->rw_eRecoPi0[i] = _eRecoPi0; 
+    duneobj->rw_eRecoN[i] = _eRecoN; 
     
-    duneobj->rw_LepE[i] = (double)_LepE; 
-    duneobj->rw_eP[i] = (double)_eP; 
-    duneobj->rw_ePip[i] = (double)_ePip; 
-    duneobj->rw_ePim[i] = (double)_ePim; 
-    duneobj->rw_ePi0[i] = (double)_ePi0; 
-    duneobj->rw_eN[i] = (double)_eN; 
+    duneobj->rw_LepE[i] = _LepE; 
+    duneobj->rw_eP[i] = _eP; 
+    duneobj->rw_ePip[i] = _ePip; 
+    duneobj->rw_ePim[i] = _ePim; 
+    duneobj->rw_ePi0[i] = _ePi0; 
+    duneobj->rw_eN[i] = _eN; 
     
-    duneobj->rw_etru[i] = (double)_ev;
-    duneobj->rw_theta[i] = (double)_LepNuAngle;
+    duneobj->rw_etru[i] = _ev;
+    duneobj->rw_theta[i] = _LepNuAngle;
     duneobj->rw_isCC[i] = _isCC;
     duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
     duneobj->rw_nuPDG[i] = _nuPDG;
-    duneobj->rw_berpaacvwgt[i] = (double)_BeRPA_cvwgt;
-    duneobj->rw_vtx_x[i] = (double)_vtx_x;
-    duneobj->rw_vtx_y[i] = (double)_vtx_y;
-    duneobj->rw_vtx_z[i] = (double)_vtx_z;
+    duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
+    duneobj->rw_vtx_x[i] = _vtx_x;
+    duneobj->rw_vtx_y[i] = _vtx_y;
+    duneobj->rw_vtx_z[i] = _vtx_z;
+
+    duneobj->global_bin_number[i] = GetGenericBinningGlobalBinNumber(iSample, i);
     
     //Assume everything is on Argon for now....
     duneobj->Target[i] = 40;

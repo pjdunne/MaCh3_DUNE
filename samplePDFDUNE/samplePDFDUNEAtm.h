@@ -37,7 +37,7 @@ public:
   inline int ReturnKinematicParameterFromString(std::string KinematicStr);
   inline std::string ReturnStringFromKinematicParameter(int KinematicVariable);
 
-  std::vector<struct dunemc_base> dunemcSamples;
+  std::vector<dunemc_base> dunemcSamples;
   bool IsELike;
 };
 
