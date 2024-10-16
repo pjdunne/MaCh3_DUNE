@@ -19,6 +19,9 @@ struct dunemc_base {
   std::vector<double> rw_eRecoPi0;
   std::vector<double> rw_eRecoN;
 
+  std::vector<double> true_q0;
+  std::vector<double> true_q3;
+
   std::vector<double> rw_LepE;
   std::vector<double> rw_eP;
   std::vector<double> rw_ePip;
@@ -42,7 +45,7 @@ struct dunemc_base {
   std::vector<int>    rw_nuPDGunosc;
   std::vector<int>    rw_nuPDG;
   std::vector<int>    rw_run;
-  std::vector<bool>    rw_isFHC;
+  bool *              rw_isFHC;
   std::vector<double> rw_vtx_x;
   std::vector<double> rw_vtx_y;
   std::vector<double> rw_vtx_z;
