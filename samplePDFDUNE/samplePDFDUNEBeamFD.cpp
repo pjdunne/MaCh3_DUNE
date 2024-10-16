@@ -168,15 +168,13 @@ void samplePDFDUNEBeamFD::Init() {
 void samplePDFDUNEBeamFD::SetupSplines() {
 
   ///@todo move all of the spline setup into core
-  if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
-	MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-	splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-	splineFile = (splineFDBase*)DUNESplines;
-	InitialiseSplineObject();
-  }
-  else{
-	MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-	splineFile = nullptr;
+  if(spline_files.size() && (XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0)){
+    MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+    splineFile = new splinesDUNE(XsecCov);
+    InitialiseSplineObject();
+  } else {
+    MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+    splineFile = nullptr;
   }
 
   return;
@@ -199,24 +197,23 @@ void samplePDFDUNEBeamFD::SetupWeightPointers() {
 
 
 int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
-  const char *sampleFile = (mtuple_files[iSample]).c_str();
-  dunemc_base *duneobj = &(dunemcSamples[iSample]);
+  auto &duneobj = dunemcSamples[iSample];
   int nutype = sample_nutype[iSample];
   int oscnutype = sample_oscnutype[iSample];
   bool signal = sample_signal[iSample];
   
   std::cout << "-------------------------------------------------------------------" << std::endl;
-  MACH3LOG_INFO("input file: {}", sampleFile);
+  MACH3LOG_INFO("input file: {}", mtuple_files[iSample].native());
   
-  _sampleFile = new TFile(sampleFile, "READ");
+  _sampleFile = new TFile(mtuple_files[iSample].c_str(), "READ");
   _data = (TTree*)_sampleFile->Get("caf");
 
   if(_data){
-    MACH3LOG_INFO("Found \"caf\" tree in {}", sampleFile);
+    MACH3LOG_INFO("Found \"caf\" tree in {}", mtuple_files[iSample].native());
     MACH3LOG_INFO("With number of entries: {}", _data->GetEntries());
   }
   else{
-	MACH3LOG_ERROR("Could not find \"caf\" tree in {}", sampleFile);
+	MACH3LOG_ERROR("Could not find \"caf\" tree in {}", mtuple_files[iSample].native());
 	throw MaCh3Exception(__FILE__, __LINE__);
   }
   

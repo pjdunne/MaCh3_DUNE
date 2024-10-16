@@ -13,7 +13,7 @@ splinesDUNE::~splinesDUNE(){
 }
 
 //****************************************
-void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::string> OscChanFileNames)
+void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::filesystem::path> OscChanFileNames)
 // Performs two jobs
 //  1. Fills indexing/each sample
 //  2. Creates the big spline vector

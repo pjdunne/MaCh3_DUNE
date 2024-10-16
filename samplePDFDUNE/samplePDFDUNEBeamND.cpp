@@ -169,20 +169,19 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
 }
 
 int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
-  const char *sampleFile = (mtupleprefix+mtuple_files[iSample]+mtuplesuffix).c_str();
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
   int nutype = sample_nutype[iSample];
   int oscnutype = sample_oscnutype[iSample];
   bool signal = sample_signal[iSample];
   
   std::cout << "-------------------------------------------------------------------" << std::endl;
-  std::cout << "input file: " << sampleFile << std::endl;
+  std::cout << "input file: " << mtuple_files[iSample] << std::endl;
   
-  _sampleFile = new TFile(sampleFile, "READ");
+  _sampleFile = new TFile(mtuple_files[iSample].c_str(), "READ");
   _data = (TTree*)_sampleFile->Get("caf");
 
   if(_data){
-    std::cout << "Found mtuple tree is " << sampleFile << std::endl;
+    std::cout << "Found mtuple tree is " << mtuple_files[iSample] << std::endl;
     std::cout << "N of entries: " << _data->GetEntries() << std::endl;
   }
   
