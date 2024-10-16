@@ -25,7 +25,23 @@ public:
   samplePDFDUNEBeamFD(std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBeamFD();
 
-  enum KinematicTypes {kTrueNeutrinoEnergy,kRecoNeutrinoEnergy,kTrueXPos,kTrueYPos,kTrueZPos,kCVNNumu,kCVNNue,kM3Mode,kGlobalBinNumber,kOscChannel};
+  enum KinematicTypes {
+    kTrueNeutrinoEnergy,
+    kRecoNeutrinoEnergy,
+    kTrueXPos,
+    kTrueYPos,
+    kTrueZPos,
+    kCVNNumu,
+    kCVNNue,
+    kM3Mode,
+    kGlobalBinNumber,
+    kOscChannel,
+    kq0,
+    kq3,
+    kERecQE,
+    kELepRec,
+    kEHadRec
+  };
 
   //More robust getters to make plots in different variables, mode, osc channel, systematic weighting and with bin range 
   TH1D* get1DVarHist(KinematicTypes Var1, int fModeToFill=-1, int fSampleToFill=-1, int WeightStyle=0, TAxis* Axis=0);
