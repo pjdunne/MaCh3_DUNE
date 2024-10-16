@@ -254,79 +254,48 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
   return duneobj->nEvents;
 }
 
-double* samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(KinematicTypes KinematicParameter, int iSample, int iEvent) {
-  double* KinematicValue;
+double const& samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(int KinematicParameter, int iSample, int iEvent) {
  
  switch(KinematicParameter) {
  case kTrueNeutrinoEnergy:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_etru[iEvent]; 
-   break;
+   return dunendgarmcSamples[iSample].rw_etru[iEvent]; 
  case kRecoNeutrinoEnergy:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_erec[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_erec[iEvent];
  case kTrueXPos:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_vtx_x[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_vtx_x[iEvent];
  case kTrueYPos:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_vtx_y[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_vtx_y[iEvent];
  case kTrueZPos:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_vtx_z[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_vtx_z[iEvent];
  case kTrueRad:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_rad[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_rad[iEvent];
  case kNMuonsRecoOverTruth:
-   KinematicValue = &dunendgarmcSamples[iSample].nmuonsratio[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].nmuonsratio[iEvent];
  case kRecoLepEnergy:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_elep_reco[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_elep_reco[iEvent];
  case kTrueLepEnergy:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_elep_true[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_elep_true[iEvent];
  case kRecoXPos:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_reco_vtx_x[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_reco_vtx_x[iEvent];
  case kRecoYPos:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_reco_vtx_y[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_reco_vtx_y[iEvent];
  case kRecoZPos:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_reco_vtx_z[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_reco_vtx_z[iEvent];
  case kRecoRad:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_reco_rad[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_reco_rad[iEvent];
  case kLepPT:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_lep_pT[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_lep_pT[iEvent];
  case kLepPZ:
-   KinematicValue = &dunendgarmcSamples[iSample].rw_lep_pZ[iEvent];
-   break;
+   return dunendgarmcSamples[iSample].rw_lep_pZ[iEvent];
  default:
    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
    throw;
  }
  
- return KinematicValue;
 }
 
-double* samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
-}
-
-double* samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent) {
-  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter));
-  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
-}
-
-double samplePDFDUNEBeamNDGar::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  return *ReturnKinematicParameterByReference(KinematicVariable, iSample, iEvent);
-}
-
-double samplePDFDUNEBeamNDGar::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
-  return *ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
+double samplePDFDUNEBeamNDGar::ReturnKinematicParameter(int KinematicParameter, int iSample, int iEvent) {
+  return ReturnKinematicParameterByReference(KinematicParameter,iSample,iEvent);
 }
 
 void samplePDFDUNEBeamNDGar::setupFDMC(int iSample) {
@@ -370,14 +339,9 @@ void samplePDFDUNEBeamNDGar::setupFDMC(int iSample) {
   
 }
 
-std::vector<double> samplePDFDUNEBeamNDGar::ReturnKinematicParameterBinning(std::string KinematicParameterStr) {
-  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameterStr));
-  return ReturnKinematicParameterBinning(KinPar);
-}
-
-std::vector<double> samplePDFDUNEBeamNDGar::ReturnKinematicParameterBinning(KinematicTypes KinPar) {
+std::vector<double> samplePDFDUNEBeamNDGar::ReturnKinematicParameterBinning(int KinematicParameter) {
   std::vector<double> binningVector;
-  switch(KinPar){
+  switch(KinematicParameter){
   case kTrueNeutrinoEnergy:
     for(double ibins =0; ibins<10*10; ibins++){
       double binval = ibins/10;

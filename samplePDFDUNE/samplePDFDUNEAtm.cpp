@@ -140,49 +140,28 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
   }
 }
 
-double* samplePDFDUNEAtm::ReturnKinematicParameterByReference(KinematicTypes KinPar, int iSample, int iEvent) {
-  double* KinematicValue;
+double const &samplePDFDUNEAtm::ReturnKinematicParameterByReference(int KinematicParameter, int iSample, int iEvent) {
 
-  switch (KinPar) {
+  switch (KinematicParameter) {
   case kTrueNeutrinoEnergy:
-    KinematicValue = &(dunemcSamples[iSample].rw_etru[iEvent]);
-    break;
+    return (dunemcSamples[iSample].rw_etru[iEvent]);
   case kRecoNeutrinoEnergy:
-    KinematicValue = &(dunemcSamples[iSample].rw_erec[iEvent]);
-    break;
+    return (dunemcSamples[iSample].rw_erec[iEvent]);
   case kTrueCosZ:
-    KinematicValue = &(dunemcSamples[iSample].rw_truecz[iEvent]);
-    break;
+    return (dunemcSamples[iSample].rw_truecz[iEvent]);
   case kRecoCosZ:
-    KinematicValue = &(dunemcSamples[iSample].rw_theta[iEvent]);
-    break;
+    return (dunemcSamples[iSample].rw_theta[iEvent]);
   default:
-    std::cerr << "Unknown KinPar:" << KinPar << std::endl;
+    std::cerr << "Unknown KinematicParameter:" << KinematicParameter << std::endl;
     throw;
   }
-  
-  return KinematicValue;
 }
 
-double* samplePDFDUNEAtm::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
+double samplePDFDUNEAtm::ReturnKinematicParameter(int KinematicParameter, int iSample, int iEvent) {
+  return ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
 }
 
-double* samplePDFDUNEAtm::ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent) {
-  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter));
-  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
-}
-
-double samplePDFDUNEAtm::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  return *ReturnKinematicParameterByReference(KinematicVariable, iSample, iEvent);
-}
-
-double samplePDFDUNEAtm::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
-  return *ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
-}
-
-std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(std::string KinematicParameterStr)  {
+std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(int KinematicParameterStr)  {
 }
 
 int samplePDFDUNEAtm::ReturnKinematicParameterFromString(std::string KinematicParameterStr) {

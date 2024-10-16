@@ -35,12 +35,11 @@ public:
   void SetupWeightPointers();
   void SetupSplines();
   
-  double* ReturnKinematicParameterByReference(KinematicTypes KinPar, int iSample, int iEvent);
-  double* ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent);
-  double* ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent);
-  double ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent);
-  double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
-  std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
+  double const &ReturnKinematicParameterByReference(int KinematicParameter, int iSample, int iEvent);
+  double ReturnKinematicParameter(int KinematicParameter, int iSample, int iEvent);
+
+  std::vector<double> ReturnKinematicParameterBinning(int KinematicParameter);
+
   int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
   std::string ReturnStringFromKinematicParameter(int KinematicParameter);
   

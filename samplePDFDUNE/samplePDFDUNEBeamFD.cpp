@@ -488,7 +488,7 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::ve
   }
 
   TH1D* _h1DVar;
-  std::vector<double> xBinEdges = ReturnKinematicParameterBinning(ReturnStringFromKinematicParameter(Var1));
+  std::vector<double> xBinEdges = ReturnKinematicParameterBinning(Var1);
   _h1DVar = new TH1D("", "", xBinEdges.size()-1, xBinEdges.data());
 
   //This should be the same as FillArray in core basically, except that
@@ -540,111 +540,33 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::ve
   return _h1DVar;
 }
 
-double samplePDFDUNEBeamFD::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  double KinematicValue = -999;
+double const& samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(int KinematicParameter, int iSample, int iEvent) {
 
-  switch(KinPar){
+  switch(KinematicParameter){
   case kTrueNeutrinoEnergy:
-    KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
-    break;
+    return dunemcSamples[iSample].rw_etru[iEvent]; 
   case kRecoNeutrinoEnergy:
-	KinematicValue = dunemcSamples[iSample].rw_erec_shifted[iEvent];
-	break;
+    return dunemcSamples[iSample].rw_erec_shifted[iEvent];
   case kTrueXPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_vtx_x[iEvent];
   case kTrueYPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_vtx_y[iEvent];
   case kTrueZPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_vtx_z[iEvent];
   case kCVNNumu:
-    KinematicValue = dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
   case kCVNNue:
-    KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
-    break;
-  case kM3Mode:
-	KinematicValue = dunemcSamples[iSample].mode[iEvent];
-	break;
+    return dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
+  case kGlobalBinNumber:
+    return dunemcSamples[iSample].global_bin_number[iEvent];
   default:
-    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type");
-	MACH3LOG_ERROR("Was given a Kinematic Variable of {}", KinematicVariable);
-    throw MaCh3Exception(__FILE__, __LINE__);
+    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
+    throw;
   }
-  
-  return KinematicValue;
-}
+  }
 
-double samplePDFDUNEBeamFD::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
- KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
- double KinematicValue = -999;
- 
- switch(KinPar){
- case kTrueNeutrinoEnergy:
-   KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
-   break;
- case kRecoNeutrinoEnergy:
-   KinematicValue = dunemcSamples[iSample].rw_erec_shifted[iEvent];
-   break;
- case kTrueXPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
-   break;
- case kTrueYPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
-   break;
- case kTrueZPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
-   break;
- case kCVNNumu:
-   KinematicValue = dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
-   break;
- case kCVNNue:
-   KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
-   break;
- default:
-   std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-   throw;
- }
- 
- return KinematicValue;
-}
-
-
-const double* samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent) {
- KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
- double* KinematicValue;
- 
- switch(KinPar){
- case kTrueNeutrinoEnergy:
-   KinematicValue = &dunemcSamples[iSample].rw_etru[iEvent]; 
-   break;
- case kRecoNeutrinoEnergy:
-   KinematicValue = &dunemcSamples[iSample].rw_erec_shifted[iEvent];
-   break;
- case kTrueXPos:
-   KinematicValue = &dunemcSamples[iSample].rw_vtx_x[iEvent];
-   break;
- case kTrueYPos:
-   KinematicValue = &dunemcSamples[iSample].rw_vtx_y[iEvent];
-   break;
- case kTrueZPos:
-   KinematicValue = &dunemcSamples[iSample].rw_vtx_z[iEvent];
-   break;
- case kCVNNumu:
-   KinematicValue = &dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
-   break;
- case kCVNNue:
-   KinematicValue = &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
-   break;
- default:
-   std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-   throw;
- }
- 
- return KinematicValue;
+double samplePDFDUNEBeamFD::ReturnKinematicParameter(int KinematicParameter, int iSample, int iEvent) {
+  return ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
 }
 
 int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string KinematicParameterStr){
@@ -657,41 +579,9 @@ int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string Kinemati
   if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
   if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
   if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
+  if (KinematicParameterStr.find("global_bin_number") != std::string::npos) {return kGlobalBinNumber;}
 
-}
 
-const double* samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  double* KinematicValue;
-
-  switch(KinPar){
-  case kTrueNeutrinoEnergy:
-    KinematicValue = &dunemcSamples[iSample].rw_etru[iEvent]; 
-    break;
-  case kRecoNeutrinoEnergy:
-    KinematicValue = &dunemcSamples[iSample].rw_erec_shifted[iEvent];
-    break;
-  case kTrueXPos:
-    KinematicValue = &dunemcSamples[iSample].rw_vtx_x[iEvent];
-    break;
-  case kTrueYPos:
-    KinematicValue = &dunemcSamples[iSample].rw_vtx_y[iEvent];
-    break;
-  case kTrueZPos:
-    KinematicValue = &dunemcSamples[iSample].rw_vtx_z[iEvent];
-    break;
-  case kCVNNumu:
-    KinematicValue = &dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
-    break;
-  case kCVNNue:
-    KinematicValue = &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
-    break;
-  default:
-    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-    throw;
-  }
-  
-  return KinematicValue;
 }
 
 inline std::string samplePDFDUNEBeamFD::ReturnStringFromKinematicParameter(int KinematicParameter) {
@@ -720,8 +610,11 @@ inline std::string samplePDFDUNEBeamFD::ReturnStringFromKinematicParameter(int K
 	 KinematicString = "CVNNue";
 	 break;
    case kM3Mode:
-	 KinematicString = "M3Mode";
-	 break;
+   KinematicString = "M3Mode";
+   break;
+   case kGlobalBinNumber:
+   KinematicString = "global_bin_number";
+   break;
    default:
     break;
   }
@@ -826,9 +719,8 @@ void samplePDFDUNEBeamFD::applyShifts(int iSample, int iEvent) {
   */
 }
 
-std::vector<double> samplePDFDUNEBeamFD::ReturnKinematicParameterBinning(std::string KinematicParameterStr) {
+std::vector<double> samplePDFDUNEBeamFD::ReturnKinematicParameterBinning(int KinematicParameter) {
   std::vector<double> binningVector;
-  KinematicTypes KinematicParameter = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameterStr));
 
   int nBins = 0;
   double bin_width = 0;

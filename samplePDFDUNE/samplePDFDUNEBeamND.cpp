@@ -316,40 +316,22 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   return duneobj->nEvents;
 }
 
-double* samplePDFDUNEBeamND::ReturnKinematicParameterByReference(KinematicTypes KinPar, int iSample, int iEvent) {
-  double* KinematicValue;
+double const& samplePDFDUNEBeamND::ReturnKinematicParameterByReference(int KinematicParameter, int iSample, int iEvent) {
   
-  switch(KinPar){
+  switch(KinematicParameter){
   case kTrueNeutrinoEnergy:
-    KinematicValue = &dunendmcSamples[iSample].rw_etru[iEvent]; 
-    break;
+    return dunendmcSamples[iSample].rw_etru[iEvent]; 
   case kRecoQ:
-    KinematicValue = &dunendmcSamples[iSample].rw_reco_q[iEvent];
-    break;
+    return dunendmcSamples[iSample].rw_reco_q[iEvent];
   default:
     std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
     throw;
   }
   
-  return KinematicValue;
 }
 
-double* samplePDFDUNEBeamND::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
-}
-
-double* samplePDFDUNEBeamND::ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent) {
-  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter));
-  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
-}
-
-double samplePDFDUNEBeamND::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  return *ReturnKinematicParameterByReference(KinematicVariable, iSample, iEvent);
-}
-
-double samplePDFDUNEBeamND::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
-  return *ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
+double samplePDFDUNEBeamND::ReturnKinematicParameter(int KinematicParameter, int iSample, int iEvent) {
+  return ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
 }
 
 void samplePDFDUNEBeamND::setupFDMC(int iSample) {
@@ -457,7 +439,8 @@ void samplePDFDUNEBeamND::applyShifts(int iSample, int iEvent) {
 
 }
 
-std::vector<double> samplePDFDUNEBeamND::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
+
+std::vector<double> samplePDFDUNEBeamND::ReturnKinematicParameterBinning(int KinematicParameter) 
 {
   std::cout << "ReturnKinematicVarBinning" << std::endl;
   std::vector<double> binningVector;
