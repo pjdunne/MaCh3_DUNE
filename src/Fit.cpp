@@ -19,7 +19,7 @@ int main(int argc, char * argv[]) {
 
   // ----------------------- OPTIONS ---------------------------------------- //
   if(argc == 1){
-    std::cout << "Usage: bin/jointFitDUNEBeam configs/config.yaml" << std::endl;
+    MACH3LOG_INFO("Usage: bin/jointFitDUNEBeam configs/config.yaml");
     return 1;
   }
 
@@ -31,9 +31,10 @@ int main(int argc, char * argv[]) {
 
   //####################################################################################
   //Create samplePDFSKBase Objs
-  std::cout << "Loading T2K samples.." << "\n" << std::endl;
+
   std::vector<samplePDFFDBase*> DUNEPdfs;
   MakeMaCh3DuneInstance(FitManager, DUNEPdfs, xsec, osc); 
+
   //Setup the cross-section parameters
   //This should get the prior values.
   std::vector<double> XsecParVals = xsec->getNominalArray();
@@ -64,9 +65,9 @@ int main(int argc, char * argv[]) {
   
   //Now print out some event rates, we'll make a nice latex table at some point 
   for (unsigned iPDF = 0; iPDF < DUNEPdfs.size() ; ++iPDF) {
-    std::cout << "Integrals of nominal hists: " << std::endl;
-    std::cout << sample_names[iPDF].c_str() << ": " << PredictionHistograms[iPDF]-> Integral() << std::endl;
-    std::cout << "~~~~~~~~~~~~~~~~" << std::endl;
+    MACH3LOG_INFO("Integrals of nominal hists: ");
+    MACH3LOG_INFO("{} : {}",sample_names[iPDF].c_str(),PredictionHistograms[iPDF]->Integral());
+    MACH3LOG_INFO("--------------");
   }
   
   //###########################################################################################################
@@ -80,7 +81,7 @@ int main(int argc, char * argv[]) {
 
   if(StartFromPreviousChain) {//Start from values at the end of an already run chain
     //Read in paramter names and values from file
-    std::cout << "MCMC getting starting position from " << FitManager->raw()["General"]["PosFileName"].as<std::string>() << std::endl;
+    MACH3LOG_INFO("MCMC getting starting position from {}",FitManager->raw()["General"]["PosFileName"].as<std::string>());
     TFile *infile = new TFile(FitManager->raw()["General"]["PosFileName"].as<std::string>().c_str(), "READ");
     TTree *posts = (TTree*)infile->Get("posteriors");
     TObjArray* brlis = (TObjArray*)posts->GetListOfBranches();
@@ -96,7 +97,7 @@ int main(int argc, char * argv[]) {
         posts->SetBranchAddress("step",&step_val);
         continue;
       }
-      std::cout << " * Loading " << bname << std::endl;
+      MACH3LOG_INFO("Loading {}",bname);
       posts->SetBranchAddress(branch_names[i], &branch_vals[i]);
     }
     posts->GetEntry(posts->GetEntries()-1);
@@ -123,7 +124,7 @@ int main(int argc, char * argv[]) {
   	iPar++;
       }
       if(covparstarts.size()!=0) parstarts.insert(std::pair<TString,std::vector<double> >(covtypes[icov],covparstarts));
-      else std::cout<<"Did not find any parameters in posterior tree for: "<<covtypes[icov]<<std::endl<<"assuming previous chain didn't use them"<<std::endl;
+      else MACH3LOG_INFO("Did not find any parameters in posterior tree for: {} assuming previous chain didn't use them",covtypes[icov]);
     }
 
     std::map<TString, double>::const_iterator itt;

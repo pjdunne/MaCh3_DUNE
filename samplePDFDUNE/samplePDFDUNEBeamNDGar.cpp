@@ -65,15 +65,11 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
   int oscnutype = sample_oscnutype[iSample];
   bool signal = sample_signal[iSample];
   
-  std::cout << "-------------------------------------------------------------------" << std::endl;
-  std::cout << "input file: " << sampleFile << std::endl;
+  MACH3LOG_INFO("-------------------------------------------------------------------");
+  MACH3LOG_INFO("Input File: {}", sampleFile);
   
   _sampleFile = new TFile(sampleFile, "READ");
   _data = (TTree*)_sampleFile->Get("cafTree");
-  if(_data){
-    std::cout << "Found mtuple tree is " << sampleFile << std::endl;
-    std::cout << "N of entries: " << _data->GetEntries() << std::endl;
-  }
   
   _data->SetBranchStatus("*", 1);
   _data->SetBranchAddress("rec", &sr);
@@ -85,9 +81,6 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
   duneobj->nutype = nutype;
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
- 
-  std::cout << "signal: " << duneobj->signal << std::endl;
-  std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
   // allocate memory for dunendgarmc variables
   duneobj->rw_yrec = new double[duneobj->nEvents];
@@ -145,11 +138,9 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
     _data->GetEntry(i);
     double radius = pow((pow((sr->mc.nu[0].vtx.y+150),2) + pow((sr->mc.nu[0].vtx.z-1486),2)),0.5);
     if(std::abs(sr->mc.nu[0].vtx.x)<=209.0 &&  radius<=227.02){
-      //std::cout<<"this event is within the fiducial volume"<<std::endl;
       num_in_fdv++;
       duneobj->in_fdv[i] = 1;
     } else{
-      //std::cout<<"this event is NOT within the fiducial volume"<<std::endl;
       num_notin_fdv++;
       duneobj->in_fdv[i] = 0;
     }
@@ -195,8 +186,8 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
 	}
 	num_nanparticles = num_nanparticles + (nanparticles/nrecoparticles);
       } //ADD PRIMARY LEPTON ENERGY ELEP_RECO
-      if(std::isnan(erec_total)){std::cout<<"nan energy"<<std::endl; num_nanenergy++; erec_total = (float)(sr->common.ixn.gsft[0].Enu.lep_calo);}
-      if(iscalo_reco){duneobj->rw_erec[i]=(double)(sr->common.ixn.gsft[0].Enu.lep_calo);  /*std::cout<<"calo erec: "<<(double)(sr->common.ixn.gsft[0].Enu.lep_calo)<<std::endl;*/}
+      if(std::isnan(erec_total)){num_nanenergy++; erec_total = (float)(sr->common.ixn.gsft[0].Enu.lep_calo);}
+      if(iscalo_reco){duneobj->rw_erec[i]=(double)(sr->common.ixn.gsft[0].Enu.lep_calo);}
       else{duneobj->rw_erec[i]=(double)(erec_total);}
       duneobj->rw_elep_reco[i] = (double)(elep_reco);
     }
@@ -304,8 +295,8 @@ double* samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(KinematicTyp
    KinematicValue = &dunendgarmcSamples[iSample].rw_lep_pZ[iEvent];
    break;
  default:
-   std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-   throw;
+   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+   throw MaCh3Exception(__FILE__, __LINE__);
  }
  
  return KinematicValue;
@@ -362,8 +353,8 @@ void samplePDFDUNEBeamNDGar::setupFDMC(int iSample) {
       fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
       break;
     default:
-      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << nDimensions << std::endl;
-      throw;
+      MACH3LOG_ERROR("Unrecognised binning option: {}",nDimensions);
+      throw MaCh3Exception(__FILE__, __LINE__);
       break;
     }
   }

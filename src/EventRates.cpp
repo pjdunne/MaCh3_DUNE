@@ -50,7 +50,7 @@ void Write1DHistogramsToPdf(std::string OutFileName, std::vector<TH1D*> Histogra
 
 int main(int argc, char * argv[]) {
   if(argc == 1){
-    std::cout << "Usage: bin/EventRatesDUNEBeam config.cfg" << std::endl;
+    MACH3LOG_ERROR("Usage: bin/EventRatesDUNEBeam config.cfg");
     return 1;
   }
 
@@ -65,15 +65,13 @@ int main(int argc, char * argv[]) {
   std::vector<samplePDFFDBase*> DUNEPdfs;
   MakeMaCh3DuneInstance(fitMan.get(), DUNEPdfs, xsec, osc); 
 
-
   std::vector<TH1D*> DUNEHists;
   for(auto Sample : DUNEPdfs){
-	Sample->reweight();
+    Sample->reweight();
     DUNEHists.push_back(Sample->get1DHist());
-
+    
     std::string EventRateString = fmt::format("{:.2f}", Sample->get1DHist()->Integral());
     MACH3LOG_INFO("Event rate for {} : {:<5}", Sample->GetName(), EventRateString);
-
   }
 
   std::string OutFileName = GetFromManager<std::string>(fitMan->raw()["General"]["OutputFile"], "EventRatesOutput.root");

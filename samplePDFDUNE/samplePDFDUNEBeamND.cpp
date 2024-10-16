@@ -129,8 +129,8 @@ void samplePDFDUNEBeamND::Init() {
       NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_res_nd_pos);
     }
     else { 
-      std::cerr << "Found a functional parameter which wasn't specified in the xml | samplePDFDUNEBeamND:" << name << std::endl;
-      throw;
+      MACH3LOG_ERROR("Found a functional parameter which wasn't specified in the xml | samplePDFDUNEBeamND: {}",name);
+      throw MaCh3Exception(__FILE__, __LINE__);
     }
   }
   
@@ -175,17 +175,12 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   int oscnutype = sample_oscnutype[iSample];
   bool signal = sample_signal[iSample];
   
-  std::cout << "-------------------------------------------------------------------" << std::endl;
-  std::cout << "input file: " << sampleFile << std::endl;
+  MACH3LOG_INFO("-------------------------------------------------------------------");
+  MACH3LOG_INFO("input file: {}",sampleFile);
   
   _sampleFile = new TFile(sampleFile, "READ");
   _data = (TTree*)_sampleFile->Get("caf");
 
-  if(_data){
-    std::cout << "Found mtuple tree is " << sampleFile << std::endl;
-    std::cout << "N of entries: " << _data->GetEntries() << std::endl;
-  }
-  
   _data->SetBranchStatus("*", 0);
   _data->SetBranchStatus("Ev", 1);
   _data->SetBranchAddress("Ev", &_ev);
@@ -327,8 +322,8 @@ double* samplePDFDUNEBeamND::ReturnKinematicParameterByReference(KinematicTypes 
     KinematicValue = &dunendmcSamples[iSample].rw_reco_q[iEvent];
     break;
   default:
-    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-    throw;
+    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   return KinematicValue;
@@ -386,8 +381,8 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
       fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
       break;
     default:
-      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << nDimensions << std::endl;
-      throw;
+      MACH3LOG_ERROR("Unrecognised binning option: {}",nDimensions);
+      throw MaCh3Exception(__FILE__, __LINE__);
       break;
     }
   }
@@ -459,7 +454,6 @@ void samplePDFDUNEBeamND::applyShifts(int iSample, int iEvent) {
 
 std::vector<double> samplePDFDUNEBeamND::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
 {
-  std::cout << "ReturnKinematicVarBinning" << std::endl;
   std::vector<double> binningVector;
   return binningVector;
 }

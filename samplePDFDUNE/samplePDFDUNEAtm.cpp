@@ -46,16 +46,16 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   dunemc_base* duneobj = &dunemcSamples[iSample];
 
   std::string FileName = mtuple_files[iSample];
-  std::cout << "Reading File:" << FileName << std::endl;
+  MACH3LOG_INFO("Reading File: {}",FileName);
   TFile* File = TFile::Open(FileName.c_str());
   if (!File || File->IsZombie()) {
-    std::cerr << "Did not find File:" << FileName << std::endl;
-    throw;
+    MACH3LOG_ERROR("Did not find File: {}",FileName);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   TTree* Tree = File->Get<TTree>("cafTree");
   if (!Tree){
-    std::cerr << "Did not find Tree::cafTree in File:" << FileName << std::endl;
-    throw;
+    MACH3LOG_ERROR("Did not find Tree::cafTree in File: {}",FileName);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   Tree->SetBranchStatus("*", 1);
@@ -83,7 +83,7 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
     Tree->GetEntry(iEvent);
 
     if ((iEvent % (duneobj->nEvents/10))==0) {
-      std::cout << "\tProcessing event: " << iEvent << "/" << duneobj->nEvents << std::endl;
+      MACH3LOG_INFO("\tProcessing event: {}/{}",iEvent,duneobj->nEvents);
     }
 
     duneobj->mode[iEvent] = SIMBMode_ToMaCh3Mode(sr->mc.nu[0].mode,sr->mc.nu[0].iscc);
@@ -157,8 +157,8 @@ double* samplePDFDUNEAtm::ReturnKinematicParameterByReference(KinematicTypes Kin
     KinematicValue = &(dunemcSamples[iSample].rw_theta[iEvent]);
     break;
   default:
-    std::cerr << "Unknown KinPar:" << KinPar << std::endl;
-    throw;
+    MACH3LOG_ERROR("Unknown KinPar: {}",KinPar);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   return KinematicValue;
@@ -193,8 +193,8 @@ int samplePDFDUNEAtm::ReturnKinematicParameterFromString(std::string KinematicPa
   else if (KinematicParameterStr == "TrueCosineZ") {ReturnVal = kTrueCosZ;}
   else if (KinematicParameterStr == "RecoCosineZ") {ReturnVal = kRecoCosZ;}
   else {
-    std::cerr << "KinematicParameterStr: " << KinematicParameterStr << " not found" << std::endl;
-    throw;
+    MACH3LOG_ERROR("KinematicParameterStr: {} not found",KinematicParameterStr);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   return ReturnVal;

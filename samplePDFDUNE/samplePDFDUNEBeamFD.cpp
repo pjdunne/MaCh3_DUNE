@@ -17,19 +17,19 @@ samplePDFDUNEBeamFD::~samplePDFDUNEBeamFD() {
 
 void samplePDFDUNEBeamFD::Init() {
   if (CheckNodeExists(SampleManager->raw(), "DUNESampleBools", "iselike" )) {
-	iselike = SampleManager->raw()["DUNESampleBools"]["iselike"].as<bool>();
+    iselike = SampleManager->raw()["DUNESampleBools"]["iselike"].as<bool>();
   } else{
     MACH3LOG_ERROR("Did not find DUNESampleBools:iselike in {}, please add this", SampleManager->GetFileName());
-	throw MaCh3Exception(__FILE__, __LINE__);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
-
+  
   if (CheckNodeExists(SampleManager->raw(), "POT")) {
     pot = SampleManager->raw()["POT"].as<double>();
   } else{
     MACH3LOG_ERROR("POT not defined in {}, please add this!", SampleManager->GetFileName());
-	throw MaCh3Exception(__FILE__, __LINE__);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
- 
+  
   tot_escale_fd_pos = -999;
   tot_escale_sqrt_fd_pos = -999;
   tot_escale_invsqrt_fd_pos = -999;
@@ -63,7 +63,7 @@ void samplePDFDUNEBeamFD::Init() {
   FDDetectorSystPointers = std::vector<const double*>(nFDDetectorSystPointers);
 
   for(auto FuncPar_i  = 0 ; FuncPar_i < funcParsIndex.size() ; ++FuncPar_i){
-	FDDetectorSystPointersMap.insert(std::pair<std::string, const double*>(funcParsNames.at(FuncPar_i), XsecCov->retPointer(funcParsIndex.at(FuncPar_i))));
+    FDDetectorSystPointersMap.insert(std::pair<std::string, const double*>(funcParsNames.at(FuncPar_i), XsecCov->retPointer(funcParsIndex.at(FuncPar_i))));
   }
 
   /*
@@ -161,24 +161,25 @@ void samplePDFDUNEBeamFD::Init() {
       throw;
     }
   }
-*/
-  std::cout << "-------------------------------------------------------------------" <<std::endl;
+  */
+  
+  MACH3LOG_INFO("-------------------------------------------------------------------");
 }
 
 void samplePDFDUNEBeamFD::SetupSplines() {
 
   ///@todo move all of the spline setup into core
   if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
-	MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-	splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-	splineFile = (splineFDBase*)DUNESplines;
-	InitialiseSplineObject();
+    MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+    splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
+    splineFile = (splineFDBase*)DUNESplines;
+    InitialiseSplineObject();
   }
   else{
-	MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-	splineFile = nullptr;
+    MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+    splineFile = nullptr;
   }
-
+  
   return;
 }
 
@@ -205,19 +206,19 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   int oscnutype = sample_oscnutype[iSample];
   bool signal = sample_signal[iSample];
   
-  std::cout << "-------------------------------------------------------------------" << std::endl;
+  MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", sampleFile);
   
   _sampleFile = new TFile(sampleFile, "READ");
   _data = (TTree*)_sampleFile->Get("caf");
-
+  
   if(_data){
     MACH3LOG_INFO("Found \"caf\" tree in {}", sampleFile);
     MACH3LOG_INFO("With number of entries: {}", _data->GetEntries());
   }
   else{
-	MACH3LOG_ERROR("Could not find \"caf\" tree in {}", sampleFile);
-	throw MaCh3Exception(__FILE__, __LINE__);
+    MACH3LOG_ERROR("Could not find \"caf\" tree in {}", sampleFile);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   _data->SetBranchStatus("*", 0);
@@ -283,26 +284,18 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
 
   TH1D* norm = (TH1D*)_sampleFile->Get("norm");
   if(!norm){
-    std::cout<< "Add a norm KEY to the root file using MakeNormHists.cxx"<<std::endl;
-    std::cout << "Ignoring for now" << std::endl;
-    std::cerr << __FILE__ << ":" << __LINE__ << std::endl;
-    throw;
+    MACH3LOG_ERROR("Add a norm KEY to the root file using MakeNormHists.cxx");
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
 
   // now fill the actual variables
   duneobj->norm_s = norm->GetBinContent(1);
   duneobj->pot_s = pot/norm->GetBinContent(2);
 
-  std::cout<< "pot_s = " << duneobj->pot_s << std::endl;
-  std::cout<< "norm_s = " << duneobj->norm_s << std::endl;
-
   duneobj->nEvents = _data->GetEntries();
   duneobj->nutype = nutype;
   duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
-
-  std::cout << "signal: " << duneobj->signal << std::endl;
-  std::cout << "nevents: " << duneobj->nEvents << std::endl;
 
   // allocate memory for dunemc variables
   duneobj->rw_cvnnumu = new double[duneobj->nEvents];
@@ -342,7 +335,7 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
-
+  
   //FILL DUNE STRUCT
   for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
     _data->GetEntry(i);
@@ -404,9 +397,8 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1, int kModeToFill, in
 
   if (kChannelToFill!=-1) {
     if (kChannelToFill>dunemcSamples.size()) {
-      std::cout << "Required channel is not available. kChannelToFill should be between 0 and " << dunemcSamples.size() << std::endl;
-      std::cout << "kChannelToFill given:" << kChannelToFill << std::endl;
-      std::cout << "Exitting.." << std::endl;
+      MACH3LOG_ERROR("Required channel is not available. kChannelToFill should be between 0 and {}",dunemcSamples.size());
+      MACH3LOG_ERROR("kChannelToFill given: {}",kChannelToFill);
       throw MaCh3Exception(__FILE__, __LINE__);
     }
     fChannel = true;
@@ -416,10 +408,9 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1, int kModeToFill, in
 
   if (kModeToFill!=-1) {
     if (kModeToFill>kMaCh3_nModes) {
-      std::cout << "Required mode is not available. kModeToFill should be between 0 and " << kMaCh3_nModes << std::endl;
-      std::cout << "kModeToFill given:" << kModeToFill << std::endl;
-      std::cout << "Exitting.." << std::endl;
-      throw;
+      MACH3LOG_ERROR("Required mode is not available. kModeToFill should be between 0 and {}",kMaCh3_nModes);
+      MACH3LOG_ERROR("kModeToFill given: {}",kModeToFill);
+      throw MaCh3Exception(__FILE__, __LINE__);
     }
     fMode = true;
   } else {
@@ -461,7 +452,7 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::ve
 
   for (unsigned int iSelection=0;iSelection<Selection.size();iSelection++) {
     if (Selection[iSelection].size()!=3) {
-      std::cerr << "Selection Vector[" << iSelection << "] is not formed correctly. Expect size == 3, given:" << Selection[iSelection].size() << std::endl;
+      MACH3LOG_ERROR("Selection Vector[{}] is not formed correctly. Expect size == 3, given: {}",iSelection,Selection[iSelection].size());
       throw MaCh3Exception(__FILE__, __LINE__);
     }
   }
@@ -477,9 +468,8 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::ve
   }
 
   if (fChannel && kChannelToFill>dunemcSamples.size()) {
-    std::cout << "Required channel is not available. kChannelToFill should be between 0 and " << dunemcSamples.size() << std::endl;
-    std::cout << "kChannelToFill given:" << kChannelToFill << std::endl;
-    std::cout << "Exitting.." << std::endl;
+    MACH3LOG_ERROR("Required channel is not available. kChannelToFill should be between 0 and {}",dunemcSamples.size());
+    MACH3LOG_ERROR("kChannelToFill given: {}",kChannelToFill);
     throw MaCh3Exception(__FILE__, __LINE__);
   }
 
@@ -545,8 +535,8 @@ double samplePDFDUNEBeamFD::ReturnKinematicParameter(double KinematicVariable, i
     KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
     break;
   case kRecoNeutrinoEnergy:
-	KinematicValue = dunemcSamples[iSample].rw_erec_shifted[iEvent];
-	break;
+    KinematicValue = dunemcSamples[iSample].rw_erec_shifted[iEvent];
+    break;
   case kTrueXPos:
     KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
     break;
@@ -563,11 +553,11 @@ double samplePDFDUNEBeamFD::ReturnKinematicParameter(double KinematicVariable, i
     KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
     break;
   case kM3Mode:
-	KinematicValue = dunemcSamples[iSample].mode[iEvent];
-	break;
+    KinematicValue = dunemcSamples[iSample].mode[iEvent];
+    break;
   default:
     MACH3LOG_ERROR("Did not recognise Kinematic Parameter type");
-	MACH3LOG_ERROR("Was given a Kinematic Variable of {}", KinematicVariable);
+    MACH3LOG_ERROR("Was given a Kinematic Variable of {}", KinematicVariable);
     throw MaCh3Exception(__FILE__, __LINE__);
   }
   
@@ -601,8 +591,8 @@ double samplePDFDUNEBeamFD::ReturnKinematicParameter(std::string KinematicParame
    KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
    break;
  default:
-   std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-   throw;
+   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+   throw MaCh3Exception(__FILE__, __LINE__);
  }
  
  return KinematicValue;
@@ -636,15 +626,14 @@ const double* samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(std::stri
    KinematicValue = &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
    break;
  default:
-   std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-   throw;
+   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+   throw MaCh3Exception(__FILE__, __LINE__);
  }
  
  return KinematicValue;
 }
 
 int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string KinematicParameterStr){
-
   if (KinematicParameterStr.find("TrueNeutrinoEnergy") != std::string::npos) {return kTrueNeutrinoEnergy;}
   if (KinematicParameterStr.find("RecoNeutrinoEnergy") != std::string::npos) {return kRecoNeutrinoEnergy;}
   if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
@@ -653,7 +642,6 @@ int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string Kinemati
   if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
   if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
   if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
-
 }
 
 const double* samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
@@ -683,8 +671,8 @@ const double* samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(double Ki
     KinematicValue = &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
     break;
   default:
-    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-    throw;
+   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+   throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   return KinematicValue;
