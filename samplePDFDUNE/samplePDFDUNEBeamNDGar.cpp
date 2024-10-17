@@ -54,7 +54,7 @@ void samplePDFDUNEBeamNDGar::SetupWeightPointers() {
 }
 
 int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
-  const char *sampleFile = mtuple_files[iSample].c_str();
+  const char *sampleFile = mc_files[iSample].c_str();
   dunemc_base *duneobj = &(dunendgarmcSamples[iSample]);
   int nutype = sample_nutype[iSample];
   int oscnutype = sample_oscnutype[iSample];
@@ -240,7 +240,7 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
   return duneobj->nEvents;
 }
 
-double* samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(KinematicTypes KinematicParameter, int iSample, int iEvent) {
+double* samplePDFDUNEBeamNDGar::GetPointerToKinematicParameter(KinematicTypes KinematicParameter, int iSample, int iEvent) {
   double* KinematicValue;
  
  switch(KinematicParameter) {
@@ -297,22 +297,22 @@ double* samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(KinematicTyp
  return KinematicValue;
 }
 
-double* samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
+double* samplePDFDUNEBeamNDGar::GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
   KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
+  return GetPointerToKinematicParameter(KinPar,iSample,iEvent);
 }
 
-double* samplePDFDUNEBeamNDGar::ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent) {
+double* samplePDFDUNEBeamNDGar::GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
   KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter));
-  return ReturnKinematicParameterByReference(KinPar,iSample,iEvent);
+  return GetPointerToKinematicParameter(KinPar,iSample,iEvent);
 }
 
 double samplePDFDUNEBeamNDGar::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  return *ReturnKinematicParameterByReference(KinematicVariable, iSample, iEvent);
+  return *GetPointerToKinematicParameter(KinematicVariable, iSample, iEvent);
 }
 
 double samplePDFDUNEBeamNDGar::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
-  return *ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
+  return *GetPointerToKinematicParameter(KinematicParameter, iSample, iEvent);
 }
 
 void samplePDFDUNEBeamNDGar::setupFDMC(int iSample) {

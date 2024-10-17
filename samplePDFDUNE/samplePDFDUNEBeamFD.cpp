@@ -196,7 +196,7 @@ void samplePDFDUNEBeamFD::SetupWeightPointers() {
 
 
 int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
-  const char *sampleFile = (mtuple_files[iSample]).c_str();
+  const char *sampleFile = mc_files[iSample].c_str();
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
   int nutype = sample_nutype[iSample];
   int oscnutype = sample_oscnutype[iSample];
@@ -595,7 +595,7 @@ double samplePDFDUNEBeamFD::ReturnKinematicParameter(std::string KinematicParame
 }
 
 
-const double* samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent) {
+const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
  double* KinematicValue;
  
@@ -640,7 +640,7 @@ int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string Kinemati
   if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
 }
 
-const double* samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent) {
+const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
   KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
   double* KinematicValue;
 

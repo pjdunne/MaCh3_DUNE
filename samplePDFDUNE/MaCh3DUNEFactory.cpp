@@ -115,7 +115,6 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
     
     DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESampleConfigs[Sample_i], xsec));
     
-    DUNEPdfs.back()->UseNonDoubledAngles(true);
     DUNEPdfs.back()->SetXsecCov(xsec);
     DUNEPdfs.back()->SetOscCov(osc);
     // Pure for debugging, lets us set which weights we don't want via the manager

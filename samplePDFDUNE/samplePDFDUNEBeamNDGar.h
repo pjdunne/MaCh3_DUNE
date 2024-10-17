@@ -40,11 +40,13 @@ public:
   double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
   void applyShifts(int iSample, int iEvent) {}
 
-  double* ReturnKinematicParameterByReference(KinematicTypes KinPar, int iSample, int iEvent);
-  double* ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent);
-  double* ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent);
+  double* GetPointerToKinematicParameter(KinematicTypes KinPar, int iSample, int iEvent);
+  double* GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent);
+  double* GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
+
   double ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent);
   double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
+
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
   std::vector<double> ReturnKinematicParameterBinning(KinematicTypes KinematicParameter);
   int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
