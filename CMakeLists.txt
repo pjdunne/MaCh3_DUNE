@@ -70,7 +70,7 @@ find_package(MaCh3)
 if(NOT MaCh3_FOUND)
   CPMFindPackage(
       NAME MaCh3
-      GIT_TAG "feature_OscClassMagic"
+      GIT_TAG "picker24/feature/GenericBinningAndReturnKinematicParameterTidy"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()
