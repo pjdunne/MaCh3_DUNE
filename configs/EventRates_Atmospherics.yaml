@@ -37,3 +37,6 @@ General:
   ProcessMCMC: No
   Seed: 0
   Debug: No
+
+Projections:
+  - Name: RecoNuEnergy
