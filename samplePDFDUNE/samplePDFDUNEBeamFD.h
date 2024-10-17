@@ -44,12 +44,14 @@ public:
   
   double ReturnKinematicParameter (double KinematicVariable, int iSample, int iEvent);
   double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
-  std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
-  const double* ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent);
-  const double* ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent); 
 
+  const double* GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
+  const double* GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent); 
+
+  std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
   inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
   inline std::string ReturnStringFromKinematicParameter(int KinematicParameterStr);
+  
   //DB functions which could be initialised to do something which is non-trivial
   double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
   void applyShifts(int iSample, int iEvent);
