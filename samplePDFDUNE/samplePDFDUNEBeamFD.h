@@ -45,8 +45,8 @@ public:
   double ReturnKinematicParameter (double KinematicVariable, int iSample, int iEvent);
   double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
-  const double* ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent);
-  const double* ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent); 
+  const double* GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
+  const double* GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent); 
 
   inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
   inline std::string ReturnStringFromKinematicParameter(int KinematicParameterStr);

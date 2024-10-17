@@ -35,9 +35,9 @@ public:
   void SetupWeightPointers();
   void SetupSplines();
   
-  double* ReturnKinematicParameterByReference(KinematicTypes KinPar, int iSample, int iEvent);
-  double* ReturnKinematicParameterByReference(double KinematicVariable, int iSample, int iEvent);
-  double* ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent);
+  const double* GetPointerToKinematicParameter(KinematicTypes KinPar, int iSample, int iEvent);
+  const double* GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent);
+  const double* GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
   double ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent);
   double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
@@ -95,6 +95,7 @@ public:
   // configuration 
   bool iselike;
   bool isND;
+  bool IsRHC;
 
   //Positions of ND Detector systematics
   double tot_escale_nd_pos;
