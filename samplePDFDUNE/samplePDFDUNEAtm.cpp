@@ -28,8 +28,8 @@ void samplePDFDUNEAtm::SetupWeightPointers() {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 3;
       MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
-      MCSamples[i].total_weight_pointers[j][0] = MCSamples[i].osc_w_pointer[j];
-      MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].flux_w[j]);
+      MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].flux_w[j]);
+      MCSamples[i].total_weight_pointers[j][1] = MCSamples[i].osc_w_pointer[j];
       MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].xsec_w[j]);
     }
   }
@@ -66,7 +66,7 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   duneobj->oscnutype = sample_oscnutype[iSample];
   duneobj->signal = sample_signal[iSample];
   
-  duneobj->mode = new int[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
   
@@ -83,7 +83,7 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
       MACH3LOG_INFO("\tProcessing event: {}/{}",iEvent,duneobj->nEvents);
     }
 
-    duneobj->mode[iEvent] = SIMBMode_ToMaCh3Mode(sr->mc.nu[0].mode,sr->mc.nu[0].iscc);
+    duneobj->mode[iEvent] = (double)SIMBMode_ToMaCh3Mode(TMath::Abs(sr->mc.nu[0].mode),(int)sr->mc.nu[0].iscc);
     duneobj->rw_isCC[iEvent] = sr->mc.nu[0].iscc;
     duneobj->Target[iEvent] = 40;
     
@@ -152,6 +152,12 @@ double* samplePDFDUNEAtm::ReturnKinematicParameterByReference(KinematicTypes Kin
   case kRecoCosZ:
     KinematicValue = &(dunemcSamples[iSample].rw_theta[iEvent]);
     break;
+  case kOscChannel:
+    KinematicValue = &(MCSamples[iSample].ChannelIndex);
+    break;
+  case kMode:
+    KinematicValue = MCSamples[iSample].mode[iEvent];
+    break;
   default:
     MACH3LOG_ERROR("Unknown KinPar: {}",KinPar);
     throw MaCh3Exception(__FILE__, __LINE__);
@@ -178,7 +184,30 @@ double samplePDFDUNEAtm::ReturnKinematicParameter(std::string KinematicParameter
   return *ReturnKinematicParameterByReference(KinematicParameter, iSample, iEvent);
 }
 
-std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(std::string KinematicParameterStr)  {
+std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(std::string KinematicParameterStr) {
+  KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameterStr));
+  return ReturnKinematicParameterBinning(KinPar);
+}
+
+std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(KinematicTypes KinPar)  {
+  std::vector<double> binningVector;
+  
+  switch (KinPar) {
+
+  case kRecoNeutrinoEnergy:
+    for (int i=0;i<20;i++) {
+      binningVector.emplace_back((double)i);
+    }
+    binningVector.emplace_back(100.);
+    binningVector.emplace_back(1000.);
+    break;
+    
+  default:
+    MACH3LOG_ERROR("Unknown KinPar: {}",KinPar);
+    throw MaCh3Exception(__FILE__, __LINE__);
+  }
+
+  return binningVector;
 }
 
 int samplePDFDUNEAtm::ReturnKinematicParameterFromString(std::string KinematicParameterStr) {
@@ -188,6 +217,8 @@ int samplePDFDUNEAtm::ReturnKinematicParameterFromString(std::string KinematicPa
   else if (KinematicParameterStr == "RecoNeutrinoEnergy") {ReturnVal = kRecoNeutrinoEnergy;}
   else if (KinematicParameterStr == "TrueCosineZ") {ReturnVal = kTrueCosZ;}
   else if (KinematicParameterStr == "RecoCosineZ") {ReturnVal = kRecoCosZ;}
+  else if (KinematicParameterStr == "OscChannel") {ReturnVal = kOscChannel;}
+  else if (KinematicParameterStr == "Mode") {ReturnVal = kMode;}
   else {
     MACH3LOG_ERROR("KinematicParameterStr: {} not found",KinematicParameterStr);
     throw MaCh3Exception(__FILE__, __LINE__);

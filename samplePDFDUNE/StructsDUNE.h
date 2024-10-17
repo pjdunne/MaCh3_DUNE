@@ -1,6 +1,8 @@
 #ifndef _StructsDUNE_h_
 #define _StructsDUNE_h_
 
+#include <iostream>
+
 struct dunemc_base {
   int nutype;
   int oscnutype;
@@ -56,7 +58,7 @@ struct dunemc_base {
   double *beam_w;
   double *flux_w;
 
-  int *mode;
+  double *mode;
   int *isbound;
 
   double *rw_truecz;
@@ -761,125 +763,125 @@ inline int SIMBMode_ToMaCh3Mode(int SIMB_mode, int isCC) {
   
   if (isCC == 1) {
     switch (SIMB_mode) {
-        //Unknown
-      case kUnknownInteraction:
-        ReturnMode = kMaCh3_nModes;
-      	    break;
-        //QE
-      case kQE:
-        ReturnMode = kMaCh3_CCQE; // CC QE in MaCh3 DUNE
-        break;
-        // DIS
-      case kDIS:
-        ReturnMode = kMaCh3_CC_DIS; //CC DIS in MaCh3 DUNE
-        break;
-        // RES
-      case kRes:
-        ReturnMode = kMaCh3_CC_RES; // CC RES in MaCh3 DUNE
-        break;
-        // Coherent
-      case kCoh:
-        ReturnMode = kMaCh3_CC_COH; // CC Coh in MaCh3 DUNE
-        break;
-        // Diffractive
-      case kDiffractive:
-        ReturnMode = kMaCh3_CC_Diffractive; // CC multi-pi in MaCh3
-        break;
-        // Nue Elastic
-      case kElectronScattering:
-        ReturnMode = kMaCh3_CC_Nue_EL; // CC Nue scattering in MaCh3 DUNE
-        break;
-        // Atmospheric Mu Gamma
-      case kAMNuGamma:
-        ReturnMode = kMaCh3_CC_AMnuGamma; // CC Am Nu Mu in MaCh3 DUNE
-        break;
-        // MEC
-      case kMEC:
-        ReturnMode = kMaCh3_CC_MEC; // CC MEC in MaCh3 DUNE
-        break;
-        // Coherent Elastic
-      case kCohElastic:
-        ReturnMode = kMaCh3_CC_COHEL; // CC Coherent Elastic in MaCh3 DUNE
-        break;
-        // Inverse Beta Decay
-      case kInverseBetaDecay:
-        ReturnMode = kMaCh3_CC_IBD; // CC Inverse Beta Decay in MaCh3 DUNE
-        break;
-        // Glashow Resonance
-      case kGlashowResonance:
-        ReturnMode = kMaCh3_CC_GlashowRES; // CC Glashow Reaonance in DUNE
-        break;
-        // IMD Annihilation
-      case kIMDAnnihilation:
-        ReturnMode = kMaCh3_CC_IMDAnnihalation; // CC Inverse Muon Decay Annihalation in DUNE
-        break;
-      default:
-        ReturnMode = kMaCh3_nModes; // Something else in MaCh3 (sand?)
-        break;
+      //Unknown
+    case kUnknownInteraction:
+      std::cerr << "Unknown Interaction mode:" << SIMB_mode << std::endl;
+      throw;
+      //QE
+    case kQE:
+      ReturnMode = kMaCh3_CCQE; // CC QE in MaCh3 DUNE
+      break;
+      // DIS
+    case kDIS:
+      ReturnMode = kMaCh3_CC_DIS; //CC DIS in MaCh3 DUNE
+      break;
+      // RES
+    case kRes:
+      ReturnMode = kMaCh3_CC_RES; // CC RES in MaCh3 DUNE
+      break;
+      // Coherent
+    case kCoh:
+      ReturnMode = kMaCh3_CC_COH; // CC Coh in MaCh3 DUNE
+      break;
+      // Diffractive
+    case kDiffractive:
+      ReturnMode = kMaCh3_CC_Diffractive; // CC multi-pi in MaCh3
+      break;
+      // Nue Elastic
+    case kElectronScattering:
+      ReturnMode = kMaCh3_CC_Nue_EL; // CC Nue scattering in MaCh3 DUNE
+      break;
+      // Atmospheric Mu Gamma
+    case kAMNuGamma:
+      ReturnMode = kMaCh3_CC_AMnuGamma; // CC Am Nu Mu in MaCh3 DUNE
+      break;
+      // MEC
+    case kMEC:
+      ReturnMode = kMaCh3_CC_MEC; // CC MEC in MaCh3 DUNE
+      break;
+      // Coherent Elastic
+    case kCohElastic:
+      ReturnMode = kMaCh3_CC_COHEL; // CC Coherent Elastic in MaCh3 DUNE
+      break;
+      // Inverse Beta Decay
+    case kInverseBetaDecay:
+      ReturnMode = kMaCh3_CC_IBD; // CC Inverse Beta Decay in MaCh3 DUNE
+      break;
+      // Glashow Resonance
+    case kGlashowResonance:
+      ReturnMode = kMaCh3_CC_GlashowRES; // CC Glashow Reaonance in DUNE
+      break;
+      // IMD Annihilation
+    case kIMDAnnihilation:
+      ReturnMode = kMaCh3_CC_IMDAnnihalation; // CC Inverse Muon Decay Annihalation in DUNE
+      break;
+    default:
+      std::cerr << "Invalid mode:" << SIMB_mode << std::endl;
+      throw;
     }
-
+    
   }
-
-
+  
+  
   if (isCC == 0) {
     switch (SIMB_mode) {
-        //Unknown
-      case kUnknownInteraction:
-        ReturnMode = kMaCh3_nModes;
-      	    break;
-        //QE
-      case kQE:
-        ReturnMode = kMaCh3_NCQE; // NC QE in MaCh3 DUNE
-        break;
-        // DIS
-      case kDIS:
-        ReturnMode = kMaCh3_NC_DIS; // NC DIS in MaCh3 DUNE
-        break;
-        // RES
-      case kRes:
-        ReturnMode = kMaCh3_NC_RES; // NC RES in MaCh3 DUNE
-        break;
-        // Coherent
-      case kCoh:
-        ReturnMode = kMaCh3_NC_COH; // NC Coh in MaCh3 DUNE
-        break;
-        // Diffractive
-      case kDiffractive:
-        ReturnMode = kMaCh3_NC_Diffractive; // CC multi-pi in MaCh3
-        break;
-        // Nue Elastic
-      case kElectronScattering:
-        ReturnMode = kMaCh3_NC_Nue_EL; // NC Nue scattering in MaCh3 DUNE
-        break;
-        // Atmospheric Mu Gamma
-      case kAMNuGamma:
-        ReturnMode = kMaCh3_NC_AMnuGamma; // NC Am Nu Mu in MaCh3 DUNE
-        break;
-        // MEC
-      case kMEC:
-        ReturnMode = kMaCh3_NC_MEC; // NC MEC in MaCh3 DUNE
-        break;
-        // Coherent Elastic
-      case kCohElastic:
-        ReturnMode = kMaCh3_NC_COHEL; // NC Coherent Elastic in MaCh3 DUNE
-        break;
-        // Inverse Beta Decay
-      case kInverseBetaDecay:
-        ReturnMode = kMaCh3_NC_IBD; // Inverse Beta Decay in MaCh3 DUNE
-        break;
-        // Glashow Resonance
-      case kGlashowResonance:
-        ReturnMode = kMaCh3_NC_GlashowRES; 
-        break;
-        // IMD Annihilation
-      case kIMDAnnihilation:
-        ReturnMode = kMaCh3_NC_IMDAnnihalation; 
-        break;
-      default:
-        ReturnMode = kMaCh3_nModes; // Something else in MaCh3 (sand?)
-        break;
+      //Unknown
+    case kUnknownInteraction:
+      std::cerr << "Unknown Interaction mode:" << SIMB_mode << std::endl;
+      throw;
+      //QE
+    case kQE:
+      ReturnMode = kMaCh3_NCQE; // NC QE in MaCh3 DUNE
+      break;
+      // DIS
+    case kDIS:
+      ReturnMode = kMaCh3_NC_DIS; // NC DIS in MaCh3 DUNE
+      break;
+      // RES
+    case kRes:
+      ReturnMode = kMaCh3_NC_RES; // NC RES in MaCh3 DUNE
+      break;
+      // Coherent
+    case kCoh:
+      ReturnMode = kMaCh3_NC_COH; // NC Coh in MaCh3 DUNE
+      break;
+      // Diffractive
+    case kDiffractive:
+      ReturnMode = kMaCh3_NC_Diffractive; // CC multi-pi in MaCh3
+      break;
+      // Nue Elastic
+    case kElectronScattering:
+      ReturnMode = kMaCh3_NC_Nue_EL; // NC Nue scattering in MaCh3 DUNE
+      break;
+      // Atmospheric Mu Gamma
+    case kAMNuGamma:
+      ReturnMode = kMaCh3_NC_AMnuGamma; // NC Am Nu Mu in MaCh3 DUNE
+      break;
+      // MEC
+    case kMEC:
+      ReturnMode = kMaCh3_NC_MEC; // NC MEC in MaCh3 DUNE
+      break;
+      // Coherent Elastic
+    case kCohElastic:
+      ReturnMode = kMaCh3_NC_COHEL; // NC Coherent Elastic in MaCh3 DUNE
+      break;
+      // Inverse Beta Decay
+    case kInverseBetaDecay:
+      ReturnMode = kMaCh3_NC_IBD; // Inverse Beta Decay in MaCh3 DUNE
+      break;
+      // Glashow Resonance
+    case kGlashowResonance:
+      ReturnMode = kMaCh3_NC_GlashowRES; 
+      break;
+      // IMD Annihilation
+    case kIMDAnnihilation:
+      ReturnMode = kMaCh3_NC_IMDAnnihalation; 
+      break;
+    default:
+      std::cerr << "Invalid mode:" << SIMB_mode << std::endl;
+      throw;
     }
-
+    
   }
 
   return ReturnMode;

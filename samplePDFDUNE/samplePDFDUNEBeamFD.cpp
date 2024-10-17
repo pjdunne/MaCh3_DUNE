@@ -327,7 +327,7 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
 
-  duneobj->mode = new int[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
@@ -378,7 +378,7 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
     duneobj->Target[i] = 40;
     
     int mode= TMath::Abs(_mode);       
-    duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
+    duneobj->mode[i]=(double)SIMBMode_ToMaCh3Mode(mode, _isCC);
     
     duneobj->flux_w[i] = 1.0;
   }

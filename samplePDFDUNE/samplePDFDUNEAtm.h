@@ -14,9 +14,9 @@ public:
   samplePDFDUNEAtm(std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEAtm();
 
-  enum KinematicTypes{kTrueNeutrinoEnergy,kRecoNeutrinoEnergy,kTrueCosZ,kRecoCosZ};
+  enum KinematicTypes{kTrueNeutrinoEnergy,kRecoNeutrinoEnergy,kTrueCosZ,kRecoCosZ,kOscChannel,kMode};
   
- protected:
+protected:
   void Init();
   int setupExperimentMC(int iSample);
   void setupFDMC(int iSample);
@@ -33,7 +33,8 @@ public:
   double* ReturnKinematicParameterByReference(std::string KinematicParameter, int iSample, int iEvent);
   double ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent);
   double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
-  std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
+  std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameterStr);
+  std::vector<double> ReturnKinematicParameterBinning(KinematicTypes KinPar);
   inline int ReturnKinematicParameterFromString(std::string KinematicStr);
   inline std::string ReturnStringFromKinematicParameter(int KinematicVariable);
 

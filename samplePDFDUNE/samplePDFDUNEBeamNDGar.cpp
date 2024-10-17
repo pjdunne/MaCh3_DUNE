@@ -88,7 +88,7 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
   duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
 
-  duneobj->mode = new int[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
 
   duneobj->nproton = new int[duneobj->nEvents];
   duneobj->nneutron = new int[duneobj->nEvents];
@@ -231,7 +231,7 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
     _isCC = (int)(sr->mc.nu[0].iscc);
     
     int mode= TMath::Abs(_mode);       
-    duneobj->mode[i]=GENIEMode_ToMaCh3Mode(mode, _isCC);
+    duneobj->mode[i]=(double)GENIEMode_ToMaCh3Mode(mode, _isCC);
     
     duneobj->flux_w[i] = 1.0;
   }
