@@ -16,12 +16,7 @@ samplePDFDUNEBeamNDGar::~samplePDFDUNEBeamNDGar() {
 }
 
 void samplePDFDUNEBeamNDGar::Init() {
-
-  // create dunendgarmc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunendgarmcSamples.push_back(obj);
-  }
+  dunendgarmcSamples.resize(nSamples,dunemc_base());
 
   iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
 }
@@ -59,7 +54,6 @@ void samplePDFDUNEBeamNDGar::SetupWeightPointers() {
 }
 
 int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
-;
   dunemc_base *duneobj = &(dunendgarmcSamples[iSample]);
   int nutype = sample_nutype[iSample];
   int oscnutype = sample_oscnutype[iSample];
@@ -332,31 +326,8 @@ void samplePDFDUNEBeamNDGar::setupFDMC(int iSample) {
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
-    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
-
-    //ETA - this is where the variables that you want to bin your samples in are defined
-    //If you want to bin in different variables this is where you put it for now
-    switch(nDimensions){
-    case 0:
-    case 1:
-      //Just point to xvar to the address of the variable you want to bin in
-      //This way we don't have to update both fdmc and skmc when we apply shifts
-      //to variables we're binning in
-      fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
-      fdobj->y_var[iEvent] = &(duneobj->dummy_y);//ETA - don't think we even need this as if we have a 1D sample we never need this, just not sure I like an unitialised variable in fdmc struct? 
-      break;
-    case 2:
-      //Just point to xvar to the address of the variable you want to bin in
-      //This way we don't have to update both fdmc and skmc when we apply shifts
-      //to variables we're binning in
-      fdobj->x_var[iEvent] = &(duneobj->rw_erec[iEvent]);
-      fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
-      break;
-    default:
-      MACH3LOG_ERROR("Unrecognised binning option: {}",nDimensions);
-      throw MaCh3Exception(__FILE__, __LINE__);
-      break;
-    }
+    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]);
+    
   }
   
 }

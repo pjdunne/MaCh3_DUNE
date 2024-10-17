@@ -35,13 +35,6 @@ int main(int argc, char * argv[]) {
   std::vector<samplePDFFDBase*> DUNEPdfs;
   MakeMaCh3DuneInstance(FitManager, DUNEPdfs, xsec, osc); 
 
-  //Setup the cross-section parameters
-  //This should get the prior values.
-  std::vector<double> XsecParVals = xsec->getNominalArray();
-
-  xsec->setParameters(XsecParVals);
-  xsec->setStepScale(FitManager->raw()["General"]["Systematics"]["XsecStepScale"].as<double>());
-
   //Some place to store the histograms
   std::vector<TH1D*> PredictionHistograms;
   std::vector<std::string> sample_names;

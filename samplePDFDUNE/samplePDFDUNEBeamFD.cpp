@@ -16,6 +16,8 @@ samplePDFDUNEBeamFD::~samplePDFDUNEBeamFD() {
 }
 
 void samplePDFDUNEBeamFD::Init() {
+  dunemcSamples.resize(nSamples,dunemc_base());
+  
   if (CheckNodeExists(SampleManager->raw(), "DUNESampleBools", "iselike" )) {
     iselike = SampleManager->raw()["DUNESampleBools"]["iselike"].as<bool>();
   } else{
@@ -51,13 +53,7 @@ void samplePDFDUNEBeamFD::Init() {
   em_res_fd_pos = -999;
   cvn_numu_fd_pos = -999;
   cvn_nue_fd_pos = -999;
-
-  // create dunemc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunemcSamples.push_back(obj);
-  }
-
+  
   nFDDetectorSystPointers = funcParsIndex.size();
   std::unordered_map<std::string, const double*> FDDetectorSystPointersMap;
   FDDetectorSystPointers = std::vector<const double*>(nFDDetectorSystPointers);

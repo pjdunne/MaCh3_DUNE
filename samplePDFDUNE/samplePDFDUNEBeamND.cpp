@@ -7,13 +7,7 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamND::samplePDFDUNEBeamND(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
-  // create dunendmc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunendmcSamples.push_back(obj);
-  }
-  
+samplePDFDUNEBeamND::samplePDFDUNEBeamND(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {  
   Initialise();
 }
 
@@ -21,6 +15,8 @@ samplePDFDUNEBeamND::~samplePDFDUNEBeamND() {
 }
 
 void samplePDFDUNEBeamND::Init() {
+  dunendmcSamples.resize(nSamples,dunemc_base());
+  
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
@@ -361,30 +357,6 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    
-    //ETA - this is where the variables that you want to bin your samples in are defined
-    //If you want to bin in different variables this is where you put it for now
-    switch(nDimensions){
-    case 0:
-    case 1:
-      //Just point to xvar to the address of the variable you want to bin in
-      //This way we don't have to update both fdmc and skmc when we apply shifts
-      //to variables we're binning in
-      fdobj->x_var[iEvent] = &(duneobj->rw_erec_shifted[iEvent]);
-      fdobj->y_var[iEvent] = &(duneobj->dummy_y);//ETA - don't think we even need this as if we have a 1D sample we never need this, just not sure I like an unitialised variable in fdmc struct? 
-      break;
-    case 2:
-      //Just point to xvar to the address of the variable you want to bin in
-      //This way we don't have to update both fdmc and skmc when we apply shifts
-      //to variables we're binning in
-      fdobj->x_var[iEvent] = &(duneobj->rw_erec_shifted[iEvent]);
-      fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
-      break;
-    default:
-      MACH3LOG_ERROR("Unrecognised binning option: {}",nDimensions);
-      throw MaCh3Exception(__FILE__, __LINE__);
-      break;
-    }
   }
 }
 

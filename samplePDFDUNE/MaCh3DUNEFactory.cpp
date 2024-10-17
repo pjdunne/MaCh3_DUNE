@@ -54,6 +54,13 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   else{
     MACH3LOG_INFO("covariance Xsec has already been created so I am not re-initialising the object"); 
   }
+
+  //Setup the cross-section parameters
+  //This should get the prior values.
+  std::vector<double> XsecParVals = xsec->getNominalArray();
+
+  xsec->setParameters(XsecParVals);  
+  xsec->setStepScale(FitManager->raw()["General"]["Systematics"]["XsecStepScale"].as<double>());
   
   MACH3LOG_INFO("cov xsec setup");
   MACH3LOG_INFO("------------------------------");

@@ -14,10 +14,7 @@ samplePDFDUNEAtm::~samplePDFDUNEAtm() {
 }
 
 void samplePDFDUNEAtm::Init() {
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunemcSamples.push_back(obj);
-  }
+  dunemcSamples.resize(nSamples,dunemc_base());
   
   IsELike = SampleManager->raw()["SampleBools"]["IsELike"].as<bool>();
 }
@@ -121,8 +118,7 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
   fdmc_base *fdobj = &(MCSamples[iSample]);  
 
-  //a bit of a hack, make sure that this is only set if you're an atmoshperic object
-  //i.e. this doesn't live in samplePDFFDBase
+  //Make sure that this is only set if you're an atmoshperic object
   fdobj->rw_truecz = new const double*[fdobj->nEvents];
   
   fdobj->nutype = duneobj->nutype;
