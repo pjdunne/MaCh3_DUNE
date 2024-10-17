@@ -3,7 +3,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 # CMake version check
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-SET(MaCh3DUNE_VERSION 0.0.0)
+SET(MaCh3DUNE_VERSION 1.0.0)
 
 # Create project (todo: set configurable CUDA)
 project(MaCh3DUNE VERSION ${MaCh3DUNE_VERSION} LANGUAGES CXX)
@@ -33,7 +33,7 @@ include(CPM)
 
 CPMFindPackage(
       NAME CMakeModules
-      GIT_TAG v0.0.11
+      GIT_TAG v0.2.3
       GITHUB_REPOSITORY NuHepMC/CMakeModules
       DOWNLOAD_ONLY
   )
