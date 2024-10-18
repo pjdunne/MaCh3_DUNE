@@ -70,24 +70,35 @@ int main(int argc, char *argv[]) {
   MakeMaCh3DuneInstance(fitMan.get(), DUNEPdfs, xsec, osc);
 
   auto gc1 = std::unique_ptr<TCanvas>(new TCanvas("gc1", "gc1", 800, 600));
+  gStyle->SetOptStat(false);
   gc1->Print("GenericBinTest.pdf[");
 
   std::vector<TH1D *> DUNEHists;
   for (auto Sample : DUNEPdfs) {
     Sample->reweight();
 
-    if(Sample->generic_binning.GetNDimensions()){
+    if (Sample->generic_binning.GetNDimensions()) {
+
       auto myhist = GetGenericBinningTH1(*Sample, "myhist");
-      myhist->Scale(1,"WIDTH");
+      myhist->Scale(1, "WIDTH");
       myhist->Draw();
       gc1->Print("GenericBinTest.pdf");
-      if(Sample->generic_binning.GetNDimensions() == 2){
+
+      if (Sample->generic_binning.GetNDimensions() == 2) {
         auto myhist2 = GetGenericBinningTH2(*Sample, "myhist2");
-        myhist2->Scale(1,"WIDTH");
         myhist2->Draw("COLZ");
         gc1->Print("GenericBinTest.pdf");
-        for(auto &slice : GetGenericBinningTH1Slices(*Sample, 0, "myslicehist")){
-          slice->Draw("COLZ");
+
+        for (auto &slice :
+             GetGenericBinningTH1Slices(*Sample, 0, "myslicehist")) {
+          slice->Draw();
+          gc1->Print("GenericBinTest.pdf");
+        }
+      }
+      if (Sample->generic_binning.GetNDimensions() == 3) {
+        for (auto &slice :
+             GetGenericBinningTH2Slices(*Sample, {0, 1}, "myslicehist")) {
+          slice->Draw();
           gc1->Print("GenericBinTest.pdf");
         }
       }
