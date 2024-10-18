@@ -94,6 +94,7 @@ public:
   // configuration 
   bool iselike;
   bool isND;
+  bool IsRHC;
 
   //Positions of ND Detector systematics
   double tot_escale_nd_pos;

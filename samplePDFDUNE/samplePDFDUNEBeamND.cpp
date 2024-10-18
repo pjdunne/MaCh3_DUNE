@@ -7,13 +7,7 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamND::samplePDFDUNEBeamND(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
-  // create dunendmc storage
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunendmcSamples.push_back(obj);
-  }
-  
+samplePDFDUNEBeamND::samplePDFDUNEBeamND(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {  
   Initialise();
 }
 
@@ -21,6 +15,8 @@ samplePDFDUNEBeamND::~samplePDFDUNEBeamND() {
 }
 
 void samplePDFDUNEBeamND::Init() {
+  dunendmcSamples.resize(nSamples,dunemc_base());
+  
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
@@ -129,8 +125,8 @@ void samplePDFDUNEBeamND::Init() {
       NDDetectorSystPointers[func_it] = XsecCov->retPointer(em_res_nd_pos);
     }
     else { 
-      std::cerr << "Found a functional parameter which wasn't specified in the xml | samplePDFDUNEBeamND:" << name << std::endl;
-      throw;
+      MACH3LOG_ERROR("Found a functional parameter which wasn't specified in the xml | samplePDFDUNEBeamND: {}",name);
+      throw MaCh3Exception(__FILE__, __LINE__);
     }
   }
   
@@ -175,16 +171,20 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   bool signal = sample_signal[iSample];
   
   std::cout << "-------------------------------------------------------------------" << std::endl;
-  std::cout << "input file: " << mtuple_files[iSample] << std::endl;
+  std::cout << "input file: " << mc_files[iSample] << std::endl;
   
-  _sampleFile = new TFile(mtuple_files[iSample].c_str(), "READ");
+  _sampleFile = new TFile(mc_files[iSample].c_str(), "READ");
   _data = (TTree*)_sampleFile->Get("caf");
 
   if(_data){
-    std::cout << "Found mtuple tree is " << mtuple_files[iSample] << std::endl;
+    std::cout << "Found mtuple tree is " << mc_files[iSample] << std::endl;
     std::cout << "N of entries: " << _data->GetEntries() << std::endl;
   }
-  
+  else{
+    MACH3LOG_ERROR("Could not find \"caf\" tree in {}", mc_files[iSample].native());
+    throw MaCh3Exception(__FILE__, __LINE__);
+  }
+
   _data->SetBranchStatus("*", 0);
   _data->SetBranchStatus("Ev", 1);
   _data->SetBranchAddress("Ev", &_ev);
@@ -323,8 +323,8 @@ double const& samplePDFDUNEBeamND::ReturnKinematicParameterByReference(int Kinem
   case kRecoQ:
     return dunendmcSamples[iSample].rw_reco_q[iEvent];
   default:
-    std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
-    throw;
+    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
 }
@@ -347,30 +347,6 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    
-    //ETA - this is where the variables that you want to bin your samples in are defined
-    //If you want to bin in different variables this is where you put it for now
-    switch(nDimensions){
-    case 0:
-    case 1:
-      //Just point to xvar to the address of the variable you want to bin in
-      //This way we don't have to update both fdmc and skmc when we apply shifts
-      //to variables we're binning in
-      fdobj->x_var[iEvent] = &(duneobj->rw_erec_shifted[iEvent]);
-      fdobj->y_var[iEvent] = &(duneobj->dummy_y);//ETA - don't think we even need this as if we have a 1D sample we never need this, just not sure I like an unitialised variable in fdmc struct? 
-      break;
-    case 2:
-      //Just point to xvar to the address of the variable you want to bin in
-      //This way we don't have to update both fdmc and skmc when we apply shifts
-      //to variables we're binning in
-      fdobj->x_var[iEvent] = &(duneobj->rw_erec_shifted[iEvent]);
-      fdobj->y_var[iEvent] = &(duneobj->rw_yrec[iEvent]);
-      break;
-    default:
-      std::cout << "[ERROR:] " << __FILE__ << ":" << __LINE__ << " unrecognised binning option" << nDimensions << std::endl;
-      throw;
-      break;
-    }
   }
 }
 
@@ -441,7 +417,6 @@ void samplePDFDUNEBeamND::applyShifts(int iSample, int iEvent) {
 
 std::vector<double> samplePDFDUNEBeamND::ReturnKinematicParameterBinning(int KinematicParameter) 
 {
-  std::cout << "ReturnKinematicVarBinning" << std::endl;
   std::vector<double> binningVector;
   return binningVector;
 }

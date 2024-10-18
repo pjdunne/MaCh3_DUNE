@@ -67,6 +67,7 @@ public:
   
   int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
   std::string ReturnStringFromKinematicParameter(int KinematicParameterStr);
+
   //DB functions which could be initialised to do something which is non-trivial
   double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
   void applyShifts(int iSample, int iEvent);

@@ -28,23 +28,23 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
 
   // there's a check inside the manager class that does this; left here for demonstrative purposes
   if (FitManager == nullptr) {
-	MACH3LOG_ERROR("Didn't find a good config in input configuration");
+    MACH3LOG_ERROR("Didn't find a good config in input configuration");
     throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   //Check that you have specified some DUNE samples
   if(!FitManager->raw()["General"]["DUNESamples"]){
     MACH3LOG_ERROR("You didn't specify any DUNESample configs to create samples from. Please add General:DUNESamples to your config");
-	throw MaCh3Exception(__FILE__, __LINE__);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   // Get inputted systematic parameters covariance matrices
   std::vector<std::string> xsecCovMatrixFile;
   if (CheckNodeExists(FitManager->raw(), "General", "Systematics", "XsecCovFile") ){
-   	xsecCovMatrixFile = FitManager->raw()["General"]["Systematics"]["XsecCovFile"].as<std::vector<std::string>>();
+    xsecCovMatrixFile = FitManager->raw()["General"]["Systematics"]["XsecCovFile"].as<std::vector<std::string>>();
   } else {
     MACH3LOG_ERROR("Require General:Systematics:XsecCovFile node in {}, please add this to the file!", FitManager->GetFileName());
-	throw MaCh3Exception(__FILE__, __LINE__);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   // Setup the covariance matrices
@@ -55,8 +55,15 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
     MACH3LOG_INFO("covariance Xsec has already been created so I am not re-initialising the object"); 
   }
 
+  //Setup the cross-section parameters
+  //This should get the prior values.
+  std::vector<double> XsecParVals = xsec->getNominalArray();
+
+  xsec->setParameters(XsecParVals);  
+  xsec->setStepScale(FitManager->raw()["General"]["Systematics"]["XsecStepScale"].as<double>());
+  
   MACH3LOG_INFO("cov xsec setup");
-  std::cout << "------------------------------" << std::endl;
+  MACH3LOG_INFO("------------------------------");
   
   std::vector<std::string> OscMatrixFile = FitManager->raw()["General"]["Systematics"]["OscCovFile"].as<std::vector<std::string>>();
   std::string  OscMatrixName = FitManager->raw()["General"]["Systematics"]["OscCovName"].as<std::string>(); 
@@ -65,15 +72,14 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
 
   for (unsigned int i=0;i<oscpars.size();i++) {
     OscPars+=std::to_string(oscpars[i]);
-	OscPars+=", ";
+    OscPars+=", ";
   }
   MACH3LOG_INFO("Oscillation Parameters being used: {} ", OscPars);
-
   
   osc = new covarianceOsc(OscMatrixFile,OscMatrixName.c_str());
   osc->setName("osc_cov");
   MACH3LOG_INFO("Osc cov setup");
-  std::cout << "------------------------------" << std::endl;
+  MACH3LOG_INFO("------------------------------");
   
   // ==========================================================
   //read flat prior, fixed paramas from the config file
@@ -98,7 +104,7 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   
   //####################################################################################
   //Create samplePDFDUNE Objs
-  std::cout << "-------------------------------------------------------------------" << std::endl;
+  MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("Loading DUNE samples..");
   std::vector<std::string> DUNESampleConfigs = FitManager->raw()["General"]["DUNESamples"].as<std::vector<std::string>>();
   
@@ -109,7 +115,6 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
     
     DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESampleConfigs[Sample_i], xsec));
     
-    DUNEPdfs.back()->UseNonDoubledAngles(true);
     DUNEPdfs.back()->SetXsecCov(xsec);
     DUNEPdfs.back()->SetOscCov(osc);
     // Pure for debugging, lets us set which weights we don't want via the manager

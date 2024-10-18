@@ -14,10 +14,7 @@ samplePDFDUNEAtm::~samplePDFDUNEAtm() {
 }
 
 void samplePDFDUNEAtm::Init() {
-  for (int i=0;i<nSamples;i++) {
-    struct dunemc_base obj = dunemc_base();
-    dunemcSamples.push_back(obj);
-  }
+  dunemcSamples.resize(nSamples,dunemc_base());
   
   IsELike = SampleManager->raw()["SampleBools"]["IsELike"].as<bool>();
 }
@@ -45,17 +42,17 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   caf::StandardRecord* sr = new caf::StandardRecord();
   dunemc_base* duneobj = &dunemcSamples[iSample];
 
-  std::string FileName = mtuple_files[iSample];
-  std::cout << "Reading File:" << FileName << std::endl;
+  std::string FileName = mc_files[iSample];
+  MACH3LOG_INFO("Reading File: {}",FileName);
   TFile* File = TFile::Open(FileName.c_str());
   if (!File || File->IsZombie()) {
-    std::cerr << "Did not find File:" << FileName << std::endl;
-    throw;
+    MACH3LOG_ERROR("Did not find File: {}",FileName);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   TTree* Tree = File->Get<TTree>("cafTree");
   if (!Tree){
-    std::cerr << "Did not find Tree::cafTree in File:" << FileName << std::endl;
-    throw;
+    MACH3LOG_ERROR("Did not find Tree::cafTree in File: {}",FileName);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   Tree->SetBranchStatus("*", 1);
@@ -83,7 +80,7 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
     Tree->GetEntry(iEvent);
 
     if ((iEvent % (duneobj->nEvents/10))==0) {
-      std::cout << "\tProcessing event: " << iEvent << "/" << duneobj->nEvents << std::endl;
+      MACH3LOG_INFO("\tProcessing event: {}/{}",iEvent,duneobj->nEvents);
     }
 
     duneobj->mode[iEvent] = SIMBMode_ToMaCh3Mode(sr->mc.nu[0].mode,sr->mc.nu[0].iscc);
@@ -121,8 +118,7 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
   fdmc_base *fdobj = &(MCSamples[iSample]);  
 
-  //a bit of a hack, make sure that this is only set if you're an atmoshperic object
-  //i.e. this doesn't live in samplePDFFDBase
+  //Make sure that this is only set if you're an atmoshperic object
   fdobj->rw_truecz = new const double*[fdobj->nEvents];
   
   fdobj->nutype = duneobj->nutype;
@@ -152,8 +148,8 @@ double const &samplePDFDUNEAtm::ReturnKinematicParameterByReference(int Kinemati
   case kRecoCosZ:
     return (dunemcSamples[iSample].rw_theta[iEvent]);
   default:
-    std::cerr << "Unknown KinematicParameter:" << KinematicParameter << std::endl;
-    throw;
+    MACH3LOG_ERROR("Unknown KinematicParameter: {}",KinematicParameter);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
 }
 
@@ -172,8 +168,8 @@ int samplePDFDUNEAtm::ReturnKinematicParameterFromString(std::string KinematicPa
   else if (KinematicParameterStr == "TrueCosineZ") {ReturnVal = kTrueCosZ;}
   else if (KinematicParameterStr == "RecoCosineZ") {ReturnVal = kRecoCosZ;}
   else {
-    std::cerr << "KinematicParameterStr: " << KinematicParameterStr << " not found" << std::endl;
-    throw;
+    MACH3LOG_ERROR("KinematicParameterStr: {} not found",KinematicParameterStr);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   return ReturnVal;
