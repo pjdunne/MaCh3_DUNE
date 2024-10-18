@@ -137,7 +137,7 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
   }
 }
 
-double* samplePDFDUNEAtm::GetPointerToKinematicParameter(KinematicTypes KinPar, int iSample, int iEvent) {
+const double* samplePDFDUNEAtm::GetPointerToKinematicParameter(KinematicTypes KinPar, int iSample, int iEvent) {
   double* KinematicValue;
 
   switch (KinPar) {
@@ -167,12 +167,12 @@ double* samplePDFDUNEAtm::GetPointerToKinematicParameter(KinematicTypes KinPar, 
   return KinematicValue;
 }
 
-double* samplePDFDUNEAtm::GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
+const double* samplePDFDUNEAtm::GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
   KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
   return GetPointerToKinematicParameter(KinPar,iSample,iEvent);
 }
 
-double* samplePDFDUNEAtm::GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
+const double* samplePDFDUNEAtm::GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
   KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter));
   return GetPointerToKinematicParameter(KinPar,iSample,iEvent);
 }
