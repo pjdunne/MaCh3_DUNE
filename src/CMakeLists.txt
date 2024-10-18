@@ -4,6 +4,7 @@ foreach(app
 	EventRates
 	Fit
 	Projections
+	LLHScan
 )
     add_executable(${app} ${app}.cpp)
     target_link_libraries(${app} MaCh3DUNE::All Minuit)
