@@ -26,12 +26,12 @@ Binning:
     - VarStr: "ELepRec" 
       Uniform: [25,0,5]
       Title: "E_{lep.}^{Rec} [GeV]"
-    - VarStr: "EHadRec" 
+    - VarStr: "mysillyvar" 
       Uniform: [25,0,5]
-      Title: "E_{had.}^{Vis} [GeV]"
-    - VarStr: "RecoNeutrinoEnergy" 
-      Uniform: [10,0.5,5.5]
-      Title: "E_{#nu}^{Rec} [GeV]"
+      Title: "dumbdumb"
+    # - VarStr: "RecoNeutrinoEnergy" 
+    #   Uniform: [10,0.5,5.5]
+    #   Title: "E_{#nu}^{Rec} [GeV]"
   # if you want to use the generic binning with a single 
   # axis, useful for calculated VarStr that cannot be referenced
   ForceGeneric: True

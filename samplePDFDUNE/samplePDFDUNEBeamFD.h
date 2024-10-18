@@ -26,7 +26,7 @@ public:
   ~samplePDFDUNEBeamFD();
 
   enum KinematicTypes {
-    kTrueNeutrinoEnergy,
+    kTrueNeutrinoEnergy = 0,
     kRecoNeutrinoEnergy,
     kTrueXPos,
     kTrueYPos,
@@ -40,14 +40,28 @@ public:
     kq3,
     kERecQE,
     kELepRec,
-    kEHadRec
+    kEHadRec,
+    kNDefaultProjections
   };
 
   //More robust getters to make plots in different variables, mode, osc channel, systematic weighting and with bin range 
   TH1D* get1DVarHist(KinematicTypes Var1, int fModeToFill=-1, int fSampleToFill=-1, int WeightStyle=0, TAxis* Axis=0);
   TH1D* get1DVarHist(KinematicTypes Var1, std::vector< std::vector<double> > Selection, int WeightStyle=0, TAxis* Axis=0);
     
+
+  struct UserProjection {
+    std::string name;
+    std::function<double(dunemc_base const&, int)> proj;
+  };
+
+  // add a user projection, capture the return value if you don't want to look the 
+  // KinematiceParameter value up by string
+  static int AddProjection(std::string const &, std::function<double(dunemc_base const&, int)>);
+
  protected:
+
+  static std::vector<UserProjection> user_projections;
+
   void Init();
   int setupExperimentMC(int iSample);
   void setupFDMC(int iSample);
