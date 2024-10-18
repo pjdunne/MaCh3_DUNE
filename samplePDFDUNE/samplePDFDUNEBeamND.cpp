@@ -177,6 +177,15 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   _sampleFile = new TFile(mc_files.at(iSample).c_str(), "READ");
   _data = (TTree*)_sampleFile->Get("caf");
 
+  if(_data){
+    MACH3LOG_INFO("Found \"caf\" tree in {}", mc_files[iSample]);
+    MACH3LOG_INFO("With number of entries: {}", _data->GetEntries());
+  }
+  else{
+    MACH3LOG_ERROR("Could not find \"caf\" tree in {}", mc_files[iSample]);
+    throw MaCh3Exception(__FILE__, __LINE__);
+  }
+
   _data->SetBranchStatus("*", 0);
   _data->SetBranchStatus("Ev", 1);
   _data->SetBranchAddress("Ev", &_ev);
@@ -306,6 +315,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   _sampleFile->Close();
   return duneobj->nEvents;
 }
+
 
 const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(KinematicTypes KinPar, int iSample, int iEvent) {
   double* KinematicValue;
