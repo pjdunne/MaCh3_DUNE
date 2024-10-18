@@ -1039,95 +1039,95 @@ inline std::string MaCh3mode_ToDUNEString(MaCh3_Mode i) {
   std::string name;
 
   switch(i) {
-    case kMaCh3_CCQE:
-      name = "ccqe";
-      break;
-	case kMaCh3_CC_Single_Kaon:
-	  name = "unknown";
-	  break;
-	case kMaCh3_CC_DIS:
-	  name = "ccdis";
-	  break;
-    case kMaCh3_CC_RES:
-      name = "ccres";
-      break;
-	case kMaCh3_CC_COH:
-	  name = "cccoh";
-	  break;
-	case kMaCh3_CC_COHEL:
-	  name = "cccohel";
-	  break;
-	case kMaCh3_CC_Diffractive:
-	  name = "ccdiff";
-	  break;
-	case kMaCh3_CC_Nue_EL:
-	  name = "ccnueel";
-	  break;
-    case kMaCh3_CC_MEC:
-      name = "ccmec";
-      break;
-	case kMaCh3_CC_IMD:
-	  name = "ccIMD";
-	  break;
-	case kMaCh3_CC_GlashowRES:
-	  name = "ccglasres";
-	  break;
-	case kMaCh3_CC_IMDAnnihalation:
-	  name = "ccimdannihilation";
-	  break;
-	case kMaCh3_CC_AMnuGamma:
-	  name = "ccamnugamma";
-	  break;
-	case kMaCh3_CC_IBD:
-	  name = "ccibd";
-	  break;
-    case kMaCh3_NCQE:
-      name = "ncqe";
-      break;
-	case kMaCh3_NC_DIS:
-	  name = "ncdis";
-	  break;
-    case kMaCh3_NC_RES:
-      name = "ncres";
-      break;
-	case kMaCh3_NC_COH:
-	  name = "nccoh";
-	  break;
-	case kMaCh3_NC_COHEL:
-	  name = "nccohel";
-	  break;
-	case kMaCh3_NC_Diffractive:
-	  name = "ncdiff";
-	  break;
-	case kMaCh3_NC_Nue_EL:
-	  name = "ncnueel";
-	  break;
-    case kMaCh3_NC_MEC:
-      name = "ncmec";
-      break;
-	case kMaCh3_NC_IMD:
-	  name = "ncIMD";
-	  break;
-	case kMaCh3_NC_GlashowRES:
-	  name = "ncglasres";
-	  break;
-	case kMaCh3_NC_IMDAnnihalation:
-	  name = "ncimdannihilation";
-	  break;
-	case kMaCh3_NC_AMnuGamma:
-	  name = "ncamnugamma";
-	  break;
-	case kMaCh3_NC_IBD:
-	  name = "ncibd";
-	  break;
-	case kMaCh3_nModes:
-	  name = "unknown";
-	  break;
-    default:
-      std::cerr << "Did not find the MaCh3 mode you specified " << i << std::endl;
-      name = "UNKNOWN_BAD";
+  case kMaCh3_CCQE:
+    name = "ccqe";
+    break;
+  case kMaCh3_CC_Single_Kaon:
+    name = "ccsinglekaon";
+    break;
+  case kMaCh3_CC_DIS:
+    name = "ccdis";
+    break;
+  case kMaCh3_CC_RES:
+    name = "ccres";
+    break;
+  case kMaCh3_CC_COH:
+    name = "cccoh";
+    break;
+  case kMaCh3_CC_COHEL:
+    name = "cccohel";
+    break;
+  case kMaCh3_CC_Diffractive:
+    name = "ccdiff";
+    break;
+  case kMaCh3_CC_Nue_EL:
+    name = "ccnueel";
+    break;
+  case kMaCh3_CC_MEC:
+    name = "ccmec";
+    break;
+  case kMaCh3_CC_IMD:
+    name = "ccIMD";
+    break;
+  case kMaCh3_CC_GlashowRES:
+    name = "ccglasres";
+    break;
+  case kMaCh3_CC_IMDAnnihalation:
+    name = "ccimdannihilation";
+    break;
+  case kMaCh3_CC_AMnuGamma:
+    name = "ccamnugamma";
+    break;
+  case kMaCh3_CC_IBD:
+    name = "ccibd";
+    break;
+  case kMaCh3_NCQE:
+    name = "ncqe";
+    break;
+  case kMaCh3_NC_DIS:
+    name = "ncdis";
+    break;
+  case kMaCh3_NC_RES:
+    name = "ncres";
+    break;
+  case kMaCh3_NC_COH:
+    name = "nccoh";
+    break;
+  case kMaCh3_NC_COHEL:
+    name = "nccohel";
+    break;
+  case kMaCh3_NC_Diffractive:
+    name = "ncdiff";
+    break;
+  case kMaCh3_NC_Nue_EL:
+    name = "ncnueel";
+    break;
+  case kMaCh3_NC_MEC:
+    name = "ncmec";
+    break;
+  case kMaCh3_NC_IMD:
+    name = "ncIMD";
+    break;
+  case kMaCh3_NC_GlashowRES:
+    name = "ncglasres";
+    break;
+  case kMaCh3_NC_IMDAnnihalation:
+    name = "ncimdannihilation";
+    break;
+  case kMaCh3_NC_AMnuGamma:
+    name = "ncamnugamma";
+    break;
+  case kMaCh3_NC_IBD:
+    name = "ncibd";
+    break;
+  case kMaCh3_nModes:
+    name = "unknown";
+    break;
+  default:
+    std::cerr << "Did not find the MaCh3 mode you specified " << i << std::endl;
+    name = "UNKNOWN_BAD";
   }
-
+  
   return name;
 }
 

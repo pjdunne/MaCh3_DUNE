@@ -196,6 +196,7 @@ std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(KinematicT
   switch (KinPar) {
 
   case kRecoNeutrinoEnergy:
+  case kTrueNeutrinoEnergy:
     for (int i=0;i<20;i++) {
       binningVector.emplace_back((double)i);
     }
