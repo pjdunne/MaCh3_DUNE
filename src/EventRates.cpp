@@ -15,6 +15,7 @@
 #include "samplePDF/GenericBinningTools.h"
 
 #include "samplePDFDUNE/MaCh3DUNEFactory.h"
+#include "samplePDFDUNE/samplePDFDUNEBeamFD.h"
 
 void Write1DHistogramsToFile(std::string OutFileName,
                              std::vector<TH1D *> Histograms) {
@@ -66,6 +67,13 @@ int main(int argc, char *argv[]) {
   // ####################################################################################
   // Create samplePDFFD objects
 
+  samplePDFDUNEBeamFD::AddProjection(
+      "mysillyvar", [](dunemc_base const &dunemcSample, int iEvent) {
+        return (dunemcSample.rw_erec_shifted[iEvent] -
+                dunemcSample.rw_erec_lep[iEvent]) /
+               (dunemcSample.true_q0[iEvent]);
+      });
+
   std::vector<samplePDFFDBase *> DUNEPdfs;
   MakeMaCh3DuneInstance(fitMan.get(), DUNEPdfs, xsec, osc);
 
@@ -113,7 +121,6 @@ int main(int argc, char *argv[]) {
   }
 
   gc1->Print("GenericBinTest.pdf]");
-
 
   std::string OutFileName = GetFromManager<std::string>(
       fitMan->raw()["General"]["OutputFile"], "EventRatesOutput.root");

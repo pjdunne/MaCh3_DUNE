@@ -553,11 +553,12 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::ve
   return _h1DVar;
 }
 
-double const& samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(int KinematicParameter, int iSample, int iEvent) {
+double const &samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(
+    int KinematicParameter, int iSample, int iEvent) {
 
-  switch(KinematicParameter){
+  switch (KinematicParameter) {
   case kTrueNeutrinoEnergy:
-    return dunemcSamples[iSample].rw_etru[iEvent]; 
+    return dunemcSamples[iSample].rw_etru[iEvent];
   case kRecoNeutrinoEnergy:
     return dunemcSamples[iSample].rw_erec_shifted[iEvent];
   case kTrueXPos:
@@ -580,98 +581,128 @@ double const& samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(int Kinem
   case kq3:
     return dunemcSamples[iSample].true_q3[iEvent];
   default:
-    std::stringstream ss;
-    ss << "[ERROR]: " << __FILE__ << ":" << __LINE__
-              << " ReturnKinematicParameterByReference Did not recognise "
-                 "Kinematic Parameter type:"
-              << KinematicParameter
-              << ". Is it possibly only available via ReturnKinematicParameter "
-                 "(not by reference?) if you need it here, give it storage in "
-                 "dunemc_base and move it to here."
-              ;
-    throw std::runtime_error(ss.str());
+
+    if (KinematicParameter >= kNDefaultProjections) {
+      MACH3LOG_ERROR("ReturnKinematicParameterByReference passed "
+                     "KinematicParameter: {}, which appears to refer to user "
+                     "projection: {}, but user projections cannot be evaluated "
+                     "by reference.",
+                     KinematicParameter,
+                     KinematicParameter - kNDefaultProjections);
+      throw MaCh3Exception(__FILE__, __LINE__);
+    }
+
+    MACH3LOG_ERROR(
+        "ReturnKinematicParameterByReference Did not recognise "
+        "Kinematic Parameter type: {}. Is it possibly only available via "
+        "ReturnKinematicParameter "
+        "(not by reference?) if you need it here, give it storage in "
+        "dunemc_base and move it to here.",
+        KinematicParameter);
+    throw MaCh3Exception(__FILE__, __LINE__);
+  }
+}
+
+double samplePDFDUNEBeamFD::ReturnKinematicParameter(int KinematicParameter,
+                                                     int iSample, int iEvent) {
+
+  if (KinematicParameter >= kNDefaultProjections) {
+
+    if ((KinematicParameter - kNDefaultProjections) > user_projections.size()) {
+      MACH3LOG_ERROR(
+          "Passed KinematicParameter: {}, which appears to refer to user "
+          "projection: {}, but we only have {} user projections defined.",
+          KinematicParameter, KinematicParameter - kNDefaultProjections,
+          user_projections.size());
+      throw MaCh3Exception(__FILE__, __LINE__);
+    }
+
+    return user_projections[KinematicParameter - kNDefaultProjections].proj(
+        dunemcSamples[iSample], iEvent);
+  }
+
+  switch (KinematicParameter) {
+  case kERecQE: {
+    constexpr double V = 0;        // 0 binding energy for now
+    constexpr double mn = 939.565; // neutron mass
+    constexpr double mp = 938.272; // proton mass
+
+    double mN_eff = mn - V;
+    double mN_oth = mp;
+
+    if (dunemcSamples[iSample].rw_nuPDGunosc[iEvent] <
+        0) { // if anti-neutrino, swap target/out masses
+      mN_eff = mp - V;
+      mN_oth = mn;
+    }
+
+    double el = dunemcSamples[iSample].rw_erec_lep[iEvent];
+
+    // this is funky, but don't be scared, it defines an annonymous function
+    // in place that grabs the lepton mass in MeV when given the neutrino PDG
+    // and whether the interaction was CC or NC and then immediately calls it.
+    // It's basically a generalisation of the ternary operator.
+    double ml =
+        [](int nupdg, bool isCC) {
+          switch (std::abs(nupdg)) {
+          case 12: {
+            return isCC ? 0.511 : 0;
+          }
+          case 14: {
+            return isCC ? 105.66 : 0;
+          }
+          case 16: {
+            return isCC ? 1777.0 : 0;
+          }
+          }
+        }(dunemcSamples[iSample].rw_nuPDGunosc[iEvent],
+          dunemcSamples[iSample].rw_isCC[iEvent]);
+
+    double pl = std::sqrt(el * el - ml * ml); // momentum of lepton
+
+    double rEnu =
+        (2 * mN_eff * el - ml * ml + mN_oth * mN_oth - mN_eff * mN_eff) /
+        (2 * (mN_eff - el +
+              pl * std::cos(dunemcSamples[iSample].rw_theta[iEvent])));
+
+    return rEnu;
+  }
+  case kEHadRec: {
+
+    return dunemcSamples[iSample].rw_eRecoP[iEvent] +
+           dunemcSamples[iSample].rw_eRecoPip[iEvent] +
+           dunemcSamples[iSample].rw_eRecoPim[iEvent] +
+           dunemcSamples[iSample].rw_eRecoPi0[iEvent] +
+           dunemcSamples[iSample].rw_eRecoN[iEvent];
+  }
+  default: {
+    return ReturnKinematicParameterByReference(KinematicParameter, iSample,
+                                               iEvent);
   }
   }
-
-  double samplePDFDUNEBeamFD::ReturnKinematicParameter(int KinematicParameter,
-                                                       int iSample,
-                                                       int iEvent) {
-    switch (KinematicParameter) {
-    case kERecQE: {
-      constexpr double V = 0;        // 0 binding energy for now
-      constexpr double mn = 939.565; // neutron mass
-      constexpr double mp = 938.272; // proton mass
-
-      double mN_eff = mn - V;
-      double mN_oth = mp;
-
-      if (dunemcSamples[iSample].rw_nuPDGunosc[iEvent] <
-          0) { // if anti-neutrino, swap target/out masses
-        mN_eff = mp - V;
-        mN_oth = mn;
-      }
-
-      double el = dunemcSamples[iSample].rw_erec_lep[iEvent];
-
-      // this is funky, but don't be scared, it defines an annonymous function
-      // in place that grabs the lepton mass in MeV when given the neutrino PDG
-      // and whether the interaction was CC or NC and then immediately calls it.
-      // It's basically a generalisation of the ternary operator.
-      double ml =
-          [](int nupdg, bool isCC) {
-            switch (std::abs(nupdg)) {
-            case 12: {
-              return isCC ? 0.511 : 0;
-            }
-            case 14: {
-              return isCC ? 105.66 : 0;
-            }
-            case 16: {
-              return isCC ? 1777.0 : 0;
-            }
-            }
-          }(dunemcSamples[iSample].rw_nuPDGunosc[iEvent],
-            dunemcSamples[iSample].rw_isCC[iEvent]);
-
-      double pl = std::sqrt(el*el - ml*ml); // momentum of lepton
-
-      double rEnu =
-          (2 * mN_eff * el - ml * ml + mN_oth * mN_oth - mN_eff * mN_eff) /
-          (2 * (mN_eff - el +
-                pl * std::cos(dunemcSamples[iSample].rw_theta[iEvent])));
-
-      return rEnu;
-    }
-    case kEHadRec: {
-
-      return dunemcSamples[iSample].rw_eRecoP[iEvent] +
-             dunemcSamples[iSample].rw_eRecoPip[iEvent] +
-             dunemcSamples[iSample].rw_eRecoPim[iEvent] +
-             dunemcSamples[iSample].rw_eRecoPi0[iEvent] +
-             dunemcSamples[iSample].rw_eRecoN[iEvent];
-    }
-    default: {
-      return ReturnKinematicParameterByReference(KinematicParameter, iSample,
-                                                 iEvent);
-    }
-    }
-  }
+}
 
 int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string KinematicParameterStr){
-  if (KinematicParameterStr.find("TrueNeutrinoEnergy") != std::string::npos) {return kTrueNeutrinoEnergy;}
-  if (KinematicParameterStr.find("RecoNeutrinoEnergy") != std::string::npos) {return kRecoNeutrinoEnergy;}
-  if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
-  if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
-  if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
-  if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
-  if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
-  if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
-  if (KinematicParameterStr.find("global_bin_number") != std::string::npos) {return kGlobalBinNumber;}
-  if (KinematicParameterStr.find("q0") != std::string::npos) {return kq0;}
-  if (KinematicParameterStr.find("q3") != std::string::npos) {return kq3;}
-  if (KinematicParameterStr.find("ERecQE") != std::string::npos) {return kERecQE;}
-  if (KinematicParameterStr.find("ELepRec") != std::string::npos) {return kELepRec;}
-  if (KinematicParameterStr.find("EHadRec") != std::string::npos) {return kEHadRec;}
+  if (KinematicParameterStr == "TrueNeutrinoEnergy") {return kTrueNeutrinoEnergy;}
+  if (KinematicParameterStr == "RecoNeutrinoEnergy") {return kRecoNeutrinoEnergy;}
+  if (KinematicParameterStr == "TrueXPos") {return kTrueXPos;}
+  if (KinematicParameterStr == "TrueYPos") {return kTrueYPos;}
+  if (KinematicParameterStr == "TrueZPos") {return kTrueZPos;}
+  if (KinematicParameterStr == "CVNNumu") {return kCVNNumu;}
+  if (KinematicParameterStr == "CVNNue") {return kCVNNue;}
+  if (KinematicParameterStr == "M3Mode") {return kM3Mode;}
+  if (KinematicParameterStr == "global_bin_number") {return kGlobalBinNumber;}
+  if (KinematicParameterStr == "q0") {return kq0;}
+  if (KinematicParameterStr == "q3") {return kq3;}
+  if (KinematicParameterStr == "ERecQE") {return kERecQE;}
+  if (KinematicParameterStr == "ELepRec") {return kELepRec;}
+  if (KinematicParameterStr == "EHadRec") {return kEHadRec;}
+
+  for(size_t up_it = 0; up_it < user_projections.size(); ++ up_it){
+    if(KinematicParameterStr == user_projections[up_it].name){
+      return kNDefaultProjections + up_it;
+    }
+  }
 
   std::stringstream ss;
   ss << "[ERROR]: " << __FILE__ << ":" << __LINE__
@@ -842,3 +873,21 @@ std::vector<double> samplePDFDUNEBeamFD::ReturnKinematicParameterBinning(int Kin
 
   return binningVector;
 }
+
+int samplePDFDUNEBeamFD::AddProjection(
+    std::string const &name,
+    std::function<double(dunemc_base const &, int)> proj) {
+  for (auto const &up : user_projections) {
+    if (name == up.name) {
+      MACH3LOG_ERROR("Attempting to overwrite existing UserProjection: {}, "
+                     "please pick a new name",
+                     name);
+      throw MaCh3Exception(__FILE__, __LINE__);
+    }
+  }
+  user_projections.push_back(UserProjection{name, proj});
+  return kNDefaultProjections + (user_projections.size() - 1);
+}
+
+std::vector<samplePDFDUNEBeamFD::UserProjection> samplePDFDUNEBeamFD::user_projections;
+
