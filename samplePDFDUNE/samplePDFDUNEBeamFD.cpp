@@ -53,7 +53,10 @@ void samplePDFDUNEBeamFD::Init() {
   em_res_fd_pos = -999;
   cvn_numu_fd_pos = -999;
   cvn_nue_fd_pos = -999;
-  
+
+  // create dunemc storage
+  dunemcSamples.resize(nSamples);
+
   nFDDetectorSystPointers = funcParsIndex.size();
   std::unordered_map<std::string, const double*> FDDetectorSystPointersMap;
   FDDetectorSystPointers = std::vector<const double*>(nFDDetectorSystPointers);
@@ -165,13 +168,11 @@ void samplePDFDUNEBeamFD::Init() {
 void samplePDFDUNEBeamFD::SetupSplines() {
 
   ///@todo move all of the spline setup into core
-  if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
+  if(spline_files.size() && (XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0)){
     MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-    splineFile = (splineFDBase*)DUNESplines;
+    splineFile = new splinesDUNE(XsecCov);
     InitialiseSplineObject();
-  }
-  else{
+  } else {
     MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
     splineFile = nullptr;
   }
@@ -197,24 +198,25 @@ void samplePDFDUNEBeamFD::SetupWeightPointers() {
 
 int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
 
-  dunemc_base *duneobj = &(dunemcSamples[iSample]);
+  auto &duneobj = dunemcSamples[iSample];
+
   int nutype = sample_nutype[iSample];
   int oscnutype = sample_oscnutype[iSample];
   bool signal = sample_signal[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
-  MACH3LOG_INFO("input file: {}", mc_files[iSample]);
+  MACH3LOG_INFO("input file: {}", mc_files[iSample].native());
   
   _sampleFile = new TFile(mc_files[iSample].c_str(), "READ");
   _data = (TTree*)_sampleFile->Get("caf");
   
   if(_data){
-    MACH3LOG_INFO("Found \"caf\" tree in {}", mc_files[iSample]);
+    MACH3LOG_INFO("Found \"caf\" tree in {}", mc_files[iSample].native());
     MACH3LOG_INFO("With number of entries: {}", _data->GetEntries());
   }
   else{
-    MACH3LOG_ERROR("Could not find \"caf\" tree in {}", mc_files[iSample]);
-    throw MaCh3Exception(__FILE__, __LINE__);
+	MACH3LOG_ERROR("Could not find \"caf\" tree in {}", mc_files[iSample].native());
+	throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   _data->SetBranchStatus("*", 0);
@@ -276,7 +278,20 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   _data->SetBranchStatus("vtx_y", 1);
   _data->SetBranchAddress("vtx_y", &_vtx_y);
   _data->SetBranchStatus("vtx_z", 1);
-  _data->SetBranchAddress("vtx_z", &_vtx_z);  
+  _data->SetBranchAddress("vtx_z", &_vtx_z);
+
+  _data->SetBranchStatus("NuMomX", 1);
+  _data->SetBranchAddress("NuMomX", &_NuMomX);
+  _data->SetBranchStatus("NuMomY", 1);
+  _data->SetBranchAddress("NuMomY", &_NuMomY);
+  _data->SetBranchStatus("NuMomZ", 1);
+  _data->SetBranchAddress("NuMomZ", &_NuMomZ);
+  _data->SetBranchStatus("LepMomX", 1);
+  _data->SetBranchAddress("LepMomX", &_LepMomX);
+  _data->SetBranchStatus("LepMomY", 1);
+  _data->SetBranchAddress("LepMomY", &_LepMomY);
+  _data->SetBranchStatus("LepMomZ", 1);
+  _data->SetBranchAddress("LepMomZ", &_LepMomZ);
 
   TH1D* norm = (TH1D*)_sampleFile->Get("norm");
   if(!norm){
@@ -285,106 +300,122 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   }
 
   // now fill the actual variables
-  duneobj->norm_s = norm->GetBinContent(1);
-  duneobj->pot_s = pot/norm->GetBinContent(2);
+  duneobj.norm_s = norm->GetBinContent(1);
+  duneobj.pot_s = pot/norm->GetBinContent(2);
 
-  duneobj->nEvents = _data->GetEntries();
-  duneobj->nutype = nutype;
-  duneobj->oscnutype = oscnutype;
-  duneobj->signal = signal;
+  duneobj.nEvents = _data->GetEntries();
+  duneobj.nutype = nutype;
+  duneobj.oscnutype = oscnutype;
+  duneobj.signal = signal;
 
   // allocate memory for dunemc variables
-  duneobj->rw_cvnnumu = new double[duneobj->nEvents];
-  duneobj->rw_cvnnue = new double[duneobj->nEvents];
-  duneobj->rw_cvnnumu_shifted = new double[duneobj->nEvents];
-  duneobj->rw_cvnnue_shifted = new double[duneobj->nEvents];
-  duneobj->rw_etru = new double[duneobj->nEvents];
-  duneobj->rw_erec = new double[duneobj->nEvents];
-  duneobj->rw_erec_shifted = new double[duneobj->nEvents];
-  duneobj->rw_erec_had = new double[duneobj->nEvents];
-  duneobj->rw_erec_lep = new double[duneobj->nEvents];
+  duneobj.rw_cvnnumu.resize(duneobj.nEvents);
+  duneobj.rw_cvnnue.resize(duneobj.nEvents);
+  duneobj.rw_cvnnumu_shifted.resize(duneobj.nEvents);
+  duneobj.rw_cvnnue_shifted.resize(duneobj.nEvents);
+  duneobj.rw_etru.resize(duneobj.nEvents);
+  duneobj.rw_erec.resize(duneobj.nEvents);
+  duneobj.rw_erec_shifted.resize(duneobj.nEvents);
+  duneobj.rw_erec_had.resize(duneobj.nEvents);
+  duneobj.rw_erec_lep.resize(duneobj.nEvents);
 
-  duneobj->rw_eRecoP = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPip = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPim = new double[duneobj->nEvents];
-  duneobj->rw_eRecoPi0 = new double[duneobj->nEvents];
-  duneobj->rw_eRecoN = new double[duneobj->nEvents];
+  duneobj.true_q0.resize(duneobj.nEvents);
+  duneobj.true_q3.resize(duneobj.nEvents);
 
-  duneobj->rw_LepE = new double[duneobj->nEvents];
-  duneobj->rw_eP = new double[duneobj->nEvents];
-  duneobj->rw_ePip = new double[duneobj->nEvents];
-  duneobj->rw_ePim = new double[duneobj->nEvents];
-  duneobj->rw_ePi0 = new double[duneobj->nEvents];
-  duneobj->rw_eN = new double[duneobj->nEvents];
+  duneobj.rw_eRecoP.resize(duneobj.nEvents);
+  duneobj.rw_eRecoPip.resize(duneobj.nEvents);
+  duneobj.rw_eRecoPim.resize(duneobj.nEvents);
+  duneobj.rw_eRecoPi0.resize(duneobj.nEvents);
+  duneobj.rw_eRecoN.resize(duneobj.nEvents);
 
-  duneobj->rw_theta = new double[duneobj->nEvents];
-  duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->rw_isCC = new int[duneobj->nEvents];
-  duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
-  duneobj->rw_nuPDG = new int[duneobj->nEvents];
-  duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
-  duneobj->rw_vtx_x = new double[duneobj->nEvents];
-  duneobj->rw_vtx_y = new double[duneobj->nEvents];
-  duneobj->rw_vtx_z = new double[duneobj->nEvents];
+  duneobj.rw_LepE.resize(duneobj.nEvents);
+  duneobj.rw_eP.resize(duneobj.nEvents);
+  duneobj.rw_ePip.resize(duneobj.nEvents);
+  duneobj.rw_ePim.resize(duneobj.nEvents);
+  duneobj.rw_ePi0.resize(duneobj.nEvents);
+  duneobj.rw_eN.resize(duneobj.nEvents);
 
-  duneobj->mode = new int[duneobj->nEvents];
-  duneobj->Target = new int[duneobj->nEvents];
+  duneobj.rw_theta.resize(duneobj.nEvents);
+  duneobj.flux_w.resize(duneobj.nEvents);
+  duneobj.rw_isCC.resize(duneobj.nEvents);
+  duneobj.rw_nuPDGunosc.resize(duneobj.nEvents);
+  duneobj.rw_nuPDG.resize(duneobj.nEvents);
+  duneobj.rw_berpaacvwgt.resize(duneobj.nEvents); 
+  duneobj.rw_vtx_x.resize(duneobj.nEvents);
+  duneobj.rw_vtx_y.resize(duneobj.nEvents);
+  duneobj.rw_vtx_z.resize(duneobj.nEvents);
+
+  duneobj.global_bin_number.resize(duneobj.nEvents);
+
+  duneobj.mode.resize(duneobj.nEvents);
+  duneobj.Target.resize(duneobj.nEvents);
 
   _data->GetEntry(0);
-  
+
+  bool need_global_bin_numbers = (XVarStr == "global_bin_number");
+
   //FILL DUNE STRUCT
-  for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
+  for (int i = 0; i < duneobj.nEvents; ++i) { // Loop through tree
     _data->GetEntry(i);
-    duneobj->rw_cvnnumu[i] = (double)_cvnnumu;
-    duneobj->rw_cvnnue[i] = (double)_cvnnue;
-    duneobj->rw_cvnnumu_shifted[i] = (double)_cvnnumu; 
-    duneobj->rw_cvnnue_shifted[i] = (double)_cvnnue;
+    duneobj.rw_cvnnumu[i] = _cvnnumu;
+    duneobj.rw_cvnnue[i] = _cvnnue;
+    duneobj.rw_cvnnumu_shifted[i] = _cvnnumu; 
+    duneobj.rw_cvnnue_shifted[i] = _cvnnue;
+
     if (iselike) {
-      duneobj->rw_erec[i] = (double)_erec_nue;
-      duneobj->rw_erec_shifted[i] = (double)_erec_nue; 
-      duneobj->rw_erec_had[i] = (double)_erec_had_nue;
-      duneobj->rw_erec_lep[i] = (double)_erec_lep_nue;
+      duneobj.rw_erec[i] = _erec_nue;
+      duneobj.rw_erec_shifted[i] = _erec_nue; 
+      duneobj.rw_erec_had[i] = _erec_had_nue;
+      duneobj.rw_erec_lep[i] = _erec_lep_nue;
     } else {
-      duneobj->rw_erec[i] = (double)_erec; 
-      duneobj->rw_erec_shifted[i] = (double)_erec; 
-      duneobj->rw_erec_had[i] = (double)_erec_had; 
-      duneobj->rw_erec_lep[i] = (double)_erec_lep; 
+      duneobj.rw_erec[i] = _erec; 
+      duneobj.rw_erec_shifted[i] = _erec; 
+      duneobj.rw_erec_had[i] = _erec_had; 
+      duneobj.rw_erec_lep[i] = _erec_lep; 
     }
+
+    duneobj.true_q0[i] = _ev - _LepE;
+    duneobj.true_q3[i] = (TVector3{_NuMomX, _NuMomY, _NuMomZ} -
+                          TVector3{_LepMomX, _LepMomY, _LepMomZ})
+                             .Mag();
+
+    duneobj.rw_eRecoP[i] = _eRecoP; 
+    duneobj.rw_eRecoPip[i] = _eRecoPip; 
+    duneobj.rw_eRecoPim[i] = _eRecoPim; 
+    duneobj.rw_eRecoPi0[i] = _eRecoPi0; 
+    duneobj.rw_eRecoN[i] = _eRecoN; 
     
-    duneobj->rw_eRecoP[i] = (double)_eRecoP; 
-    duneobj->rw_eRecoPip[i] = (double)_eRecoPip; 
-    duneobj->rw_eRecoPim[i] = (double)_eRecoPim; 
-    duneobj->rw_eRecoPi0[i] = (double)_eRecoPi0; 
-    duneobj->rw_eRecoN[i] = (double)_eRecoN; 
+    duneobj.rw_LepE[i] = _LepE; 
+    duneobj.rw_eP[i] = _eP; 
+    duneobj.rw_ePip[i] = _ePip; 
+    duneobj.rw_ePim[i] = _ePim; 
+    duneobj.rw_ePi0[i] = _ePi0; 
+    duneobj.rw_eN[i] = _eN; 
     
-    duneobj->rw_LepE[i] = (double)_LepE; 
-    duneobj->rw_eP[i] = (double)_eP; 
-    duneobj->rw_ePip[i] = (double)_ePip; 
-    duneobj->rw_ePim[i] = (double)_ePim; 
-    duneobj->rw_ePi0[i] = (double)_ePi0; 
-    duneobj->rw_eN[i] = (double)_eN; 
-    
-    duneobj->rw_etru[i] = (double)_ev;
-    duneobj->rw_theta[i] = (double)_LepNuAngle;
-    duneobj->rw_isCC[i] = _isCC;
-    duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
-    duneobj->rw_nuPDG[i] = _nuPDG;
-    duneobj->rw_berpaacvwgt[i] = (double)_BeRPA_cvwgt;
-    duneobj->rw_vtx_x[i] = (double)_vtx_x;
-    duneobj->rw_vtx_y[i] = (double)_vtx_y;
-    duneobj->rw_vtx_z[i] = (double)_vtx_z;
-    
+    duneobj.rw_etru[i] = _ev;
+    duneobj.rw_theta[i] = _LepNuAngle;
+    duneobj.rw_isCC[i] = _isCC;
+    duneobj.rw_nuPDGunosc[i] = _nuPDGunosc;
+    duneobj.rw_nuPDG[i] = _nuPDG;
+    duneobj.rw_berpaacvwgt[i] = _BeRPA_cvwgt;
+    duneobj.rw_vtx_x[i] = _vtx_x;
+    duneobj.rw_vtx_y[i] = _vtx_y;
+    duneobj.rw_vtx_z[i] = _vtx_z;
+
+    if(need_global_bin_numbers){
+      duneobj.global_bin_number[i] = GetGenericBinningGlobalBinNumber(iSample, i);
+    } 
     //Assume everything is on Argon for now....
-    duneobj->Target[i] = 40;
+    duneobj.Target[i] = 40;
     
     int mode= TMath::Abs(_mode);       
-    duneobj->mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
+    duneobj.mode[i]=SIMBMode_ToMaCh3Mode(mode, _isCC);
     
-    duneobj->flux_w[i] = 1.0;
+    duneobj.flux_w[i] = 1.0;
   }
   
   _sampleFile->Close();
-  return duneobj->nEvents;
+  return duneobj.nEvents;
 }
 
 TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis) {
@@ -470,7 +501,7 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::ve
   }
 
   TH1D* _h1DVar;
-  std::vector<double> xBinEdges = ReturnKinematicParameterBinning(ReturnStringFromKinematicParameter(Var1));
+  std::vector<double> xBinEdges = ReturnKinematicParameterBinning(Var1);
   _h1DVar = new TH1D("", "", xBinEdges.size()-1, xBinEdges.data());
 
   //This should be the same as FillArray in core basically, except that
@@ -522,112 +553,109 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::ve
   return _h1DVar;
 }
 
-double samplePDFDUNEBeamFD::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  double KinematicValue = -999;
+double const& samplePDFDUNEBeamFD::ReturnKinematicParameterByReference(int KinematicParameter, int iSample, int iEvent) {
 
-  switch(KinPar){
+  switch(KinematicParameter){
   case kTrueNeutrinoEnergy:
-    KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
-    break;
+    return dunemcSamples[iSample].rw_etru[iEvent]; 
   case kRecoNeutrinoEnergy:
-    KinematicValue = dunemcSamples[iSample].rw_erec_shifted[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_erec_shifted[iEvent];
   case kTrueXPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_vtx_x[iEvent];
   case kTrueYPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_vtx_y[iEvent];
   case kTrueZPos:
-    KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_vtx_z[iEvent];
   case kCVNNumu:
-    KinematicValue = dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
-    break;
+    return dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
   case kCVNNue:
-    KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
-    break;
-  case kM3Mode:
-    KinematicValue = dunemcSamples[iSample].mode[iEvent];
-    break;
-  default:
-    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type");
-    MACH3LOG_ERROR("Was given a Kinematic Variable of {}", KinematicVariable);
-    throw MaCh3Exception(__FILE__, __LINE__);
+    return dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
+  case kGlobalBinNumber:
+    return dunemcSamples[iSample].global_bin_number[iEvent];
+  case kELepRec: {
+    return dunemcSamples[iSample].rw_erec_lep[iEvent];
   }
-  
-  return KinematicValue;
-}
+  case kq0:
+    return dunemcSamples[iSample].true_q0[iEvent];
+  case kq3:
+    return dunemcSamples[iSample].true_q3[iEvent];
+  default:
+    std::stringstream ss;
+    ss << "[ERROR]: " << __FILE__ << ":" << __LINE__
+              << " ReturnKinematicParameterByReference Did not recognise "
+                 "Kinematic Parameter type:"
+              << KinematicParameter
+              << ". Is it possibly only available via ReturnKinematicParameter "
+                 "(not by reference?) if you need it here, give it storage in "
+                 "dunemc_base and move it to here."
+              ;
+    throw std::runtime_error(ss.str());
+  }
+  }
 
-double samplePDFDUNEBeamFD::ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
- KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
- double KinematicValue = -999;
- 
- switch(KinPar){
- case kTrueNeutrinoEnergy:
-   KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
-   break;
- case kRecoNeutrinoEnergy:
-   KinematicValue = dunemcSamples[iSample].rw_erec_shifted[iEvent];
-   break;
- case kTrueXPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_x[iEvent];
-   break;
- case kTrueYPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_y[iEvent];
-   break;
- case kTrueZPos:
-   KinematicValue = dunemcSamples[iSample].rw_vtx_z[iEvent];
-   break;
- case kCVNNumu:
-   KinematicValue = dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
-   break;
- case kCVNNue:
-   KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
-   break;
- default:
-   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
-   throw MaCh3Exception(__FILE__, __LINE__);
- }
- 
- return KinematicValue;
-}
+  double samplePDFDUNEBeamFD::ReturnKinematicParameter(int KinematicParameter,
+                                                       int iSample,
+                                                       int iEvent) {
+    switch (KinematicParameter) {
+    case kERecQE: {
+      constexpr double V = 0;        // 0 binding energy for now
+      constexpr double mn = 939.565; // neutron mass
+      constexpr double mp = 938.272; // proton mass
 
+      double mN_eff = mn - V;
+      double mN_oth = mp;
 
-const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent) {
- KinematicTypes KinPar = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameter)); 
- double* KinematicValue = nullptr;
- 
- switch(KinPar){
- case kTrueNeutrinoEnergy:
-   KinematicValue = &dunemcSamples[iSample].rw_etru[iEvent]; 
-   break;
- case kRecoNeutrinoEnergy:
-   KinematicValue = &dunemcSamples[iSample].rw_erec_shifted[iEvent];
-   break;
- case kTrueXPos:
-   KinematicValue = &dunemcSamples[iSample].rw_vtx_x[iEvent];
-   break;
- case kTrueYPos:
-   KinematicValue = &dunemcSamples[iSample].rw_vtx_y[iEvent];
-   break;
- case kTrueZPos:
-   KinematicValue = &dunemcSamples[iSample].rw_vtx_z[iEvent];
-   break;
- case kCVNNumu:
-   KinematicValue = &dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
-   break;
- case kCVNNue:
-   KinematicValue = &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
-   break;
- default:
-   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
-   throw MaCh3Exception(__FILE__, __LINE__);
- }
- 
- return KinematicValue;
-}
+      if (dunemcSamples[iSample].rw_nuPDGunosc[iEvent] <
+          0) { // if anti-neutrino, swap target/out masses
+        mN_eff = mp - V;
+        mN_oth = mn;
+      }
+
+      double el = dunemcSamples[iSample].rw_erec_lep[iEvent];
+
+      // this is funky, but don't be scared, it defines an annonymous function
+      // in place that grabs the lepton mass in MeV when given the neutrino PDG
+      // and whether the interaction was CC or NC and then immediately calls it.
+      // It's basically a generalisation of the ternary operator.
+      double ml =
+          [](int nupdg, bool isCC) {
+            switch (std::abs(nupdg)) {
+            case 12: {
+              return isCC ? 0.511 : 0;
+            }
+            case 14: {
+              return isCC ? 105.66 : 0;
+            }
+            case 16: {
+              return isCC ? 1777.0 : 0;
+            }
+            }
+          }(dunemcSamples[iSample].rw_nuPDGunosc[iEvent],
+            dunemcSamples[iSample].rw_isCC[iEvent]);
+
+      double pl = std::sqrt(el*el - ml*ml); // momentum of lepton
+
+      double rEnu =
+          (2 * mN_eff * el - ml * ml + mN_oth * mN_oth - mN_eff * mN_eff) /
+          (2 * (mN_eff - el +
+                pl * std::cos(dunemcSamples[iSample].rw_theta[iEvent])));
+
+      return rEnu;
+    }
+    case kEHadRec: {
+
+      return dunemcSamples[iSample].rw_eRecoP[iEvent] +
+             dunemcSamples[iSample].rw_eRecoPip[iEvent] +
+             dunemcSamples[iSample].rw_eRecoPim[iEvent] +
+             dunemcSamples[iSample].rw_eRecoPi0[iEvent] +
+             dunemcSamples[iSample].rw_eRecoN[iEvent];
+    }
+    default: {
+      return ReturnKinematicParameterByReference(KinematicParameter, iSample,
+                                                 iEvent);
+    }
+    }
+  }
 
 int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string KinematicParameterStr){
   if (KinematicParameterStr.find("TrueNeutrinoEnergy") != std::string::npos) {return kTrueNeutrinoEnergy;}
@@ -638,91 +666,73 @@ int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string Kinemati
   if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
   if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
   if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
+  if (KinematicParameterStr.find("global_bin_number") != std::string::npos) {return kGlobalBinNumber;}
+  if (KinematicParameterStr.find("q0") != std::string::npos) {return kq0;}
+  if (KinematicParameterStr.find("q3") != std::string::npos) {return kq3;}
+  if (KinematicParameterStr.find("ERecQE") != std::string::npos) {return kERecQE;}
+  if (KinematicParameterStr.find("ELepRec") != std::string::npos) {return kELepRec;}
+  if (KinematicParameterStr.find("EHadRec") != std::string::npos) {return kEHadRec;}
+
+  std::stringstream ss;
+  ss << "[ERROR]: " << __FILE__ << ":" << __LINE__
+     << "failed to translate kinematic parameter string "
+     << KinematicParameterStr << " to parameter id.";
+  throw std::runtime_error(ss.str());
 }
 
-const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
-  double* KinematicValue = nullptr;
+std::string samplePDFDUNEBeamFD::ReturnStringFromKinematicParameter(
+    int KinematicParameter) {
 
-  switch(KinPar){
-  case kTrueNeutrinoEnergy:
-    KinematicValue = &dunemcSamples[iSample].rw_etru[iEvent]; 
-    break;
+  switch (KinematicParameter) {
   case kRecoNeutrinoEnergy:
-    KinematicValue = &dunemcSamples[iSample].rw_erec_shifted[iEvent];
-    break;
+    return "RecoNeutrinoEnergy";
+  case kTrueNeutrinoEnergy:
+    return "RecoNeutrinoEnergy";
   case kTrueXPos:
-    KinematicValue = &dunemcSamples[iSample].rw_vtx_x[iEvent];
-    break;
+    return "TrueXPos";
   case kTrueYPos:
-    KinematicValue = &dunemcSamples[iSample].rw_vtx_y[iEvent];
-    break;
+    return "TrueYPos";
   case kTrueZPos:
-    KinematicValue = &dunemcSamples[iSample].rw_vtx_z[iEvent];
-    break;
+    return "TrueZPos";
   case kCVNNumu:
-    KinematicValue = &dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
-    break;
+    return "CVNNumu";
   case kCVNNue:
-    KinematicValue = &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
-    break;
-  default:
+    return "CVNNue";
+  case kM3Mode:
+    return "M3Mode";
+  case kGlobalBinNumber:
+    return "global_bin_number";
+  case kq0:
+    return "q0";
+  case kq3:
+    return "q3";
+  case kERecQE:
+    return "ERecQE";
+  case kELepRec:
+    return "ELepRec";
+  case kEHadRec:
+    return "EHadRec";
+  default: {
    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
    throw MaCh3Exception(__FILE__, __LINE__);
   }
-  
-  return KinematicValue;
-}
-
-inline std::string samplePDFDUNEBeamFD::ReturnStringFromKinematicParameter(int KinematicParameter) {
-  std::string KinematicString = "";
- 
-  switch(KinematicParameter){
-   case kRecoNeutrinoEnergy:
-     KinematicString = "RecoNeutrinoEnergy";
-	 break;
-   case kTrueNeutrinoEnergy:
-     KinematicString = "RecoNeutrinoEnergy";
-	 break;
-   case kTrueXPos:
-	 KinematicString= "TrueXPos";
-	 break;
-   case kTrueYPos:
-	 KinematicString= "TrueYPos";
-	 break;
-   case kTrueZPos:
-	 KinematicString= "TrueZPos";
-	 break;
-   case kCVNNumu:
-	 KinematicString = "CVNNumu";
-	 break;
-   case kCVNNue:
-	 KinematicString = "CVNNue";
-	 break;
-   case kM3Mode:
-	 KinematicString = "M3Mode";
-	 break;
-   default:
-    break;
   }
-
-  return KinematicString;
 }
 
 void samplePDFDUNEBeamFD::setupFDMC(int iSample) {
-  dunemc_base *duneobj = &(dunemcSamples[iSample]);
+  auto &duneobj = dunemcSamples[iSample];
   fdmc_base *fdobj = &(MCSamples[iSample]);  
   
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
-  fdobj->signal = duneobj->signal;
+  fdobj->nutype = duneobj.nutype;
+  fdobj->oscnutype = duneobj.oscnutype;
+  fdobj->signal = duneobj.signal;
   fdobj->SampleDetID = SampleDetID;
   
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent) {
-    fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
-    fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
-    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
-    fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+    fdobj->rw_etru[iEvent] = &(duneobj.rw_etru[iEvent]);
+    fdobj->mode[iEvent] = &(duneobj.mode[iEvent]);
+    fdobj->Target[iEvent] = &(duneobj.Target[iEvent]); 
+    fdobj->isNC[iEvent] = !(duneobj.rw_isCC[iEvent]);
   }
 }
  
@@ -806,9 +816,8 @@ void samplePDFDUNEBeamFD::applyShifts(int iSample, int iEvent) {
   */
 }
 
-std::vector<double> samplePDFDUNEBeamFD::ReturnKinematicParameterBinning(std::string KinematicParameterStr) {
+std::vector<double> samplePDFDUNEBeamFD::ReturnKinematicParameterBinning(int KinematicParameter) {
   std::vector<double> binningVector;
-  KinematicTypes KinematicParameter = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameterStr));
 
   int nBins = 0;
   double bin_width = 0;

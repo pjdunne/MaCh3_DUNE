@@ -25,7 +25,23 @@ public:
   samplePDFDUNEBeamFD(std::string mc_version, covarianceXsec* xsec_cov);
   ~samplePDFDUNEBeamFD();
 
-  enum KinematicTypes {kTrueNeutrinoEnergy,kRecoNeutrinoEnergy,kTrueXPos,kTrueYPos,kTrueZPos,kCVNNumu,kCVNNue,kM3Mode,kOscChannel};
+  enum KinematicTypes {
+    kTrueNeutrinoEnergy,
+    kRecoNeutrinoEnergy,
+    kTrueXPos,
+    kTrueYPos,
+    kTrueZPos,
+    kCVNNumu,
+    kCVNNue,
+    kM3Mode,
+    kGlobalBinNumber,
+    kOscChannel,
+    kq0,
+    kq3,
+    kERecQE,
+    kELepRec,
+    kEHadRec
+  };
 
   //More robust getters to make plots in different variables, mode, osc channel, systematic weighting and with bin range 
   TH1D* get1DVarHist(KinematicTypes Var1, int fModeToFill=-1, int fSampleToFill=-1, int WeightStyle=0, TAxis* Axis=0);
@@ -41,23 +57,23 @@ public:
   /// @todo extract this completely to core
   ///@brief Setup our spline file, this calls InitialseSplineObject() under the hood
   void SetupSplines();
-  
-  double ReturnKinematicParameter (double KinematicVariable, int iSample, int iEvent);
-  double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
 
-  const double* GetPointerToKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
-  const double* GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent); 
+  double const &ReturnKinematicParameterByReference(int KinematicParameter,
+                                                    int iSample, int iEvent);
+  double ReturnKinematicParameter(int KinematicParameter, int iSample,
+                                  int iEvent);
 
-  std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
-  inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
-  inline std::string ReturnStringFromKinematicParameter(int KinematicParameterStr);
+  std::vector<double> ReturnKinematicParameterBinning(int KinematicParameter);
   
+  int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
+  std::string ReturnStringFromKinematicParameter(int KinematicParameterStr);
+
   //DB functions which could be initialised to do something which is non-trivial
   double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
   void applyShifts(int iSample, int iEvent);
 
   // dunemc
-  std::vector<struct dunemc_base> dunemcSamples;
+  std::vector<dunemc_base> dunemcSamples;
 
   double pot;
 
