@@ -4,6 +4,7 @@ build/
 *.tgz
 *.pdf
 *.png
+*~
 logs/
 jupyter_env
 .history
