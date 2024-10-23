@@ -289,11 +289,11 @@ for(int iplotvars = 0; iplotvars<plotvariables.size(); iplotvars++){
       c0->Update();
 //      getchar();
 
-      double max=1.6, min=0.4;
+      double max=1.0, min=1.0;
       for(int j=0; j<4; j++)
       {
 	 hVar[j]->Divide(divisor);
-	 if(hVar[j]->GetMinimum(0.1)<min)
+	 if(hVar[j]->GetMinimum()<min)
 	    min = hVar[j]->GetMinimum();
 	 if(hVar[j]->GetMaximum()>max)
 	    max = hVar[j]->GetMaximum();
@@ -302,8 +302,8 @@ for(int iplotvars = 0; iplotvars<plotvariables.size(); iplotvars++){
 	 min=(2-max);
       }
       else{
-      //max*=1.02;
-      //min*=0.98;
+      max*=1.02;
+      min*=0.98;
       }
       TH1D* divcopy = (TH1D*)divisor->Clone("divcopy");
       divcopy->Divide(divisor);

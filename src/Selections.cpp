@@ -320,7 +320,7 @@ int main(int argc, char * argv[]) {
 		  //Reweight prediction
 		  SamplePDFs[ipdf]->reweight(osc->getPropPars());
 
-		  sprintf( houtname, "%s_xsec_par_%i_sig_%c%i", sample_names[ipdf].c_str(), i, sign,abs(j));
+		  sprintf( houtname, "%s_xsec_par_%s_sig_%c%i", sample_names[ipdf].c_str(), xsec_names[i], sign,abs(j));
 		  TH1D * hist = (TH1D*)SamplePDFs[ipdf]->get1DHist()->Clone(houtname);
 		  
 		    //LW - Right now core can't plot by mode
