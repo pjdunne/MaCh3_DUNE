@@ -56,7 +56,7 @@ struct dunemc_base {
   double *beam_w;
   double *flux_w;
 
-  int *mode;
+  double *mode;
   int *isbound;
 
   double *rw_truecz;
