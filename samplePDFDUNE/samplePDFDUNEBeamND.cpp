@@ -269,7 +269,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_ePi0 = new double[duneobj->nEvents];
   duneobj->rw_eN = new double[duneobj->nEvents];
 
-  duneobj->mode = new int[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
