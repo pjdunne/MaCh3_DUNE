@@ -22,9 +22,18 @@ SelectionCuts:
     - KinematicStr: "InFDV"
       Bounds: [1.0, 2.0]
     - KinematicStr: "IsAccepted"
-      Bounds: [1.0, 2.0]
+      Bounds: [0.0, 2.0]
     - KinematicStr: "IsCC"
       Bounds: [1.0, 2.0]
+#    - KinematicStr: "HighestpTParticleTransverseMomentum"
+#      Bounds: [0.0, 0.04]
+
+#    - KinematicStr: "PDGNonAccepted"
+#      Bounds: [2212, 2213]
+    - KinematicStr: "TrueRad"
+      Bounds: [0.0, 200.0]
+    - KinematicStr: "TrueXPos"
+      Bounds: [-190.0, 190.0]
 #    - KinematicStr: "NTruePrimMuons"
 #      Bounds: [1.0, 2.0]
 #    - KinematicStr: "RecoRad"
@@ -75,12 +84,16 @@ SampleCuts:
   recovertexradius_threshold: 100.0
   pionenergy_threshold: 0
   B_field: 0.5
-  momentum_resolution_threshold: 0.05 
+  momentum_resolution_threshold: 0.05
   pixel_spacing: 6.0
   adc_sampling_frequency: 20.0
   drift_velocity: 3.011
-  average_gain: 500
-NSubSamples: 4
+  TPCFidLength: 209.0
+  TPCFidRadius: 227.02 
+  gamma_reco_efficiency: 1.0
+  pi0_reco_efficiency: 1.0
+#  average_gain: 500
+NSubSamples: 1
 DetID: 1
 SubSamples:
   - name: "FHC_numu_x_numu"
@@ -90,27 +103,27 @@ SubSamples:
     nutype: 14
     oscnutype: 14
     signal: false
-  - name: "FHC_nue_x_nue"
-    mtuplefile: "nue_x_nue"
-    splinefile: "nue_x_nue"
-    samplevecno: 1
-    nutype: 12
-    oscnutype: 12
-    signal: false
-  - name: "FHC_numubar_x_numubar"
-    mtuplefile: "numubar_x_numubar"
-    splinefile: "numubar_x_numubar"
-    samplevecno: 2
-    nutype: -14
-    oscnutype: -14
-    signal: false
-  - name: "FHC_nuebar_x_nuebar"
-    mtuplefile: "nuebar_x_nuebar"
-    splinefile: "nuebar_x_nuebar"
-    samplevecno: 3
-    nutype: -12
-    oscnutype: -12
-    signal: false
+#  - name: "FHC_nue_x_nue"
+#    mtuplefile: "nue_x_nue"
+#    splinefile: "nue_x_nue"
+#    samplevecno: 1
+#    nutype: 12
+#    oscnutype: 12
+#    signal: false
+#  - name: "FHC_numubar_x_numubar"
+#    mtuplefile: "numubar_x_numubar"
+#    splinefile: "numubar_x_numubar"
+#    samplevecno: 2
+#    nutype: -14
+#    oscnutype: -14
+#    signal: false
+#  - name: "FHC_nuebar_x_nuebar"
+#    mtuplefile: "nuebar_x_nuebar"
+#    splinefile: "nuebar_x_nuebar"
+#    samplevecno: 3
+#    nutype: -12
+#    oscnutype: -12
+#    signal: false
 #  - name: "FHC_numu_x_nue"
 #    mtuplefile: "numu_x_nue"
 #    splinefile: "numu_x_nue"

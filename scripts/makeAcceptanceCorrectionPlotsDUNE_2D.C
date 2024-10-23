@@ -6,16 +6,17 @@
 #include "TStyle.h"
 #include "TLegend.h"
 
-
 #include <iostream>
 
 void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
 {
   std::cout << "honk" << std::endl;
   gStyle->SetOptStat(0);
+  gStyle->SetPalette(kBlueRedYellow);
+  gStyle->SetPaintTextFormat("1.2f");
   TCanvas* c0 = new TCanvas("c0","c0",0,0,600,600);
   c0->Divide(1,2);
-  TCanvas* c1 = new TCanvas("c1","c1",0,0,600,600);
+  TCanvas* c1 = new TCanvas("c1","c1",0,0,800,800);
 //  c1->Divide(1,2);
   c0->Print("acceptancecorrectionvars_2d.ps[");
   int ipionmax;
@@ -30,14 +31,27 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
    if(ipion == 0 && ithreshold > 0){continue;}
    if((ithreshold > 150) && (ithreshold % 50 != 0)){continue;}
 */
+//  for(int i_radius = 170; i_radius<240; i_radius=i_radius+20){
+//   for(int i_pi0eff = 50; i_pi0eff<110; i_pi0eff=i_pi0eff+10){ 
+//   for(int i_gammeff = 50; i_gammaeff<110; i_gammaeff=i_gammaeff+10){
    std::vector<TString> inputfilelist;
    inputfilelist.push_back(inputfile);
    std::vector<TH2D*> histlist;
    std::vector<std::string> histnames;
    std::vector<std::string> x_axis;
+   int histlistsize;
 
-   if(inputfile2){inputfilelist.push_back(inputfile2);}
-     
+   std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "TrueRad", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueRad", "HighestpTParticleTransverseMomentum", "HighestpTParticleThetaAngle"};
+
+//   std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "TrueRad", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueRad", "HighestpTParticleTransverseMomentum", "HighestpTParticleThetaAngle", "RejectedParticleTransverseMomentum", "RejectedParticleMomentum", "RejectedParticleMomentum", "SigmaMom", "RejectedParticleThetaAngle", "SigmaTheta"};
+
+//"TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "RejectedParticleMomentum", "RejectedParticleThetaAngle", "RejectedParticleRadCurvature", "RejectedParticleThetaAngle", "TrueRad", "TrueXPos", "RejectedParticleRadCurvature", "RejectedParticleTransverseMomentum", "RejectedParticleMomentum", "SigmaMom", "RejectedParticleThetaAngle", "SigmaTheta", "PDGNonAccepted", "RejectedParticleMomentum", "TrueRad", "RejectedParticleTransverseMomentum", "TrueXPos", "RejectedParticleMomentum", "RejectedParticleTransverseMomentum", "RejectedParticleThetaAngle"};
+
+
+//{"TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "RejectedParticleMomentum", "RejectedParticleThetaAngle", "RejectedParticleRadCurvature", "RejectedParticleThetaAngle", "TrueRad", "TrueXPos", "RejectedParticleRadCurvature", "RejectedParticleMomentum","RejectedParticleMomentum", "SigmaMom", "RejectedParticleThetaAngle", "SigmaTheta", "PDGNonAccepted", "RejectedParticleMomentum", "TrueRad", "RejectedParticleMomentum", "TrueXPos", "RejectedParticleMomentum"};
+//   std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0"};
+   if(inputfile2 != ""){inputfilelist.push_back(inputfile2); histlistsize = plotvariables.size() + plotvariables.size()/2;}
+   else{histlistsize = plotvariables.size()/2;}
    for(int i_files =0; i_files<inputfilelist.size(); i_files++){
    std::string filenamestart(inputfilelist[i_files]);
    std::string fullfile = filenamestart+".root";
@@ -55,7 +69,8 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
 //  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "TrueNeutrinoEnergy", "TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "TrueMinusRecoEnergy", "TrueMinusRecoEnergyRatio", "PionMultiplicity", "ChargedPionMultiplicity", "NRecoPions", "NRecoParticles", "InFDV", "NTrueMuons", "NRecoMuons", "RecoLepEnergy", "TrueLepEnergy", "LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "PiTrueEnergy", "PiRecoMomentum", "PiTrueMomentum", "MuonPiRecoAngle", "MuonPiAngle", "PiZRecoAngle", "PiZAngle"};
 
 //  std::vector<std::string> plotvariables = {"TrueMinusIdealRecoEnergy", "TrueMinusIdealRecoEnergyRatio", "TrueQ2", "TrueW"};
-  std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0"};
+
+//  std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0"};
 //  std::vector<std::string> plotvariables = {"IdealNeutrinoRecoEnergy", "RecoNeutrinoEnergy"};
 
 
@@ -143,38 +158,64 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
      }
    }
    }
-   for(int i_hists = 0; i_hists<histlist.size()+1; i_hists++){
-     if(i_hists<2){
+
+   if(inputfilelist.size() == 1){
+   for(int i_hists = 0; i_hists<histlistsize; i_hists++){
+       std::string finalname = histnames[i_hists];
+       TH2D* histrebin = (TH2D*)(histlist[i_hists]->Rebin2D(1, 1, "histrebin"));
+       c0->cd(i_hists);
+       histrebin->Draw("COLZ");
+       std::cout<<"draw here"<<std::endl;
+       histrebin->SetTitle(finalname.c_str());
+       histrebin->GetXaxis()->SetTitle(x_axis[i_hists*2].c_str());
+       histrebin->GetYaxis()->SetTitle(x_axis[i_hists*2+1].c_str());
+       c0->Print("acceptancecorrectionvars_2d.ps");
+   }
+   }
+   else{
+   for(int i_hists = 0; i_hists<histlistsize; i_hists++){
+     if(i_hists<histlistsize-plotvariables.size()/2){
        std::string finalname = histnames[i_hists];
        if(i_hists==0){finalname=finalname+"_AcceptedEvents";}
        if(i_hists==1){finalname=finalname+"_AllEvents";}
+       int rebinnum = 2;
+       if(std::string(histlist[i_hists]->GetName()).find("TrueRad") != std::string::npos){rebinnum = 4;}
+       TH2D* histrebin = (TH2D*)(histlist[i_hists]->Rebin2D(rebinnum, rebinnum, "histrebin"));
        c0->cd(i_hists);
-       histlist[i_hists]->Draw("COLZ");
+       histrebin->Draw("COLZ");
        std::cout<<"draw here"<<std::endl;
-       histlist[i_hists]->SetTitle(finalname.c_str());
-       histlist[i_hists]->GetXaxis()->SetTitle(x_axis[0].c_str());
-       histlist[i_hists]->GetYaxis()->SetTitle(x_axis[1].c_str());
+       histrebin->SetTitle(finalname.c_str());
+       histrebin->GetXaxis()->SetTitle(x_axis[i_hists*2].c_str());
+       histrebin->GetYaxis()->SetTitle(x_axis[i_hists*2+1].c_str());
        c0->Print("acceptancecorrectionvars_2d.ps");
      }
-     if(i_hists==2){
-       TH2D* histratios = (TH2D*)histlist[0]->Clone();
+     else{
+       TH2D* histratios = (TH2D*)histlist[i_hists-plotvariables.size()]->Clone();
+       int rebinnum = 2;
+       if((std::string(histlist[i_hists-plotvariables.size()]->GetName()).find("TrueRad") != std::string::npos) || (std::string(histlist[i_hists-plotvariables.size()]->GetName()).find("TrueXPos") != std::string::npos)){rebinnum = 4;}
+       TH2D* histdenom = (TH2D*)(histlist[i_hists-plotvariables.size()/2]->Rebin2D(rebinnum, rebinnum, "histrebin"));
+       TH2D* histrebin = (TH2D*)(histratios->Rebin2D(rebinnum, rebinnum, "histrebin"));
        std::cout<<"cloned"<<std::endl;
-       histratios->GetXaxis()->SetTitle(x_axis[0].c_str());
-       histratios->GetYaxis()->SetTitle(x_axis[1].c_str());
-       histratios->SetTitle("Acceptance vs Q3 vs Q0");
-       histratios->Divide(histlist[1]);
+       histrebin->GetXaxis()->SetTitle(x_axis[(i_hists-plotvariables.size())*2].c_str());
+       histrebin->GetYaxis()->SetTitle(x_axis[(i_hists-plotvariables.size())*2+1].c_str());
+       histrebin->SetTitle("Acceptance vs Q3 vs Q0");
+       histrebin->Divide(histdenom);
        for(int i_x =0; i_x<histratios->GetNbinsX(); i_x++){
          for(int i_y = 0; i_y<histratios->GetNbinsY(); i_y++){
-           int binnum = histratios->GetBin(i_x+1, i_y+1);
-           double numerator = histlist[0]->GetBinContent(binnum);
-           double denominator = histlist[1]->GetBinContent(binnum);
-           if(numerator == 0 && denominator != 0){histratios->SetBinContent(binnum, 1e-6);}
+           int binnum = histrebin->GetBin(i_x+1, i_y+1);
+           double value = histrebin->GetBinContent(binnum);
+           double denominator = histdenom->GetBinContent(binnum);
+           if(value == 0 && denominator != 0){histrebin->SetBinContent(binnum, 1e-6);}
          }
        }
        std::cout<<"divided"<<std::endl;
        c0->cd(i_hists);
-       histratios->Draw("COLZ");
+       histrebin->Draw("COLZ");
+       histrebin->SetMarkerSize(0.2);
+       histrebin->Draw("TEXT SAME");
+//       histratios->Draw("COLZ");
        c0->Print("acceptancecorrectionvars_2d.ps");
+     }
      }
 /*       c0->cd(1);
        hist->Draw("COLZ");
@@ -186,7 +227,9 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
        c0->Print("acceptancecorrectionvars_2d.ps");
 */
      }
-   
+//   }
+//   }
+//   } 
    //}
    std::cout<<"HERE"<<std::endl;
    c0->Print("acceptancecorrectionvars_2d.ps]");

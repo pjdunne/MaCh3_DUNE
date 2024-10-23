@@ -88,6 +88,18 @@ enum KinematicTypes {
   kIsAccepted = 49,
   kIsCC = 50,
   kPiTrueMinEnergy =51,
+  kMomResNonAccepted = 52,
+  kMomMuonNonAccepted = 53,
+  kPDGNonAccepted = 54,
+  kMuonZAngle = 55,
+  kRejectedParticleMomentum =56,
+  kRejectedParticleThetaAngle = 57,
+  kRejectedParticleRadCurvature = 58,
+  kSigmaTheta = 59,
+  kSigmaMom = 60,
+  kRejectedParticleTransverseMomentum =61,
+  kHighestpTParticleTransverseMomentum =62,
+  kHighestpTParticleThetaAngle = 63,
 
   kNKinematicParams
 };
@@ -146,6 +158,18 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("IsAccepted") != std::string::npos) {return kIsAccepted;} 
   if (KinematicParameterStr.find("IsCC") != std::string::npos) {return kIsCC;} 
   if (KinematicParameterStr.find("PiTrueMinEnergy") != std::string::npos) {return kPiTrueMinEnergy;}
+  if (KinematicParameterStr.find("MomResNonAccepted") != std::string::npos) {return kMomResNonAccepted;}
+  if (KinematicParameterStr.find("MomMuonNonAccepted") != std::string::npos) {return kMomMuonNonAccepted;}
+  if (KinematicParameterStr.find("PDGNonAccepted") != std::string::npos) {return kPDGNonAccepted;}
+  if (KinematicParameterStr.find("MuonZAngle") != std::string::npos) {return kMuonZAngle;}
+  if (KinematicParameterStr.find("RejectedParticleMomentum") != std::string::npos) {return kRejectedParticleMomentum;}
+  if (KinematicParameterStr.find("RejectedParticleTransverseMomentum") != std::string::npos) {return kRejectedParticleTransverseMomentum;}
+  if (KinematicParameterStr.find("RejectedParticleThetaAngle") != std::string::npos) {return kRejectedParticleThetaAngle;}
+  if (KinematicParameterStr.find("RejectedParticleRadCurvature") != std::string::npos) {return kRejectedParticleRadCurvature;}
+  if (KinematicParameterStr.find("SigmaTheta") != std::string::npos) {return kSigmaTheta;}
+  if (KinematicParameterStr.find("SigmaMom") != std::string::npos) {return kSigmaMom;}
+  if (KinematicParameterStr.find("HighestpTParticleTransverseMomentum") != std::string::npos) {return kHighestpTParticleTransverseMomentum;}
+  if (KinematicParameterStr.find("HighestpTParticleThetaAngle") != std::string::npos) {return kHighestpTParticleThetaAngle;}
 
   return kNKinematicParams; 
 }
@@ -204,7 +228,18 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kIsAccepted) {return "IsAccepted";}
   if (KinematicParameter == kIsCC) {return "IsCC";}
   if (KinematicParameter == kPiTrueMinEnergy) {return "PiTrueMinEnergy";}
-
+  if (KinematicParameter == kMomResNonAccepted) {return "MomResNonAccepted";}
+  if (KinematicParameter == kMomMuonNonAccepted) {return "MomMuonNonAccepted";}
+  if (KinematicParameter == kPDGNonAccepted) {return "PDGNonAccepted";}
+  if (KinematicParameter == kMuonZAngle) {return "MuonZAngle";}
+  if (KinematicParameter == kRejectedParticleMomentum) {return "RejectedParticleMomentum";}
+  if (KinematicParameter == kRejectedParticleTransverseMomentum) {return "RejectedParticleTransverseMomentum";}
+  if (KinematicParameter == kRejectedParticleThetaAngle) {return "RejectedParticleThetaAngle";}
+  if (KinematicParameter == kRejectedParticleRadCurvature) {return "RejectedParticleRadCurvature";}
+  if (KinematicParameter == kSigmaTheta) {return "SigmaTheta";}
+  if (KinematicParameter == kSigmaMom) {return "SigmaMom";}
+  if (KinematicParameter == kHighestpTParticleTransverseMomentum) {return "HighestpTParticleTransverseMomentum";}
+  if (KinematicParameter == kHighestpTParticleThetaAngle) {return "HighestpTParticleThetaAngle";}
   return "NULL"; 
 }
 

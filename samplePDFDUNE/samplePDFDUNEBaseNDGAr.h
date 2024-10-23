@@ -127,7 +127,15 @@ struct dunendgarmc_base {
   double *rw_reco_pi_pY;
   double *rw_reco_pi_pX;
   double *rw_reco_pi_pMag;
-
+  
+  double *rejectedpart_ptot;
+  double *rejectedpart_pT;
+  double *rejectedpart_theta_angle;
+  double *rejectedpart_radcurvature;
+  double *rejectedpart_sigmamom;
+  double *rejectedpart_sigmatheta;
+  double *highestpart_pT;
+  double *highestpart_theta_angle;
 
   double *rw_reco_vtx_x;
   double *rw_reco_vtx_y;
@@ -144,6 +152,7 @@ struct dunendgarmc_base {
   double *rw_pi_energy;
   double *muon_pi_angle;
   double *pi_z_angle;
+  double *muon_z_angle;
   double *rw_pi_min_energy; 
 
   double *rw_elep_true;
@@ -152,6 +161,8 @@ struct dunendgarmc_base {
   bool *in_fdv;
 
   bool *is_accepted;
+  double *momres_nonaccepted;
+  int *pdg_nonaccepted;
 
   double pot_s; // s is for scale                                             
   double norm_s;//    
@@ -271,9 +282,10 @@ public:
   double m_chargedpi = 0.13957039;
   double m_pi0 = 0.1349768;
   double m_e = 0.00051099895;
-  double m_mu = 0.0001056583755;
+  double m_mu = 0.1056583755;
   double m_p = 0.93827208816;
   double m_n = 0.9395654205;
+  double m_chargedk = 0.493677;
 
   double TPCFidLength;
   double TPCFidRadius;
@@ -313,6 +325,9 @@ public:
   float drift_velocity;
 //  float hits_per_mm;
   double average_gain; //in electrons per ADC
+  float pi0_reco_efficiency;  //efficiency for pi0 reco in ECAL 
+  float gamma_reco_efficiency;  //efficiency for gamma reco in ECAL
+ 
   // Note: the following 4 variables shouldn't be used any more! (From 14/1/2015 - KD). Just kept in for backwards compatibility in compiling, but they have no effect.
   bool do_flux_rw;
   bool do_xsec_rw;
