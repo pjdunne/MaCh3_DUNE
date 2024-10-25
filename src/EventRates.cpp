@@ -90,11 +90,11 @@ int main(int argc, char * argv[]) {
       SelecChannel[2] = iOscChan+1;
       SelectionVec.push_back(SelecChannel);
       
-      TH1* Hist = Sample->get1DVarHist("RecoNeutrinoEnergy",SelectionVec);
+      TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
       MACH3LOG_INFO("{:<20} : {:<20} : {:<20.2f}",Sample->GetName(),Sample->getFlavourName(iOscChan),Hist->Integral());
     }
 
-    TH1* Hist = Sample->get1DVarHist("RecoNeutrinoEnergy");
+    TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
     MACH3LOG_INFO("{:<20} : {:<20.2f}",Sample->GetName(),Hist->Integral());
   }
 
@@ -117,11 +117,11 @@ int main(int argc, char * argv[]) {
       SelecChannel[2] = iModeChan+1;
       SelectionVec.push_back(SelecChannel);
 
-      TH1* Hist = Sample->get1DVarHist("RecoNeutrinoEnergy",SelectionVec);
+      TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
       MACH3LOG_INFO("{:<20} : {:<20} : {:<20.2f}",Sample->GetName(),MaCh3mode_ToDUNEString((MaCh3_Mode)iModeChan),Hist->Integral());
     }
 
-    TH1* Hist = Sample->get1DVarHist("RecoNeutrinoEnergy");
+    TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
     MACH3LOG_INFO("{:<20} : {:<20.2f}",Sample->GetName(),Hist->Integral());
   }
 
