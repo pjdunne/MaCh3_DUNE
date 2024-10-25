@@ -39,7 +39,7 @@ int main(int argc, char * argv[]) {
   std::vector<TH1D*> PredictionHistograms;
   std::vector<std::string> sample_names;
 
-  auto OutputFile = std::unique_ptr<TFile>(new TFile(OutputFileName.c_str(), "RECREATE"));
+  auto OutputFile = std::unique_ptr<TFile>(TFile::Open(OutputFileName.c_str(), "RECREATE"));
   OutputFile->cd();
 
   for (unsigned sample_i = 0 ; sample_i < DUNEPdfs.size() ; ++sample_i) {
@@ -75,7 +75,7 @@ int main(int argc, char * argv[]) {
   if(StartFromPreviousChain) {//Start from values at the end of an already run chain
     //Read in paramter names and values from file
     MACH3LOG_INFO("MCMC getting starting position from {}",FitManager->raw()["General"]["PosFileName"].as<std::string>());
-    TFile *infile = new TFile(FitManager->raw()["General"]["PosFileName"].as<std::string>().c_str(), "READ");
+    TFile *infile = TFile::Open(FitManager->raw()["General"]["PosFileName"].as<std::string>().c_str(), "READ");
     TTree *posts = (TTree*)infile->Get("posteriors");
     TObjArray* brlis = (TObjArray*)posts->GetListOfBranches();
     int nbr = brlis->GetEntries();

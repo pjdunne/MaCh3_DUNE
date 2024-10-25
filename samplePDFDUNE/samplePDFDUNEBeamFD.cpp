@@ -205,7 +205,7 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", mc_files[iSample]);
   
-  _sampleFile = new TFile(mc_files[iSample].c_str(), "READ");
+  _sampleFile = TFile::Open(mc_files[iSample].c_str(), "READ");
   _data = (TTree*)_sampleFile->Get("caf");
   
   if(_data){
