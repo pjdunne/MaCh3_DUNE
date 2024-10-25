@@ -1,6 +1,10 @@
 #ifndef _StructsDUNE_h_
 #define _StructsDUNE_h_
 
+#include <vector>
+#include <string>
+#include <iostream>
+
 struct dunemc_base {
   int nutype;
   int oscnutype;

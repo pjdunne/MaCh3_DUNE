@@ -52,15 +52,14 @@ find_package(duneanaobj)
 if(NOT duneanaobj_FOUND)
   CPMFindPackage(
     NAME duneanaobj
-    GIT_TAG "patch-1"
-    GITHUB_REPOSITORY dbarrow257/duneanaobj
-    OPTIONS
-    "STANDALONE_BUILD ON"
+    GIT_TAG feature/Clingification_rebase2024
+    GITHUB_REPOSITORY luketpickering/duneanaobj
+    VERSION 4.0.0
   )
 endif()
 
-if(NOT TARGET duneanaobj::All)
-  cmessage(FATAL_ERROR "MaCh3 DUNE Expected dependency target: duneanaobj::All")
+if(NOT TARGET duneanaobj::all)
+  cmessage(FATAL_ERROR "MaCh3 DUNE Expected dependency target: duneanaobj::all")
 endif()
 
 ##################################  MaCh3  ######################################
