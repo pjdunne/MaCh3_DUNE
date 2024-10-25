@@ -327,7 +327,7 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
 
-  duneobj->mode = new int[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);

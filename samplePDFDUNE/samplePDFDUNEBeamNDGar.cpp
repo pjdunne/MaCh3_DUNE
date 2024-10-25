@@ -97,7 +97,7 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
   duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
 
-  duneobj->mode = new int[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
 
   duneobj->nproton = new int[duneobj->nEvents];
   duneobj->nneutron = new int[duneobj->nEvents];
