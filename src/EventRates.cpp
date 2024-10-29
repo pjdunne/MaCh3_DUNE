@@ -14,7 +14,7 @@
 
 #include "samplePDFDUNE/MaCh3DUNEFactory.h"
 
-void Write1DHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histograms) {
+void WriteHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histograms, std::vector<TH2D*> Histograms2D) {
 
   // Now write out the saved hsitograms to file 
   auto OutputFile = std::unique_ptr<TFile>(new TFile(OutFileName.c_str(), "RECREATE"));
@@ -22,10 +22,14 @@ void Write1DHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histogr
   for(auto Hist : Histograms){
     Hist->Write();
   }
+  for(auto Hist : Histograms2D){
+    Hist->Write();
+  }
   OutputFile->Close();
 
   return;
 }
+
 
 void Write1DHistogramsToPdf(std::string OutFileName, std::vector<TH1D*> Histograms) {
 
@@ -66,8 +70,12 @@ int main(int argc, char * argv[]) {
   MakeMaCh3DuneInstance(fitMan.get(), DUNEPdfs, xsec, osc); 
 
   std::vector<TH1D*> DUNEHists;
+  std::vector<TH2D*> DUNE2DHists;
   for(auto Sample : DUNEPdfs){
     Sample->reweight();
+    if (Sample->GetNDim() == 2){
+      DUNE2DHists.push_back(Sample->get2DHist());
+      }
     DUNEHists.push_back(Sample->get1DHist());
     
     std::string EventRateString = fmt::format("{:.2f}", Sample->get1DHist()->Integral());
@@ -76,6 +84,6 @@ int main(int argc, char * argv[]) {
 
   std::string OutFileName = GetFromManager<std::string>(fitMan->raw()["General"]["OutputFile"], "EventRatesOutput.root");
 
-  Write1DHistogramsToFile(OutFileName, DUNEHists); 
+  WriteHistogramsToFile(OutFileName, DUNEHists, DUNE2DHists); 
   Write1DHistogramsToPdf(OutFileName, DUNEHists);
 }

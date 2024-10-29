@@ -16,6 +16,13 @@ samplePDFDUNEBeamND::~samplePDFDUNEBeamND() {
 
 void samplePDFDUNEBeamND::Init() {
   dunendmcSamples.resize(nSamples,dunemc_base());
+
+  if (CheckNodeExists(SampleManager->raw(), "POT")) {
+    pot = SampleManager->raw()["POT"].as<double>();
+  } else{
+    MACH3LOG_ERROR("POT not defined in {}, please add this!", SampleManager->GetFileName());
+    throw MaCh3Exception(__FILE__, __LINE__);
+  }
   
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
@@ -236,6 +243,10 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     duneobj->norm_s = (1e21/1.905e21);
   }
   duneobj->pot_s = (pot)/1e21;
+  
+  std::cout << "pot: " << pot << std::endl;
+  std::cout << "pot_s: " << duneobj->pot_s << std::endl;
+  std::cout << "norm_s: " << duneobj->norm_s << std::endl;
 
   duneobj->nEvents = _data->GetEntries();
   duneobj->nutype = nutype;
@@ -327,6 +338,9 @@ const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(KinematicTypes
   case kRecoQ:
     KinematicValue = &dunendmcSamples[iSample].rw_reco_q[iEvent];
     break;
+  case kRecoNeutrinoEnergy:
+    KinematicValue = &dunendmcSamples[iSample].rw_erec[iEvent];
+    break;
   default:
     MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
     throw MaCh3Exception(__FILE__, __LINE__);
@@ -393,7 +407,7 @@ void samplePDFDUNEBeamND::applyShifts(int iSample, int iEvent) {
   bool CCnue {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==12 && dunendmcSamples[iSample].nutype==1};
   bool NotCCnumu {!(dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==14) && dunendmcSamples[iSample].nutype==2};
 
-
+/*
   TotalEScaleND(NDDetectorSystPointers[0], &dunendmcSamples[iSample].rw_erec_shifted[iEvent], dunendmcSamples[iSample].rw_erec_had[iEvent], dunendmcSamples[iSample].rw_erec_lep[iEvent], NotCCnumu);
 
   TotalEScaleSqrtND(NDDetectorSystPointers[1], &dunendmcSamples[iSample].rw_erec_shifted[iEvent], dunendmcSamples[iSample].rw_erec_had[iEvent], dunendmcSamples[iSample].rw_erec_lep[iEvent], sqrtErecHad, sqrtErecLep, NotCCnumu);
@@ -431,7 +445,7 @@ void samplePDFDUNEBeamND::applyShifts(int iSample, int iEvent) {
   NResND(NDDetectorSystPointers[17], &dunendmcSamples[iSample].rw_erec_shifted[iEvent], dunendmcSamples[iSample].rw_eRecoN[iEvent], dunendmcSamples[iSample].rw_eN[iEvent]);
 
   EMResND(NDDetectorSystPointers[18], &dunendmcSamples[iSample].rw_erec_shifted[iEvent], dunendmcSamples[iSample].rw_eRecoPi0[iEvent], dunendmcSamples[iSample].rw_ePi0[iEvent], dunendmcSamples[iSample].rw_erec_lep[iEvent], dunendmcSamples[iSample].rw_LepE[iEvent], CCnue);
-
+*/
 }
 
 std::vector<double> samplePDFDUNEBeamND::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
@@ -441,9 +455,17 @@ std::vector<double> samplePDFDUNEBeamND::ReturnKinematicParameterBinning(std::st
 }
 
 int samplePDFDUNEBeamND::ReturnKinematicParameterFromString(std::string KinematicParameterStr) {
+  if(KinematicParameterStr == "TrueNeutrinoEnergy") return kTrueNeutrinoEnergy;
+  if(KinematicParameterStr == "RecoQ") return kRecoQ;
+  if(KinematicParameterStr == "RecoNeutrinoEnergy") return kRecoNeutrinoEnergy;
   return -1;
 }
 
 std::string samplePDFDUNEBeamND::ReturnStringFromKinematicParameter(int KinematicParameter) {
-  return "";
+  switch(KinematicParameter){
+    case kTrueNeutrinoEnergy: return "TrueNeutrinoEnergy";
+    case kRecoQ: return "RecoQ";
+    case kRecoNeutrinoEnergy: return "RecoNeutrinoEnergy";
+    default: return "";
+  }
 }
