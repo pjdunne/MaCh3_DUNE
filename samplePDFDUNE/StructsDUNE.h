@@ -100,6 +100,10 @@ enum KinematicTypes {
   kRejectedParticleTransverseMomentum =61,
   kHighestpTParticleTransverseMomentum =62,
   kHighestpTParticleThetaAngle = 63,
+  kHighestpTLengthTrackX = 64,
+  kHighestpTLengthTrackYZ = 65,
+  kRejectedParticleTrackThetaAngle = 66,
+  kRejectedParticleRatioRadCurvature = 67,
 
   kNKinematicParams
 };
@@ -170,6 +174,10 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("SigmaMom") != std::string::npos) {return kSigmaMom;}
   if (KinematicParameterStr.find("HighestpTParticleTransverseMomentum") != std::string::npos) {return kHighestpTParticleTransverseMomentum;}
   if (KinematicParameterStr.find("HighestpTParticleThetaAngle") != std::string::npos) {return kHighestpTParticleThetaAngle;}
+  if (KinematicParameterStr.find("HighestpTLengthTrackX") != std::string::npos) {return kHighestpTLengthTrackX;}
+  if (KinematicParameterStr.find("HighestpTLengthTrackYZ") != std::string::npos) {return kHighestpTLengthTrackYZ;}
+  if (KinematicParameterStr.find("RejectedParticleTrackThetaAngle") != std::string::npos) {return kRejectedParticleTrackThetaAngle;}
+  if (KinematicParameterStr.find("RejectedParticleRatioRadCurvature") != std::string::npos) {return kRejectedParticleRatioRadCurvature;}
 
   return kNKinematicParams; 
 }
@@ -240,6 +248,10 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kSigmaMom) {return "SigmaMom";}
   if (KinematicParameter == kHighestpTParticleTransverseMomentum) {return "HighestpTParticleTransverseMomentum";}
   if (KinematicParameter == kHighestpTParticleThetaAngle) {return "HighestpTParticleThetaAngle";}
+  if (KinematicParameter == kHighestpTLengthTrackX) {return "HighestpTLengthTrackX";}
+  if (KinematicParameter == kHighestpTLengthTrackYZ) {return "HighestpTLengthTrackYZ";}
+  if (KinematicParameter == kRejectedParticleTrackThetaAngle) {return "RejectedParticleTrackThetaAngle";}
+  if (KinematicParameter == kRejectedParticleRatioRadCurvature) {return "RejectedParticleRatioRadCurvature";}
   return "NULL"; 
 }
 

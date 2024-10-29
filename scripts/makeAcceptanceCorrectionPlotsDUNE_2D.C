@@ -41,9 +41,9 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
    std::vector<std::string> x_axis;
    int histlistsize;
 
-   std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "TrueRad", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueRad", "HighestpTParticleTransverseMomentum", "HighestpTParticleThetaAngle"};
+//   std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "TrueRad", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueRad", "HighestpTParticleTransverseMomentum", "HighestpTParticleThetaAngle"};
 
-//   std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "TrueRad", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueRad", "HighestpTParticleTransverseMomentum", "HighestpTParticleThetaAngle", "RejectedParticleTransverseMomentum", "RejectedParticleMomentum", "RejectedParticleMomentum", "SigmaMom", "RejectedParticleThetaAngle", "SigmaTheta"};
+   std::vector<std::string> plotvariables = {"TrueQ3", "TrueQ0", "TrueNeutrinoEnergy", "HighestpTParticleTransverseMomentum", "MuonZAngle", "TrueLepEnergy", "TrueRad", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueRad", "HighestpTParticleTransverseMomentum", "HighestpTParticleThetaAngle", "RejectedParticleTransverseMomentum", "RejectedParticleMomentum", "RejectedParticleMomentum", "SigmaMom", "RejectedParticleThetaAngle", "SigmaTheta", "HighestpTLengthTrackX", "HighestpTLengthTrackYZ", "HighestpTParticleTransverseMomentum", "HighestpTLengthTrackYZ", "HighestpTParticleTransverseMomentum", "HighestpTLengthTrackX", "TrueXPos","HighestpTLengthTrackX", "TrueRad","HighestpTLengthTrackYZ", "RejectedParticleTrackThetaAngle", "RejectedParticleRatioRadCurvature"};
 
 //"TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "RejectedParticleMomentum", "RejectedParticleThetaAngle", "RejectedParticleRadCurvature", "RejectedParticleThetaAngle", "TrueRad", "TrueXPos", "RejectedParticleRadCurvature", "RejectedParticleTransverseMomentum", "RejectedParticleMomentum", "SigmaMom", "RejectedParticleThetaAngle", "SigmaTheta", "PDGNonAccepted", "RejectedParticleMomentum", "TrueRad", "RejectedParticleTransverseMomentum", "TrueXPos", "RejectedParticleMomentum", "RejectedParticleTransverseMomentum", "RejectedParticleThetaAngle"};
 
@@ -162,7 +162,10 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
    if(inputfilelist.size() == 1){
    for(int i_hists = 0; i_hists<histlistsize; i_hists++){
        std::string finalname = histnames[i_hists];
-       TH2D* histrebin = (TH2D*)(histlist[i_hists]->Rebin2D(1, 1, "histrebin"));
+       int rebinnum = 2;
+       if((std::string(histlist[i_hists]->GetName()).find("HighestpTLength") != std::string::npos)){rebinnum = 5;}
+
+       TH2D* histrebin = (TH2D*)(histlist[i_hists]->Rebin2D(rebinnum, rebinnum, "histrebin"));
        c0->cd(i_hists);
        histrebin->Draw("COLZ");
        std::cout<<"draw here"<<std::endl;
@@ -191,7 +194,7 @@ void makeAcceptanceCorrectionPlotsDUNE_2D(TString inputfile, TString inputfile2)
      }
      else{
        TH2D* histratios = (TH2D*)histlist[i_hists-plotvariables.size()]->Clone();
-       int rebinnum = 2;
+       int rebinnum = 4;
        if((std::string(histlist[i_hists-plotvariables.size()]->GetName()).find("TrueRad") != std::string::npos) || (std::string(histlist[i_hists-plotvariables.size()]->GetName()).find("TrueXPos") != std::string::npos)){rebinnum = 4;}
        TH2D* histdenom = (TH2D*)(histlist[i_hists-plotvariables.size()/2]->Rebin2D(rebinnum, rebinnum, "histrebin"));
        TH2D* histrebin = (TH2D*)(histratios->Rebin2D(rebinnum, rebinnum, "histrebin"));

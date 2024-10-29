@@ -136,6 +136,10 @@ struct dunendgarmc_base {
   double *rejectedpart_sigmatheta;
   double *highestpart_pT;
   double *highestpart_theta_angle;
+  double *highestpart_lengthtrackx;
+  double *highestpart_lengthtrackyz;
+  double *rejectedpart_track_theta_angle;
+  double *rejectedpart_ratioradcurvature;
 
   double *rw_reco_vtx_x;
   double *rw_reco_vtx_y;
