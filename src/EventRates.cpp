@@ -17,7 +17,7 @@
 void Write1DHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histograms) {
 
   // Now write out the saved hsitograms to file 
-  auto OutputFile = std::unique_ptr<TFile>(new TFile(OutFileName.c_str(), "RECREATE"));
+  auto OutputFile = std::unique_ptr<TFile>(TFile::Open(OutFileName.c_str(), "RECREATE"));
   OutputFile->cd();
   for(auto Hist : Histograms){
     Hist->Write();

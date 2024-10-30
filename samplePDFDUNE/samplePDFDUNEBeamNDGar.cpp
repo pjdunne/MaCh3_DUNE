@@ -63,7 +63,7 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("Input File: {}", mc_files.at(iSample));
   
-  _sampleFile = new TFile(mc_files.at(iSample).c_str(), "READ");
+  _sampleFile = TFile::Open(mc_files.at(iSample).c_str(), "READ");
   _data = (TTree*)_sampleFile->Get("cafTree");
 
   if(_data){
