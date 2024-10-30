@@ -87,7 +87,7 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   
   // Fixed xsec parameters loop
   if (XsecFixParams.size() == 1 && XsecFixParams.at(0) == "All") {
-    for (int j = 0; j < xsec->getSize(); j++) {
+    for (int j = 0; j < xsec->getNpars(); j++) {
       xsec->toggleFixParameter(j);
     }
   } else {
