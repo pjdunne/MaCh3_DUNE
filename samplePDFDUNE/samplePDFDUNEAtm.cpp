@@ -1,7 +1,7 @@
 #include "samplePDFDUNEAtm.h"
 
 //Standard Record includes
-#include "StandardRecord.h"
+#include "duneanaobj/StandardRecord/StandardRecord.h"
 
 //ROOT includes
 #include "TError.h"

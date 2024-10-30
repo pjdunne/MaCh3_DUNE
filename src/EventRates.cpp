@@ -16,7 +16,7 @@
 #include "samplePDFDUNE/StructsDUNE.h"
 
 void Write1DHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histograms) {
-  auto OutputFile = std::unique_ptr<TFile>(new TFile(OutFileName.c_str(), "RECREATE"));
+  auto OutputFile = std::unique_ptr<TFile>(TFile::Open(OutFileName.c_str(), "RECREATE"));
   OutputFile->cd();
   for(auto Hist : Histograms){
     Hist->Write();
