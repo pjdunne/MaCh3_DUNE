@@ -9,6 +9,8 @@ SET(MaCh3DUNE_VERSION 1.0.0)
 project(MaCh3DUNE VERSION ${MaCh3DUNE_VERSION} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+option(MaCh3_DUNE_USE_SRProxy "Whether to build proxy classes for Standard Record objects" OFF)
+
 # Changes default install path to be a subdirectory of the build dir.
 # Can set build dir at configure time with -DCMAKE_INSTALL_PREFIX=/install/path
 if(CMAKE_INSTALL_PREFIX STREQUAL "" OR CMAKE_INSTALL_PREFIX STREQUAL
@@ -51,19 +53,60 @@ endif()
 
 ############################  DUNEAnaObj  ####################################
 
-find_package(duneanaobj)
+if(MaCh3_DUNE_USE_SRProxy)
+  find_package(duneanaobj)
 
-if(NOT duneanaobj_FOUND)
-  CPMFindPackage(
+  if(NOT duneanaobj_FOUND)
+    CPMFindPackage(
+      NAME duneanaobj
+      GIT_TAG feature/Clingification_rebase2024
+      GITHUB_REPOSITORY luketpickering/duneanaobj
+      VERSION 4.0.0
+    )
+  endif()
+
+  if(NOT TARGET duneanaobj::all)
+    cmessage(FATAL_ERROR "MaCh3 DUNE Expected dependency target: duneanaobj::all")
+  endif()
+else()
+  CPMAddPackage(
     NAME duneanaobj
-    GIT_TAG feature/Clingification_rebase2024
-    GITHUB_REPOSITORY luketpickering/duneanaobj
-    VERSION 4.0.0
+    GIT_TAG v03_06_00
+    GITHUB_REPOSITORY "DUNE/duneanaobj"
+    DOWNLOAD_ONLY YES
   )
-endif()
 
-if(NOT TARGET duneanaobj::all)
-  cmessage(FATAL_ERROR "MaCh3 DUNE Expected dependency target: duneanaobj::all")
+  include_directories(${duneanaobj_SOURCE_DIR})
+
+  ROOT_GENERATE_DICTIONARY(StandardRecordDict ${duneanaobj_SOURCE_DIR}/duneanaobj/StandardRecord/StandardRecord.h
+    LINKDEF ${duneanaobj_SOURCE_DIR}/duneanaobj/StandardRecord/classes_def.xml)
+
+  file(GLOB SR_IMPL_FILES "${duneanaobj_SOURCE_DIR}/duneanaobj/StandardRecord/*.cxx")
+  LIST(APPEND SR_IMPL_FILES ${CMAKE_CURRENT_BINARY_DIR}/StandardRecordDict.cxx)
+
+  add_library(duneanaobj_StandardRecord SHARED ${SR_IMPL_FILES})
+  target_link_libraries(duneanaobj_StandardRecord PUBLIC ROOT::MathCore)
+
+  target_include_directories(duneanaobj_StandardRecord PUBLIC 
+    $<BUILD_INTERFACE:${duneanaobj_SOURCE_DIR}> 
+    $<INSTALL_INTERFACE:include>)
+  target_include_directories(duneanaobj_StandardRecord PRIVATE 
+    $<BUILD_INTERFACE:${duneanaobj_SOURCE_DIR}/duneanaobj/StandardRecord> #root puts this in the dictionary
+    )
+  
+  set_target_properties(duneanaobj_StandardRecord PROPERTIES EXPORT_NAME all)
+  install(TARGETS duneanaobj_StandardRecord EXPORT mach3dune-targets DESTINATION lib)
+  
+  file(GLOB SR_HEADER_FILES "${duneanaobj_SOURCE_DIR}/duneanaobj/StandardRecord/*.h")
+
+  install(FILES ${SR_HEADER_FILES} DESTINATION include/duneanaobj/StandardRecord)
+  install(FILES 
+      ${CMAKE_CURRENT_BINARY_DIR}/libStandardRecordDict_rdict.pcm 
+      ${CMAKE_CURRENT_BINARY_DIR}/libStandardRecordDict.rootmap 
+    DESTINATION lib)
+
+  add_library(duneanaobj::all ALIAS duneanaobj_StandardRecord)
+
 endif()
 
 ##################################  MaCh3  ######################################
