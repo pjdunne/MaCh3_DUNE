@@ -306,6 +306,7 @@ public:
   double excitationenergy = 188.0; //excitation energy for electrons in argon gas in eV
   double density = 0.0167; //in g/cm^3
 
+  double X0 = 1193; //in cm From Federico's Kalman Filter Paper
 //  double density = -0.00615*294.26 + 1.928; //in g/cm^3
   //covarianceFlux *flux;
   //covarianceSkDet_joint *skdet_joint;

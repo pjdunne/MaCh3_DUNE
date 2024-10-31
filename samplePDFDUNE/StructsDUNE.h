@@ -104,6 +104,7 @@ enum KinematicTypes {
   kHighestpTLengthTrackYZ = 65,
   kRejectedParticleTrackThetaAngle = 66,
   kRejectedParticleRatioRadCurvature = 67,
+  kTrueSquaredRad = 68,
 
   kNKinematicParams
 };
@@ -178,6 +179,7 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("HighestpTLengthTrackYZ") != std::string::npos) {return kHighestpTLengthTrackYZ;}
   if (KinematicParameterStr.find("RejectedParticleTrackThetaAngle") != std::string::npos) {return kRejectedParticleTrackThetaAngle;}
   if (KinematicParameterStr.find("RejectedParticleRatioRadCurvature") != std::string::npos) {return kRejectedParticleRatioRadCurvature;}
+  if (KinematicParameterStr.find("TrueSquaredRad") != std::string::npos) {return kTrueSquaredRad;}
 
   return kNKinematicParams; 
 }
@@ -192,7 +194,7 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kTrueXPos) {return "TrueXPos";}
   if (KinematicParameter == kTrueYPos) {return "TrueYPos";}
   if (KinematicParameter == kTrueZPos) {return "TrueZPos";}
-  if (KinematicParameter == kTrueRad) {return "TrueRad";} 
+  if (KinematicParameter == kTrueRad) {return "TrueRad";}
   if (KinematicParameter == kPionMultiplicity) {return "PionMultiplicity";}
   if (KinematicParameter == kNRecoParticles) {return "NRecoParticles";}
   if (KinematicParameter == kInFDV) {return "InFDV";}
@@ -252,6 +254,8 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kHighestpTLengthTrackYZ) {return "HighestpTLengthTrackYZ";}
   if (KinematicParameter == kRejectedParticleTrackThetaAngle) {return "RejectedParticleTrackThetaAngle";}
   if (KinematicParameter == kRejectedParticleRatioRadCurvature) {return "RejectedParticleRatioRadCurvature";}
+  if (KinematicParameter == kTrueSquaredRad) {return "TrueSquaredRad";}
+
   return "NULL"; 
 }
 

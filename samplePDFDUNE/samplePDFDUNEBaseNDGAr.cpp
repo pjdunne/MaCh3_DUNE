@@ -743,35 +743,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                double helixlength = ((std::abs(length_track_x)/100)/pitch)*pow((pow(M_PI*2*rad_curvature, 2) + pow(pitch, 2)), 0.5); //L = height/pitch*sqrt((pi*diameter)**2 + pitch**2)
 //               double arclength = rad_curvature*2*asin((L_tot*100)/2*rad_curvature); //r*theta in m
                double tan_theta = tan(theta_xT);
-               //Calculate dE/dX for this particle. This calculation is taken from garsoft/DetectorInfo/DetectorPropertiesStandard.cxx
-               //First Calculate required kinematic quantities
-               double p_mag = sr->mc.nu[0].prim[i_truepart].p.px/sr->mc.nu[0].prim[i_truepart].p.Mag();
-               double bg = p_mag/pdgmass; //beta*gamma
-               double gamma = pow((1+bg*bg), 0.5); //gamma
-               double beta = bg/gamma; //beta (velocity)
-               double mer = m_e/pdgmass; //electron mass/mass of particle
-               double tmax = 2.*1000*m_e* bg*bg / (1. + 2.*gamma*mer + mer*mer);  // Maximum delta ray energy (MeV).
-               //Assume tcut = tmax
-               double tcut = tmax;
-               //Find density effect correction (delta). Sternheimer values set in header file
-               double log_bg = std::log10(bg);
-               double delta = 0;
-               if( log_bg >= sternheimer_X0){
-                 delta = 2. * std::log(10.)*log_bg - sternheimer_Cbar;
-                   if(log_bg < sternheimer_X1){
-                     delta += sternheimer_A * std::pow(sternheimer_X1 - log_bg, sternheimer_K);
-                   }
-                }
-               
-               //Calculate Stopping number, B
-               double B = 0.5 * std::log(2.*1000*m_e*bg*bg*tcut / (1.e-12 * pow(excitationenergy, 0.5)))- 0.5*beta*beta*(1. + tcut / tmax) - 0.5*delta;
-               if(B<1.){B=1.;} //Don't let B become negative
 
-               //Calculate dE/dX 
-               double dedx = density*K_const*18*B / (39.981 * beta*beta); //18 is atmic number and 39.981 is atomic mass in g/mol
-               
-               //Calculate energy loss over this length in GeV
-               double E_loss = dedx*helixlength*pow(10, -3);
                //Estimate number of hits
 //               double N_hits = std::abs((E_loss*3.788*pow(10,7))/(average_gain)); //5 electrons per ADC and 3.788e7 electrons produced per GeV
 //               std::cout<<"n hits: "<<N_hits<<std::endl;
@@ -842,7 +814,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //                 L_chord = pow((pow(_MCPStartY->at(i_anapart)-y_intersect_chosen, 2)+pow(_MCPStartZ->at(i_anapart)-z_intersect_chosen, 2)), 0.5);
                  L_yz = rad_curvature*100*theta_chosen;
                  L_yz_chord = std::abs(2*rad_curvature*100*sin(theta_chosen/2));
-                 std::cout<<"L_yz: "<<L_yz<<" theta_chosen: "<<theta_chosen<<std::endl;
+//                 std::cout<<"L_yz: "<<L_yz<<" theta_chosen: "<<theta_chosen<<std::endl;
                  if(std::abs(L_yz*tan_theta) > std::abs(length_track_x)){
                    double nturns = std::abs(length_track_x/100)/pitch;
                    double theta_intersect = fmod(nturns, 1)*2*M_PI;
@@ -915,28 +887,69 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //               std::cout<<"_MCPEndY->at(i_anapart)-TPC_centre_y: "<<_MCPEndY->at(i_anapart)-TPC_centre_y<<" _MCPEndZ->at(i_anapart)-TPC_centre_z: "<<_MCPEndZ->at(i_anapart)-TPC_centre_z<<" _MCPEndX->at(i_anapart)-TPC_centre_X: "<<_MCPEndX->at(i_anapart)-TPC_centre_x<<std::endl;
                //double N_hits = arclength*1000/hits_per_mm;
 //               double N_yz = (pow((pow(length_track_y, 2)+pow(length_track_z, 2)), 0.5))
+
+               //Calculate dE/dX for this particle. This calculation is taken from garsoft/DetectorInfo/DetectorPropertiesStandard.cxx
+               //First Calculate required kinematic quantities
+//               double p_mag = sr->mc.nu[0].prim[i_truepart].p.px/sr->mc.nu[0].prim[i_truepart].p.Mag();
+               double p_mag = sr->mc.nu[0].prim[i_truepart].p.Mag();
+               double bg = p_mag/pdgmass; //beta*gamma
+               double gamma = pow((1+bg*bg), 0.5); //gamma
+               double beta = bg/gamma; //beta (velocity)
+               double mer = m_e/pdgmass; //electron mass/mass of particle
+               double tmax = 2.*1000*m_e* bg*bg / (1. + 2.*gamma*mer + mer*mer);  // Maximum delta ray energy (MeV).
+               //Assume tcut = tmax
+               double tcut = tmax;
+               //Find density effect correction (delta). Sternheimer values set in header file
+               double log_bg = std::log10(bg);
+               double delta = 0;
+               if( log_bg >= sternheimer_X0){
+                 delta = 2. * std::log(10.)*log_bg - sternheimer_Cbar;
+                   if(log_bg < sternheimer_X1){
+                     delta += sternheimer_A * std::pow(sternheimer_X1 - log_bg, sternheimer_K);
+                   }
+                }
+               
+               //Calculate Stopping number, B
+               double B = 0.5 * std::log(2.*1000*m_e*bg*bg*tcut / (1.e-12 * pow(excitationenergy, 0.5)))- 0.5*beta*beta*(1. + tcut / tmax) - 0.5*delta;
+               if(B<1.){B=1.;} //Don't let B become negative
+
+               //Calculate dE/dX 
+               double dedx = density*K_const*18*B / (39.981 * beta*beta); //18 is atomic number and 39.981 is atomic mass in g/mol
+               
+               //Calculate energy loss over this length in GeV
+               double E_loss = dedx*helixlength*pow(10, -3);
+
+               double KE_end = sr->mc.nu[0].prim[i_truepart].p.E - pdgmass - E_loss;
+               double p_mag_end = pow(pow(KE_end+pdgmass, 2)-pow(pdgmass, 2), 0.5);
+               double bg_end = p_mag_end/pdgmass;
+               double gamma_end = pow((1+bg_end*bg_end), 0.5);
+               double beta_end = bg_end/gamma_end;
+               double avg_betapT = (1/(beta_end*p_mag_end*cos(theta_xT)) + 1/(beta*transverse_mom))*0.5;
                double sigmax = (drift_velocity/100)*(1/(adc_sampling_frequency));
-               double sigmayz = pixel_spacing/(1000); //needs to be in m              
+               double sigmayz = (2.5/6)*(pixel_spacing/(1000)); //needs to be in m              
 //               double momres_x = std::abs(sr->mc.nu[0].prim[i_truepart].p.px)*(pow(720/(N_hits+4), 0.5)*(sigmax*std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/(0.3*B_field*pow(length_track_x/100, 2))));
                double momres_yz = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz_chord/100, 2)))*pow((1-(1/21)*pow((L_yz_chord/(rad_curvature*100)), 2)), 0.5));
+               double momres_ms = transverse_mom*avg_betapT*(0.016/(0.3*B_field*(L_yz/100)*cos(theta_xT)))*pow(L_yz/X0, 0.5);
+//               double momres_ms = 0;
+               double momres_tottransverse = pow(pow(momres_yz, 2) + pow(momres_ms, 2), 0.5);
                double momres_yz_old = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz/100, 2))));
-               double sigma_theta = (pow(cos(theta_xT), 2))*(pitch/(2*M_PI*rad_curvature))*pow((pow(sigmax/(std::abs(length_track_x)/100),2) +pow(momres_yz/transverse_mom, 2)), 0.5);
+               double sigma_theta = (pow(cos(theta_xT), 2))*(pitch/(2*M_PI*rad_curvature))*pow((pow(sigmax/(std::abs(length_track_x)/100),2) +pow(momres_tottransverse/transverse_mom, 2)), 0.5);
 //               double sigma_theta = (pow(tan_theta, 3))*(sigmax/(length_track_x/100) - momres_yz/transverse_mom);
 //               double sigma_theta = (sigmax/pitch)*(pow(tan_theta, 2)-pow(tan_theta, 4)) - (2*M_PI*pow(rad_curvature,2)*pow(tan_theta, 4)/pow(pitch, 2))*momres_yz/transverse_mom;
 //               double momres_tot = (std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_x + (transverse_mom/sr->mc.nu[0].prim[i_truepart].p.Mag())*momres_yz;
 //               double momres_frac = momres_tot/sr->mc.nu[0].prim[i_truepart].p.Mag();
-               double momres_frac = pow(pow((momres_yz/transverse_mom), 2)+pow(sigma_theta*tan_theta, 2), 0.5);
+               double momres_frac = pow(pow((momres_tottransverse/transverse_mom), 2)+pow(sigma_theta*tan_theta, 2), 0.5);
                if(momres_frac > momentum_resolution_threshold){
 //                 if(std::abs(length_track_x/100)<0.20){
-                 std::cout<<" momres_yz: "<<momres_yz<<" momres_yz_old: "<<momres_yz_old<<" transverse mom: "<<transverse_mom<<" rad_curvature: "<<rad_curvature<<std::endl;
-                 std::cout<<"N_hits: "<<N_hits<<"num_intersections: "<<num_intersections<<std::endl;
-                 std::cout<<"theta chosen: "<<(180/M_PI)*theta_chosen<<" L_yz: "<<L_yz<<" L_yz_chord: "<<L_yz_chord<<" L_yz_old: "<<L_yz_old<<" length_track_x: "<<length_track_x<<std::endl;
-                 std::cout<<"start pos x: "<<_MCPStartX->at(i_anapart)<<" end pos x: "<<_MCPEndX->at(i_anapart)<<std::endl;
-                 std::cout<<" start rad: "<<pow((pow((double)(_MCPStartY->at(i_anapart))+150, 2)+pow((double)(_MCPStartZ->at(i_anapart))-1486, 2)), 0.5)<<" end rad: "<< pow((pow((double)(_MCPEndY->at(i_anapart))+150, 2)+pow((double)(_MCPEndZ->at(i_anapart))-1486, 2)), 0.5)<<std::endl;
+                 std::cout<<"momres_frac: "<<momres_frac<<" momres_yz: "<<momres_yz<<"momres_ms: "<<momres_ms<<"momres_tottransverse: "<<momres_tottransverse<<" sigma_theta: "<<sigma_theta<<" tan_theta: "<<tan_theta<<" momres_yz_old: "<<momres_yz_old<<" transverse mom: "<<transverse_mom<<" rad_curvature: "<<rad_curvature<<std::endl;
+//                 std::cout<<"N_hits: "<<N_hits<<"num_intersections: "<<num_intersections<<std::endl;
+//                 std::cout<<"theta chosen: "<<(180/M_PI)*theta_chosen<<" L_yz: "<<L_yz<<" L_yz_chord: "<<L_yz_chord<<" L_yz_old: "<<L_yz_old<<" length_track_x: "<<length_track_x<<std::endl;
+//                 std::cout<<"start pos x: "<<_MCPStartX->at(i_anapart)<<" end pos x: "<<_MCPEndX->at(i_anapart)<<std::endl;
+//                 std::cout<<" start rad: "<<pow((pow((double)(_MCPStartY->at(i_anapart))+150, 2)+pow((double)(_MCPStartZ->at(i_anapart))-1486, 2)), 0.5)<<" end rad: "<< pow((pow((double)(_MCPEndY->at(i_anapart))+150, 2)+pow((double)(_MCPEndZ->at(i_anapart))-1486, 2)), 0.5)<<std::endl;
              
 //                 std::cout<<"momres_frac: "<<momres_frac<<" momres_tot: "<<momres_tot<<" total momentum: "<<sr->mc.nu[0].prim[i_truepart].p.Mag()<<std::endl;
-                 std::cout<<"theta_xT: "<<theta_xT<<" parallel mom: "<<_MCPStartPX->at(i_anapart)<<" sigma_theta: "<<sigma_theta<<" momres_yz: "<<momres_yz<<" transverse mom: "<<transverse_mom<<" rad_curvature: "<<rad_curvature<<std::endl;
-                 std::cout<<"momres_frac: "<<momres_frac<<" total momentum: "<<sr->mc.nu[0].prim[i_truepart].p.Mag()<<std::endl;
+//                 std::cout<<"theta_xT: "<<theta_xT<<" parallel mom: "<<_MCPStartPX->at(i_anapart)<<" sigma_theta: "<<sigma_theta<<" momres_yz: "<<momres_yz<<" transverse mom: "<<transverse_mom<<" rad_curvature: "<<rad_curvature<<std::endl;
+//                 std::cout<<"momres_frac: "<<momres_frac<<" total momentum: "<<sr->mc.nu[0].prim[i_truepart].p.Mag()<<std::endl;
 //                 std::cout<<"theta chosen: "<<(180/M_PI)*theta_chosen<<" L_yz: "<<L_yz<<" L_yz_old: "<<L_yz_old<<std::endl;
 //                 }
                 if(L_yz/(rad_curvature*100)<0.3){L_R_ratio++;}
@@ -1010,8 +1023,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
        }
        if(isnotaccepted > 0){duneobj->is_accepted[i] = 0;}
        else{duneobj->is_accepted[i] = 1;}
-       if(nparticlesmatched!= ntrueparticles){std::cout<<" nparticlesmatched: "<<nparticlesmatched<<" ntrueparticles: "<<ntrueparticles<<std::endl;}
-       if(nparticleswithnonzeropT==0){std::cout<<"nparticleswithnonzeropT: "<<nparticleswithnonzeropT<<" nparticlesmatched: "<<nparticlesmatched<<" ntrueparticles: "<<ntrueparticles<<std::endl;}
+//       if(nparticlesmatched!= ntrueparticles){std::cout<<" nparticlesmatched: "<<nparticlesmatched<<" ntrueparticles: "<<ntrueparticles<<std::endl;}
+//       if(nparticleswithnonzeropT==0){std::cout<<"nparticleswithnonzeropT: "<<nparticleswithnonzeropT<<" nparticlesmatched: "<<nparticlesmatched<<" ntrueparticles: "<<ntrueparticles<<std::endl;}
 //       std::cout<<"1st Secondary start pos x: "<<(double)(sr->mc.nu[0].sec[0].start_pos.X())<<" end pos x: "<<(double)(sr->mc.nu[0].sec[0].end_pos.X())<<std::endl;
 //     }
 /*
@@ -1318,6 +1331,9 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
    case kRejectedParticleRatioRadCurvature:
          KinematicValue = dunendgarmcSamples[iSample].rejectedpart_ratioradcurvature[iEvent];
          break;
+   case kTrueSquaredRad:
+         KinematicValue = pow(dunendgarmcSamples[iSample].rw_rad[iEvent], 2);
+         break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
 	 throw;
@@ -1581,6 +1597,11 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
     case kTrueRad:
     case kRecoRad:
         for(double ibins =0; ibins<300; ibins = ibins+5){
+           binningVector.push_back(ibins);
+        }
+        break;
+    case kTrueSquaredRad:
+        for(double ibins =0; ibins<270*270; ibins=ibins+100){
            binningVector.push_back(ibins);
         }
         break;
