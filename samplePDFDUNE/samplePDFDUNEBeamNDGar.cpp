@@ -240,7 +240,7 @@ int samplePDFDUNEBeamNDGar::setupExperimentMC(int iSample) {
     _isCC = (int)(sr->mc.nu[0].iscc);
     
     int mode= TMath::Abs(_mode);       
-    duneobj->mode[i]=GENIEMode_ToMaCh3Mode(mode, _isCC);
+    duneobj->mode[i]=(double)GENIEMode_ToMaCh3Mode(mode, _isCC);
     
     duneobj->flux_w[i] = 1.0;
   }

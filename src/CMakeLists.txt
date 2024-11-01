@@ -3,7 +3,11 @@ add_custom_target(MaCh3DUNEApps)
 foreach(app
 	EventRates
 	Fit
-)
+	Projections
+	SigmaVariation
+	LikelihoodScan
+      )
+      
     add_executable(${app} ${app}.cpp)
     target_link_libraries(${app} MaCh3DUNE::All Minuit)
 
