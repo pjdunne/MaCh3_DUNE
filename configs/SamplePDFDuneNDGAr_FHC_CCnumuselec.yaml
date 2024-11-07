@@ -22,18 +22,21 @@ SelectionCuts:
     - KinematicStr: "InFDV"
       Bounds: [1.0, 2.0]
     - KinematicStr: "IsAccepted"
-      Bounds: [0.0, 2.0]
+      Bounds: [1.0, 2.0]
     - KinematicStr: "IsCC"
       Bounds: [1.0, 2.0]
+    - KinematicStr: "TrueNeutrinoEnergy"
+      Bounds: [1.0, 5.0]
 #    - KinematicStr: "HighestpTParticleTransverseMomentum"
-#      Bounds: [0.0, 0.04]
-
+#      Bounds: [0.0, 0.2]
+#    - KinematicStr: "RejectedParticleTrackThetaAngle"
+#      Bounds: [37.0, 360.0]
 #    - KinematicStr: "PDGNonAccepted"
 #      Bounds: [2212, 2213]
-    - KinematicStr: "TrueRad"
-      Bounds: [0.0, 200.0]
-    - KinematicStr: "TrueXPos"
-      Bounds: [-190.0, 190.0]
+#    - KinematicStr: "TrueRad"
+#      Bounds: [0.0, 190.0]
+#    - KinematicStr: "TrueXPos"
+#      Bounds: [-190.0, 190.0]
 #    - KinematicStr: "NTruePrimMuons"
 #      Bounds: [1.0, 2.0]
 #    - KinematicStr: "RecoRad"
@@ -88,8 +91,15 @@ SampleCuts:
   pixel_spacing: 6.0
   adc_sampling_frequency: 20.0
   drift_velocity: 3.011
+#  TPCFidLength: 259.0
+#  TPCFidRadius: 249.45 
   TPCFidLength: 209.0
-  TPCFidRadius: 227.02 
+  TPCFidRadius: 160.0 
+#  TPCFidRadius: 180.0 
+#  TPCFidRadius: 227.02 
+#  TPCFidRadius: 200.0 
+  TPCInstrumentedLength: 259.0
+  TPCInstrumentedRadius: 249.45 
   gamma_reco_efficiency: 1.0
   pi0_reco_efficiency: 1.0
 #  average_gain: 500

@@ -85,6 +85,9 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
 
   TPCFidLength = SampleManager->raw()["SampleCuts"]["TPCFidLength"].as<double>();
   TPCFidRadius = SampleManager->raw()["SampleCuts"]["TPCFidRadius"].as<double>();
+  TPCInstrumentedLength = SampleManager->raw()["SampleCuts"]["TPCInstrumentedLength"].as<double>();
+  TPCInstrumentedRadius = SampleManager->raw()["SampleCuts"]["TPCInstrumentedRadius"].as<double>();
+
 //  hits_per_mm = SampleManager->raw()["SampleCuts"]["hits_per_mm"].as<float>();
 
   //muonscore_threshold = 0.5;
@@ -479,7 +482,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   std::srand(std::time(NULL));
 
   float pixel_spacing_cm = pixel_spacing/10;
-  int numpixelrows = floor(TPCFidRadius*2/(pixel_spacing_cm)); //find number of pixels along y and z axis.
+  int numpixelrows = floor(TPCInstrumentedRadius*2/(pixel_spacing_cm)); //find number of pixels along y and z axis.
   float pixelymin, pixelymax, pixelzmin, pixelzmax, centre_yboundary, centre_zboundary;
   if(numpixelrows % 2 == 0){centre_yboundary = TPC_centre_y; centre_zboundary = TPC_centre_z;}
   if(numpixelrows % 2 == 1){centre_yboundary = TPC_centre_y-(pixel_spacing_cm/2); centre_zboundary = TPC_centre_z-(pixel_spacing_cm/2);}
@@ -719,13 +722,13 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //         std::cout<<"pdg: "<<sr->mc.nu[0].prim[i_truepart].pdg<<std::endl;
 //         std::cout<<"mag pos: "<<(double)(sr->mc.nu[0].prim[i_truepart].start_pos.Mag())<<" mag mom: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())<<std::endl;
 //         if(!std::isnan((double)(sr->mc.nu[0].prim[i_truepart].start_pos.X()))){hasstart++;}
-         if((std::abs(_MCPEndX->at(i_anapart))-TPC_centre_x)>TPCFidLength || pow((pow(_MCPEndY->at(i_anapart)-TPC_centre_y, 2)+pow(_MCPEndZ->at(i_anapart)-TPC_centre_z, 2)), 0.5)>TPCFidRadius){
+         if((std::abs(_MCPEndX->at(i_anapart))-TPC_centre_x)>TPCInstrumentedLength || pow((pow(_MCPEndY->at(i_anapart)-TPC_centre_y, 2)+pow(_MCPEndZ->at(i_anapart)-TPC_centre_z, 2)), 0.5)>TPCInstrumentedRadius){
            if((std::abs(_MCPStartX->at(i_anapart))-TPC_centre_x)<=TPCFidLength && start_radius<=TPCFidRadius){
              if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 13) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 211) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 2212) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 11) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 321)){
                double length_track_x;
-               if(std::abs(_MCPEndX->at(i_anapart)-TPC_centre_x)>TPCFidLength){
-                 if((_MCPEndX->at(i_anapart)-TPC_centre_x)>=0){ length_track_x = TPCFidLength - (_MCPStartX->at(i_anapart)-TPC_centre_x);} //in cm
-                 else{ length_track_x = -TPCFidLength - (_MCPStartX->at(i_anapart)-TPC_centre_x);} //in cm
+               if(std::abs(_MCPEndX->at(i_anapart)-TPC_centre_x)>TPCInstrumentedLength){
+                 if((_MCPEndX->at(i_anapart)-TPC_centre_x)>=0){ length_track_x = TPCInstrumentedLength - (_MCPStartX->at(i_anapart)-TPC_centre_x);} //in cm
+                 else{ length_track_x = -TPCInstrumentedLength - (_MCPStartX->at(i_anapart)-TPC_centre_x);} //in cm
                }
                else{length_track_x = _MCPEndX->at(i_anapart) - _MCPStartX->at(i_anapart);} //in cm
                double length_track_y = _MCPEndY->at(i_anapart)-_MCPStartY->at(i_anapart); //in cm
@@ -764,12 +767,12 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                   centre_circle_y = _MCPStartY->at(i_anapart) - (rad_curvature*100*_MCPStartPZ->at(i_anapart)/transverse_mom); //Note minus sign here as cross product gives F in direction of ( -pz j + py k)
                   centre_circle_z = _MCPStartZ->at(i_anapart) + (rad_curvature*100*_MCPStartPY->at(i_anapart)/transverse_mom);
                }
-               //Find Position where track leaves fiducial volume. Intersection of two circles.
+               //Find Position where track leaves TPC. Intersection of two circles.
                  float m_const = (TPC_centre_z - centre_circle_z)/(TPC_centre_y-centre_circle_y); //gradient of line between two intersection points
-                 float a_const = (pow(TPCFidRadius, 2)-pow(rad_curvature*100, 2) - (pow(TPC_centre_y, 2)-pow(centre_circle_y, 2))-(pow(TPC_centre_z, 2)-pow(centre_circle_z, 2)))/(2*(centre_circle_y-TPC_centre_y));
+                 float a_const = (pow(TPCInstrumentedRadius, 2)-pow(rad_curvature*100, 2) - (pow(TPC_centre_y, 2)-pow(centre_circle_y, 2))-(pow(TPC_centre_z, 2)-pow(centre_circle_z, 2)))/(2*(centre_circle_y-TPC_centre_y));
                  float quadraticformula_b = -(2*m_const*(a_const -TPC_centre_y)+2*TPC_centre_z);
                  float quadraticformula_a = pow(m_const, 2)+1;
-                 float quadraticformula_c = pow((a_const - TPC_centre_y), 2) +pow(TPC_centre_z, 2) - pow(TPCFidRadius,2);
+                 float quadraticformula_c = pow((a_const - TPC_centre_y), 2) +pow(TPC_centre_z, 2) - pow(TPCInstrumentedRadius,2);
 //                 std::cout<<"TPCFidRadius: "<<TPCFidRadius<<" rad_curvature*100: "<<rad_curvature*100<<" TPC_centre_y: "<<TPC_centre_y<<" centre_circle_y: "<<centre_circle_y<<" TPC_centre_z: "<<TPC_centre_z<<" centre_circle_z: "<<centre_circle_z<<std::endl;
 //                 std::cout<<"m_const: "<<m_const<<" a_const: "<<a_const<<" quadraticformula_b: "<<quadraticformula_b<<" quadraticformula_a: "<<quadraticformula_a<<" quadraticformula_c: "<<quadraticformula_c<<std::endl;
                  double z_intersect_1, y_intersect_1, z_intersect_2, y_intersect_2, z_intersect_chosen, y_intersect_chosen, theta_1, theta_2, theta_start, theta_chosen, theta_diff_1, theta_diff_2;
@@ -805,7 +808,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                    theta_diff_2 = (theta_2 > theta_start) ? (theta_2 - theta_start) : (2*M_PI - (theta_start - theta_2));
                 }
 //                std::cout<<"theta_start: "<<theta_start<<" theta_1: "<<theta_1<<" theta_diff_1: "<<theta_diff_1<<" theta_2: "<<theta_2<<"theta_diff_2: "<<theta_diff_2<<std::endl;
-                if(theta_diff_1<theta_diff_2 && (rad_curvature*100*theta_diff_1 > (TPCFidRadius-start_radius))){theta_chosen = theta_diff_1; y_intersect_chosen = y_intersect_1; z_intersect_chosen = z_intersect_1;}
+                if(theta_diff_1<theta_diff_2 && (rad_curvature*100*theta_diff_1 > (TPCInstrumentedRadius-start_radius))){theta_chosen = theta_diff_1; y_intersect_chosen = y_intersect_1; z_intersect_chosen = z_intersect_1;}
                 else{theta_chosen = theta_diff_2; y_intersect_chosen = y_intersect_2; z_intersect_chosen = z_intersect_2;}
 //                std::cout<<"Start Z: "<<_MCPStartZ->at(i_anapart)<<" Start Y: "<<_MCPStartY->at(i_anapart)<<std::endl;
 //                std::cout<<"z_intersect_1: "<<z_intersect_1<<" y_intersect_1: "<<y_intersect_1<<" z_intersect_2: "<<z_intersect_2<<" y_intersect_2: "<<y_intersect_2<<" z chosen: "<<z_intersect_chosen<<" y chosen: "<< y_intersect_chosen<<std::endl;
@@ -847,13 +850,13 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                  if(quadratic_ineq_y > 0){
 //                   std::cout<<"(centre_circle_z + pow(quadratic_ineq_y, 0.5): "<<(centre_circle_z + pow(quadratic_ineq_y, 0.5))<<" (centre_circle_z - pow(quadratic_ineq_y, 0.5): "<<(centre_circle_z + pow(quadratic_ineq_y, 0.5))<<std::endl;
 //                   std::cout<<"pixelzmin: "<<pixelzmin<<" pixelzmax: "<<pixelzmax<<std::endl;
-                   if((pow((pow((centre_circle_z + pow(quadratic_ineq_y, 0.5)-TPC_centre_z), 2) + pow((yboundarypositions[i_intersect]-TPC_centre_y), 2)), 0.5) <=TPCFidRadius) && (pixelzmin<(centre_circle_z + pow(quadratic_ineq_y, 0.5))<=pixelzmax)){ //check that the z coord is also on pixel plane
+                   if((pow((pow((centre_circle_z + pow(quadratic_ineq_y, 0.5)-TPC_centre_z), 2) + pow((yboundarypositions[i_intersect]-TPC_centre_y), 2)), 0.5) <=TPCInstrumentedRadius) && (pixelzmin<(centre_circle_z + pow(quadratic_ineq_y, 0.5))<=pixelzmax)){ //check that the z coord is also on pixel plane
                      num_intersections++;
                    if((double)(fmod((centre_circle_z + (float)(pow(quadratic_ineq_y, 0.5)) - pixelzmin), pixel_spacing_cm)) == 0){ // this is the case when a vertex is crossed so to avoid double counting pixels
                      num_vertices++;
                    }
                    }
-                   if((pow((pow((centre_circle_z - pow(quadratic_ineq_y, 0.5)-TPC_centre_z), 2) + pow((yboundarypositions[i_intersect]-TPC_centre_y), 2)), 0.5) <TPCFidRadius) && pixelzmin<(centre_circle_z - pow(quadratic_ineq_y, 0.5))<=pixelzmax){ //check that the z coord is also on pixel plane
+                   if((pow((pow((centre_circle_z - pow(quadratic_ineq_y, 0.5)-TPC_centre_z), 2) + pow((yboundarypositions[i_intersect]-TPC_centre_y), 2)), 0.5) <TPCInstrumentedRadius) && pixelzmin<(centre_circle_z - pow(quadratic_ineq_y, 0.5))<=pixelzmax){ //check that the z coord is also on pixel plane
                      num_intersections++;
                    if((double)(fmod((centre_circle_z - (float)(pow(quadratic_ineq_y, 0.5)) - pixelzmin), pixel_spacing_cm)) == 0){ // this is the case when a vertex is crossed so to avoid double counting pixels
                      num_vertices++;
@@ -869,10 +872,10 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
 //                 std::cout<<" quadratic_ineq_z: "<<quadratic_ineq_z<<std::endl;
                  if(quadratic_ineq_z > 0){
 //                   std::cout<<"(centre_circle_y + pow(quadratic_ineq_z, 0.5): "<<(centre_circle_y + pow(quadratic_ineq_z, 0.5))<<" (centre_circle_y - pow(quadratic_ineq_z, 0.5): "<<(centre_circle_y - pow(quadratic_ineq_z, 0.5))<<std::endl;
-                   if( (pow((pow((centre_circle_y + pow(quadratic_ineq_z, 0.5)-TPC_centre_y), 2) + pow((zboundarypositions[i_intersect]-TPC_centre_z), 2)), 0.5) <=TPCFidRadius) && pixelymin<(centre_circle_y + pow(quadratic_ineq_z, 0.5))<=pixelymax){ //check that the z coord is also on pixel plane
+                   if( (pow((pow((centre_circle_y + pow(quadratic_ineq_z, 0.5)-TPC_centre_y), 2) + pow((zboundarypositions[i_intersect]-TPC_centre_z), 2)), 0.5) <=TPCInstrumentedRadius) && pixelymin<(centre_circle_y + pow(quadratic_ineq_z, 0.5))<=pixelymax){ //check that the z coord is also on pixel plane
                      num_intersections++;
                    }
-                   if((pow((pow((centre_circle_y - pow(quadratic_ineq_z, 0.5)-TPC_centre_y), 2) + pow((zboundarypositions[i_intersect]-TPC_centre_z), 2)), 0.5) <=TPCFidRadius) && pixelymin<(centre_circle_y - pow(quadratic_ineq_z, 0.5))<=pixelymax){ //check that the z coord is also on pixel plane
+                   if((pow((pow((centre_circle_y - pow(quadratic_ineq_z, 0.5)-TPC_centre_y), 2) + pow((zboundarypositions[i_intersect]-TPC_centre_z), 2)), 0.5) <=TPCInstrumentedRadius) && pixelymin<(centre_circle_y - pow(quadratic_ineq_z, 0.5))<=pixelymax){ //check that the z coord is also on pixel plane
                      num_intersections++;
                    }
                    // already checked all vertices for duplicates before so no need to repeat that
@@ -925,11 +928,13 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                double gamma_end = pow((1+bg_end*bg_end), 0.5);
                double beta_end = bg_end/gamma_end;
                double avg_betapT = (1/(beta_end*p_mag_end*cos(theta_xT)) + 1/(beta*transverse_mom))*0.5;
+//               std::cout<<"beta start: "<<beta<<" beta_end: "<<beta_end<<" pT_start: "<<transverse_mom<<" pT_end: "<<p_mag_end*cos(theta_xT)<<std::endl;
                double sigmax = (drift_velocity/100)*(1/(adc_sampling_frequency));
                double sigmayz = (2.5/6)*(pixel_spacing/(1000)); //needs to be in m              
 //               double momres_x = std::abs(sr->mc.nu[0].prim[i_truepart].p.px)*(pow(720/(N_hits+4), 0.5)*(sigmax*std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/(0.3*B_field*pow(length_track_x/100, 2))));
                double momres_yz = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz_chord/100, 2)))*pow((1-(1/21)*pow((L_yz_chord/(rad_curvature*100)), 2)), 0.5));
-               double momres_ms = transverse_mom*avg_betapT*(0.016/(0.3*B_field*(L_yz/100)*cos(theta_xT)))*pow(L_yz/X0, 0.5);
+               double momres_ms = transverse_mom*(0.016/(0.3*B_field*(L_yz/100)*cos(theta_xT)*beta))*pow(L_yz/X0, 0.5);
+//               double momres_ms = transverse_mom*avg_betapT*(0.016/(0.3*B_field*(L_yz/100)*cos(theta_xT)))*pow(L_yz/X0, 0.5);
 //               double momres_ms = 0;
                double momres_tottransverse = pow(pow(momres_yz, 2) + pow(momres_ms, 2), 0.5);
                double momres_yz_old = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz/100, 2))));
@@ -941,7 +946,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                double momres_frac = pow(pow((momres_tottransverse/transverse_mom), 2)+pow(sigma_theta*tan_theta, 2), 0.5);
                if(momres_frac > momentum_resolution_threshold){
 //                 if(std::abs(length_track_x/100)<0.20){
-                 std::cout<<"momres_frac: "<<momres_frac<<" momres_yz: "<<momres_yz<<"momres_ms: "<<momres_ms<<"momres_tottransverse: "<<momres_tottransverse<<" sigma_theta: "<<sigma_theta<<" tan_theta: "<<tan_theta<<" momres_yz_old: "<<momres_yz_old<<" transverse mom: "<<transverse_mom<<" rad_curvature: "<<rad_curvature<<std::endl;
+                 std::cout<<"beta start: "<<beta<<std::endl;
+                 std::cout<<"momres_frac: "<<momres_frac<<" momres_yz: "<<momres_yz/transverse_mom<<"momres_ms: "<<momres_ms/transverse_mom<<"momres_tottransverse: "<<momres_tottransverse<<"sigmatheta*tantheta: "<<sigma_theta*tan_theta<<" sigma_theta: "<<sigma_theta<<" tan_theta: "<<tan_theta<<" momres_yz_old: "<<momres_yz_old<<" transverse mom: "<<transverse_mom<<" rad_curvature: "<<rad_curvature<<std::endl;
 //                 std::cout<<"N_hits: "<<N_hits<<"num_intersections: "<<num_intersections<<std::endl;
 //                 std::cout<<"theta chosen: "<<(180/M_PI)*theta_chosen<<" L_yz: "<<L_yz<<" L_yz_chord: "<<L_yz_chord<<" L_yz_old: "<<L_yz_old<<" length_track_x: "<<length_track_x<<std::endl;
 //                 std::cout<<"start pos x: "<<_MCPStartX->at(i_anapart)<<" end pos x: "<<_MCPEndX->at(i_anapart)<<std::endl;
@@ -1008,13 +1014,17 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                  duneobj->highestpart_theta_angle[i] = 90 - (180/M_PI)*tan(atan((_MCPStartPX->at(i_anapart)/(pow((pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2)), 0.5)))));
                  duneobj->highestpart_pT[i] = pow(pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2)+pow(_MCPStartPX->at(i_anapart), 2), 0.5);
 
-                 std::cout<<"pdg not accepted: "<<duneobj->pdg_nonaccepted[i]<<std::endl;
+//                 std::cout<<"pdg not accepted: "<<duneobj->pdg_nonaccepted[i]<<std::endl;
 //                 std::cout<<"cosine angle: "<<duneobj->rejectedpart_theta_angle[i]<<" angle to B field: "<< M_PI/2 - tan(atan((_MCPStartPX->at(i_anapart)/(pow((pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2)), 0.5)))))<<" dip angle: "<<(180/M_PI)*tan(atan((_MCPStartPX->at(i_anapart)/(pow((pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2)), 0.5)))))<<std::endl;
                  break;
                  }
                }
              }
-             else{std::cout<<"position not in fdv"<<std::endl; isnotaccepted++; notaccepted_pos++; duneobj->pdg_nonaccepted[i] = sr->mc.nu[0].prim[i_truepart].pdg; break;}
+             else{
+//               std::cout<<"position not in fdv"<<std::endl;
+               isnotaccepted++; notaccepted_pos++; duneobj->pdg_nonaccepted[i] = sr->mc.nu[0].prim[i_truepart].pdg;
+               break;
+             }
            }
            }
            break;
@@ -1590,7 +1600,7 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
          break;
     case kHighestpTLengthTrackX:
     case kHighestpTLengthTrackYZ:
-        for(double ibins =0; ibins<2*50; ibins++){
+        for(double ibins =0; ibins<7*50; ibins++){
            binningVector.push_back(ibins/50);
         }
         break;
@@ -1601,7 +1611,7 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
         }
         break;
     case kTrueSquaredRad:
-        for(double ibins =0; ibins<270*270; ibins=ibins+100){
+        for(double ibins =0; ibins<TPCFidRadius*TPCFidRadius + 100; ibins=ibins+100){
            binningVector.push_back(ibins);
         }
         break;

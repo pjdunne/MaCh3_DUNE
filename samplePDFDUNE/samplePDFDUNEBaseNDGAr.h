@@ -293,6 +293,8 @@ public:
 
   double TPCFidLength;
   double TPCFidRadius;
+  double TPCInstrumentedLength;
+  double TPCInstrumentedRadius;
 
   double TPC_centre_x =0.;
   double TPC_centre_y = -150.;
