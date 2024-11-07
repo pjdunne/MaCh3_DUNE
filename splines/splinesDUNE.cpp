@@ -115,6 +115,7 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
           break;
         }
       }
+
 	  //Check if mode has been registered already
 	  if(ModeStatus[SystNum].count(Mode))
 	  {
@@ -159,6 +160,7 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
         // if the value is 1 then set the flat bool to false
         int nKnots = Spline->GetNp();
         bool isFlat = true;
+
         for (int iKnot = 0; iKnot < nKnots; iKnot++)
         {
           double x = -999;
@@ -180,9 +182,9 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
           }
         }
 
-        
         //Rather than keeping a mega vector of splines then converting, this should just keep everything nice in memory!
         indexvec[iSample][iOscChan][SystNum][ModeNum][Var1Bin][Var2Bin][Var3Bin]=MonolithIndex;
+
         coeffindexvec.push_back(CoeffIndex);
         // Should save memory rather saving [x_i_0 ,... x_i_maxknots] for every spline!
         if (isFlat)
@@ -204,7 +206,6 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
     std::cout << "Got " << nb_splines << " total splines with " << unique_spline_names.size() << " unique names." << std::endl;
     delete File;
   } //End of oscillation channel loop
-
 
   //Find all modes which have been found in the spline file but have not been specified in the config
   for (unsigned iSyst = 0; iSyst < SplineFileParPrefixNames[iSample].size(); iSyst++) 
