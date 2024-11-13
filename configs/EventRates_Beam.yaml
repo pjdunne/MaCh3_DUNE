@@ -1,6 +1,9 @@
 General:
-  OutputFile: "DuneEventRates.root"
-  DUNESamples: ["configs/Samples/SamplePDFDuneND_FHC_numuselec_everything.yaml"] 
+  OutputFile: "outputs/liban_stepsize/DuneEventRates_debug.root"
+  # DUNESamples: ["configs/Samples/SamplePDFDuneND_FHC_numuselec_everything.yaml"] 
+  # DUNESamples: ["configs/Samples/SamplePDFDuneND_RHC_numuselec_everything.yaml"] 
+  # DUNESamples: ["configs/Samples/SamplePDFDuneND_FHC_numuselec_everything.yaml", "configs/Samples/SamplePDFDuneND_RHC_numuselec_everything.yaml"] 
+  DUNESamples: ["configs/Samples/SamplePDFDuneND_FHC_numuselec.yaml"]
   #Nu-FIT
   #OscillationParameters: [0.310, 0.582, 0.224, 7.39E-5, 2.5254E-3, -2.498]
   # T2K-like best-fit
@@ -11,7 +14,9 @@ General:
   Systematics:
     XsecCovFile: ["configs/CovObjs/xsec_covariance_DUNE_systs_2022a_FD_v3_flux.yaml"]
     XsecCovName: "xsec_cov"
-    XsecStepScale: 0.1
+    XsecStepScale: 0.2
+    # Start with a large step scale for adaptive
+    # XsecStepScale: 1
     XsecAtGen: false 
     OscCovFile: ["configs/CovObjs/OscCov_PDG2021_v2_unoscillated.yaml"]
     OscCovName: "osc_cov"
@@ -19,11 +24,43 @@ General:
   Fitter:
     FitTestLikelihood: false
   MCMC:
-    NSteps: 2000
+    NSteps: 1000
     AutoSave: 10000
   Output:
     FileName: "TestEventRates.root"
     OUTPUTNAME: "TestLLH.root"
   ProcessMCMC: No
   Seed: 0
-  Debug: No
+  Debug: Yes
+
+# AdaptionOptions:
+#   Settings:
+#     # When do we start throwing from our adaptive matrix?
+#     AdaptionStartThrow : 2000
+#     # When do we start putting steps into our adaptive covariance?
+#     AdaptionStartUpdate : 0
+#     # When do we end updating our covariance?
+#     AdaptionEndUpdate : 50000
+#     # How often do we change our matrix throws?
+#     AdaptionUpdateStep : 1000
+#   Covariance:
+#     # So now we list individual matrices, let's just do xsec
+#     xsec_cov:
+#       # Do we want to adapt this matrix?
+#       DoAdaption: true
+#       # So we can separate out flux and xsec
+#       MatrixBlocks: [ ]
+#       # External Settings
+#       UseExternalMatrix: false
+#       ExternalMatrixFileName: ""
+#       ExternalMatrixName: ""
+#       ExternalMeansName: ""
+#     osc_cov:
+#       DoAdaption: false
+#       # So we can separate out flux and xsec
+#       MatrixBlocks: [  ]
+#       # External Settings
+#       UseExternalMatrix: false
+#       ExternalMatrixFileName: ""
+#       ExternalMatrixName: ""
+#       ExternalMeansName: ""

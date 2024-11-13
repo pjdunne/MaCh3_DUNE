@@ -77,6 +77,7 @@ int main(int argc, char * argv[]) {
       DUNE2DHists.push_back(Sample->get2DHist());
       }
     DUNEHists.push_back(Sample->get1DHist());
+    std::cout << "Sample LLH: " << Sample->GetName() << " has likelihood " << Sample->GetLikelihood() << std::endl;
     
     std::string EventRateString = fmt::format("{:.2f}", Sample->get1DHist()->Integral());
     MACH3LOG_INFO("Event rate for {} : {:<5}", Sample->GetName(), EventRateString);

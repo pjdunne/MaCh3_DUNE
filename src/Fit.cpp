@@ -54,6 +54,7 @@ int main(int argc, char * argv[]) {
     PredictionHistograms.push_back(SampleHistogram);
     
     DUNEPdfs[sample_i]->addData(PredictionHistograms[sample_i]);
+    std::cout << "Added data to " << name << "with llh " << DUNEPdfs[sample_i]->GetLikelihood() << std::endl;
   }
   
   //Now print out some event rates, we'll make a nice latex table at some point 
