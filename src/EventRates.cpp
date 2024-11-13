@@ -13,11 +13,10 @@
 #include <TMath.h>
 
 #include "samplePDFDUNE/MaCh3DUNEFactory.h"
+#include "samplePDFDUNE/StructsDUNE.h"
 
-void WriteHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histograms, std::vector<TH2D*> Histograms2D) {
-
-  // Now write out the saved hsitograms to file 
-  auto OutputFile = std::unique_ptr<TFile>(new TFile(OutFileName.c_str(), "RECREATE"));
+void Write1DHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histograms) {
+  auto OutputFile = std::unique_ptr<TFile>(TFile::Open(OutFileName.c_str(), "RECREATE"));
   OutputFile->cd();
   for(auto Hist : Histograms){
     Hist->Write();
@@ -26,16 +25,10 @@ void WriteHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histogram
     Hist->Write();
   }
   OutputFile->Close();
-
-  return;
 }
 
 
 void Write1DHistogramsToPdf(std::string OutFileName, std::vector<TH1D*> Histograms) {
-
-  // Now write out the saved hsitograms to file 
-
-
   //Remove root from end of file
   OutFileName.erase(OutFileName.find('.'));
   OutFileName+=".pdf";
@@ -45,11 +38,9 @@ void Write1DHistogramsToPdf(std::string OutFileName, std::vector<TH1D*> Histogra
   c1->Print(std::string(OutFileName+"[").c_str());
   for(auto Hist : Histograms){
     Hist->Draw("HIST");
-	c1->Print(OutFileName.c_str());
+    c1->Print(OutFileName.c_str());
   }
   c1->Print(std::string(OutFileName+"]").c_str());
-
-  return;
 }
 
 int main(int argc, char * argv[]) {
@@ -57,17 +48,19 @@ int main(int argc, char * argv[]) {
     MACH3LOG_ERROR("Usage: bin/EventRatesDUNEBeam config.cfg");
     return 1;
   }
-
   auto fitMan = std::unique_ptr<manager>(new manager(argv[1]));
 
-  covarianceXsec* xsec = nullptr;
-  covarianceOsc* osc = nullptr;
-
-  //####################################################################################
+  //###############################################################################################################################
   //Create samplePDFFD objects
   
+  covarianceXsec* xsec = nullptr;
+  covarianceOsc* osc = nullptr;
+  
   std::vector<samplePDFFDBase*> DUNEPdfs;
-  MakeMaCh3DuneInstance(fitMan.get(), DUNEPdfs, xsec, osc); 
+  MakeMaCh3DuneInstance(fitMan.get(), DUNEPdfs, xsec, osc);
+
+  //###############################################################################################################################
+  //Perform reweight and print total integral
 
   std::vector<TH1D*> DUNEHists;
   std::vector<TH2D*> DUNE2DHists;
@@ -84,7 +77,62 @@ int main(int argc, char * argv[]) {
   }
 
   std::string OutFileName = GetFromManager<std::string>(fitMan->raw()["General"]["OutputFile"], "EventRatesOutput.root");
-
-  WriteHistogramsToFile(OutFileName, DUNEHists, DUNE2DHists); 
+  Write1DHistogramsToFile(OutFileName, DUNEHists); 
   Write1DHistogramsToPdf(OutFileName, DUNEHists);
+
+  //###############################################################################################################################
+  //Make oscillation channel breakdown
+
+  MACH3LOG_INFO("========================================================================");
+  MACH3LOG_INFO("========================================================================");
+  MACH3LOG_INFO("Oscillation Mode Breakdown:");
+  
+  for(auto Sample : DUNEPdfs) {
+    MACH3LOG_INFO("======================");
+    int nOscChannels = Sample->getNMCSamples();
+    for (int iOscChan=0;iOscChan<nOscChannels;iOscChan++) {
+      std::vector< std::vector<double> > SelectionVec;
+
+      std::vector<double> SelecChannel(3);
+      SelecChannel[0] = Sample->ReturnKinematicParameterFromString("OscChannel");
+      SelecChannel[1] = iOscChan;
+      SelecChannel[2] = iOscChan+1;
+      SelectionVec.push_back(SelecChannel);
+      
+      TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
+      MACH3LOG_INFO("{:<20} : {:<20} : {:<20.2f}",Sample->GetName(),Sample->getFlavourName(iOscChan),Hist->Integral());
+    }
+
+    TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
+    MACH3LOG_INFO("{:<20} : {:<20.2f}",Sample->GetName(),Hist->Integral());
+  }
+
+  //###############################################################################################################################
+  //Make interaction channel breakdown
+
+  MACH3LOG_INFO("========================================================================");
+  MACH3LOG_INFO("========================================================================");
+  MACH3LOG_INFO("Interaction Mode Breakdown:");
+
+  for(auto Sample : DUNEPdfs) {
+    MACH3LOG_INFO("======================");
+    int nModeChannels = kMaCh3_nModes;
+    for (int iModeChan=0;iModeChan<nModeChannels;iModeChan++) {
+      std::vector< std::vector<double> > SelectionVec;
+
+      std::vector<double> SelecChannel(3);
+      SelecChannel[0] = Sample->ReturnKinematicParameterFromString("Mode");
+      SelecChannel[1] = iModeChan;
+      SelecChannel[2] = iModeChan+1;
+      SelectionVec.push_back(SelecChannel);
+
+      TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
+      MACH3LOG_INFO("{:<20} : {:<20} : {:<20.2f}",Sample->GetName(),MaCh3mode_ToDUNEString((MaCh3_Mode)iModeChan),Hist->Integral());
+    }
+
+    TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
+    MACH3LOG_INFO("{:<20} : {:<20.2f}",Sample->GetName(),Hist->Integral());
+  }
+
+  //###############################################################################################################################
 }

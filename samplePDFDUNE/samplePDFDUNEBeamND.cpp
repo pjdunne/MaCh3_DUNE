@@ -181,7 +181,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", mc_files.at(iSample));
   
-  _sampleFile = new TFile(mc_files.at(iSample).c_str(), "READ");
+  _sampleFile = TFile::Open(mc_files.at(iSample).c_str(), "READ");
   _data = (TTree*)_sampleFile->Get("caf");
 
   if(_data){
@@ -280,7 +280,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_ePi0 = new double[duneobj->nEvents];
   duneobj->rw_eN = new double[duneobj->nEvents];
 
-  duneobj->mode = new int[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
   _data->GetEntry(0);
@@ -318,7 +318,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     duneobj->Target[i] = 40;
     
     int mode= TMath::Abs(_mode);       
-    duneobj->mode[i]=GENIEMode_ToMaCh3Mode(mode, _isCC);
+    duneobj->mode[i]=(double)GENIEMode_ToMaCh3Mode(mode, _isCC);
     
     duneobj->flux_w[i] = 1.0;
   }

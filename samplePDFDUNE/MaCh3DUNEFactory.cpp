@@ -2,7 +2,7 @@
 
 #include "samplePDFDUNE/samplePDFDUNEBeamFD.h"
 #include "samplePDFDUNE/samplePDFDUNEBeamND.h"
-#include "samplePDFDUNE/samplePDFDUNEBeamNDGar.h"
+// #include "samplePDFDUNE/samplePDFDUNEBeamNDGar.h"
 #include "samplePDFDUNE/samplePDFDUNEAtm.h"
 
 samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string SampleConfig, covarianceXsec* &xsec) {
@@ -12,8 +12,8 @@ samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string Sample
     FDSample = new samplePDFDUNEBeamFD(SampleConfig, xsec);
   } else if (SampleType == "BeamND") {
     FDSample = new samplePDFDUNEBeamND(SampleConfig, xsec);
-  } else if (SampleType == "BeamNDGar") {
-    FDSample = new samplePDFDUNEBeamNDGar(SampleConfig, xsec);
+  // } else if (SampleType == "BeamNDGar") {
+  //   FDSample = new samplePDFDUNEBeamNDGar(SampleConfig, xsec);
   } else if (SampleType == "Atm") {
     FDSample = new samplePDFDUNEAtm(SampleConfig, xsec);
   } else {
@@ -87,7 +87,7 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   
   // Fixed xsec parameters loop
   if (XsecFixParams.size() == 1 && XsecFixParams.at(0) == "All") {
-    for (int j = 0; j < xsec->getSize(); j++) {
+    for (int j = 0; j < xsec->getNpars(); j++) {
       xsec->toggleFixParameter(j);
     }
   } else {
