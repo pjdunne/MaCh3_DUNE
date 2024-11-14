@@ -100,6 +100,13 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
   duneobj->rw_cvnnumu_shifted = new double[duneobj->nEvents];
   duneobj->rw_cvnnue_shifted = new double[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
+  duneobj->Target = new int[duneobj->nEvents];
+  duneobj->rw_isCC = new int[duneobj->nEvents];
+
+  duneobj->nutype = sample_nutype[iSample];
+  duneobj->oscnutype = sample_oscnutype[iSample];
+  duneobj->signal = sample_signal[iSample];
 
   // after allocation, set all event entries to a bad bad value
   std::fill_n(duneobj->rw_etru, duneobj->nEvents, -99999);
@@ -109,6 +116,9 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   std::fill_n(duneobj->rw_vtx_z, duneobj->nEvents, -99999);
   std::fill_n(duneobj->rw_cvnnumu_shifted, duneobj->nEvents, -99999);
   std::fill_n(duneobj->rw_cvnnue_shifted, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->mode, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->Target, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->rw_isCC, duneobj->nEvents, -99999);
 
   for (auto entryi : tree_rdr) {
 
@@ -117,6 +127,9 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
     }
 
     duneobj->rw_etru[entryi] = sr->mc.nu[0].E;
+    duneobj->mode[entryi] = sr->mc.nu[0].mode;
+    duneobj->Target[entryi] = (sr->mc.nu[0].targetPDG / 1000) % 1000;
+    duneobj->rw_isCC[entryi] = sr->mc.nu[0].iscc;
 
     if (sr->common.ixn.pandora.size() < 1) { // no reconstructed objects
       continue;

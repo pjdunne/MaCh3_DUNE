@@ -1,0 +1,33 @@
+SampleName: "FHC_numu"
+SampleType: "BeamFD"
+POT: 1.3628319e+23
+SelectionCuts:
+  - KinematicStr: "TrueXPos"
+    Bounds: [ -310.0, 310.0 ]
+  - KinematicStr: "TrueYPos"
+    Bounds: [ -550.0, 550.0 ]
+  - KinematicStr: "TrueZPos"
+    Bounds: [ 50.0, 1244.0 ]
+  - KinematicStr: "CVNNumu"
+    Bounds: [ 0.5, 999 ]
+Binning:
+  XVarStr : "RecoNeutrinoEnergy" 
+  XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
+InputFiles:
+  mtupleprefix: "inputs/DUNE_CAF_files/Prod24/VD/fardet-vd_mc_list-merge_physics_cafmaker_dunevd10kt_1x8x6_3view_30deg_runreco-nuenergy_geov3_root-tuple_merged_skip"
+  mtuplesuffix: ".root"
+  splineprefix: ""
+  splinesuffix: ""
+DetID: 24
+NuOsc:
+  NuOscConfigFile: "configs/NuOsc/CUDAProb3Linear.yaml"
+NSubSamples: 1
+SubSamples:
+  - name: "FHC_f0"
+    mtuplefile: "000000_lim000060_final_20241024T024241"
+    splinefile: ""
+    samplevecno: 0
+    nutype: 14
+    oscnutype: 14
+    signal: false
+

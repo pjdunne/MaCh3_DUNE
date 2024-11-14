@@ -71,7 +71,7 @@ if(MaCh3_DUNE_USE_SRProxy)
 else()
   CPMAddPackage(
     NAME duneanaobj
-    GIT_TAG v03_06_00
+    GIT_TAG v03_05_00
     GITHUB_REPOSITORY "DUNE/duneanaobj"
     DOWNLOAD_ONLY YES
   )
