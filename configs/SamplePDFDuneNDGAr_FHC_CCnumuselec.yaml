@@ -74,6 +74,7 @@ SampleBools:
   iselike: no
   iscalo_reco: yes
   incl_geant: yes
+  ecal_containment: no
 InputFiles:
   mtupleprefix: "inputs/DUNE_NDGAr_CAF_files/NDGAr_FHC_ger_"
   mtuplesuffix: "_numuselec.root"
@@ -87,10 +88,11 @@ SampleCuts:
   recovertexradius_threshold: 100.0
   pionenergy_threshold: 0
   B_field: 0.5
-  momentum_resolution_threshold: 0.05
+  momentum_resolution_threshold: 0.08
   pixel_spacing: 6.0
   adc_sampling_frequency: 20.0
   drift_velocity: 3.011
+  spatial_resolution: 1.0
 #  TPCFidLength: 259.0
 #  TPCFidRadius: 249.45 
   TPCFidLength: 209.0
@@ -100,6 +102,10 @@ SampleCuts:
 #  TPCFidRadius: 200.0 
   TPCInstrumentedLength: 259.0
   TPCInstrumentedRadius: 249.45 
+  ECALInnerRadius: 278.02
+  ECALOuterRadius: 322.252
+  ECALEndCapStart: 329.25
+  ECALEndCapEnd: 374.4
   gamma_reco_efficiency: 1.0
   pi0_reco_efficiency: 1.0
 #  average_gain: 500

@@ -140,6 +140,7 @@ struct dunendgarmc_base {
   double *highestpart_lengthtrackyz;
   double *rejectedpart_track_theta_angle;
   double *rejectedpart_ratioradcurvature;
+  double *rejectedpart_beta;
 
   double *rw_reco_vtx_x;
   double *rw_reco_vtx_y;
@@ -295,6 +296,10 @@ public:
   double TPCFidRadius;
   double TPCInstrumentedLength;
   double TPCInstrumentedRadius;
+  double ECALInnerRadius;
+  double ECALOuterRadius;
+  double ECALEndCapStart;
+  double ECALEndCapEnd;
 
   double TPC_centre_x =0.;
   double TPC_centre_y = -150.;
@@ -320,6 +325,7 @@ public:
 
   bool incl_geant; //NK - Added so we can use GArAnaTrees
   bool iscalo_reco; //NK Added so we can easily change what energy reconstruction we are using
+  bool ecal_containment; //NK Do we count containment if the particle stops in the ECAL?
   float muonscore_threshold; //NK Added so we can optimise muon threshold
   float protondEdxscore;
   float protontofscore;
@@ -328,6 +334,7 @@ public:
   float B_field;
   float momentum_resolution_threshold;
   float pixel_spacing;
+  float spatial_resolution;
   float adc_sampling_frequency;
   float drift_velocity;
 //  float hits_per_mm;

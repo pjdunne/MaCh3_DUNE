@@ -105,6 +105,7 @@ enum KinematicTypes {
   kRejectedParticleTrackThetaAngle = 66,
   kRejectedParticleRatioRadCurvature = 67,
   kTrueSquaredRad = 68,
+  kRejectedParticleBeta =69,
 
   kNKinematicParams
 };
@@ -180,7 +181,7 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("RejectedParticleTrackThetaAngle") != std::string::npos) {return kRejectedParticleTrackThetaAngle;}
   if (KinematicParameterStr.find("RejectedParticleRatioRadCurvature") != std::string::npos) {return kRejectedParticleRatioRadCurvature;}
   if (KinematicParameterStr.find("TrueSquaredRad") != std::string::npos) {return kTrueSquaredRad;}
-
+  if (KinematicParameterStr.find("RejectedParticleBeta") != std::string::npos) {return kRejectedParticleBeta;}
   return kNKinematicParams; 
 }
 
@@ -255,6 +256,7 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kRejectedParticleTrackThetaAngle) {return "RejectedParticleTrackThetaAngle";}
   if (KinematicParameter == kRejectedParticleRatioRadCurvature) {return "RejectedParticleRatioRadCurvature";}
   if (KinematicParameter == kTrueSquaredRad) {return "TrueSquaredRad";}
+  if (KinematicParameter == kRejectedParticleBeta) {return "RejectedParticleBeta";}
 
   return "NULL"; 
 }

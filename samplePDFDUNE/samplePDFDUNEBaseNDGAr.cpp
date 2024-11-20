@@ -67,6 +67,7 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
   incl_geant = SampleManager->raw()["SampleBools"]["incl_geant"].as<bool>();
   
   iscalo_reco = SampleManager->raw()["SampleBools"]["iscalo_reco"].as<bool>(); //NK determine what reco used
+  ecal_containment = SampleManager->raw()["SampleBools"]["ecal_containment"].as<bool>(); //NK do we count containment if its stopped in ECAL
   muonscore_threshold = SampleManager->raw()["SampleCuts"]["muonscore_threshold"].as<float>(); //NK determine what muon score threshold to use
   protondEdxscore = SampleManager->raw()["SampleCuts"]["protondEdxscore_threshold"].as<float>(); //NK determine what proton score threshold to use
   protontofscore = SampleManager->raw()["SampleCuts"]["protontofscore_threshold"].as<float>();  //NK determine what muon score threshold to use
@@ -75,7 +76,8 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
 
   B_field = SampleManager->raw()["SampleCuts"]["B_field"].as<float>(); //NK B field value in T
   momentum_resolution_threshold = SampleManager->raw()["SampleCuts"]["momentum_resolution_threshold"].as<float>(); //NK momentum_resolution threshold, total as a fraction of momentum
-  pixel_spacing = SampleManager->raw()["SampleCuts"]["pixel_spacing"].as<float>(); //NK pixel spacing in mm to find mom resolution in y,z plane
+  pixel_spacing = SampleManager->raw()["SampleCuts"]["pixel_spacing"].as<float>(); //NK pixel spacing in mm to find num hits in y,z plane
+  spatial_resolution = SampleManager->raw()["SampleCuts"]["spatial_resolution"].as<float>(); //NK spatial resolution in mm to find  in y,z plane
   adc_sampling_frequency = SampleManager->raw()["SampleCuts"]["adc_sampling_frequency"].as<float>(); //NK sampling frequency for ADC - needed to find timing resolution and spatial resolution in x dir in MHz
   drift_velocity = SampleManager->raw()["SampleCuts"]["drift_velocity"].as<float>(); //NK drift velocity of electrons in gas - needed to find timing resolution and spatial resolution in x dir in cm/microsecond
 //  average_gain = SampleManager->raw()["SampleCuts"]["average_gain"].as<float>();
@@ -87,7 +89,10 @@ void samplePDFDUNEBaseNDGAr::init(double pot, std::string samplecfgfile, covaria
   TPCFidRadius = SampleManager->raw()["SampleCuts"]["TPCFidRadius"].as<double>();
   TPCInstrumentedLength = SampleManager->raw()["SampleCuts"]["TPCInstrumentedLength"].as<double>();
   TPCInstrumentedRadius = SampleManager->raw()["SampleCuts"]["TPCInstrumentedRadius"].as<double>();
-
+  ECALInnerRadius = SampleManager->raw()["SampleCuts"]["ECALInnerRadius"].as<double>();
+  ECALOuterRadius = SampleManager->raw()["SampleCuts"]["ECALOuterRadius"].as<double>();
+  ECALEndCapStart = SampleManager->raw()["SampleCuts"]["ECALEndCapStart"].as<double>();
+  ECALEndCapEnd = SampleManager->raw()["SampleCuts"]["ECALEndCapEnd"].as<double>();
 //  hits_per_mm = SampleManager->raw()["SampleCuts"]["hits_per_mm"].as<float>();
 
   //muonscore_threshold = 0.5;
@@ -249,7 +254,6 @@ void samplePDFDUNEBaseNDGAr::setupWeightPointers() {
   std::cout<<"setup weight pointers"<<std::endl;
   return;
 }
-
 
 void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
 {
@@ -449,6 +453,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   duneobj->highestpart_pT = new double[duneobj->nEvents];
   duneobj->highestpart_lengthtrackx = new double[duneobj->nEvents];
   duneobj->highestpart_lengthtrackyz = new double[duneobj->nEvents];
+  duneobj->rejectedpart_beta = new double[duneobj->nEvents];
 
   //These spline bins get filled in fillSplineBins
   duneobj->enu_s_bin = new unsigned int[duneobj->nEvents];
@@ -715,19 +720,25 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                  highestpT = transverse_mom;
              }
 
-           if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg))!= 2112 && (std::abs(sr->mc.nu[0].prim[i_truepart].pdg))!= 14 && (std::abs(sr->mc.nu[0].prim[i_truepart].pdg))!= 12){
+         if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg))!= 2112 && (std::abs(sr->mc.nu[0].prim[i_truepart].pdg))!= 14 && (std::abs(sr->mc.nu[0].prim[i_truepart].pdg))!= 12){
+           bool stopsinecal_radius = false;
+           bool stopsinecal_length = false;
+           float end_radius = pow((pow(_MCPEndY->at(i_anapart)-TPC_centre_y, 2)+pow(_MCPEndZ->at(i_anapart)-TPC_centre_z, 2)), 0.5);
+           float end_length = _MCPEndX->at(i_anapart)-TPC_centre_x;
+           if(ecal_containment && end_radius>ECALInnerRadius && end_radius<ECALOuterRadius){stopsinecal_radius = true;}
+           if(ecal_containment && std::abs(end_length)>ECALEndCapStart && std::abs(end_length)<ECALEndCapEnd){stopsinecal_length = true;}
 //           if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg))!= 14 && (std::abs(sr->mc.nu[0].prim[i_truepart].pdg))!= 12){
 //           std::cout<<"start pos x: "<<_MCPStartX->at(i_anapart)<<" end pos x: "<<_MCPEndX->at(i_anapart)<<std::endl;
 //           std::cout<<" start rad: "<<pow((pow((double)(_MCPStartY->at(i_anapart))+150, 2)+pow((double)(_MCPStartZ->at(i_anapart))-1486, 2)), 0.5)<<" end rad: "<< pow((pow((double)(_MCPEndY->at(i_anapart))+150, 2)+pow((double)(_MCPEndZ->at(i_anapart))-1486, 2)), 0.5)<<std::endl;
 //         std::cout<<"pdg: "<<sr->mc.nu[0].prim[i_truepart].pdg<<std::endl;
 //         std::cout<<"mag pos: "<<(double)(sr->mc.nu[0].prim[i_truepart].start_pos.Mag())<<" mag mom: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())<<std::endl;
 //         if(!std::isnan((double)(sr->mc.nu[0].prim[i_truepart].start_pos.X()))){hasstart++;}
-         if((std::abs(_MCPEndX->at(i_anapart))-TPC_centre_x)>TPCInstrumentedLength || pow((pow(_MCPEndY->at(i_anapart)-TPC_centre_y, 2)+pow(_MCPEndZ->at(i_anapart)-TPC_centre_z, 2)), 0.5)>TPCInstrumentedRadius){
+         if((std::abs(end_length)>TPCInstrumentedLength && !stopsinecal_length) || (end_radius>TPCInstrumentedRadius && !stopsinecal_radius)){
            if((std::abs(_MCPStartX->at(i_anapart))-TPC_centre_x)<=TPCFidLength && start_radius<=TPCFidRadius){
              if((std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 13) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 211) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 2212) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 11) || (std::abs(sr->mc.nu[0].prim[i_truepart].pdg) == 321)){
                double length_track_x;
-               if(std::abs(_MCPEndX->at(i_anapart)-TPC_centre_x)>TPCInstrumentedLength){
-                 if((_MCPEndX->at(i_anapart)-TPC_centre_x)>=0){ length_track_x = TPCInstrumentedLength - (_MCPStartX->at(i_anapart)-TPC_centre_x);} //in cm
+               if(std::abs(end_length)>TPCInstrumentedLength){
+                 if((end_length)>=0){ length_track_x = TPCInstrumentedLength - (_MCPStartX->at(i_anapart)-TPC_centre_x);} //in cm
                  else{ length_track_x = -TPCInstrumentedLength - (_MCPStartX->at(i_anapart)-TPC_centre_x);} //in cm
                }
                else{length_track_x = _MCPEndX->at(i_anapart) - _MCPStartX->at(i_anapart);} //in cm
@@ -930,7 +941,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                double avg_betapT = (1/(beta_end*p_mag_end*cos(theta_xT)) + 1/(beta*transverse_mom))*0.5;
 //               std::cout<<"beta start: "<<beta<<" beta_end: "<<beta_end<<" pT_start: "<<transverse_mom<<" pT_end: "<<p_mag_end*cos(theta_xT)<<std::endl;
                double sigmax = (drift_velocity/100)*(1/(adc_sampling_frequency));
-               double sigmayz = (2.5/6)*(pixel_spacing/(1000)); //needs to be in m              
+               double sigmayz = (spatial_resolution/(1000)); //needs to be in m              
 //               double momres_x = std::abs(sr->mc.nu[0].prim[i_truepart].p.px)*(pow(720/(N_hits+4), 0.5)*(sigmax*std::abs(sr->mc.nu[0].prim[i_truepart].p.px)/(0.3*B_field*pow(length_track_x/100, 2))));
                double momres_yz = transverse_mom*(pow(720/(N_hits+4), 0.5)*(sigmayz*transverse_mom/(0.3*B_field*pow(L_yz_chord/100, 2)))*pow((1-(1/21)*pow((L_yz_chord/(rad_curvature*100)), 2)), 0.5));
                double momres_ms = transverse_mom*(0.016/(0.3*B_field*(L_yz/100)*cos(theta_xT)*beta))*pow(L_yz/X0, 0.5);
@@ -946,8 +957,8 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                double momres_frac = pow(pow((momres_tottransverse/transverse_mom), 2)+pow(sigma_theta*tan_theta, 2), 0.5);
                if(momres_frac > momentum_resolution_threshold){
 //                 if(std::abs(length_track_x/100)<0.20){
-                 std::cout<<"beta start: "<<beta<<std::endl;
-                 std::cout<<"momres_frac: "<<momres_frac<<" momres_yz: "<<momres_yz/transverse_mom<<"momres_ms: "<<momres_ms/transverse_mom<<"momres_tottransverse: "<<momres_tottransverse<<"sigmatheta*tantheta: "<<sigma_theta*tan_theta<<" sigma_theta: "<<sigma_theta<<" tan_theta: "<<tan_theta<<" momres_yz_old: "<<momres_yz_old<<" transverse mom: "<<transverse_mom<<" rad_curvature: "<<rad_curvature<<std::endl;
+//                 std::cout<<"beta start: "<<beta<<std::endl;
+//                 std::cout<<"momres_frac: "<<momres_frac<<" momres_yz: "<<momres_yz/transverse_mom<<"momres_ms: "<<momres_ms/transverse_mom<<"momres_tottransverse: "<<momres_tottransverse<<"sigmatheta*tantheta: "<<sigma_theta*tan_theta<<" sigma_theta: "<<sigma_theta<<" tan_theta: "<<tan_theta<<" momres_yz_old: "<<momres_yz_old<<" transverse mom: "<<transverse_mom<<" rad_curvature: "<<rad_curvature<<std::endl;
 //                 std::cout<<"N_hits: "<<N_hits<<"num_intersections: "<<num_intersections<<std::endl;
 //                 std::cout<<"theta chosen: "<<(180/M_PI)*theta_chosen<<" L_yz: "<<L_yz<<" L_yz_chord: "<<L_yz_chord<<" L_yz_old: "<<L_yz_old<<" length_track_x: "<<length_track_x<<std::endl;
 //                 std::cout<<"start pos x: "<<_MCPStartX->at(i_anapart)<<" end pos x: "<<_MCPEndX->at(i_anapart)<<std::endl;
@@ -975,7 +986,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
                  duneobj->highestpart_theta_angle[i] = 90 - (180/M_PI)*atan(tan_theta);
                  duneobj->highestpart_lengthtrackx[i] = std::abs(length_track_x/100);
                  duneobj->highestpart_lengthtrackyz[i] = std::abs(L_yz/100);
-
+                 duneobj->rejectedpart_beta[i] = beta;
 //                 std::cout<<"cosine angle: "<<duneobj->rejectedpart_theta_angle[i]<<" angle to B: field:"<<90 - (180/M_PI)*atan(tan_theta)<<" dip angle: "<<theta_xT<<" radius curvature: "<<rad_curvature<<std::endl;
                  break;
                }
@@ -1344,6 +1355,9 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
    case kTrueSquaredRad:
          KinematicValue = pow(dunendgarmcSamples[iSample].rw_rad[iEvent], 2);
          break;
+   case kRejectedParticleBeta:
+         KinematicValue = dunendgarmcSamples[iSample].rejectedpart_beta[iEvent];
+         break;
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
 	 throw;
@@ -1586,6 +1600,11 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
     case kRejectedParticleMomentum:
         for(double ibins =0; ibins<20*10; ibins++){
            binningVector.push_back((double)(ibins)/10);
+         } 
+         break;
+    case kRejectedParticleBeta:
+        for(double ibins =0; ibins<1*20+0.05; ibins++){
+           binningVector.push_back((double)(ibins)/20);
          } 
          break;
     case kRejectedParticleRadCurvature:
