@@ -116,7 +116,7 @@ find_package(MaCh3)
 if(NOT MaCh3_FOUND)
   CPMFindPackage(
       NAME MaCh3
-      GIT_TAG "feature/dbarrow257/OscProb"
+      GIT_TAG "48a9500"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()
