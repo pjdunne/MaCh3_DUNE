@@ -20,17 +20,16 @@ void samplePDFDUNEAtm::Init() {
 }
 
 void samplePDFDUNEAtm::SetupSplines() {
-  splineFile = nullptr;
+  SplineHandler = nullptr;
 }
 
 void samplePDFDUNEAtm::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 3;
-      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
-      MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].flux_w[j]);
-      MCSamples[i].total_weight_pointers[j][1] = MCSamples[i].osc_w_pointer[j];
-      MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].xsec_w[j]);
+      MCSamples[i].total_weight_pointers[j].push_back(&(dunemcSamples[i].flux_w[j]));
+      MCSamples[i].total_weight_pointers[j].push_back(MCSamples[i].osc_w_pointer[j]);
+      MCSamples[i].total_weight_pointers[j].push_back(&(MCSamples[i].xsec_w[j]));
     }
   }
 }
@@ -116,10 +115,10 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
 
 void samplePDFDUNEAtm::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
-  fdmc_base *fdobj = &(MCSamples[iSample]);  
+  FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);  
 
   //Make sure that this is only set if you're an atmoshperic object
-  fdobj->rw_truecz = new const double*[fdobj->nEvents];
+  fdobj->rw_truecz.resize(fdobj->nEvents);
   
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;

@@ -137,13 +137,12 @@ void samplePDFDUNEBeamND::SetupSplines() {
   ///@todo move all of the spline setup into core
   if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
     MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-    splineFile = (splineFDBase*)DUNESplines;
+    SplineHandler = std::unique_ptr<splinesDUNE>(new splinesDUNE(XsecCov));
     InitialiseSplineObject();
   }
   else{
     MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splineFile = nullptr;
+    SplineHandler = nullptr;
   }
 
   return;
@@ -153,7 +152,7 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendmcSamples.size(); ++i) {
     for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
-      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
       MCSamples[i].total_weight_pointers[j][0] = &(dunendmcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunendmcSamples[i].norm_s);
       MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
@@ -355,7 +354,7 @@ double samplePDFDUNEBeamND::ReturnKinematicParameter(std::string KinematicParame
 
 void samplePDFDUNEBeamND::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
-  fdmc_base *fdobj = &(MCSamples[iSample]);
+  FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);
   
   fdobj->nutype = duneobj->nutype;
   fdobj->oscnutype = duneobj->oscnutype;
