@@ -199,6 +199,12 @@ public:
 
   void setupWeightPointers();
 
+  void makePixelGrid(float pixel_spacing_cm);
+  double FindNHits(float pixel_spacing_cm, float centre_circle_y, float centre_circle_z, double rad_curvature);
+  double CalcDeDx(double beta, double bg, double gamma);
+  double CalcBeta(double p_mag, double& bg, double& gamma);
+  void IsParticleAccepted(dunendgarmc_base *duneobj, int& i_truepart, int& i, int& isnotaccepted, double& highestpT, float pixel_spacing_cm);
+
   // oscillation: Prob3++ 
   TH1D *modes;
   
@@ -283,6 +289,7 @@ public:
   std::vector<float> *_MCPEndPY=0;
   std::vector<float> *_MCPEndPZ=0;
   std::vector<int> *_PDG = 0;
+  double pdgmass;
   //particle masses in GeV
   double m_chargedpi = 0.13957039;
   double m_pi0 = 0.1349768;
@@ -317,7 +324,14 @@ public:
 //  double density = -0.00615*294.26 + 1.928; //in g/cm^3
   //covarianceFlux *flux;
   //covarianceSkDet_joint *skdet_joint;
-  
+
+  //pixel vars
+  double pixelymin;
+  double pixelymax;
+  double pixelzmin;
+  double pixelzmax;
+  std::vector<double> yboundarypositions;
+  std::vector<double> zboundarypositions;
   // configuration 
   bool iselike;
   bool isND;
@@ -385,6 +399,11 @@ public:
 
  private:
   void calcXsecNormsBins(dunendgarmc_base* dunendgarmc);
+//  void makePixelGrid(float pixel_spacing_cm);
+//  double FindNHits(float pixel_spacing_cm, float centre_circle_y, float centre_circle_z, double rad_curvature);
+//  double CalcDeDx(double pdgmass, double beta, double bg, double gamma);
+//  double CalcBeta(double pdgmass, double p_mag, double& bg, double& gamma);
+//  void IsParticleAccepted(dunendgarmc_base *duneobj, int& i_truepart, int& i, int& isnotaccepted, double& highestpT, double pdgmass, float pixel_spacing_cm);
   //void calcHistoBins();
   //TH1D *_hPDF1Dtest;
 };
