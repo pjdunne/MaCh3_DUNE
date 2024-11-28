@@ -35,14 +35,14 @@ include(CPM)
 #This is over-riden with -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
 CPMFindPackage(
     NAME MaCh3
-    GIT_TAG "DUNECore2024"
+    GIT_TAG "NDGAr"
     GITHUB_REPOSITORY mach3-software/MaCh3
 )
 
 CPMFindPackage(
     NAME duneanaobj
-    GITHUB_REPOSITORY "luketpickering/duneanaobj"
-    GIT_TAG "feature/Clingification_rebase"
+    GITHUB_REPOSITORY "naseemkhan99/duneanaobj"
+    GIT_TAG "main"
 )
 
 #Compile and link options (Should be in experiment project but copied in case CORE is built alone) 

@@ -93,3 +93,43 @@ RHC_nue unosc:      208.31873
 RHC_nue   osc:      447.09673
 ~~~~~~~~~~~~~~~~
 
+
+####################################
+# NDGAr Branch #######
+####################################
+
+In order to set up the NDGAr branch and read in ND-GAr CAF files you need to follow these instructions:
+You will need to check the paths in scripts/link_files.sh to make sure they point to directories where your files are saved. Likewise, you will need to check the paths in the setup.sh script. If running on SL7 instead of Alma9, then you need to change line 18 on setup.sh to "source setup_dune_env.sh" 
+
+~~~~~~~~~~~~~~
+$ mkdir MaCh3_DUNE
+$ git clone -b NDGAr https://github.com/DUNE/MaCh3_DUNE.git MaCh3_DUNE
+$ cd MaCh3_DUNE
+$ source setup.sh
+~~~~~~~~~~~~~
+
+Then need to get a duneanaobj library to read the ND-GAr CAFs. If the CAF format changes then this library will have to be updated
+
+~~~~~~~~~~~~~
+$ cd ..
+$ mkdir duneanaobj
+$ git clone https://github.com/naseemkhan99/duneanaobj.git duneanaobj
+~~~~~~~~~~~~~
+
+If you need to build MaCh3 core locally
+
+~~~~~~~~~~~~~
+$ mkdir MaCh3_core
+$ git clone -b NDGAr https://github.com/mach3-software/MaCh3.git MaCh3_core
+~~~~~~~~~~~~~
+
+Now make a build directory and build MaCh3
+~~~~~~~~~~~~~
+$ mkdir build
+$ cd build
+$ cmake ../MaCh3_DUNE/ -DCPU_ONLY=ON -DUSE_PROB3=OFF -DSINGLE_THREAD_ONLY=OFF -DCPM_duneanaobj_SOURCE=../duneanaobj -DSTANDALONE_BUILD=ON -DCPM_DOWNLOAD_LOCATION=../MaCh3_DUNE/cmake/Modules/CPM.cmake -DCPM_MaCh3_SOURCE=path/to/MaCh3core
+$ make
+$ cd ../MaCh3_DUNE
+~~~~~~~~~~~~~
+
+Now you can run executables from MaCh3_DUNE directory using config files in configs/ folder.
