@@ -53,6 +53,9 @@ void samplePDFDUNEBeamFD::Init() {
   em_res_fd_pos = -999;
   cvn_numu_fd_pos = -999;
   cvn_nue_fd_pos = -999;
+
+  std::vector<std::string> funcParsNames = XsecCov->GetParsNamesFromDetID(SampleDetID, SystType::kFunc);
+  std::vector<int> funcParsIndex = XsecCov->GetParsIndexFromDetID(SampleDetID, SystType::kFunc);
   
   nFDDetectorSystPointers = funcParsIndex.size();
   std::unordered_map<std::string, const double*> FDDetectorSystPointersMap;

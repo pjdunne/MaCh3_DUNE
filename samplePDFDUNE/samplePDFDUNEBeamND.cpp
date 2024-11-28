@@ -48,6 +48,8 @@ void samplePDFDUNEBeamND::Init() {
   n_res_nd_pos = -999;
   em_res_nd_pos = -999;
 
+  std::vector<std::string> funcParsNames = XsecCov->GetParsNamesFromDetID(SampleDetID, SystType::kFunc);
+  std::vector<int> funcParsIndex = XsecCov->GetParsIndexFromDetID(SampleDetID, SystType::kFunc);
   nNDDetectorSystPointers = funcParsIndex.size();
   NDDetectorSystPointers = std::vector<const double*>(nNDDetectorSystPointers);
 
@@ -204,6 +206,8 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   _data->SetBranchAddress("mode",&_mode);
   _data->SetBranchStatus("isCC", 1);
   _data->SetBranchAddress("isCC", &_isCC);
+  _data->SetBranchStatus("isFHC", 1);
+  _data->SetBranchAddress("isFHC", &_isFHC);
   _data->SetBranchStatus("reco_q", 1);
   _data->SetBranchAddress("reco_q", &_reco_q);
   _data->SetBranchStatus("nuPDGunosc", 1);
@@ -262,6 +266,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_theta = new double[duneobj->nEvents];
   duneobj->flux_w = new double[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
+  duneobj->rw_isFHC = new double[duneobj->nEvents];
   duneobj->rw_reco_q = new double[duneobj->nEvents];
   duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
   duneobj->rw_nuPDG = new int[duneobj->nEvents];
@@ -296,6 +301,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     duneobj->rw_etru[i] = (double)_ev; // in GeV
     duneobj->rw_theta[i] = (double)_LepNuAngle;
     duneobj->rw_isCC[i] = _isCC;
+    duneobj->rw_isFHC[i] = (double)_isFHC;
     duneobj->rw_reco_q[i] = _reco_q;
     duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
     duneobj->rw_nuPDG[i] = _nuPDG;
@@ -341,8 +347,12 @@ const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(KinematicTypes
   case kRecoNeutrinoEnergy:
     KinematicValue = &dunendmcSamples[iSample].rw_erec[iEvent];
     break;
+  case kIsFHC:
+    KinematicValue = &dunendmcSamples[iSample].rw_isFHC[iEvent];
+    break;
   default:
     MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+    std::cout << KinPar << ReturnStringFromKinematicParameter(KinPar) << std::endl;
     throw MaCh3Exception(__FILE__, __LINE__);
   }
   
@@ -375,6 +385,8 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
   fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
+  fdobj->nupdgUnosc = duneobj->nutype;
+  fdobj->nupdg = duneobj->oscnutype;
 
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
@@ -458,6 +470,7 @@ int samplePDFDUNEBeamND::ReturnKinematicParameterFromString(std::string Kinemati
   if(KinematicParameterStr == "TrueNeutrinoEnergy") return kTrueNeutrinoEnergy;
   if(KinematicParameterStr == "RecoQ") return kRecoQ;
   if(KinematicParameterStr == "RecoNeutrinoEnergy") return kRecoNeutrinoEnergy;
+  if(KinematicParameterStr == "IsFHC") return kIsFHC;
   return -1;
 }
 
@@ -466,6 +479,7 @@ std::string samplePDFDUNEBeamND::ReturnStringFromKinematicParameter(int Kinemati
     case kTrueNeutrinoEnergy: return "TrueNeutrinoEnergy";
     case kRecoQ: return "RecoQ";
     case kRecoNeutrinoEnergy: return "RecoNeutrinoEnergy";
+    case kIsFHC: return "IsFHC";
     default: return "";
   }
 }

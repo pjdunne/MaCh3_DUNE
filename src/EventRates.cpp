@@ -21,12 +21,8 @@ void Write1DHistogramsToFile(std::string OutFileName, std::vector<TH1D*> Histogr
   for(auto Hist : Histograms){
     Hist->Write();
   }
-  for(auto Hist : Histograms2D){
-    Hist->Write();
-  }
   OutputFile->Close();
 }
-
 
 void Write1DHistogramsToPdf(std::string OutFileName, std::vector<TH1D*> Histograms) {
   //Remove root from end of file
@@ -63,14 +59,9 @@ int main(int argc, char * argv[]) {
   //Perform reweight and print total integral
 
   std::vector<TH1D*> DUNEHists;
-  std::vector<TH2D*> DUNE2DHists;
   for(auto Sample : DUNEPdfs){
     Sample->reweight();
-    if (Sample->GetNDim() == 2){
-      DUNE2DHists.push_back(Sample->get2DHist());
-      }
     DUNEHists.push_back(Sample->get1DHist());
-    std::cout << "Sample LLH: " << Sample->GetName() << " has likelihood " << Sample->GetLikelihood() << std::endl;
     
     std::string EventRateString = fmt::format("{:.2f}", Sample->get1DHist()->Integral());
     MACH3LOG_INFO("Event rate for {} : {:<5}", Sample->GetName(), EventRateString);
@@ -83,56 +74,56 @@ int main(int argc, char * argv[]) {
   //###############################################################################################################################
   //Make oscillation channel breakdown
 
-  MACH3LOG_INFO("========================================================================");
-  MACH3LOG_INFO("========================================================================");
-  MACH3LOG_INFO("Oscillation Mode Breakdown:");
+  // MACH3LOG_INFO("========================================================================");
+  // MACH3LOG_INFO("========================================================================");
+  // MACH3LOG_INFO("Oscillation Mode Breakdown:");
   
-  for(auto Sample : DUNEPdfs) {
-    MACH3LOG_INFO("======================");
-    int nOscChannels = Sample->getNMCSamples();
-    for (int iOscChan=0;iOscChan<nOscChannels;iOscChan++) {
-      std::vector< std::vector<double> > SelectionVec;
+  // for(auto Sample : DUNEPdfs) {
+  //   MACH3LOG_INFO("======================");
+  //   int nOscChannels = Sample->getNMCSamples();
+  //   for (int iOscChan=0;iOscChan<nOscChannels;iOscChan++) {
+  //     std::vector< std::vector<double> > SelectionVec;
 
-      std::vector<double> SelecChannel(3);
-      SelecChannel[0] = Sample->ReturnKinematicParameterFromString("OscChannel");
-      SelecChannel[1] = iOscChan;
-      SelecChannel[2] = iOscChan+1;
-      SelectionVec.push_back(SelecChannel);
+  //     std::vector<double> SelecChannel(3);
+  //     SelecChannel[0] = Sample->ReturnKinematicParameterFromString("OscChannel");
+  //     SelecChannel[1] = iOscChan;
+  //     SelecChannel[2] = iOscChan+1;
+  //     SelectionVec.push_back(SelecChannel);
       
-      TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
-      MACH3LOG_INFO("{:<20} : {:<20} : {:<20.2f}",Sample->GetName(),Sample->getFlavourName(iOscChan),Hist->Integral());
-    }
+  //     TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
+  //     MACH3LOG_INFO("{:<20} : {:<20} : {:<20.2f}",Sample->GetName(),Sample->getFlavourName(iOscChan),Hist->Integral());
+  //   }
 
-    TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
-    MACH3LOG_INFO("{:<20} : {:<20.2f}",Sample->GetName(),Hist->Integral());
-  }
+  //   TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
+  //   MACH3LOG_INFO("{:<20} : {:<20.2f}",Sample->GetName(),Hist->Integral());
+  // }
 
   //###############################################################################################################################
   //Make interaction channel breakdown
 
-  MACH3LOG_INFO("========================================================================");
-  MACH3LOG_INFO("========================================================================");
-  MACH3LOG_INFO("Interaction Mode Breakdown:");
+  // MACH3LOG_INFO("========================================================================");
+  // MACH3LOG_INFO("========================================================================");
+  // MACH3LOG_INFO("Interaction Mode Breakdown:");
 
-  for(auto Sample : DUNEPdfs) {
-    MACH3LOG_INFO("======================");
-    int nModeChannels = kMaCh3_nModes;
-    for (int iModeChan=0;iModeChan<nModeChannels;iModeChan++) {
-      std::vector< std::vector<double> > SelectionVec;
+  // for(auto Sample : DUNEPdfs) {
+  //   MACH3LOG_INFO("======================");
+  //   int nModeChannels = kMaCh3_nModes;
+  //   for (int iModeChan=0;iModeChan<nModeChannels;iModeChan++) {
+  //     std::vector< std::vector<double> > SelectionVec;
 
-      std::vector<double> SelecChannel(3);
-      SelecChannel[0] = Sample->ReturnKinematicParameterFromString("Mode");
-      SelecChannel[1] = iModeChan;
-      SelecChannel[2] = iModeChan+1;
-      SelectionVec.push_back(SelecChannel);
+  //     std::vector<double> SelecChannel(3);
+  //     SelecChannel[0] = Sample->ReturnKinematicParameterFromString("Mode");
+  //     SelecChannel[1] = iModeChan;
+  //     SelecChannel[2] = iModeChan+1;
+  //     SelectionVec.push_back(SelecChannel);
 
-      TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
-      MACH3LOG_INFO("{:<20} : {:<20} : {:<20.2f}",Sample->GetName(),MaCh3mode_ToDUNEString((MaCh3_Mode)iModeChan),Hist->Integral());
-    }
+  //     TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
+  //     MACH3LOG_INFO("{:<20} : {:<20} : {:<20.2f}",Sample->GetName(),MaCh3mode_ToDUNEString((MaCh3_Mode)iModeChan),Hist->Integral());
+  //   }
 
-    TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
-    MACH3LOG_INFO("{:<20} : {:<20.2f}",Sample->GetName(),Hist->Integral());
-  }
+  //   TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
+  //   MACH3LOG_INFO("{:<20} : {:<20.2f}",Sample->GetName(),Hist->Integral());
+  // }
 
   //###############################################################################################################################
 }

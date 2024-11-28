@@ -64,22 +64,39 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   
   MACH3LOG_INFO("cov xsec setup");
   MACH3LOG_INFO("------------------------------");
-  
-  std::vector<std::string> OscMatrixFile = FitManager->raw()["General"]["Systematics"]["OscCovFile"].as<std::vector<std::string>>();
-  std::string  OscMatrixName = FitManager->raw()["General"]["Systematics"]["OscCovName"].as<std::string>(); 
-  std::vector<double> oscpars = FitManager->raw()["General"]["OscillationParameters"].as<std::vector<double>>();
-  std::string OscPars = "";
 
-  for (unsigned int i=0;i<oscpars.size();i++) {
-    OscPars+=std::to_string(oscpars[i]);
-    OscPars+=", ";
+  // HH: Add a check to skip osc cov if OscCovFile is not specified
+  std::vector<std::string> OscMatrixFile = GetFromManager<std::vector<std::string>>(FitManager->raw()["General"]["Systematics"]["OscCovFile"], {""});
+  std::string  OscMatrixName = GetFromManager<std::string>(FitManager->raw()["General"]["Systematics"]["OscCovName"], "");
+  std::vector<double> oscpars = GetFromManager<std::vector<double>>(FitManager->raw()["General"]["OscillationParameters"], {});
+  std::string OscPars = "";
+  bool useosc = oscpars.size() > 0;
+  if (useosc){
+
+    for (unsigned int i=0;i<oscpars.size();i++) {
+      OscPars+=std::to_string(oscpars[i]);
+      OscPars+=", ";
+    }
+    MACH3LOG_INFO("Oscillation Parameters being used: {} ", OscPars);
+    
+    osc = new covarianceOsc(OscMatrixFile,OscMatrixName.c_str());
+    osc->setName("osc_cov");
+    MACH3LOG_INFO("Osc cov setup");
+    MACH3LOG_INFO("------------------------------");
+  }  
+  else {
+    MACH3LOG_WARN("No OscillationParameters found, skipping oscillation parameters.");
   }
-  MACH3LOG_INFO("Oscillation Parameters being used: {} ", OscPars);
-  
-  osc = new covarianceOsc(OscMatrixFile,OscMatrixName.c_str());
-  osc->setName("osc_cov");
-  MACH3LOG_INFO("Osc cov setup");
-  MACH3LOG_INFO("------------------------------");
+
+  // HH: moved this to be before fix or flat in accordance with the comments below:
+  // Fill the parameter values with their nominal values
+  // should _ALWAYS_ be done before overriding with fix or flat
+  xsec->setParameters();
+  if (useosc) {
+    MACH3LOG_INFO("Setting oscillation parameters for osc");
+    
+    osc->setParameters(oscpars); 
+  }
   
   // ==========================================================
   //read flat prior, fixed paramas from the config file
@@ -97,10 +114,6 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   }
   MACH3LOG_INFO("xsec parameters loop done");
   
-  // Fill the parameter values with their nominal values
-  // should _ALWAYS_ be done before overriding with fix or flat
-  xsec->setParameters();
-  osc->setParameters(oscpars); 
   
   //####################################################################################
   //Create samplePDFDUNE Objs
@@ -115,14 +128,21 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
     
     DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESampleConfigs[Sample_i], xsec));
     
-    DUNEPdfs.back()->SetXsecCov(xsec);
-    DUNEPdfs.back()->SetOscCov(osc);
+    if (useosc){
+      MACH3LOG_INFO("Setting oscillation parameters for sample {}", DUNEPdfs.back()->GetName());
+      DUNEPdfs.back()->SetOscCov(osc);
+    }
+  
     // Pure for debugging, lets us set which weights we don't want via the manager
 #if DEBUG_DUNE_WEIGHTS==1
     DUNEPdfs.back()->setWeightSwitchOffVector(FitManager->getWeightSwitchOffVector());
     DUNEPdfs.back()->setXsecWeightSwitchOffVector(FitManager->getXsecWeightSwitchOffVector());
 #endif
   }
+
+  // Adaptive MCMC stuff
+  if(FitManager->raw()["AdaptionOptions"])
+    xsec->initialiseAdaption(FitManager->raw());
   
   return;
 }
