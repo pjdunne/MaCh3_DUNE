@@ -19,7 +19,7 @@ InputFiles:
   splinesuffix: ""
 DetID: 24
 NuOsc:
-  NuOscConfigFile: "configs/NuOsc/CUDAProb3.yaml"
+  NuOscConfigFile: "configs/NuOsc/OscProb.yaml"
 NSubSamples: 12
 SubSamples:
   - name: "nue_x_nue"
