@@ -106,30 +106,29 @@ $ mkdir MaCh3_DUNE
 $ git clone -b NDGAr https://github.com/DUNE/MaCh3_DUNE.git MaCh3_DUNE
 $ cd MaCh3_DUNE
 $ source setup.sh
-~~~~~~~~~~~~~
-
+~~~~~~~~~~~~~~
 Then need to get a duneanaobj library to read the ND-GAr CAFs. If the CAF format changes then this library will have to be updated
 
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 $ cd ..
 $ mkdir duneanaobj
 $ git clone https://github.com/naseemkhan99/duneanaobj.git duneanaobj
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 If you need to build MaCh3 core locally
 
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 $ mkdir MaCh3_core
 $ git clone -b NDGAr https://github.com/mach3-software/MaCh3.git MaCh3_core
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 Now make a build directory and build MaCh3
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 $ mkdir build
 $ cd build
 $ cmake ../MaCh3_DUNE/ -DCPU_ONLY=ON -DUSE_PROB3=OFF -DSINGLE_THREAD_ONLY=OFF -DCPM_duneanaobj_SOURCE=../duneanaobj -DSTANDALONE_BUILD=ON -DCPM_DOWNLOAD_LOCATION=../MaCh3_DUNE/cmake/Modules/CPM.cmake -DCPM_MaCh3_SOURCE=path/to/MaCh3core
 $ make
 $ cd ../MaCh3_DUNE
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 Now you can run executables from MaCh3_DUNE directory using config files in configs/ folder.
