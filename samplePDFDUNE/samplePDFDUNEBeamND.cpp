@@ -176,8 +176,6 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
 int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
 
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
-  int nutype = sample_nutype[iSample];
-  int oscnutype = sample_oscnutype[iSample];
   bool signal = sample_signal[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
@@ -253,8 +251,6 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   std::cout << "norm_s: " << duneobj->norm_s << std::endl;
 
   duneobj->nEvents = _data->GetEntries();
-  duneobj->nutype = nutype;
-  duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
 
   duneobj->rw_yrec = new double[duneobj->nEvents];
@@ -319,7 +315,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     duneobj->rw_ePim[i] = (double)_ePim; 
     duneobj->rw_ePi0[i] = (double)_ePi0; 
     duneobj->rw_eN[i] = (double)_eN; 
-    
+
     //Assume everything is on Argon for now....
     duneobj->Target[i] = 40;
     
@@ -381,18 +377,16 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
   fdmc_base *fdobj = &(MCSamples[iSample]);
   
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
-  fdobj->nupdgUnosc = duneobj->nutype;
-  fdobj->nupdg = duneobj->oscnutype;
 
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+    fdobj->nupdg[iEvent] = duneobj->rw_nuPDG[iEvent];
+    fdobj->nupdgunosc[iEvent] = duneobj->rw_nuPDGunosc[iEvent];
   }
 }
 
@@ -415,9 +409,9 @@ void samplePDFDUNEBeamND::applyShifts(int iSample, int iEvent) {
   double invSqrteRecoN =  1/(sqrteRecoN+0.1);
   double invSqrtSumEhad =  1/(sqrtSumEhad+0.1);
 
-  bool CCnumu {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==14 && dunendmcSamples[iSample].nutype==2};
-  bool CCnue {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==12 && dunendmcSamples[iSample].nutype==1};
-  bool NotCCnumu {!(dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==14) && dunendmcSamples[iSample].nutype==2};
+  bool CCnumu {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==NuPDG::kNumu && dunendmcSamples[iSample].rw_nuPDGunosc[iEvent]==NuPDG::kNumu};
+  bool CCnue {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==NuPDG::kNue && dunendmcSamples[iSample].rw_nuPDGunosc[iEvent]==NuPDG::kNue};
+  bool NotCCnumu {!(dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==14) && dunendmcSamples[iSample].rw_nuPDGunosc[iEvent]==NuPDG::kNumu};
 
 /*
   TotalEScaleND(NDDetectorSystPointers[0], &dunendmcSamples[iSample].rw_erec_shifted[iEvent], dunendmcSamples[iSample].rw_erec_had[iEvent], dunendmcSamples[iSample].rw_erec_lep[iEvent], NotCCnumu);

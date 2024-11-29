@@ -128,11 +128,6 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
     
     DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESampleConfigs[Sample_i], xsec));
     
-    if (useosc){
-      MACH3LOG_INFO("Setting oscillation parameters for sample {}", DUNEPdfs.back()->GetName());
-      DUNEPdfs.back()->SetOscCov(osc);
-    }
-  
     // Pure for debugging, lets us set which weights we don't want via the manager
 #if DEBUG_DUNE_WEIGHTS==1
     DUNEPdfs.back()->setWeightSwitchOffVector(FitManager->getWeightSwitchOffVector());

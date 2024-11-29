@@ -201,8 +201,6 @@ void samplePDFDUNEBeamFD::SetupWeightPointers() {
 int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
 
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
-  int nutype = sample_nutype[iSample];
-  int oscnutype = sample_oscnutype[iSample];
   bool signal = sample_signal[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
@@ -292,8 +290,6 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->pot_s = pot/norm->GetBinContent(2);
 
   duneobj->nEvents = _data->GetEntries();
-  duneobj->nutype = nutype;
-  duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
 
   // allocate memory for dunemc variables
@@ -376,6 +372,9 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
     duneobj->rw_vtx_x[i] = (double)_vtx_x;
     duneobj->rw_vtx_y[i] = (double)_vtx_y;
     duneobj->rw_vtx_z[i] = (double)_vtx_z;
+
+    duneobj->rw_nuPDG[i] = _nuPDG;
+    duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
     
     //Assume everything is on Argon for now....
     duneobj->Target[i] = 40;
@@ -716,8 +715,6 @@ void samplePDFDUNEBeamFD::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
   fdmc_base *fdobj = &(MCSamples[iSample]);  
   
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
   
@@ -726,6 +723,8 @@ void samplePDFDUNEBeamFD::setupFDMC(int iSample) {
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+    fdobj->nupdg[iEvent] = duneobj->rw_nuPDG[iEvent];
+    fdobj->nupdgunosc[iEvent] = duneobj->rw_nuPDGunosc[iEvent];
   }
 }
  

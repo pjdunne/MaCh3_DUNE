@@ -4,8 +4,9 @@
 #include <iostream>
 
 struct dunemc_base {
-  int nutype;
-  int oscnutype;
+  // HH: commented out these two to match core v.1.2.0
+  // int nutype;
+  // int oscnutype;
   bool signal; // true if signue
   int nEvents; // how many MC events are there
   int *Target; //Target the interaction was on
@@ -44,7 +45,7 @@ struct dunemc_base {
   int    *rw_nuPDGunosc;
   int    *rw_nuPDG;
   int    *rw_run;
-  bool    *rw_isFHC;
+  double    *rw_isFHC;
   double *rw_vtx_x;
   double *rw_vtx_y;
   double *rw_vtx_z;

@@ -62,8 +62,6 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   duneobj->norm_s = 1;
   duneobj->pot_s = 1;
 
-  duneobj->nutype = sample_nutype[iSample];
-  duneobj->oscnutype = sample_oscnutype[iSample];
   duneobj->signal = sample_signal[iSample];
   
   duneobj->mode = new double[duneobj->nEvents];
@@ -75,6 +73,8 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   duneobj->flux_w = new double[duneobj->nEvents];
   duneobj->rw_erec = new double[duneobj->nEvents];
   duneobj->rw_theta = new double[duneobj->nEvents];
+  duneobj->rw_nuPDG = new int[duneobj->nEvents];
+  duneobj->rw_nuPDGunosc = new int[duneobj->nEvents];
  
   for (int iEvent=0;iEvent<duneobj->nEvents;iEvent++) {
     Tree->GetEntry(iEvent);
@@ -103,7 +103,9 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
       RecoNuMomentumVector = (TVector3(sr->common.ixn.pandora[0].dir.lngtrk.X(),sr->common.ixn.pandora[0].dir.lngtrk.Y(),sr->common.ixn.pandora[0].dir.lngtrk.Z())).Unit();      
     }
     duneobj->rw_theta[iEvent] = RecoNuMomentumVector.Y();
-    
+    // HH: Added these to match core v1.2.0 so that mach3_dune can compile 
+    duneobj->rw_nuPDG[iEvent] = sr->mc.nu[0].pdg;
+    duneobj->rw_nuPDGunosc[iEvent] = sr->mc.nu[0].pdgorig;
   }
 
   delete Tree;
@@ -121,8 +123,6 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
   //Make sure that this is only set if you're an atmoshperic object
   fdobj->rw_truecz = new const double*[fdobj->nEvents];
   
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
   fdobj->ChannelIndex = iSample;
@@ -134,6 +134,8 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
     
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->rw_truecz[iEvent] = &(duneobj->rw_truecz[iEvent]);
+    fdobj->nupdgunosc[iEvent] = duneobj->rw_nuPDGunosc[iEvent];
+    fdobj->nupdg[iEvent] = duneobj->rw_nuPDG[iEvent];
   }
 }
 
