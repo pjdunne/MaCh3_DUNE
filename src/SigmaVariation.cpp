@@ -75,8 +75,17 @@ int main(int argc, char * argv[]) {
       File->mkdir(ParName.c_str());
       File->cd(ParName.c_str());
       
-      for (size_t iSigVar=0;iSigVar<sigmaVariations.size();iSigVar++) {
-	double VarVal = VarInit + sigmaVariations[iSigVar]*VarSigma;
+      int n_variations;
+      if (ParName == "delta_cp")
+        n_variations = 8;
+      else
+        n_variations = sigmaVariations.size();
+      for (size_t iSigVar=0;iSigVar<n_variations;iSigVar++) {
+        double VarVal;
+        if (ParName == "delta_cp")
+          VarVal = 2 * TMath::Pi() * iSigVar / 8;
+        else
+	VarVal = VarInit + sigmaVariations[iSigVar]*VarSigma;
 	if (VarVal < CovObj->GetLowerBound(iPar)) VarVal = CovObj->GetLowerBound(iPar);
 	if (VarVal > CovObj->GetUpperBound(iPar)) VarVal = CovObj->GetUpperBound(iPar);
 	
