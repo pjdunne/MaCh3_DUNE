@@ -126,6 +126,7 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
   fdobj->ChannelIndex = iSample;
+  fdobj->flavourName = mc_files[iSample];
   
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent) {
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
