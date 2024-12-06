@@ -41,7 +41,7 @@ if [ ! -d "$MACH3DIR/inputs/DUNE_NDGAr_CAF_files" ]
 then
   mkdir $MACH3DIR/inputs/DUNE_NDGAr_CAF_files
 fi
-ln -sf ${FILESDIR1}/NDGAr_100kCAFs/Outputs/*root inputs/DUNE_NDGAr_CAF_files
+ln -sf ${FILESDIR1}/NDGAr_500kCAFs/Outputs/*root inputs/DUNE_NDGAr_CAF_files
 
 
 if [ ! -d "$MACH3DIR/inputs/DUNE_NDGAr_spline_files" ]
@@ -54,6 +54,6 @@ if [ ! -d "$MACH3DIR/inputs/DUNE_NDGAr_AnaTrees" ]
 then
   mkdir $MACH3DIR/inputs/DUNE_NDGAr_AnaTrees
 fi
-ln -sf ${FILESDIR1}/NDGAr_100kCAFs/AnaTreesOutputs/*root inputs/DUNE_NDGAr_AnaTrees
+ln -sf ${FILESDIR1}/NDGAr_500kCAFs/AnaTreesOutputs/*root inputs/DUNE_NDGAr_AnaTrees
 
 

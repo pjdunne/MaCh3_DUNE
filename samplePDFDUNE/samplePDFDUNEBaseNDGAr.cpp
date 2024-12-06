@@ -1425,7 +1425,7 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
   std::vector<double> binningVector;
   switch(KinPar){
     case kRecoNeutrinoEnergy:
-//    case kTrueNeutrinoEnergy:
+    case kTrueNeutrinoEnergy:
     case kIdealNeutrinoRecoEnergy:
 /*         for(double ibins =0; ibins<10*10; ibins++){
            double binval = ibins/10;
@@ -1456,7 +1456,7 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
     case kRecoYPos:
     case kTrueYPos:
 	 for(double ibins =0; ibins<277*2; ibins++){
-           binningVector.push_back(ibins-277+TPC_centre_z);
+           binningVector.push_back(ibins-277+TPC_centre_y);
          }
 	 break;
     case kRecoZPos:
@@ -1517,7 +1517,7 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
            binningVector.push_back((double)(ibins)/10);
          } 
          break;
-    case kTrueNeutrinoEnergy:
+//    case kTrueNeutrinoEnergy:
     case kTrueLepEnergy:
     case kHighestpTParticleTransverseMomentum:
     case kRejectedParticleTransverseMomentum:

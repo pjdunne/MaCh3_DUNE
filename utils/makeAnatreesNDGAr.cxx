@@ -159,8 +159,8 @@ void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numusele
 void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numuselec) 
 {  
 
-   const char* path  = "/vols/dune/nk3717/data/NDGAr_100kCAFs/AnaTrees/";
-   const char* outpath  = "/vols/dune/nk3717/data/NDGAr_100kCAFs/AnaTreesOutputs";
+   const char* path  = "/vols/dune/nk3717/data/NDGAr_500kCAFs/";
+   const char* outpath  = "/vols/dune/nk3717/data/NDGAr_500kCAFs/AnaTreesOutputs";
 
    vector<int> *ntypes=0;
    int nutype;
@@ -316,9 +316,9 @@ int makeAnatreesNDGAr(std::string infile)
 //  Plot(infile);
  
   // NUMU_X_NUMU
-//  Split(infile, 14, 14, true); //numu_x_numu_numuselec
+  Split(infile, 14, 14, true); //numu_x_numu_numuselec
 //  Split(infile, 14, 14, false); //numu_x_numu_nueselec
-//  Split(infile, -14, -14, true); //numubar_x_numubar_numuselec
+  Split(infile, -14, -14, true); //numubar_x_numubar_numuselec
 //  Split(infile, -14, -14, false); //numubar_x_numubar_nueselec
   
   // NUMU_X_NUE

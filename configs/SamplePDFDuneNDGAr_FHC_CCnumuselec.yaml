@@ -17,55 +17,27 @@
 # 	signal = true for signal samples;,
 # },
 #SampleName: "NDGAr_FHC_CCnumu"
-SampleName: "NDGAr_FHC"
+SampleName: NDGAr_FHC
 SelectionCuts:
-    - KinematicStr: "InFDV"
-      Bounds: [1.0, 2.0]
-    - KinematicStr: "IsAccepted"
-      Bounds: [1.0, 2.0]
-    - KinematicStr: "IsCC"
-      Bounds: [1.0, 2.0]
-    - KinematicStr: "TrueNeutrinoEnergy"
-      Bounds: [1.0, 5.0]
-#    - KinematicStr: "HighestpTParticleTransverseMomentum"
-#      Bounds: [0.0, 0.2]
-#    - KinematicStr: "RejectedParticleTrackThetaAngle"
-#      Bounds: [37.0, 360.0]
-#    - KinematicStr: "PDGNonAccepted"
-#      Bounds: [2212, 2213]
-#    - KinematicStr: "TrueRad"
-#      Bounds: [0.0, 190.0]
-#    - KinematicStr: "TrueXPos"
-#      Bounds: [-190.0, 190.0]
-#    - KinematicStr: "NTruePrimMuons"
-#      Bounds: [1.0, 2.0]
-#    - KinematicStr: "RecoRad"
-#      Bounds: [0.0, 227.0]
-#    - KinematicStr: "NRecoMuons"
-#      Bounds: [1.0, 2.0]
-#    - KinematicStr: "RecoXPos"
-#      Bounds: [-209.0, 209.0]
-#    - KinematicStr: "NRecoParticles"
-#      Bounds: [2.0, 100.0]
-#    - KinematicStr: "NRecoMuons"
-#      Bounds: [1.0, 2.0]
-#    - KinematicStr: "NChargedPions"
-#      Bounds: [3,4]
-#    - KinematicStr: "DeltaRecoEnergyThreshold"
-#      Bounds: [0.09,2.0]
-
-#    - KinematicStr: "NRecoPions"
-#      Bounds: [1.0, 2.0]
-#    - KinematicStr: "PiTrueEnergy"
-#      Bounds: [0.0, 1.0]
-#    - KinematicStr: "PiRecoEnergy"
-#      Bounds: [0.0, 1.0]
-
+- KinematicStr: InFDV
+  Bounds: [1.0, 2.0]
+#- KinematicStr: IsAccepted
+#  Bounds:
+#  - 1.0
+#  - 2.0
+- KinematicStr: IsCC
+  Bounds: [1.0, 2.0]
+#- KinematicStr: TrueNeutrinoEnergy
+#  Bounds:
+#  - 4.5
+#  - 5.0
+- KinematicStr: NRecoMuons
+  Bounds: [1.0, 100.0]
 Binning:
   BinningOpt: 2
 #  XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
 #  YVarBins: [0., 0.1, 0.2, 0.3, 0.4, 0.6, 1.1]
-  XVarBins: [0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.25, 3.5, 3.75, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.]
+#  XVarBins: [0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.25, 3.5, 3.75, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.]
   XVarBins: [0., 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.]
   YVarBins: [0., 0.1, 0.2, 0.4, 0.7, 1.1]
 SampleBools:
@@ -74,12 +46,12 @@ SampleBools:
   iselike: no
   iscalo_reco: yes
   incl_geant: yes
-  ecal_containment: no
+  ecal_containment: yes
 InputFiles:
-  mtupleprefix: "inputs/DUNE_NDGAr_CAF_files/NDGAr_FHC_ger_"
-  mtuplesuffix: "_numuselec.root"
-  splineprefix: "inputs/DUNE_NDGAr_spline_files/NDGAr_FHC_ger_"
-  splinesuffix: "_numuselec_2dsplinesnewreco.root"
+  mtupleprefix: inputs/DUNE_NDGAr_CAF_files/NDGAr_FHC_ger_
+  mtuplesuffix: _numuselec.root
+  splineprefix: inputs/DUNE_NDGAr_spline_files/NDGAr_FHC_ger_
+  splinesuffix: _numuselec_2dsplinesnewreco.root
 SampleCuts:
   up_bnd: 100000.
   muonscore_threshold: 0.5
@@ -88,22 +60,22 @@ SampleCuts:
   recovertexradius_threshold: 100.0
   pionenergy_threshold: 0
   B_field: 0.5
-  momentum_resolution_threshold: 0.08
+  momentum_resolution_threshold: 0.05
   pixel_spacing: 6.0
   adc_sampling_frequency: 20.0
   drift_velocity: 3.011
-  spatial_resolution: 1.0
+  spatial_resolution: 2.5
 #  TPCFidLength: 259.0
 #  TPCFidRadius: 249.45 
   TPCFidLength: 209.0
-  TPCFidRadius: 160.0 
+#  TPCFidRadius: 160.0
 #  TPCFidRadius: 180.0 
-#  TPCFidRadius: 227.02 
+  TPCFidRadius: 227.02
 #  TPCFidRadius: 200.0 
   TPCInstrumentedLength: 259.0
-  TPCInstrumentedRadius: 249.45 
+  TPCInstrumentedRadius: 249.45
   ECALInnerRadius: 278.02
-  ECALOuterRadius: 322.252
+  ECALOuterRadius: 322.25199999999995
   ECALEndCapStart: 329.25
   ECALEndCapEnd: 374.4
   gamma_reco_efficiency: 1.0
@@ -112,13 +84,13 @@ SampleCuts:
 NSubSamples: 1
 DetID: 1
 SubSamples:
-  - name: "FHC_numu_x_numu"
-    mtuplefile: "numu_x_numu"
-    splinefile: "numu_x_numu"
-    samplevecno: 0
-    nutype: 14
-    oscnutype: 14
-    signal: false
+- name: FHC_numu_x_numu
+  mtuplefile: numu_x_numu
+  splinefile: numu_x_numu
+  samplevecno: 0
+  nutype: 14
+  oscnutype: 14
+  signal: false
 #  - name: "FHC_nue_x_nue"
 #    mtuplefile: "nue_x_nue"
 #    splinefile: "nue_x_nue"
@@ -196,7 +168,6 @@ SubSamples:
 #    nutype: -12
 #    oscnutype: -16
 #    signal: true
-                 
 #SubSamples:
 #  - name: "FHC_numu_x_numu_0"
 #    mtuplefile: "numu_x_numu_0"
