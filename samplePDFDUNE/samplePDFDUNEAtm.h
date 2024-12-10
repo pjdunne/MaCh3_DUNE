@@ -11,7 +11,7 @@
 class samplePDFDUNEAtm : virtual public samplePDFFDBase
 {
 public:
-  samplePDFDUNEAtm(std::string mc_version, covarianceXsec* xsec_cov);
+  samplePDFDUNEAtm(std::string mc_version, covarianceXsec* xsec_cov, covarianceOsc* osc_cov);
   ~samplePDFDUNEAtm();
 
   enum KinematicTypes{kTrueNeutrinoEnergy,kRecoNeutrinoEnergy,kTrueCosZ,kRecoCosZ,kOscChannel,kMode};

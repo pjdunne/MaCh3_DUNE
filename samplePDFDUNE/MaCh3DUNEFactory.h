@@ -7,4 +7,4 @@
 #include "samplePDF/samplePDFFDBase.h"
 
 void MakeMaCh3DuneInstance(manager *fitMan, std::vector<samplePDFFDBase*> &sample_vec,  covarianceXsec *&xsec, covarianceOsc *&osc);
-samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string SampleConfig, covarianceXsec* &xsec);
+samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string SampleConfig, covarianceXsec* &xsec, covarianceOsc* &osc);

@@ -6,7 +6,7 @@
 //ROOT includes
 #include "TError.h"
 
-samplePDFDUNEAtm::samplePDFDUNEAtm(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
+samplePDFDUNEAtm::samplePDFDUNEAtm(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {
   Initialise();
 }
 
@@ -61,8 +61,6 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   duneobj->norm_s = 1;
   duneobj->pot_s = 1;
 
-  duneobj->nutype = sample_nutype[iSample];
-  duneobj->oscnutype = sample_oscnutype[iSample];
   duneobj->signal = sample_signal[iSample];
   
   duneobj->mode = new double[duneobj->nEvents];
@@ -120,8 +118,6 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
   //Make sure that this is only set if you're an atmoshperic object
   fdobj->rw_truecz.resize(fdobj->nEvents);
   
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
   fdobj->ChannelIndex = iSample;
@@ -133,6 +129,9 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
     
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->rw_truecz[iEvent] = &(duneobj->rw_truecz[iEvent]);
+
+    fdobj->nupdgUnosc[iEvent] = &(sample_nupdgunosc[iSample]);
+    fdobj->nupdg[iEvent] = &(sample_nupdg[iSample]);
   }
 }
 

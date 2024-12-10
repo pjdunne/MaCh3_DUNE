@@ -328,8 +328,6 @@ void samplePDFDUNEBeamNDGar::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunendgarmcSamples[iSample]);
   fdmc_base *fdobj = &(MCSamples[iSample]);
   
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
   

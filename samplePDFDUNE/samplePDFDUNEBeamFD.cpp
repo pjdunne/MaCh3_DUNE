@@ -714,8 +714,6 @@ void samplePDFDUNEBeamFD::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
   FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);  
   
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
   fdobj->signal = duneobj->signal;
   fdobj->SampleDetID = SampleDetID;
   
