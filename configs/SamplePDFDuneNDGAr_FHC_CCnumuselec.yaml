@@ -21,18 +21,16 @@ SampleName: NDGAr_FHC
 SelectionCuts:
 - KinematicStr: InFDV
   Bounds: [1.0, 2.0]
-#- KinematicStr: IsAccepted
-#  Bounds:
-#  - 1.0
-#  - 2.0
+- KinematicStr: IsAccepted
+  Bounds:
+  - 1.0
+  - 2.0
 - KinematicStr: IsCC
   Bounds: [1.0, 2.0]
-#- KinematicStr: TrueNeutrinoEnergy
-#  Bounds:
-#  - 4.5
-#  - 5.0
-- KinematicStr: NRecoMuons
-  Bounds: [1.0, 100.0]
+- KinematicStr: TrueNeutrinoEnergy
+  Bounds:
+  - 4.5
+  - 5.0
 Binning:
   BinningOpt: 2
 #  XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
@@ -46,7 +44,7 @@ SampleBools:
   iselike: no
   iscalo_reco: yes
   incl_geant: yes
-  ecal_containment: yes
+  ecal_containment: no
 InputFiles:
   mtupleprefix: inputs/DUNE_NDGAr_CAF_files/NDGAr_FHC_ger_
   mtuplesuffix: _numuselec.root
@@ -70,7 +68,7 @@ SampleCuts:
   TPCFidLength: 209.0
 #  TPCFidRadius: 160.0
 #  TPCFidRadius: 180.0 
-  TPCFidRadius: 227.02
+  TPCFidRadius: 190.0
 #  TPCFidRadius: 200.0 
   TPCInstrumentedLength: 259.0
   TPCInstrumentedRadius: 249.45
