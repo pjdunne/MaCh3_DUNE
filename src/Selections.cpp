@@ -155,7 +155,7 @@ int main(int argc, char * argv[]) {
       SamplePDFs.push_back(FHC_numuCCNDGAr_trueselected_pdf);
     }
     else{
-      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, "configs/SamplePDFDuneNDGAr_FHC_CCnumuselec.yaml", xsec);
+      samplePDFDUNEBaseNDGAr * FHC_numuCCNDGAr_pdf = new samplePDFDUNEBaseNDGAr(NDPOT, argv[2], xsec);
       SamplePDFs.push_back(FHC_numuCCNDGAr_pdf);
     }
   }

@@ -79,32 +79,48 @@ def main():
         enu = [0.00, 1.50, 1.75, 2.00, 2.25, 2.50, 2.75, 3.00, 3.25, 3.50, 4.00, 4.50, 5.00]
 #        enu=[1.50, 1.75]
         accepted_arr=[0.0, 1.0, 2.0]
+        k=0
         print(len(accepted_arr))
+        newdir='configs/SamplePDFConfigs_fidrad{fidrad}_Bfield{bfield}_{ecal_containment}'.format(fidrad=str(args.tpcfidrad).replace(".", "_"), bfield = str(args.bfield).replace(".", "_"), ecal_containment=ecalcontainment)
+       # p_1 = subprocess.Popen('mkdir {newdir}', shell=True)
+        p_1 = subprocess.Popen(['mkdir', '-p', f"{newdir}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (output,err)= p_1.communicate()
+        p_1status = p_1.wait()       
         for i in range(0, len(enu)-1):
             config_samplepdf = 'configs/SamplePDFDuneNDGAr_FHC_CCnumuselec.yaml'
             kinematicstr = 'TrueNeutrinoEnergy'
 #            newvalues = '[{boundlow:.2f}, {boundup:.2f}]'.format(boundlow=enu[i], boundup=enu[i+1])
             newvalues = [enu[i], enu[i+1]]
             modify_config(config_samplepdf, 'SelectionCuts', kinematicstr, newvalues, True)
-            modify_config(config_samplepdf, 'SelectionCuts', kinematicstr, newvalues, True)
+#            modify_config(config_samplepdf, 'SelectionCuts', kinematicstr, newvalues, True)
             for j in range(0, len(accepted_arr)-1):
                 print(accepted_arr)
                 print(j)
-                modify_config(config_samplepdf, 'SelectionCuts', 'IsAccepted', [accepted_arr[j], 2.0], True) 
+                config_samplepdf_new = '{newdir}/SamplePDFDuneNDGAr_FHC_CCnumuselec_{k}.yaml'.format(newdir=newdir, k=k)
+                p_2 = subprocess.Popen(['cp', f"{config_samplepdf}", f"{config_samplepdf_new}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                (output,err)= p_2.communicate()
+                p_2status = p_2.wait()
+                modify_config(config_samplepdf_new, 'SelectionCuts', 'IsAccepted', [accepted_arr[j], 2.0], True) 
                 config_selec = 'configs/Selections_NDGAr_acceptancecorrection_2dhist.yaml'
+                config_selec_new = '{newdir}/Selections_NDGAr_acceptancecorrection_2dhist_{k}.yaml'.format(newdir=newdir,k=k)
+                p_3 = subprocess.Popen(['cp', f"{config_selec}", f"{config_selec_new}"],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                (output,err)= p_3.communicate()
+                p_3status = p_3.wait()
                 nameout = 'Output: '
                 if j == 1:
                     accepted = "Accepted"
                 else:
                     accepted = "All"
-                filename = 'outputs/01_12_2024/Selections_CC_AcceptanceCorrection_2dhist_{accepted}Events_2point5mmpointres_fidrad{fidrad}_Bfield{bfield}_Enubin{binnum}_{ecal_containment}'.format(accepted=accepted, fidrad=str(args.tpcfidrad).replace(".", "_"), bfield = str(args.bfield).replace(".", "_"), binnum=i, ecal_containment=ecalcontainment)
+                filename = 'outputs/10_12_2024/Selections_CC_AcceptanceCorrection_2dhist_{accepted}Events_2point5mmpointres_fidrad{fidrad}_Bfield{bfield}_Enubin{binnum}_{ecal_containment}'.format(accepted=accepted, fidrad=str(args.tpcfidrad).replace(".", "_"), bfield = str(args.bfield).replace(".", "_"), binnum=i, ecal_containment=ecalcontainment)
                 newoutput = '{filename}.root'.format(filename=filename)
-                modify_config(config_selec, 'Output', nameout, newoutput, False, False)
-                command = 'Selections configs/Selections_NDGAr_acceptancecorrection_2dhist.yaml &> {filename}.txt'.format(filename=filename)
-                print(command)
-                p = subprocess.Popen(command, shell=True)
-                (output,err)= p.communicate()
-                p_status = p.wait()
+                modify_config(config_selec_new, 'Output', nameout, newoutput, False, False)
+#                file = 'acceptance_{inum}_{jnum}.job'.format(inum=i, jnum=j)
+#                command = 'Selections {config_selec_new} {config_samplepdf_new} &> {filename}.txt'.format(filename=filename)
+#                print(command)
+#                p = subprocess.Popen(command, shell=True)
+#                (output,err)= p.communicate()
+#                p_status = p.wait()
+                k=k+1
  
 if __name__=="__main__":
     parser = argparse.ArgumentParser()

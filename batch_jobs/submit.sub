@@ -1,0 +1,7 @@
+executable = submit.sh
+output = outlogs/out.$(CLUSTER).$(PROCESS)
+error = outlogs/err.$(CLUSTER).$(PROCESS)
+log = outlogs/log.$(CLUSTER).$(PROCESS)
+arguments = $(CLUSTER) $(PROCESS)
++MaxRuntime = 2700
+queue 1
