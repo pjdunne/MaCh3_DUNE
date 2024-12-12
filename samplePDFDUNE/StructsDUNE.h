@@ -1043,7 +1043,7 @@ inline std::string MaCh3mode_ToDUNEString(MaCh3_Mode i) {
     name = "ccqe";
     break;
   case kMaCh3_CC_Single_Kaon:
-    name = "ccsinglekaon";
+    name = "unknown";
     break;
   case kMaCh3_CC_DIS:
     name = "ccdis";

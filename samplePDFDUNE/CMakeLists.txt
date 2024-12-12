@@ -22,7 +22,7 @@ if(NOT CPU_ONLY)
   set_target_properties(SamplePDFDUNE PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 endif()
 
-target_link_libraries(SamplePDFDUNE MaCh3::All MaCh3DUNECompilerOptions duneanaobj::all)
+target_link_libraries(SamplePDFDUNE splinesDUNE MaCh3::All MaCh3DUNECompilerOptions duneanaobj::all)
 
 target_include_directories(SamplePDFDUNE PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
