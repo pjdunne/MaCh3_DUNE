@@ -184,7 +184,7 @@ add_subdirectory(src)
 
 add_library(MaCh3DUNEAll INTERFACE)
 set_target_properties(MaCh3DUNEAll PROPERTIES EXPORT_NAME All)
-target_link_libraries(MaCh3DUNEAll INTERFACE splinesDUNE SamplePDFDUNE MaCh3DUNECompilerOptions)
+target_link_libraries(MaCh3DUNEAll INTERFACE SamplePDFDUNE MaCh3DUNECompilerOptions)
 add_library(MaCh3DUNE::All ALIAS MaCh3DUNEAll)
 
 install(TARGETS MaCh3DUNEAll
