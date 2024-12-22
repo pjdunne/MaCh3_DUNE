@@ -169,6 +169,12 @@ struct dunendgarmc_base {
   double *momres_nonaccepted;
   int *pdg_nonaccepted;
 
+  double *ecaldepositfraction;
+  int *particleevent;
+  int *particlepdg;
+  double *particleenergy;
+  double *particlededx;
+  double *particlemomentum;
   double pot_s; // s is for scale                                             
   double norm_s;//    
 
@@ -203,7 +209,7 @@ public:
   double FindNHits(float pixel_spacing_cm, float centre_circle_y, float centre_circle_z, double rad_curvature);
   double CalcDeDx(double beta, double bg, double gamma);
   double CalcBeta(double p_mag, double& bg, double& gamma);
-  void IsParticleAccepted(dunendgarmc_base *duneobj, int& i_truepart, int& i, int& isnotaccepted, double& highestpT, float pixel_spacing_cm);
+  void IsParticleAccepted(dunendgarmc_base *duneobj, int& i_truepart, int& i, int& isnotaccepted, double& highestpT, float pixel_spacing_cm, int& tot_particles);
 
   // oscillation: Prob3++ 
   TH1D *modes;
@@ -289,6 +295,9 @@ public:
   std::vector<float> *_MCPEndPY=0;
   std::vector<float> *_MCPEndPZ=0;
   std::vector<int> *_PDG = 0;
+  std::vector<int> *_MCPTrkID=0;
+  std::vector<int> *_SimHitTrkID=0;
+  std::vector<float> *_SimHitEnergy=0;
   double pdgmass;
   //particle masses in GeV
   double m_chargedpi = 0.13957039;

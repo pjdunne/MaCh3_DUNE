@@ -106,6 +106,12 @@ enum KinematicTypes {
   kRejectedParticleRatioRadCurvature = 67,
   kTrueSquaredRad = 68,
   kRejectedParticleBeta =69,
+  kECalDepositFrac = 70,
+  kParticlePDG = 71,
+  kParticleMom = 72,
+  kParticleEnergy = 73,
+  kParticleDeDx = 74,
+  kParticleEvent = 75,
 
   kNKinematicParams
 };
@@ -182,6 +188,14 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("RejectedParticleRatioRadCurvature") != std::string::npos) {return kRejectedParticleRatioRadCurvature;}
   if (KinematicParameterStr.find("TrueSquaredRad") != std::string::npos) {return kTrueSquaredRad;}
   if (KinematicParameterStr.find("RejectedParticleBeta") != std::string::npos) {return kRejectedParticleBeta;}
+  if (KinematicParameterStr.find("ECalDepositFrac") != std::string::npos) {return kECalDepositFrac;}
+  if (KinematicParameterStr.find("ParticlePDG") != std::string::npos) {return kParticlePDG;}
+  if (KinematicParameterStr.find("ParticleMom") != std::string::npos) {return kParticleMom;}
+  if (KinematicParameterStr.find("ParticleEnergy") != std::string::npos) {return kParticleEnergy;}
+  if (KinematicParameterStr.find("ParticleDeDx") != std::string::npos) {return kParticleDeDx;}
+  if (KinematicParameterStr.find("ParticleDeDx") != std::string::npos) {return kParticleDeDx;}
+  if (KinematicParameterStr.find("ParticleEvent") != std::string::npos) {return kParticleEvent;}
+
   return kNKinematicParams; 
 }
 
@@ -257,6 +271,12 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kRejectedParticleRatioRadCurvature) {return "RejectedParticleRatioRadCurvature";}
   if (KinematicParameter == kTrueSquaredRad) {return "TrueSquaredRad";}
   if (KinematicParameter == kRejectedParticleBeta) {return "RejectedParticleBeta";}
+  if (KinematicParameter == kECalDepositFrac) {return "ECalDepositFrac";}
+  if (KinematicParameter == kParticlePDG) {return "ParticlePDG";}
+  if (KinematicParameter == kParticleMom) {return "ParticleMom";}
+  if (KinematicParameter == kParticleEnergy) {return "ParticleEnergy";}
+  if (KinematicParameter == kParticleDeDx) {return "ParticleDeDx";}
+  if (KinematicParameter == kParticleEvent) {return "ParticleEvent";}
 
   return "NULL"; 
 }

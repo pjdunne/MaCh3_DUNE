@@ -23,7 +23,7 @@ SelectionCuts:
   Bounds: [1.0, 2.0]
 - KinematicStr: IsAccepted
   Bounds:
-  - 1.0
+  - 0.0
   - 2.0
 - KinematicStr: IsCC
   Bounds: [1.0, 2.0]
@@ -68,7 +68,7 @@ SampleCuts:
   TPCFidLength: 209.0
 #  TPCFidRadius: 160.0
 #  TPCFidRadius: 180.0 
-  TPCFidRadius: 190.0
+  TPCFidRadius: 249.45
 #  TPCFidRadius: 200.0 
   TPCInstrumentedLength: 259.0
   TPCInstrumentedRadius: 249.45

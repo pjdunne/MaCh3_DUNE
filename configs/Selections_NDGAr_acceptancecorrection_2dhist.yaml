@@ -19,7 +19,7 @@ General:
     OscStepScale: 0.045
   Output:
     FileName: 
-      outputs/01_12_2024/Selections_CC_AcceptanceCorrection_2dhist_AcceptedEvents_2point5mmpointres_fidrad160_0_Bfield0_5_Enubin11_withecalcontainment.root
+      outputs/13_12_2024/Selections_CC_AcceptanceCorrection_2dhist_AllEvents_2point5mmpointres_fidrad249_45_Bfield0_5_withecalcontainment_newplots1M_newbinning_new.root
 SigmaVariations:
   EvalXsec: false
 Selections:
@@ -33,7 +33,7 @@ Selections:
     HighestpTLengthTrackYZ, HighestpTParticleTransverseMomentum, HighestpTLengthTrackX,
     TrueXPos, HighestpTLengthTrackX, TrueRad, HighestpTLengthTrackYZ, RejectedParticleTrackThetaAngle,
     RejectedParticleRatioRadCurvature, TrueSquaredRad, HighestpTLengthTrackYZ, RejectedParticleMomentum,
-    RejectedParticleBeta, RejectedParticlePDG, RejectedParticleBeta]
+    RejectedParticleBeta, RejectedParticlePDG, RejectedParticleBeta, ParticlePDG, ECalDepositFrac, ParticleMom, ParticleDeDx, TrueNeutrinoEnergy, ParticleEnergy, TrueNeutrinoEnergy, ParticleMom, ParticlePDG, ParticleEnergy, ParticleEnergy, ECalDepositFrac]
 #  KinematicParsToPlot: ["TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "RejectedParticleMomentum", "RejectedParticleThetaAngle", "RejectedParticleRadCurvature", "RejectedParticleThetaAngle", "TrueRad", "TrueXPos", "RejectedParticleRadCurvature", "RejectedParticleTransverseMomentum", "RejectedParticleMomentum", "SigmaMom", "RejectedParticleThetaAngle", "SigmaTheta", "PDGNonAccepted", "RejectedParticleMomentum", "TrueRad", "RejectedParticleTransverseMomentum", "TrueXPos", "RejectedParticleMomentum", "RejectedParticleTransverseMomentum", "RejectedParticleThetaAngle"]
 #  KinematicParsToPlot: ["TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy"]
 #  KinematicParsToPlot: ["LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "MuonPiRecoAngle", "PiTrueEnergy", "MuonPiAngle", "PiRecoEnergy", "PiZRecoAngle", "PiTrueEnergy", "PiZAngle", "PiRecoEnergy","PiTrueEnergy"]
