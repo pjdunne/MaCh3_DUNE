@@ -22,6 +22,27 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
 
   int iSample = getSampleIndex(SampleName);
 
+  enum ModeState {
+    kInConfig = 0,
+    kInConfigAndInFile,
+    kInFile
+  };
+
+  std::vector<std::map<std::string,ModeState>> ModeStatus;
+
+  //Create map of Mode Status
+  for (unsigned iSyst = 0; iSyst < SplineFileParPrefixNames[iSample].size(); iSyst++) 
+  {
+    auto modes = SplineModeVecs[iSample][iSyst];
+	ModeStatus.emplace_back();
+
+	for (auto const & mode : modes) 
+	{
+	  //Add Modes from config
+	  ModeStatus.back()[MaCh3mode_ToDUNEString((MaCh3_Mode)mode).c_str()] = kInConfig;
+	}
+  }
+
   int nOscChannels = nOscChans[iSample];
 
   for (int iOscChan = 0; iOscChan < nOscChannels; iOscChan++)
@@ -95,11 +116,23 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
         }
       }
 
-	  if (ModeNum == -1) {
-		//ETA - Turned this into an error
-		MACH3LOG_ERROR("Could not find mode {} for spline {}", Mode, Key->GetName());
-		MACH3LOG_ERROR("This is not ok, please check the spline file or the xsec systematic yaml file");
-		throw MaCh3Exception(__FILE__, __LINE__);
+	  //Check if mode has been registered already
+	  if(ModeStatus[SystNum].count(Mode))
+	  {
+		//Chech if mode has been found in config
+		if(ModeStatus[SystNum][Mode]!=kInFile) 
+		{
+		  ModeStatus[SystNum][Mode]=kInConfigAndInFile;
+		}
+		else 
+		{
+		  continue; //Skip if mode has been found in file but not config
+		}
+	  }
+	  else
+	  {
+		ModeStatus[SystNum][Mode]=kInFile; //If mode hasn't been registered then skip because it's not in the config 
+		continue;
 	  }
 
       TSpline3 *Obj = (TSpline3 *)Key->ReadObj();
@@ -148,7 +181,7 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
             break;
           }
         }
-        
+
         //Rather than keeping a mega vector of splines then converting, this should just keep everything nice in memory!
         indexvec[iSample][iOscChan][SystNum][ModeNum][Var1Bin][Var2Bin][Var3Bin]=MonolithIndex;
 
@@ -173,6 +206,30 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
     std::cout << "Got " << nb_splines << " total splines with " << unique_spline_names.size() << " unique names." << std::endl;
     delete File;
   } //End of oscillation channel loop
+
+  //Find all modes which have been found in the spline file but have not been specified in the config
+  for (unsigned iSyst = 0; iSyst < SplineFileParPrefixNames[iSample].size(); iSyst++) 
+  {
+    std::vector<std::string> MissedModes;
+	for (auto const & ModeUsage : ModeStatus[iSyst])
+	{
+	  if(ModeUsage.second==kInFile)
+	  {
+		MissedModes.push_back(ModeUsage.first);
+	  }
+	}
+
+	if(MissedModes.size()!=0)
+	{
+      MACH3LOG_INFO("Parameter {} has splines for {} modes which have not been read in!", SplineFileParPrefixNames[iSample][iSyst].c_str(), MissedModes.size());
+	  std::cout << "Modes: ";  
+	  for (auto const & Mode : MissedModes)
+	  {
+	    std::cout << Mode << " ";  
+	  }
+	  std::cout << std::endl;
+    }
+  } 
   
   return;
 }
