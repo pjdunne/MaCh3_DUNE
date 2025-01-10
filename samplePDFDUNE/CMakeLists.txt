@@ -1,15 +1,15 @@
 set(HEADERS
   samplePDFDUNEAtm.h
-  samplePDFDUNEBeamFD.h
-  samplePDFDUNEBeamND.h
+  #samplePDFDUNEBeamFD.h
+  #samplePDFDUNEBeamND.h
   # samplePDFDUNEBeamNDGar.h
   MaCh3DUNEFactory.h 
 )
 
 add_library(SamplePDFDUNE SHARED
   samplePDFDUNEAtm.cpp
-  samplePDFDUNEBeamFD.cpp
-  samplePDFDUNEBeamND.cpp
+  #samplePDFDUNEBeamFD.cpp
+  #samplePDFDUNEBeamND.cpp
   # samplePDFDUNEBeamNDGar.cpp
   MaCh3DUNEFactory.cpp
 )
@@ -22,7 +22,7 @@ if(NOT CPU_ONLY)
   set_target_properties(SamplePDFDUNE PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 endif()
 
-target_link_libraries(SamplePDFDUNE splinesDUNE MaCh3::All MaCh3DUNECompilerOptions duneanaobj::all)
+target_link_libraries(SamplePDFDUNE splinesDUNE MaCh3::All MaCh3DUNECompilerOptions ROOT::Physics duneanaobj::all)
 
 target_include_directories(SamplePDFDUNE PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../>
