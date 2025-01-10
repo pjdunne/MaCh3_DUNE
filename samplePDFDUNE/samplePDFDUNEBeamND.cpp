@@ -41,6 +41,7 @@ void samplePDFDUNEBeamND::Init() {
   n_res_nd_pos = -999;
   em_res_nd_pos = -999;
 
+  /*
   nNDDetectorSystPointers = funcParsIndex.size();
   NDDetectorSystPointers = std::vector<const double*>(nNDDetectorSystPointers);
 
@@ -129,6 +130,7 @@ void samplePDFDUNEBeamND::Init() {
       throw MaCh3Exception(__FILE__, __LINE__);
     }
   }
+  */
   
   std::cout << "-------------------------------------------------------------------" <<std::endl;
 }
@@ -137,13 +139,12 @@ void samplePDFDUNEBeamND::SetupSplines() {
   ///@todo move all of the spline setup into core
   if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
     MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-    splineFile = (splineFDBase*)DUNESplines;
+    SplineHandler = std::unique_ptr<splineFDBase>(new splinesDUNE(XsecCov));
     InitialiseSplineObject();
   }
   else{
     MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splineFile = nullptr;
+    SplineHandler = nullptr;
   }
 
   return;
@@ -153,7 +154,7 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendmcSamples.size(); ++i) {
     for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
-      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
       MCSamples[i].total_weight_pointers[j][0] = &(dunendmcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunendmcSamples[i].norm_s);
       MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
@@ -167,8 +168,8 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
 int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
 
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
-  int nutype = sample_nutype[iSample];
-  int oscnutype = sample_oscnutype[iSample];
+  int nupdgUnosc = sample_nupdgunosc[iSample];
+  int nupdg = sample_nupdg[iSample];
   bool signal = sample_signal[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
@@ -238,8 +239,6 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->pot_s = (pot)/1e21;
 
   duneobj->nEvents = _data->GetEntries();
-  duneobj->nutype = nutype;
-  duneobj->oscnutype = oscnutype;
   duneobj->signal = signal;
 
   duneobj->rw_yrec = new double[duneobj->nEvents];
@@ -269,6 +268,8 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_ePi0 = new double[duneobj->nEvents];
   duneobj->rw_eN = new double[duneobj->nEvents];
 
+  duneobj->nupdg = new int[duneobj->nEvents];
+  duneobj->nupdgUnosc = new int[duneobj->nEvents];
   duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
@@ -277,6 +278,10 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   //FILL DUNE STRUCT
   for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
     _data->GetEntry(i);
+
+    duneobj->nupdg[i] = sample_nupdg[iSample];
+    duneobj->nupdgUnosc[i] = sample_nupdgunosc[iSample];
+    
     duneobj->rw_erec[i] = (double)_erec;
     duneobj->rw_erec_shifted[i] = (double)_erec;
     duneobj->rw_erec_lep[i] = (double)_erec_lep;
@@ -355,18 +360,15 @@ double samplePDFDUNEBeamND::ReturnKinematicParameter(std::string KinematicParame
 
 void samplePDFDUNEBeamND::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
-  fdmc_base *fdobj = &(MCSamples[iSample]);
+  FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);
   
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
-  fdobj->signal = duneobj->signal;
-  fdobj->SampleDetID = SampleDetID;
-
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+    fdobj->nupdgUnosc[iEvent] = &(duneobj->nupdgUnosc[iEvent]);
+    fdobj->nupdg[iEvent] = &(duneobj->nupdg[iEvent]);
   }
 }
 
@@ -389,9 +391,9 @@ void samplePDFDUNEBeamND::applyShifts(int iSample, int iEvent) {
   double invSqrteRecoN =  1/(sqrteRecoN+0.1);
   double invSqrtSumEhad =  1/(sqrtSumEhad+0.1);
 
-  bool CCnumu {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==14 && dunendmcSamples[iSample].nutype==2};
-  bool CCnue {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==12 && dunendmcSamples[iSample].nutype==1};
-  bool NotCCnumu {!(dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==14) && dunendmcSamples[iSample].nutype==2};
+  bool CCnumu {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==14 && dunendmcSamples[iSample].nupdgUnosc[iEvent]==2};
+  bool CCnue {dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==12 && dunendmcSamples[iSample].nupdgUnosc[iEvent]==1};
+  bool NotCCnumu {!(dunendmcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunendmcSamples[iSample].rw_nuPDG[iEvent])==14) && dunendmcSamples[iSample].nupdgUnosc[iEvent]==2};
 
 
   TotalEScaleND(NDDetectorSystPointers[0], &dunendmcSamples[iSample].rw_erec_shifted[iEvent], dunendmcSamples[iSample].rw_erec_had[iEvent], dunendmcSamples[iSample].rw_erec_lep[iEvent], NotCCnumu);
