@@ -1,5 +1,3 @@
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
 # CMake version check
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
@@ -8,8 +6,6 @@ SET(MaCh3DUNE_VERSION 1.0.0)
 # Create project (todo: set configurable CUDA)
 project(MaCh3DUNE VERSION ${MaCh3DUNE_VERSION} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-option(MaCh3_DUNE_USE_SRProxy "Whether to build proxy classes for Standard Record objects" OFF)
 
 # Changes default install path to be a subdirectory of the build dir.
 # Can set build dir at configure time with -DCMAKE_INSTALL_PREFIX=/install/path
@@ -27,20 +23,31 @@ find_program(CMAKE_CXX_COMPILER NAMES $ENV{CXX} g++ PATHS ENV PATH NO_DEFAULT_PA
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 message("CMAKE SOURCE_DIR IS ${CMAKE_SOURCE_DIR}")
+
 ################################################################################
 #                            Check Dependencies
 ################################################################################
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/Modules)
-include(CPM)
+
+#=================== CPM
+
+# download CPM.cmake
+file(
+  DOWNLOAD
+  https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.40.2/CPM.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
+)
+include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
 
 CPMFindPackage(
       NAME CMakeModules
-      GIT_TAG v0.2.3
+      GIT_TAG stable
       GITHUB_REPOSITORY NuHepMC/CMakeModules
       DOWNLOAD_ONLY
   )
 include(${CMakeModules_SOURCE_DIR}/NuHepMCModules.cmake)
 
+#=================== ROOT
 include(ROOT)
 
 if(NOT TARGET ROOT::ROOT)
@@ -51,7 +58,9 @@ if(DEFINED ROOT_CXX_STANDARD AND ROOT_CXX_STANDARD GREATER CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD ${ROOT_CXX_STANDARD})
 endif()
 
-############################  DUNEAnaObj  ####################################
+#=================== DUNEAnaObj
+
+option(MaCh3_DUNE_USE_SRProxy "Whether to build proxy classes for Standard Record objects" OFF)
 
 if(MaCh3_DUNE_USE_SRProxy)
   find_package(duneanaobj)
@@ -111,18 +120,48 @@ endif()
 
 ##################################  MaCh3  ######################################
 #If MaCh3 was sourced find it, otherwise use CPM
-find_package(MaCh3 1.3.2 EXACT QUIET)
+SET(MaCh3_FOUND FALSE)
+find_package(MaCh3 1.3.3 EXACT QUIET)
 
 if(NOT MaCh3_FOUND)
-  CPMFindPackage(
+  cmessage(STATUS "Didn't find MaCh3, attempting to use built in MaCh3")
+
+  if(NOT DEFINED USE_CPU)
+    set(USE_CPU FALSE)
+  endif()
+
+  if(NOT DEFINED DEBUG_ENABLED)
+    set(DEBUG_ENABLED FALSE)
+  endif()
+
+  if(NOT DEFINED MULTITHREAD_ENABLED)
+    set(MULTITHREAD_ENABLED TRUE)
+  endif()
+
+  # Options list construction
+  set(MaCh3_OPTIONS
+      "USE_CPU ${USE_CPU}"
+      "MaCh3_DEBUG_ENABLED ${DEBUG_ENABLED}"
+      "MaCh3_MULTITHREAD_ENABLED ${MULTITHREAD_ENABLED}"
+  )
+
+  # Add LOG_LEVEL if defined
+  if (LOG_LEVEL)
+      list(APPEND MaCh3_OPTIONS "LOG_LEVEL ${LOG_LEVEL}")
+  endif()
+  
+  CPMAddPackage(
       NAME MaCh3
-      GIT_TAG "v1.3.2"
+      GIT_TAG "v1.3.3"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()
   ##KS: This ensure that all executables that are in core will be moved
   FILE(GLOB MaCh3Exe $ENV{MaCh3_ROOT}/Diagnostics/*)
   FILE(COPY ${MaCh3Exe} DESTINATION ${CMAKE_BINARY_DIR}/Diagnostics/)
+
+  FILE(GLOB MaCh3Exe $ENV{MaCh3_ROOT}/plotting/*)
+  FILE(COPY ${MaCh3Exe} DESTINATION ${CMAKE_BINARY_DIR}/plotting/)
 endif()
 
 if(NOT TARGET MaCh3::All)
@@ -131,14 +170,13 @@ endif()
 
 ############################  C++ Compiler  ####################################
 if (NOT DEFINED CMAKE_CXX_STANDARD OR "${CMAKE_CXX_STANDARD} " STREQUAL " ")
-  SET(CMAKE_CXX_STANDARD 11)
+  SET(CMAKE_CXX_STANDARD 14)
 endif()
 
 if(DEFINED ROOT_CXX_STANDARD AND ROOT_CXX_STANDARD GREATER CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD ${ROOT_CXX_STANDARD})
 endif()
 cmessage(STATUS "CMAKE CXX Standard: ${CMAKE_CXX_STANDARD}")
-
 
 ################################# Features ##################################
 
@@ -165,9 +203,7 @@ endif()
 ################################# Build MaCh3 ##################################
 add_library(MaCh3DUNECompilerOptions INTERFACE)
 set_target_properties(MaCh3DUNECompilerOptions PROPERTIES EXPORT_NAME CompilerOptions)
-if(PSYCHE_FOUND)
-  target_compile_definitions(MaCh3DUNECompilerOptions INTERFACE PSYCHESETUP)
-endif()
+
 target_include_directories(MaCh3DUNECompilerOptions
   INTERFACE
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
@@ -184,7 +220,7 @@ add_subdirectory(src)
 
 add_library(MaCh3DUNEAll INTERFACE)
 set_target_properties(MaCh3DUNEAll PROPERTIES EXPORT_NAME All)
-target_link_libraries(MaCh3DUNEAll INTERFACE SamplePDFDUNE MaCh3DUNECompilerOptions)
+target_link_libraries(MaCh3DUNEAll INTERFACE SamplePDFDUNE splinesDUNE MaCh3DUNECompilerOptions)
 add_library(MaCh3DUNE::All ALIAS MaCh3DUNEAll)
 
 install(TARGETS MaCh3DUNEAll
@@ -203,18 +239,11 @@ install(DIRECTORY inputs DESTINATION ${CMAKE_BINARY_DIR})
 install(DIRECTORY configs DESTINATION ${CMAKE_BINARY_DIR})
 install(DIRECTORY utils DESTINATION ${CMAKE_BINARY_DIR})
 
-set(export_destinations
-    ${CMAKE_INSTALL_PREFIX}/lib/cmake/
-    ${CMAKE_INSTALL_PREFIX}/
+install(EXPORT mach3dune-targets
+        FILE MaCh3DUNETargets.cmake
+        NAMESPACE MaCh3DUNE::
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/
 )
-
-foreach(dest ${export_destinations})
-  install(EXPORT mach3dune-targets
-          FILE MaCh3DUNETargets.cmake
-          NAMESPACE MaCh3DUNE::
-          DESTINATION ${dest}
-  )
-endforeach()
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
