@@ -199,7 +199,6 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
   int nupdgUnosc = sample_nupdgunosc[iSample];
   int nupdg = sample_nupdg[iSample];
-  bool signal = sample_signal[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", mc_files[iSample]);
@@ -288,7 +287,6 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->pot_s = pot/norm->GetBinContent(2);
 
   duneobj->nEvents = _data->GetEntries();
-  duneobj->signal = signal;
 
   // allocate memory for dunemc variables
   duneobj->rw_cvnnumu = new double[duneobj->nEvents];
