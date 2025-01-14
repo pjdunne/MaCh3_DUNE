@@ -6,6 +6,12 @@
 //ROOT includes
 #include "TError.h"
 
+//
+#include <assert.h>
+#include <manager/MaCh3Exception.h>
+#include <manager/MaCh3Logger.h>
+#include <manager/YamlHelper.h>
+
 samplePDFDUNEAtm::samplePDFDUNEAtm(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {
   Initialise();
 }
