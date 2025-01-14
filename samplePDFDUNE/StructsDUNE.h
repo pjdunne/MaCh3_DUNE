@@ -8,7 +8,6 @@
 
 struct dunemc_base {
 
-  bool signal; // true if signue
   int nEvents; // how many MC events are there
   int *Target; //Target the interaction was on
 

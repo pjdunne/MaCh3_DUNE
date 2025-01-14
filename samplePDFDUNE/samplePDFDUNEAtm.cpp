@@ -68,11 +68,9 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   duneobj->norm_s = 1;
   duneobj->pot_s = 1;
 
-  duneobj->signal = sample_signal[iSample];
-
   duneobj->nupdg = new int[duneobj->nEvents];
   duneobj->nupdgUnosc = new int[duneobj->nEvents];
-  
+
   duneobj->mode = new double[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];

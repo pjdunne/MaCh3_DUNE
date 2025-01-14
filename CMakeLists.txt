@@ -152,7 +152,7 @@ if(NOT MaCh3_FOUND)
   
   CPMAddPackage(
       NAME MaCh3
-      GIT_TAG "v1.3.3"
+      GIT_TAG "dbarrow257/fix/FDSignalFix"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()
@@ -177,6 +177,31 @@ if(DEFINED ROOT_CXX_STANDARD AND ROOT_CXX_STANDARD GREATER CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD ${ROOT_CXX_STANDARD})
 endif()
 cmessage(STATUS "CMAKE CXX Standard: ${CMAKE_CXX_STANDARD}")
+
+############################  FLAGS  ####################################
+add_library(DUNEMaCh3Warnings INTERFACE)
+
+target_compile_options(DUNEMaCh3Warnings INTERFACE
+  -Wextra                 # Enable extra warning flags
+  -Wall                   # Enable all standard warning flags
+  -Wshadow                # Warn when a variable declaration shadows one from an outer scope
+  -Wuninitialized         # Warn about uninitialized variables
+  -Wnon-virtual-dtor      # Warn when a class with virtual functions has a non-virtual destructor
+  -Woverloaded-virtual    # Warn when a function declaration hides a virtual function from a base class
+  -Wformat=2              # Warn on security issues around functions that format output (ie printf)
+  -Wunused                # Warn on anything being unused
+  -Wredundant-decls       # Warn about multiple declarations of the same entity. Useful for code cleanup.
+  -Wstrict-aliasing=2     # Helps detect potential aliasing issues that could lead to undefined behavior.
+  -Wuseless-cast          # Warn if you perform a cast to the same type (only in GCC >= 4.8)
+  -Wnull-dereference      # Warn if a null dereference is detected (only in GCC >= 6.0)
+  -Wold-style-cast        # Warn for c-style casts
+  -Wconversion            # Warn on type conversions that may lose data
+  -Wformat-security       # Warn on functions that are potentially insecure for formatting
+  -Walloca                # Warn if `alloca` is used, as it can lead to stack overflows
+  #-Wswitch-enum           # Warn if a `switch` statement on an enum does not cover all values
+  #-Wfloat-equal          # Warn if floating-point values are compared directly
+  #-Wpadded               # Warn when padding is added to a structure or class for alignment
+)
 
 ################################# Features ##################################
 
