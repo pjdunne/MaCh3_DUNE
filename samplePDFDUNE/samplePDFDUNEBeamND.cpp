@@ -251,6 +251,24 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   std::cout << "norm_s: " << duneobj->norm_s << std::endl;
 
   duneobj->nEvents = _data->GetEntries();
+
+  // HH: Downsampling by choosing the first X% of the events
+  if (CheckNodeExists(SampleManager->raw(), "Downsample")) {
+    double downsample = SampleManager->raw()["Downsample"].as<double>();
+    MACH3LOG_INFO("Downsample found in {}, will sample only {} of each file and scale POT correspondingly!", SampleManager->GetFileName(), downsample);
+    duneobj->nEvents = (int)(duneobj->nEvents*downsample);
+    // pot = pot/downsample;
+    duneobj->pot_s = duneobj->pot_s/downsample;
+    // duneobj->norm_s = duneobj->norm_s/downsample;
+    MACH3LOG_INFO("New number of events: {}", duneobj->nEvents);
+    MACH3LOG_INFO("New POT: {}", pot);
+    MACH3LOG_INFO("New pot_s: {}", duneobj->pot_s);
+    MACH3LOG_INFO("New norm_s: {}", duneobj->norm_s);
+  } else{
+    MACH3LOG_INFO("Downsample not defined in {}, continuing without downsampling!", SampleManager->GetFileName());
+  }
+
+
   duneobj->signal = signal;
 
   duneobj->rw_yrec = new double[duneobj->nEvents];
