@@ -9,7 +9,7 @@ ENV MACH3_DUNE_WORK_DIR=/opt/MaCh3DUNE/
 ENV MACH3_DUNE_INSTALL_DIR=${MACH3_DUNE_WORK_DIR}/build
 
 
-RUN git clone https://github.com/t2k-software/MaCh3.git ${MACH3_DUNE_WORK_DIR}
+RUN git clone https://github.com/DUNE/MaCh3_DUNE.git ${MACH3_DUNE_WORK_DIR}
 
 WORKDIR ${MACH3_DUNE_WORK_DIR}
 RUN git checkout ${MACH3_DUNE_VERSION}
