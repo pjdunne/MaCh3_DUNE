@@ -40,5 +40,5 @@ jobs:
       run: |
         docker build . \
           --file ${{ matrix.file }} \
-          --tag ghcr.io/${{ github.repository_owner | toLower()  }}/mach3:${{ matrix.tag }} \
+          --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
           --build-arg MACH3_DUNE_VERSION=${{ github.head_ref }} \
