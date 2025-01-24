@@ -23,6 +23,7 @@ class samplePDFDUNEBeamFD : virtual public samplePDFFDBase
 {
 public:
 
+
   /// @brief samplePDFDUNE FD beam Constructor
   /// @param mc_version Config Name
   /// @param xsec_cov Cross-section covariance matrix
