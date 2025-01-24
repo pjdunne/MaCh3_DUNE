@@ -6,7 +6,13 @@
 //ROOT includes
 #include "TError.h"
 
-samplePDFDUNEAtm::samplePDFDUNEAtm(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
+//
+#include <assert.h>
+#include <manager/MaCh3Exception.h>
+#include <manager/MaCh3Logger.h>
+#include <manager/YamlHelper.h>
+
+samplePDFDUNEAtm::samplePDFDUNEAtm(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {
   Initialise();
 }
 
@@ -20,14 +26,14 @@ void samplePDFDUNEAtm::Init() {
 }
 
 void samplePDFDUNEAtm::SetupSplines() {
-  splineFile = nullptr;
+  SplineHandler = nullptr;
 }
 
 void samplePDFDUNEAtm::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 3;
-      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
       MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].flux_w[j]);
       MCSamples[i].total_weight_pointers[j][1] = MCSamples[i].osc_w_pointer[j];
       MCSamples[i].total_weight_pointers[j][2] = &(MCSamples[i].xsec_w[j]);
@@ -62,10 +68,9 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   duneobj->norm_s = 1;
   duneobj->pot_s = 1;
 
-  duneobj->nutype = sample_nutype[iSample];
-  duneobj->oscnutype = sample_oscnutype[iSample];
-  duneobj->signal = sample_signal[iSample];
-  
+  duneobj->nupdg = new int[duneobj->nEvents];
+  duneobj->nupdgUnosc = new int[duneobj->nEvents];
+
   duneobj->mode = new double[duneobj->nEvents];
   duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
@@ -77,11 +82,14 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   duneobj->rw_theta = new double[duneobj->nEvents];
  
   for (int iEvent=0;iEvent<duneobj->nEvents;iEvent++) {
-    Tree->GetEntry(iEvent);
+    Tree->GetEntry(iEvent);    
 
     if ((iEvent % (duneobj->nEvents/10))==0) {
       MACH3LOG_INFO("\tProcessing event: {}/{}",iEvent,duneobj->nEvents);
     }
+
+    duneobj->nupdg[iEvent] = sample_nupdg[iSample];
+    duneobj->nupdgUnosc[iEvent] = sample_nupdgunosc[iSample];
 
     duneobj->mode[iEvent] = (double)SIMBMode_ToMaCh3Mode(TMath::Abs(sr->mc.nu[0].mode),(int)sr->mc.nu[0].iscc);
     duneobj->rw_isCC[iEvent] = sr->mc.nu[0].iscc;
@@ -116,23 +124,19 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
 
 void samplePDFDUNEAtm::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
-  fdmc_base *fdobj = &(MCSamples[iSample]);  
+  FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);  
 
   //Make sure that this is only set if you're an atmoshperic object
-  fdobj->rw_truecz = new const double*[fdobj->nEvents];
-  
-  fdobj->nutype = duneobj->nutype;
-  fdobj->oscnutype = duneobj->oscnutype;
-  fdobj->signal = duneobj->signal;
-  fdobj->SampleDetID = SampleDetID;
-  fdobj->ChannelIndex = iSample;
+  fdobj->rw_truecz.resize(fdobj->nEvents);
   
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent) {
-    fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
-    fdobj->isNC[iEvent] = !duneobj->rw_isCC[iEvent];
-    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]);
-    
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
+    fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
+    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]);    
+    fdobj->isNC[iEvent] = !duneobj->rw_isCC[iEvent];
+    fdobj->nupdg[iEvent] = &(duneobj->nupdg[iEvent]);
+    fdobj->nupdgUnosc[iEvent] = &(duneobj->nupdgUnosc[iEvent]);
+
     fdobj->rw_truecz[iEvent] = &(duneobj->rw_truecz[iEvent]);
   }
 }
@@ -157,7 +161,7 @@ const double* samplePDFDUNEAtm::GetPointerToKinematicParameter(KinematicTypes Ki
     KinematicValue = &(MCSamples[iSample].ChannelIndex);
     break;
   case kMode:
-    KinematicValue = MCSamples[iSample].mode[iEvent];
+    KinematicValue = &(dunemcSamples[iSample].mode[iEvent]);
     break;
   default:
     MACH3LOG_ERROR("Unknown KinPar: {}",KinPar);
