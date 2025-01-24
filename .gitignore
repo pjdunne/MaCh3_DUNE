@@ -10,3 +10,5 @@ jupyter_env
 .history
 Doc
 inputs/Atmospherics/CAFs
+inputs/DUNE_CAF_files
+inputs/DUNE_spline_files
