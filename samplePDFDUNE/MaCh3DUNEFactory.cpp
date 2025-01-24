@@ -8,14 +8,13 @@
 samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string SampleConfig, covarianceXsec* &xsec, covarianceOsc* &osc) {
 
   samplePDFFDBase *FDSample;
-  //if (SampleType == "BeamFD") {
-  //FDSample = new samplePDFDUNEBeamFD(SampleConfig, xsec);
-  //} else if (SampleType == "BeamND") {
-  //FDSample = new samplePDFDUNEBeamND(SampleConfig, xsec);
+  if (SampleType == "BeamFD") {
+    FDSample = new samplePDFDUNEBeamFD(SampleConfig, xsec, osc);
+  } else if (SampleType == "BeamND") {
+    FDSample = new samplePDFDUNEBeamND(SampleConfig, xsec, osc);
   // } else if (SampleType == "BeamNDGar") {
   //   FDSample = new samplePDFDUNEBeamNDGar(SampleConfig, xsec);
-  //} else if (SampleType == "Atm") {
-  if (SampleType == "Atm") {
+  } else if (SampleType == "Atm") {
     FDSample = new samplePDFDUNEAtm(SampleConfig, xsec, osc);
   } else {
     MACH3LOG_ERROR("Invalid SampleType: {} defined in {}", SampleType, SampleConfig);
