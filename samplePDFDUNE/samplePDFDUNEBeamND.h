@@ -23,10 +23,10 @@
 class samplePDFDUNEBeamND : virtual public samplePDFFDBase
 {
 public:
-  /// @brief Constructor
-  /// @param mc_version Configuration file
-  /// @param xsec_cov cross-section covariance matrix
-  /// @param osc_cov oscillation covariance matrix
+  /// @brief samplePDFDUNE ND beam Constructor
+  /// @param mc_version Config Name
+  /// @param xsec_cov Cross-section covariance matrix
+  /// @param osc_cov Oscillation covariance matrix
   samplePDFDUNEBeamND(std::string mc_version, covarianceXsec* xsec_cov, covarianceOsc* osc_cov);
   /// @brief destructor
   ~samplePDFDUNEBeamND();
