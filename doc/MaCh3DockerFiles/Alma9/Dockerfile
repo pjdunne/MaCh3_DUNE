@@ -19,4 +19,4 @@ WORKDIR ${MACH3_DUNE_INSTALL_DIR}
 
 RUN cmake ../
 
-RUN make -j4 && make install
+RUN make -j && make install
