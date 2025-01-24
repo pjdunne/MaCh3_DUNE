@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['splinesdune_0',['splinesdune',['../classsplinesDUNE.html',1,'splinesDUNE'],['../classsplinesDUNE.html#a3d1ba06e4356e0e36c784a5f181ecb74',1,'splinesDUNE::splinesDUNE()']]],
-  ['splinesdune_2ecpp_1',['splinesDUNE.cpp',['../splinesDUNE_8cpp.html',1,'']]],
-  ['splinesdune_2eh_2',['splinesDUNE.h',['../splinesDUNE_8h.html',1,'']]],
-  ['stripduplicatedmodes_3',['StripDuplicatedModes',['../classsplinesDUNE.html#a6a7f595330f15b8ac6fdcd5b3d91e400',1,'splinesDUNE']]]
+  ['fddetectorsystpointers_0',['FDDetectorSystPointers',['../classsamplePDFDUNEBeamFD.html#a1709678383a52094e88aeb9fc32b5c75',1,'samplePDFDUNEBeamFD']]],
+  ['fillsamplearray_1',['FillSampleArray',['../classsplinesDUNE.html#afaf6778156a9e0ddd52156cc945fb7b8',1,'splinesDUNE']]],
+  ['flux_5fw_2',['flux_w',['../structdunemc__base.html#a7f862d7cde60d9f7288a66845d76dfff',1,'dunemc_base']]]
 ];

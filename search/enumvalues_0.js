@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['gamnugamma_0',['gAMNuGamma',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635aabd7122ee68cef66e3349cf058a413bf',1,'StructsDUNE.h']]],
+  ['gcoh_1',['gCoh',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635ac01ad2c0960cc660e495cba461ca5c6c',1,'StructsDUNE.h']]],
+  ['gcohelastic_2',['gCohElastic',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635a6b7163e7de7a90419ae992d8c7d1e615',1,'StructsDUNE.h']]],
+  ['gdiffractive_3',['gDiffractive',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635a3762b6b495ce545aee94987ac7cdc93d',1,'StructsDUNE.h']]],
+  ['gdis_4',['gDIS',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635a00987ee9837778facdf842df512e763a',1,'StructsDUNE.h']]],
+  ['gelectronscattering_5',['gElectronScattering',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635a56930f4a920877289a4bb045408cb023',1,'StructsDUNE.h']]],
+  ['ggenie_5fnmodes_6',['gGENIE_nModes',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635ae56e526df153d81968dc15bee4988a6e',1,'StructsDUNE.h']]],
+  ['gglashowresonance_7',['gGlashowResonance',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635a461bc4c781d857ae02367135bb2c44b6',1,'StructsDUNE.h']]],
+  ['gimd_8',['gIMD',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635aa5d0915e02ef12504611e51073e4c87c',1,'StructsDUNE.h']]],
+  ['gimdannihilation_9',['gIMDAnnihilation',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635aea900f00fe0ad61e89c5326cb72df55e',1,'StructsDUNE.h']]],
+  ['ginversebetadecay_10',['gInverseBetaDecay',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635aef3702d9855b0d41608dddbe9fc8662b',1,'StructsDUNE.h']]],
+  ['gmec_11',['gMEC',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635a099cc4b9321838462269aaf62887332a',1,'StructsDUNE.h']]],
+  ['gqe_12',['gQE',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635aeab227d25b98fc181b986de0bbbad85e',1,'StructsDUNE.h']]],
+  ['gres_13',['gRes',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635adb64b7f96bb5866968cdf2c5882a6f70',1,'StructsDUNE.h']]],
+  ['gsinglekaon_14',['gSingleKaon',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635aa4dc5d45e494bd0d91e66ae03aac4b22',1,'StructsDUNE.h']]],
+  ['gunknowninteraction_15',['gUnknownInteraction',['../StructsDUNE_8h.html#af3b2d58a783363ae3c3a97ec4dc87635a8f695734a38e6c2e4be1366e0b79ffc1',1,'StructsDUNE.h']]]
+];

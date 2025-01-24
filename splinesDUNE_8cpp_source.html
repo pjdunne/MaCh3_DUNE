@@ -90,7 +90,7 @@ $(document).ready(function() { init_codefold(0); });
 </div><!--header-->
 <div class="contents">
 <a href="splinesDUNE_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="splinesDUNE_8h.html">splinesDUNE.h</a>&quot;</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;samplePDFDUNE/StructsDUNE.h&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="StructsDUNE_8h.html">samplePDFDUNE/StructsDUNE.h</a>&quot;</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;TKey.h&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;TROOT.h&quot;</span></div>
@@ -185,7 +185,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>      <span class="keywordtype">int</span> ModeNum = -1;</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>      Mode = strtok(NULL, <span class="stringliteral">&quot;_&quot;</span>);</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iMode = 0; iMode &lt; SplineModeVecs[iSample][SystNum].size(); iMode++) {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">if</span> (strcmp(Mode, MaCh3mode_ToDUNEString((MaCh3_Mode)SplineModeVecs[iSample][SystNum][iMode]).c_str()) == 0) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">if</span> (strcmp(Mode, <a class="code hl_function" href="StructsDUNE_8h.html#a397a4a529374cae240a28b2a86162593">MaCh3mode_ToDUNEString</a>((<a class="code hl_enumeration" href="StructsDUNE_8h.html#ad6d6cb539decf2212fd3a2186c9daf40">MaCh3_Mode</a>)SplineModeVecs[iSample][SystNum][iMode]).c_str()) == 0) {</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>          ModeNum = iMode;</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>          <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        }</div>
@@ -296,7 +296,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>  <span class="keywordtype">int</span> nSplineSysts = (int)indexvec[SampleIndex][iOscChan].size();</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>  <span class="comment">//ETA- this is already a MaCh3 mode</span></div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>  <span class="comment">//int Mode = MaCh3Mode_to_SplineMode(MaCh3_Mode(EventMode));</span></div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>  <span class="keywordtype">int</span> Mode = MaCh3_Mode(EventMode);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>  <span class="keywordtype">int</span> Mode = <a class="code hl_enumeration" href="StructsDUNE_8h.html#ad6d6cb539decf2212fd3a2186c9daf40">MaCh3_Mode</a>(EventMode);</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>  <span class="keywordtype">int</span> Var1Bin = SplineBinning[SampleIndex][iOscChan][0]-&gt;FindBin(Var1Val)-1;</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>  <span class="keywordflow">if</span> (Var1Bin &lt; 0 || Var1Bin &gt;= SplineBinning[SampleIndex][iOscChan][0]-&gt;GetNbins()){</div>
@@ -363,7 +363,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="comment">//Loop over the modes that we&#39;ve listed in xsec cov</span></div>
 <div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iMode = 0 ; iMode &lt; InputVector[iVec].size() ; iMode++){</div>
 <div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>      <span class="comment">//Convert the MaCh3 mode to spline mode (could use MaCh3Mode_SplineMode_Map here)</span></div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>      <span class="keywordtype">int</span> iSplineMode = MaCh3Mode_to_SplineMode(InputVector[iVec][iMode]);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>      <span class="keywordtype">int</span> iSplineMode = <a class="code hl_function" href="StructsDUNE_8h.html#a46b5fc5d17221c2f314d6642a395fea1">MaCh3Mode_to_SplineMode</a>(InputVector[iVec][iMode]);</div>
 <div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>      <span class="keywordtype">bool</span> IncludeMode = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>      <span class="comment">//Now check to see if we&#39;ve already included this unique spline mode</span></div>
@@ -387,6 +387,10 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  <span class="keywordflow">return</span> ReturnVec;</div>
 <div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>}</div>
 </div>
+<div class="ttc" id="aStructsDUNE_8h_html"><div class="ttname"><a href="StructsDUNE_8h.html">StructsDUNE.h</a></div></div>
+<div class="ttc" id="aStructsDUNE_8h_html_a397a4a529374cae240a28b2a86162593"><div class="ttname"><a href="StructsDUNE_8h.html#a397a4a529374cae240a28b2a86162593">MaCh3mode_ToDUNEString</a></div><div class="ttdeci">std::string MaCh3mode_ToDUNEString(MaCh3_Mode i)</div><div class="ttdef"><b>Definition</b> <a href="StructsDUNE_8h_source.html#l01041">StructsDUNE.h:1041</a></div></div>
+<div class="ttc" id="aStructsDUNE_8h_html_a46b5fc5d17221c2f314d6642a395fea1"><div class="ttname"><a href="StructsDUNE_8h.html#a46b5fc5d17221c2f314d6642a395fea1">MaCh3Mode_to_SplineMode</a></div><div class="ttdeci">int MaCh3Mode_to_SplineMode(int iMode)</div><div class="ttdef"><b>Definition</b> <a href="StructsDUNE_8h_source.html#l01202">StructsDUNE.h:1202</a></div></div>
+<div class="ttc" id="aStructsDUNE_8h_html_ad6d6cb539decf2212fd3a2186c9daf40"><div class="ttname"><a href="StructsDUNE_8h.html#ad6d6cb539decf2212fd3a2186c9daf40">MaCh3_Mode</a></div><div class="ttdeci">MaCh3_Mode</div><div class="ttdef"><b>Definition</b> <a href="StructsDUNE_8h_source.html#l00617">StructsDUNE.h:617</a></div></div>
 <div class="ttc" id="aclasssplinesDUNE_html_a3d1ba06e4356e0e36c784a5f181ecb74"><div class="ttname"><a href="classsplinesDUNE.html#a3d1ba06e4356e0e36c784a5f181ecb74">splinesDUNE::splinesDUNE</a></div><div class="ttdeci">splinesDUNE(covarianceXsec *xsec_cov)</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition</b> <a href="splinesDUNE_8cpp_source.html#l00007">splinesDUNE.cpp:7</a></div></div>
 <div class="ttc" id="aclasssplinesDUNE_html_a6a7f595330f15b8ac6fdcd5b3d91e400"><div class="ttname"><a href="classsplinesDUNE.html#a6a7f595330f15b8ac6fdcd5b3d91e400">splinesDUNE::StripDuplicatedModes</a></div><div class="ttdeci">virtual std::vector&lt; std::vector&lt; int &gt; &gt; StripDuplicatedModes(std::vector&lt; std::vector&lt; int &gt; &gt; InputVector) override</div><div class="ttdoc">Find sand strips dubplicate modes to ensure everything corresponds to MaCh3 modes.</div><div class="ttdef"><b>Definition</b> <a href="splinesDUNE_8cpp_source.html#l00253">splinesDUNE.cpp:253</a></div></div>
 <div class="ttc" id="aclasssplinesDUNE_html_ac443fbd10b6f13a774802d7aba9eb4b6"><div class="ttname"><a href="classsplinesDUNE.html#ac443fbd10b6f13a774802d7aba9eb4b6">splinesDUNE::GetEventSplines</a></div><div class="ttdeci">virtual std::vector&lt; std::vector&lt; int &gt; &gt; GetEventSplines(std::string SampleName, int iOscChan, int EventMode, double Var1Val, double Var2Val, double Var3Val) override</div><div class="ttdoc">Getter method for each spline.</div><div class="ttdef"><b>Definition</b> <a href="splinesDUNE_8cpp_source.html#l00181">splinesDUNE.cpp:181</a></div></div>

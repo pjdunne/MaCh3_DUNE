@@ -311,7 +311,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">   89</span>      <span class="keywordtype">int</span> ModeNum = -1;</div>
 <div class="line"><span class="lineno">   90</span>      Mode = strtok(NULL, <span class="stringliteral">&quot;_&quot;</span>);</div>
 <div class="line"><span class="lineno">   91</span>      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iMode = 0; iMode &lt; SplineModeVecs[iSample][SystNum].size(); iMode++) {</div>
-<div class="line"><span class="lineno">   92</span>        <span class="keywordflow">if</span> (strcmp(Mode, MaCh3mode_ToDUNEString((MaCh3_Mode)SplineModeVecs[iSample][SystNum][iMode]).c_str()) == 0) {</div>
+<div class="line"><span class="lineno">   92</span>        <span class="keywordflow">if</span> (strcmp(Mode, <a class="code hl_function" href="StructsDUNE_8h.html#a397a4a529374cae240a28b2a86162593">MaCh3mode_ToDUNEString</a>((<a class="code hl_enumeration" href="StructsDUNE_8h.html#ad6d6cb539decf2212fd3a2186c9daf40">MaCh3_Mode</a>)SplineModeVecs[iSample][SystNum][iMode]).c_str()) == 0) {</div>
 <div class="line"><span class="lineno">   93</span>          ModeNum = iMode;</div>
 <div class="line"><span class="lineno">   94</span>          <span class="keywordflow">break</span>;</div>
 <div class="line"><span class="lineno">   95</span>        }</div>
@@ -398,6 +398,8 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  176</span>  </div>
 <div class="line"><span class="lineno">  177</span>  <span class="keywordflow">return</span>;</div>
 <div class="line"><span class="lineno">  178</span>}</div>
+<div class="ttc" id="aStructsDUNE_8h_html_a397a4a529374cae240a28b2a86162593"><div class="ttname"><a href="StructsDUNE_8h.html#a397a4a529374cae240a28b2a86162593">MaCh3mode_ToDUNEString</a></div><div class="ttdeci">std::string MaCh3mode_ToDUNEString(MaCh3_Mode i)</div><div class="ttdef"><b>Definition</b> <a href="StructsDUNE_8h_source.html#l01041">StructsDUNE.h:1041</a></div></div>
+<div class="ttc" id="aStructsDUNE_8h_html_ad6d6cb539decf2212fd3a2186c9daf40"><div class="ttname"><a href="StructsDUNE_8h.html#ad6d6cb539decf2212fd3a2186c9daf40">MaCh3_Mode</a></div><div class="ttdeci">MaCh3_Mode</div><div class="ttdef"><b>Definition</b> <a href="StructsDUNE_8h_source.html#l00617">StructsDUNE.h:617</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -492,7 +494,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  198</span>  <span class="keywordtype">int</span> nSplineSysts = (int)indexvec[SampleIndex][iOscChan].size();</div>
 <div class="line"><span class="lineno">  199</span>  <span class="comment">//ETA- this is already a MaCh3 mode</span></div>
 <div class="line"><span class="lineno">  200</span>  <span class="comment">//int Mode = MaCh3Mode_to_SplineMode(MaCh3_Mode(EventMode));</span></div>
-<div class="line"><span class="lineno">  201</span>  <span class="keywordtype">int</span> Mode = MaCh3_Mode(EventMode);</div>
+<div class="line"><span class="lineno">  201</span>  <span class="keywordtype">int</span> Mode = <a class="code hl_enumeration" href="StructsDUNE_8h.html#ad6d6cb539decf2212fd3a2186c9daf40">MaCh3_Mode</a>(EventMode);</div>
 <div class="line"><span class="lineno">  202</span> </div>
 <div class="line"><span class="lineno">  203</span>  <span class="keywordtype">int</span> Var1Bin = SplineBinning[SampleIndex][iOscChan][0]-&gt;FindBin(Var1Val)-1;</div>
 <div class="line"><span class="lineno">  204</span>  <span class="keywordflow">if</span> (Var1Bin &lt; 0 || Var1Bin &gt;= SplineBinning[SampleIndex][iOscChan][0]-&gt;GetNbins()){</div>
@@ -591,7 +593,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  263</span>    <span class="comment">//Loop over the modes that we&#39;ve listed in xsec cov</span></div>
 <div class="line"><span class="lineno">  264</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iMode = 0 ; iMode &lt; InputVector[iVec].size() ; iMode++){</div>
 <div class="line"><span class="lineno">  265</span>      <span class="comment">//Convert the MaCh3 mode to spline mode (could use MaCh3Mode_SplineMode_Map here)</span></div>
-<div class="line"><span class="lineno">  266</span>      <span class="keywordtype">int</span> iSplineMode = MaCh3Mode_to_SplineMode(InputVector[iVec][iMode]);</div>
+<div class="line"><span class="lineno">  266</span>      <span class="keywordtype">int</span> iSplineMode = <a class="code hl_function" href="StructsDUNE_8h.html#a46b5fc5d17221c2f314d6642a395fea1">MaCh3Mode_to_SplineMode</a>(InputVector[iVec][iMode]);</div>
 <div class="line"><span class="lineno">  267</span>      <span class="keywordtype">bool</span> IncludeMode = <span class="keyword">true</span>;</div>
 <div class="line"><span class="lineno">  268</span> </div>
 <div class="line"><span class="lineno">  269</span>      <span class="comment">//Now check to see if we&#39;ve already included this unique spline mode</span></div>
@@ -614,6 +616,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  286</span>  </div>
 <div class="line"><span class="lineno">  287</span>  <span class="keywordflow">return</span> ReturnVec;</div>
 <div class="line"><span class="lineno">  288</span>}</div>
+<div class="ttc" id="aStructsDUNE_8h_html_a46b5fc5d17221c2f314d6642a395fea1"><div class="ttname"><a href="StructsDUNE_8h.html#a46b5fc5d17221c2f314d6642a395fea1">MaCh3Mode_to_SplineMode</a></div><div class="ttdeci">int MaCh3Mode_to_SplineMode(int iMode)</div><div class="ttdef"><b>Definition</b> <a href="StructsDUNE_8h_source.html#l01202">StructsDUNE.h:1202</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
