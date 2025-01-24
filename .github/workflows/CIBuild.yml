@@ -6,7 +6,9 @@ name: Build CI
 # The events that trigger the workflow
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, hwallace/feature/workflows ]
+  push:
+    branches: hwallace/feature/workflows
 
 permissions:
   contents: read
