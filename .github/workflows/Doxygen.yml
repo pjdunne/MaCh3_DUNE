@@ -45,7 +45,7 @@ jobs:
       - name: Doxygen Action
         uses: mattnotmitt/doxygen-action@1.9.8
         with:
-          doxyfile-path: './Doc/Doxyfile.txt'
+          doxyfile-path: './doc/Doxyfile'
           working-directory: .
 
       # Deploys the generated documentation to GitHub Pages
@@ -53,4 +53,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./Doc/html
+          publish_dir: ./doc/html
