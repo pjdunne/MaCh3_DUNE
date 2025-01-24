@@ -14,9 +14,8 @@ public:
   /// @brief Constructor
   /// @param mc_version Configuration file
   /// @param xsec_cov cross-section covariance matrix
-  samplePDFDUNEAtm(std::string mc_version, covarianceXsec* xsec_cov);
-
-  /// @brief destructor
+  /// @param osc_cov oscillation covariance matrix
+  samplePDFDUNEAtm(std::string mc_version, covarianceXsec* xsec_cov, covarianceOsc* osc_cov);
   ~samplePDFDUNEAtm();
 
   /// @brief Enum to identify kinematics

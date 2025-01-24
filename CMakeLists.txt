@@ -111,12 +111,12 @@ endif()
 
 ##################################  MaCh3  ######################################
 #If MaCh3 was sourced find it, otherwise use CPM
-find_package(MaCh3)
+find_package(MaCh3 1.3.2 EXACT QUIET)
 
 if(NOT MaCh3_FOUND)
   CPMFindPackage(
       NAME MaCh3
-      GIT_TAG "v1.2.0_alpha"
+      GIT_TAG "v1.3.2"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()
