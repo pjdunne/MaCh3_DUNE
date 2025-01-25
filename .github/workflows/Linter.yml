@@ -4,7 +4,7 @@ name: Super Linter
 
 on:
   pull_request:
-    branches: [develop hwallace/feature/additional_workflows]
+    branches: [develop, hwallace/feature/additional_workflows]
 
 jobs:
   super-linter:
