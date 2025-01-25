@@ -20,7 +20,7 @@ RUN mkdir -p ${MACH3_DUNE_INSTALL_DIR}
 WORKDIR ${MACH3_DUNE_INSTALL_DIR}
 
 RUN if [ -n "$MACH3_CORE_VERSION" ]; then \
-      cmake ../ -DMaCh3_Branch=${CORE_VERSION}; \
+      cmake ../ -DMaCh3_Branch=${MACH3_CORE_VERSION}; \
     else \
       cmake ../; \
     fi
