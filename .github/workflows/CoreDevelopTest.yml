@@ -39,7 +39,7 @@ jobs:
       - name: Push Docker image
         run: |
           docker push "ghcr.io/dune/mach3:${{ matrix.tag_latest }}_core_develop"
-  
+  xw
       - name: Delete old images
         uses: actions/delete-package-versions@v5
         with:
