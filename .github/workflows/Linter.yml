@@ -4,10 +4,8 @@ name: Super Linter
 
 on:
   pull_request:
-    branches: [develop, hwallace/feature/additional_workflows]
+    branches: [develop]
 
-  push:
-    branches: [hwallace/feature/additional_workflows]
 
 jobs:
   super-linter:
@@ -28,6 +26,6 @@ jobs:
           VALIDATE_YAML: true  # Enable YAML linting
           VALIDATE_GITHUB_ACTIONS: true  # Enable GitHub Actions workflow linting
           VALIDATE_PYTHON: true  # Enable Python linting
-          VALIDATE_ALL_CODEBASE: false  # Lint the entire codebase
+          VALIDATE_ALL_CODEBASE: true  # Lint the entire codebase
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for permissions
           # DISABLE_LINTERS: "CPP"  # Disable linting for other languages
