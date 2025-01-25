@@ -3,7 +3,7 @@ FROM picker24/root_v6_26_10:alma9 AS mach3dune_build
 
 # Declare the build argument
 ARG MACH3_DUNE_VERSION
-ARG CORE_VERSION
+ARG MACH3_CORE_VERSION
 ENV MACH3_DUNE_VERSION=${MACH3_DUNE_VERSION:-develop}
 
 ENV MACH3_DUNE_WORK_DIR=/opt/MaCh3DUNE/
@@ -17,7 +17,7 @@ RUN git checkout ${MACH3_DUNE_VERSION}
 RUN mkdir -p ${MACH3_DUNE_INSTALL_DIR}
 WORKDIR ${MACH3_DUNE_INSTALL_DIR}
 
-RUN if [ -n "$CORE_VERSION" ]; then \
+RUN if [ -n "$MACH3_CORE_VERSION" ]; then \
       cmake ../ -DMaCh3_Branch=${CORE_VERSION}; \
     else \
       cmake ../; \
