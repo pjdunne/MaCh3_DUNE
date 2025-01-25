@@ -6,7 +6,7 @@ name: Weekly Core Integration
 
 on:
   schedule:
-    - cron '0 0 * * 0' # Might as well do everything Sunday at midngiht
+    - cron: '0 0 * * 0' # Might as well do everything Sunday at midngiht
   push:
     branches: [hwallace/feature/additional_workflows]
 
