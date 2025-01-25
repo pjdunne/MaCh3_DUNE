@@ -42,7 +42,7 @@ jobs:
             docker build . \
               --file "${{ matrix.file }}" \
               --tag "ghcr.io/dune/mach3:${{ matrix.tag_latest }}" \
-              --build-arg MACH3_DUNE_VERSION="develop" \
+              --build-arg MACH3_DUNE_VERSION="hwallace/feature/additional_workflows" \
               --build-arg MACH3_CORE_VERSION=develop
           fi
 
