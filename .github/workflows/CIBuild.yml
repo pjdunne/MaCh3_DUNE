@@ -45,8 +45,8 @@ jobs:
     - name: PR Landmine
       uses: tylermurry/github-pr-landmine@v1
       with:
-      token: ${{ github.token }}
-      test-command: docker build . \
-          --file ${{ matrix.file }} \
-          --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
-          --build-arg MACH3_DUNE_VERSION=${{ github.head_ref }}
+        token: ${{ github.token }}
+        test-command: docker build . \
+            --file ${{ matrix.file }} \
+            --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
+            --build-arg MACH3_DUNE_VERSION=${{ github.head_ref }}
