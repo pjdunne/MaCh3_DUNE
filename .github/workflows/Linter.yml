@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [develop, hwallace/feature/additional_workflows]
 
+  push:
+    branches: [hwallace/feature/additional_workflows]
+
 jobs:
   super-linter:
     runs-on: ubuntu-latest
