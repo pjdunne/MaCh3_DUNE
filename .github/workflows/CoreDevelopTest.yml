@@ -35,13 +35,13 @@ jobs:
           if [ "${{ github.ref_type }}" == "tag" ]; then
             docker build . \
               --file "${{ matrix.file }}" \
-              --tag "ghcr.io/dune/mach3:${{ matrix.os }}${{ github.ref_name }}" \
+              --tag "ghcr.io/dune/mach3:${{ matrix.os }}${{ github.ref_name }}_core_develop" \
               --build-arg MACH3_DUNE_VERSION="${{ github.ref_name }}" \
               --build-arg MACH3_CORE_VERSION=develop
           else
             docker build . \
               --file "${{ matrix.file }}" \
-              --tag "ghcr.io/dune/mach3:${{ matrix.tag_latest }}" \
+              --tag "ghcr.io/dune/mach3:${{ matrix.tag_latest }}_core_develop" \
               --build-arg MACH3_DUNE_VERSION="hwallace/feature/additional_workflows" \
               --build-arg MACH3_CORE_VERSION=develop
           fi
@@ -49,9 +49,9 @@ jobs:
       - name: Push Docker image
         run: |
           if [ "${{ github.ref_type }}" == "tag" ]; then
-            docker push "ghcr.io/dune/mach3:${{ matrix.os }}${{ github.ref_name }}_develop_build"
+            docker push "ghcr.io/dune/mach3:${{ matrix.os }}${{ github.ref_name }}_core_develop"
           else
-            docker push "ghcr.io/dune/mach3:${{ matrix.tag_latest }}_develop_build"
+            docker push "ghcr.io/dune/mach3:${{ matrix.tag_latest }}_core_develop"
           fi
 
       - name: Delete old images
