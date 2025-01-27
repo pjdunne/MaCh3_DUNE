@@ -22,6 +22,10 @@ jobs:
           - os: Alma9
             file: doc/MaCh3DockerFiles/Alma9/Dockerfile
             tag: alma9latest
+          - os: Ubuntu22.04
+            file: doc/MaCh3DockerFiles/Ubuntu22/Dockerfile
+            tag: ubuntulatest
+
          # - os: Rocky9
          #   file: doc/MaCh3DockerFiles/Rocky9/Dockerfile
          #   tag: rocky9latest

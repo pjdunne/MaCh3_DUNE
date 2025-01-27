@@ -23,7 +23,7 @@ jobs:
 
     name: Build CI ${{ matrix.os }}
     container:
-      image: ghcr.io/dune/mach3:alma9latest
+      image: ghcr.io/dune/mach3:ubuntulatest
       options: --privileged -v /cvmfs:/cvmfs:shared
 
     steps:
