@@ -1,7 +1,7 @@
 ---
 # Check if MaCh3 compiles correctly
 
-name: Build CI
+name: Event Rates Beam
 
 # The events that trigger the workflow
 on:
@@ -29,24 +29,33 @@ jobs:
          #   tag: rocky9latest
 
     name: Build CI ${{ matrix.os }}
+    container:
+       image: ghcr.io/dune/mach3:alma9latest
 
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
 
-
-    - name: Log in to GitHub Container Registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-    - name: Build the Docker image
+    - name: Build Code
       run: |
-        docker build . \
-          --file ${{ matrix.file }} \
-          --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
-          --build-arg MACH3_DUNE_VERSION=${{ github.head_ref }} 
+        ./setup_inputs.sh ${{ matrix.inputs }}
+        mkdir build
+        cd build
+        cmake ../
+        make -j4
+        cd ..
+        source build/bin/setup.MaCh3.sh
+        source build/bin/setup.NuOscillator.sh
+        source build/bin/setup.MaCh3DUNE.sh
+        ln -sf \
+         /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* inputs
+
+
 
     - name: Run Event rates
-      run: |
-        ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
+      run: |         
+         ./build/bin/EventRates configs/EventRates_Beam.yaml
+
+
 
     
