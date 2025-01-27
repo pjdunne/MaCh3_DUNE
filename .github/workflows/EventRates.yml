@@ -28,11 +28,6 @@ jobs:
       - name: Set up CVMFS
         uses: cvmfs-contrib/github-action-cvmfs@v4
 
-      # Verify CVMFS mount
-      - name: Verify CVMFS Access
-        run: |
-          echo "Checking CVMFS..."
-          ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
 
       # Checkout the repository code
       - uses: actions/checkout@v4
@@ -49,16 +44,11 @@ jobs:
         
           docker run -v /cvmfs:/cvmfs:shared ghcr.io/dune/mach3:${{ matrix.tag }}
 
-      # Build the code
-      - name: Build Code
+      - name: Link inputs
         run: |
-          mkdir build
-          cd build
-          cmake ../
-          make install -j4
-          cd ..
           ln -sf \
-           /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* inputs
+           /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
+           inputs
 
       # Run event rates
       - name: Run Event Rates
