@@ -27,19 +27,23 @@ jobs:
       options: --privileged -v /cvmfs:/cvmfs:shared
 
     steps:
-      # Set up CVMFS
-      - name: Set up CVMFS
-        uses: cvmfs-contrib/github-action-cvmfs@v4
+      # Checkout the repository code
+      - uses: actions/checkout@v4
+
+      # Install and set up CVMFS manually inside the container
+      - name: Set up CVMFS in Container
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cvmfs
+          sudo mkdir -p /etc/cvmfs
+          sudo cvmfs_config setup
+          sudo mount -t cvmfs dune.osgstorage.org /cvmfs/dune.osgstorage.org
 
       # Verify CVMFS mount
       - name: Verify CVMFS Access
         run: |
           echo "Checking CVMFS..."
           ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
-
-      # Checkout the repository code
-      - uses: actions/checkout@v4
-
 
       # Build the code
       - name: Build Code
