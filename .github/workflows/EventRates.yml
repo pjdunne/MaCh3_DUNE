@@ -45,11 +45,11 @@ jobs:
           cd ..
           ln -sf \
            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* inputs
-          source build/bin/setup.MaCh3.sh
-          source build/bin/setup.NuOscillator.sh
-          source build/bin/setup.MaCh3DUNE.sh
 
 
       - name: Run Event rates
         run: |
+          source build/bin/setup.MaCh3.sh
+          source build/bin/setup.NuOscillator.sh
+          source build/bin/setup.MaCh3DUNE.sh
           ./build/src/EventRates configs/EventRates_Beam.yaml
