@@ -42,12 +42,12 @@ jobs:
 
       - name: start docker container with bind mount cvmfs
         run: |
-          docker build -v /cvmfs:/cvmfs:shared \
+          docker build  \
           --file ${{ matrix.file }} \
           --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
           --build-arg MACH3_DUNE_VERSION=${{ github.head_ref }} 
         
-          docker run ghcr.io/dune/mach3:${{ matrix.tag }}
+          docker run -v /cvmfs:/cvmfs:shared ghcr.io/dune/mach3:${{ matrix.tag }}
 
       # Build the code
       - name: Build Code
