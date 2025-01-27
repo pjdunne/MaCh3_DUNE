@@ -24,13 +24,11 @@ jobs:
           - os: Alma9
             file: doc/MaCh3DockerFiles/Alma9/Dockerfile
             tag: alma9latest
-         # - os: Rocky9
-         #   file: doc/MaCh3DockerFiles/Rocky9/Dockerfile
-         #   tag: rocky9latest
 
     name: Build CI ${{ matrix.os }}
     container:
        image: ghcr.io/dune/mach3:alma9latest
+       volumes: [/cvmfs/]
 
     steps:
     - uses: actions/checkout@v4
