@@ -6,7 +6,12 @@ name: Build CI
 # The events that trigger the workflow
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [ develop  ]
+
+  push:
+    branches: [hwallace/feature/event_rate_bot]
+  
+  
 
 permissions:
   contents: read
