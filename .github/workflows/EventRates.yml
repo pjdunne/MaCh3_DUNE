@@ -1,9 +1,8 @@
 name: Event Rates Beam
 
-# The events that trigger the workflow
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [develop]
   push:
     branches: [hwallace/feature/event_rate_bot]
 
@@ -12,16 +11,10 @@ permissions:
   packages: write
 
 jobs:
-  setup-cvmfs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: cvmfs-contrib/github-action-cvmfs@v4
-
   build:
-    needs: setup-cvmfs
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false  # Prevents cancellation of remaining jobs if one fails
+      fail-fast: false
       matrix:
         include:
           - os: Alma9
@@ -30,28 +23,40 @@ jobs:
 
     name: Build CI ${{ matrix.os }}
     container:
-       image: ghcr.io/dune/mach3:alma9latest
-       options: -v /cvmfs:/cvmfs:shared
+      image: ghcr.io/dune/mach3:alma9latest
+      options: --privileged -v /cvmfs:/cvmfs:shared
 
     steps:
+      # Checkout the repository code
       - uses: actions/checkout@v4
 
+      # Set up CVMFS
+      - name: Set up CVMFS
+        uses: cvmfs-contrib/github-action-cvmfs@v4
+
+      # Verify CVMFS mount
+      - name: Verify CVMFS Access
+        run: |
+          echo "Checking CVMFS..."
+          ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
+
+      # Build the code
       - name: Build Code
         run: |
           mkdir build
           cd build
           cmake ../
-          make install -j4 
+          make install -j4
           cd ..
           ln -sf \
            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* inputs
 
-
-      - name: Run Event rates
+      # Run event rates
+      - name: Run Event Rates
         run: |
           echo "Inputs: "
           ls inputs
-          echo : "CVMFS"
+          echo "CVMFS: "
           ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
           source build/bin/setup.MaCh3.sh
           source build/bin/setup.NuOscillator.sh
