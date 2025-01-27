@@ -26,7 +26,7 @@ jobs:
             tag_latest: alma9latest
           - os: Ubuntu22.04
             file: doc/MaCh3DockerFiles/Ubuntu22.04/Dockerfile
-            tag: ubuntulatest
+            tag_latest: ubuntulatest
 
 
     name: Image CD ${{ matrix.os }}
