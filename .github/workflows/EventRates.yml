@@ -1,6 +1,3 @@
----
-# Check if MaCh3 compiles correctly
-
 name: Event Rates Beam
 
 # The events that trigger the workflow
@@ -15,10 +12,16 @@ permissions:
   packages: write
 
 jobs:
+  setup-cvmfs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cvmfs-contrib/github-action-cvmfs@v4
+
   build:
+    needs: setup-cvmfs
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false  # KS: Prevents cancellation of remaining jobs if one fails
+      fail-fast: false  # Prevents cancellation of remaining jobs if one fails
       matrix:
         include:
           - os: Alma9
@@ -28,32 +31,25 @@ jobs:
     name: Build CI ${{ matrix.os }}
     container:
        image: ghcr.io/dune/mach3:alma9latest
-       volumes: [/cvmfs/]
+       options: -v /cvmfs:/cvmfs:shared
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: cvmfs-contrib/github-action-cvmfs@v4
+      - uses: actions/checkout@v4
 
-    - name: Build Code
-      run: |
-        ./setup_inputs.sh ${{ matrix.inputs }}
-        mkdir build
-        cd build
-        cmake ../
-        make -j4
-        cd ..
-        source build/bin/setup.MaCh3.sh
-        source build/bin/setup.NuOscillator.sh
-        source build/bin/setup.MaCh3DUNE.sh
-        ln -sf \
-         /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* inputs
+      - name: Build Code
+        run: |
+          ./setup_inputs.sh ${{ matrix.inputs }}
+          mkdir build
+          cd build
+          cmake ../
+          make -j4
+          cd ..
+          source build/bin/setup.MaCh3.sh
+          source build/bin/setup.NuOscillator.sh
+          source build/bin/setup.MaCh3DUNE.sh
+          ln -sf \
+           /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* inputs
 
-
-
-    - name: Run Event rates
-      run: |         
-         ./build/bin/EventRates configs/EventRates_Beam.yaml
-
-
-
-    
+      - name: Run Event rates
+        run: |
+          ./build/bin/EventRates configs/EventRates_Beam.yaml
