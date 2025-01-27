@@ -41,7 +41,7 @@ jobs:
           mkdir build
           cd build
           cmake ../
-          make -j4
+          make install -j4 
           cd ..
           source build/bin/setup.MaCh3.sh
           source build/bin/setup.NuOscillator.sh
