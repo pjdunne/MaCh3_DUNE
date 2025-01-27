@@ -7,12 +7,7 @@ name: Build CI
 on:
   pull_request:
     branches: [ develop  ]
-
-  push:
-    branches: [hwallace/feature/event_rate_bot]
   
-  
-
 permissions:
   contents: read
   packages: write
@@ -30,10 +25,6 @@ jobs:
           - os: Ubuntu22.04
             file: doc/MaCh3DockerFiles/Ubuntu22.04/Dockerfile
             tag: ubuntulatest
-
-         # - os: Rocky9
-         #   file: doc/MaCh3DockerFiles/Rocky9/Dockerfile
-         #   tag: rocky9latest
 
     name: Build CI ${{ matrix.os }}
 
