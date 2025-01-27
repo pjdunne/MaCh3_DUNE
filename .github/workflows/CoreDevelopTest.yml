@@ -1,0 +1,49 @@
+# Runs weekly build against develop idea is to give us 
+# a reasonable warning when DUNE develop and core
+# are incompatible! Also pushes container for easy testing
+
+name: Weekly Core Integration
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Might as well do everything Sunday at midngiht
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false  # KS: Prevents cancellation of remaining jobs if one fails
+      matrix:
+        include:
+          - os: alma9
+            file: doc/MaCh3DockerFiles/Alma9/Dockerfile
+            tag_latest: alma9latest
+
+    name: Image CD ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build . \
+            --file "${{ matrix.file }}" \
+            --tag "ghcr.io/dune/mach3:${{ matrix.tag_latest }}_core_develop" \
+            --build-arg MACH3_DUNE_VERSION="develop" \
+            --build-arg MACH3_CORE_VERSION=develop
+
+      - name: Push Docker image
+        run: |
+          docker push "ghcr.io/dune/mach3:${{ matrix.tag_latest }}_core_develop"
+  xw
+      - name: Delete old images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'mach3'
+          package-type: 'container'
+          min-versions-to-keep: 5
+          delete-only-untagged-versions: 'true'
