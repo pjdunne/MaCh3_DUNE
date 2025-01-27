@@ -22,28 +22,30 @@ jobs:
             tag: ubuntulatest
 
     name: Build CI ${{ matrix.os }}
-    container:
-      image: ghcr.io/dune/mach3:ubuntulatest
-      options: --privileged -v /cvmfs:/cvmfs:shared
 
     steps:
-      # Checkout the repository code
-      - uses: actions/checkout@v4
-
-      # Install and set up CVMFS manually inside the container
-      - name: Set up CVMFS in Container
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cvmfs
-          sudo mkdir -p /etc/cvmfs
-          sudo cvmfs_config setup
-          sudo mount -t cvmfs dune.osgstorage.org /cvmfs/dune.osgstorage.org
+      # Set up CVMFS
+      - name: Set up CVMFS
+        uses: cvmfs-contrib/github-action-cvmfs@v4
 
       # Verify CVMFS mount
       - name: Verify CVMFS Access
         run: |
           echo "Checking CVMFS..."
           ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
+
+      # Checkout the repository code
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: start docker container with bind mount cvmfs
+        run: |
+          docker run --rm -v /cvmfs:/cvmfs:shared \
+          --file ${{ matrix.file }} \
+          --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
+          --build-arg MACH3_DUNE_VERSION=${{ github.head_ref }} 
 
       # Build the code
       - name: Build Code
