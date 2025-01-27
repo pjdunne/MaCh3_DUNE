@@ -17,9 +17,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: Alma9
-            file: doc/MaCh3DockerFiles/Alma9/Dockerfile
-            tag: alma9latest
+          - os: Ubuntu22.04
+            file: doc/MaCh3DockerFiles/Ubuntu22.04/Dockerfile
+            tag: ubuntulatest
 
     name: Build CI ${{ matrix.os }}
     container:
