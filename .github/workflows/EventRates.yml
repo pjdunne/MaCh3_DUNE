@@ -38,7 +38,6 @@ jobs:
 
       - name: Build Code
         run: |
-          ./setup_inputs.sh ${{ matrix.inputs }}
           mkdir build
           cd build
           cmake ../
