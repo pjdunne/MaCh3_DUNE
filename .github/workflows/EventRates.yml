@@ -42,17 +42,17 @@ jobs:
           --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
           --build-arg MACH3_DUNE_VERSION=${{ github.head_ref }} 
         
-          docker run -v /cvmfs:/cvmfs:shared ghcr.io/dune/mach3:${{ matrix.tag }}
-
-      - name: Link inputs
-        run: |
-          ln -sf \
-           /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
-           inputs
 
       # Run event rates
       - name: Run Event Rates
         run: |
+          docker run -v /cvmfs:/cvmfs:shared ghcr.io/dune/mach3:${{ matrix.tag }}
+         
+          ln -sf \
+          /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
+          inputs
+         
+         
           echo "Inputs: "
           ls inputs
           echo "CVMFS: "
