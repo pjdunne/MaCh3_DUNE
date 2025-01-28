@@ -51,6 +51,7 @@ jobs:
           image: ghcr.io/dune/mach3:${{ matrix.tag }}
           options: -v /cvmfs:/cvmfs:shared
           run: |
+            . /bin/bash
             source /opt/root/bin/thisroot.sh
             
             ln -sf \
