@@ -1,6 +1,14 @@
 #To run use: docker build --secret id=tokens,src=tokens.txt -t mach3dune .
 FROM rootproject/root:6.32.02-ubuntu22.04 AS mach3_dune_build
 
+# Add a label for the author
+LABEL maintainer="The MaCh3 Collaboration"
+LABEL website="https://dune.github.io/MaCh3_DUNE/"
+LABEL compiler="GNU 11.4.0"
+LABEL root_version="v6.32.02"
+LABEL org.opencontainers.image.description="Official MaCh3 DUNE container"
+
+
 RUN apt update && apt upgrade -y
 RUN apt-get install -y nlohmann-json3-dev
 #MISC_SW
@@ -28,3 +36,5 @@ WORKDIR ${MACH3_DUNE_INSTALL_DIR}
 RUN cmake ../
 
 RUN make -j && make install
+
+RUN which root-config
