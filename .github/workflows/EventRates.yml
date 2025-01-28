@@ -19,7 +19,7 @@ jobs:
         include:
           - os: alma9
             file: doc/MaCh3DockerFiles/Alma9/Dockerfile
-            tag: alma9latest
+            tag: alma9test
 
     name: Build CI ${{ matrix.os }}
 
@@ -49,9 +49,9 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/dune/mach3:${{ matrix.tag }}
+          shell: bash
           options: -v /cvmfs:/cvmfs:shared
           run: |
-            . /bin/bash
             source /opt/root/bin/thisroot.sh
             
             ln -sf \
