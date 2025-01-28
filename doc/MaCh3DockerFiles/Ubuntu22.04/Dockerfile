@@ -1,3 +1,6 @@
+# Let's be smart and use bash...
+CMD ["/bin/bash"]
+
 #To run use: docker build --secret id=tokens,src=tokens.txt -t mach3dune .
 FROM rootproject/root:6.32.02-ubuntu22.04 AS mach3_dune_build
 
@@ -36,5 +39,3 @@ WORKDIR ${MACH3_DUNE_INSTALL_DIR}
 RUN cmake ../
 
 RUN make -j && make install
-
-RUN which root-config
