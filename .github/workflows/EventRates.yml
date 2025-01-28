@@ -58,7 +58,7 @@ jobs:
           echo "CVMFS: "
           
           ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
-          cd source /opt/root/bin/thisroot.sh
+          source /opt/root/bin/thisroot.sh
           
           cd /opt/bin/MaCh3_DUNE
 
