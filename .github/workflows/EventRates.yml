@@ -40,7 +40,7 @@ jobs:
           docker build . \
           --file ${{ matrix.file }} \
           --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
-          --build-arg MACH3_DUNE_VERSION=${{ github.ref_name }}
+          --build-arg MACH3_DUNE_VERSION=${{ github.ref_name }} \
           --build-arg MACH3_DUNE_BUILD_ARGS="-DNuFastLinear_ENABLED=ON"
       
 
@@ -52,9 +52,7 @@ jobs:
           image: ghcr.io/dune/mach3:${{ matrix.tag }}
           shell: bash
           options: -v /cvmfs:/cvmfs:shared
-          run: |
-            which root-config
-          
+          run: |          
             ln -sf \
             /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
             inputs
