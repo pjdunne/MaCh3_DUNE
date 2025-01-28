@@ -51,8 +51,6 @@ jobs:
           image: ghcr.io/dune/mach3:${{ matrix.tag }}
           options: -v /cvmfs:/cvmfs:shared
           run: |
-            echo "You're in $(pwd)"
-            echo "Directory contents are : $(ls)"
                     
             source /opt/root/bin/thisroot.sh
             
@@ -62,7 +60,7 @@ jobs:
             /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
             inputs
 
-            source build/bin/setup.MaCh3.sh
-            source build/bin/setup.NuOscillator.sh
-            source build/bin/setup.MaCh3DUNE.sh
-            ./build/src/EventRates configs/EventRates_Beam.yaml
+            source bin/setup.MaCh3.sh
+            source bin/setup.NuOscillator.sh
+            source setup.MaCh3DUNE.sh
+            ./src/EventRates configs/EventRates_Beam.yaml
