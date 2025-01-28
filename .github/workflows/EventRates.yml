@@ -47,20 +47,17 @@ jobs:
       - name: Run Event Rates
         run: |
           docker run -v /cvmfs:/cvmfs:shared ghcr.io/dune/mach3:${{ matrix.tag }}
-         
-          ln -sf \
-          /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
-          inputs
-         
-         
-          echo "Inputs: "
-          ls inputs
-          echo "CVMFS: "
-          
-          ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
+
+          echo "You're in $(pwd)"
+          echo "Directory contents are : $(ls)"
+                  
           source /opt/root/bin/thisroot.sh
           
           cd /opt/bin/MaCh3_DUNE
+
+          ln -sf \
+          /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
+          inputs
 
           source build/bin/setup.MaCh3.sh
           source build/bin/setup.NuOscillator.sh
