@@ -19,7 +19,7 @@ jobs:
         include:
           - os: alma9
             file: doc/MaCh3DockerFiles/Alma9/Dockerfile
-            tag_latest: alma9latest
+            tag: alma9latest
 
     name: Build CI ${{ matrix.os }}
 
