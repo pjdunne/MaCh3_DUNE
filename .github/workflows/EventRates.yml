@@ -51,13 +51,13 @@ jobs:
           image: ghcr.io/dune/mach3:${{ matrix.tag }}
           options: -v /cvmfs:/cvmfs:shared
           run: |
-            source /opt/root/bin/thisroot.sh
+            . /opt/root/bin/thisroot.sh
             
             ln -sf \
             /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
             inputs
 
-            source bin/setup.MaCh3.sh
-            source bin/setup.NuOscillator.sh
-            source bin/setup.MaCh3DUNE.sh
+            . bin/setup.MaCh3.sh
+            . bin/setup.NuOscillator.sh
+            . bin/setup.MaCh3DUNE.sh
             ./src/EventRates configs/EventRates_Beam.yaml
