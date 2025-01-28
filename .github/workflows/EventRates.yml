@@ -51,11 +51,8 @@ jobs:
           image: ghcr.io/dune/mach3:${{ matrix.tag }}
           options: -v /cvmfs:/cvmfs:shared
           run: |
-                    
             source /opt/root/bin/thisroot.sh
             
-            cd /opt/bin/MaCh3_DUNE
-
             ln -sf \
             /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
             inputs
