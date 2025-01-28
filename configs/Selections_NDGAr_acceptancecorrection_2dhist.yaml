@@ -19,12 +19,12 @@ General:
     OscStepScale: 0.045
   Output:
     FileName: 
-      outputs/13_12_2024/Selections_CC_AcceptanceCorrection_2dhist_AllEvents_2point5mmpointres_fidrad249_45_Bfield0_5_withecalcontainment_newplots1M_newbinning_new.root
+      outputs/14_01_2025/Selections_CC_AcceptanceCorrection_2dhist_AcceptedEvents_2point5mmpointres_fidrad180_0_Bfield0_3_20MHz_1to5GeV_noecalcontainment.root
 SigmaVariations:
   EvalXsec: false
 Selections:
 #  KinematicParsToPlot: ["TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "TrueRad", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueXPos", "HighestpTParticleTransverseMomentum", "TrueRad", "HighestpTParticleTransverseMomentum", "HighestpTParticleThetaAngle"]
-  KinematicParsToPlot: [TrueQ3, TrueQ0, TrueNeutrinoEnergy, HighestpTParticleTransverseMomentum,
+  KinematicParsToPlot2D: [TrueQ3, TrueQ0, TrueNeutrinoEnergy, HighestpTParticleTransverseMomentum,
     MuonZAngle, TrueLepEnergy, TrueRad, TrueXPos, TrueSquaredRad, TrueXPos, HighestpTParticleTransverseMomentum,
     TrueXPos, HighestpTParticleTransverseMomentum, TrueRad, HighestpTParticleTransverseMomentum,
     HighestpTParticleThetaAngle, RejectedParticleMomentum, SigmaMom, RejectedParticleThetaAngle,
@@ -33,12 +33,13 @@ Selections:
     HighestpTLengthTrackYZ, HighestpTParticleTransverseMomentum, HighestpTLengthTrackX,
     TrueXPos, HighestpTLengthTrackX, TrueRad, HighestpTLengthTrackYZ, RejectedParticleTrackThetaAngle,
     RejectedParticleRatioRadCurvature, TrueSquaredRad, HighestpTLengthTrackYZ, RejectedParticleMomentum,
-    RejectedParticleBeta, RejectedParticlePDG, RejectedParticleBeta, ParticlePDG, ECalDepositFrac, ParticleMom, ParticleDeDx, TrueNeutrinoEnergy, ParticleEnergy, TrueNeutrinoEnergy, ParticleMom, ParticlePDG, ParticleEnergy, ParticleEnergy, ECalDepositFrac]
+    RejectedParticleBeta, RejectedParticlePDG, RejectedParticleBeta, ParticlePDG, ECalDepositFrac, ParticleMom, ParticleDeDx, TrueNeutrinoEnergy, ParticleEnergy, TrueNeutrinoEnergy, ParticleMom, ParticlePDG, ParticleEnergy, ParticleEnergy, ECalDepositFrac, ParticleEnergy, ParticleTheta]
+  KinematicParsToPlot1D: [TrueNeutrinoEnergy, MuonZAngle, TrueLepEnergy, TrueRad, TrueXPos, TrueYPos, TrueZPos, PDGNonAccepted, RejectedParticleMomentum, ParticlePDG, ECalDepositFrac, ParticleMom, ParticleTheta]
 #  KinematicParsToPlot: ["TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy", "RejectedParticleMomentum", "RejectedParticleThetaAngle", "RejectedParticleRadCurvature", "RejectedParticleThetaAngle", "TrueRad", "TrueXPos", "RejectedParticleRadCurvature", "RejectedParticleTransverseMomentum", "RejectedParticleMomentum", "SigmaMom", "RejectedParticleThetaAngle", "SigmaTheta", "PDGNonAccepted", "RejectedParticleMomentum", "TrueRad", "RejectedParticleTransverseMomentum", "TrueXPos", "RejectedParticleMomentum", "RejectedParticleTransverseMomentum", "RejectedParticleThetaAngle"]
 #  KinematicParsToPlot: ["TrueQ3", "TrueQ0", "MuonZAngle", "TrueLepEnergy"]
 #  KinematicParsToPlot: ["LepPT", "LepPZ", "LepRecoPT", "LepRecoPZ", "PiRecoEnergy", "MuonPiRecoAngle", "PiTrueEnergy", "MuonPiAngle", "PiRecoEnergy", "PiZRecoAngle", "PiTrueEnergy", "PiZAngle", "PiRecoEnergy","PiTrueEnergy"]
-  PlotModes: [all]
-#  PlotModes: ["ccqe", "ccdis", "ccres", "cccoh", "cccohel", "ccdiff", "ccnueel", "ccmec", "ccIMD", "ccglasres", "ccimdannihilation", "ccamnugamma", "ccibd"]
+  PlotModes2D: [all]
+  PlotModes1D: ["ccqe", "ccdis", "ccres", "cccoh", "cccohel", "ccdiff", "ccnueel", "ccmec", "ccIMD", "ccglasres", "ccimdannihilation", "ccamnugamma", "ccibd"]
 #  PlotModes: ["ccqe", "ccdis", "ccres", "cccoh", "cccohel", "ccdiff", "ccnueel", "ccmec", "ccIMD", "ccglasres", "ccimdannihilation", "ccamnugamma", "ccibd", "ncqe", "ncdis", "ncres", "nccoh", "nccohel", "ncdiff", "ncnueel", "ncmec", "ncIMD", "ncglasres", "ncimdannihilation", "ncamnugamma", "ncibd"]
 #  PlotModes: ["kMaCh3_CCQE", "kMaCh3_CC_DIS", "kMaCh3_CC_RES", "kMaCh3_CC_MEC", "kMaCh3_CC_COHEL", "kMaCh3_NCQE", "kMaCh3_NC_DIS", "kMaCh3_NC_RES", "kMaCh3_NC_COH"]
 #  PlotModes: ["kMaCh3_CCQE", "kMaCh3_CC_DIS", "kMaCh3_CC_RES", "kMaCh3_CC_Diffractive", "kMaCh3_CC_Nue_EL", "kMaCh3_CC_IMD", "kMaCh3_CC_AMnuGamma", "kMaCh3_CC_MEC", "kMaCh3_CC_COHEL", "kMaCh3_CC_IBD", "kMaCh3_CC_GlashowRES", "kMaCh3_CC_IMDAnnihalation", "kMaCh3_NCQE", "kMaCh3_NC_DIS", "kMaCh3_NC_RES", "kMaCh3_NC_COH", "kMaCh3_NC_Diffractive", "kMaCh3_NC_Nue_EL", "kMaCh3_NC_IMD", "kMaCh3_NC_AMnuGamma", "kMaCh3_NC_MEC", "kMaCh3_NC_COHEL", "kMaCh3_NC_IBD", "kMaCh3_NC_GlashowRES", "kMaCh3_NC_IMDAnnihalation"]
@@ -47,3 +48,4 @@ Selections:
   Efficiency: false
   Purity: false
   2DHist: true
+  1DHist: true

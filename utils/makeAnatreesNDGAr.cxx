@@ -159,8 +159,8 @@ void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numusele
 void Split(std::string infile, int initial_nuPDG, int final_nuPDG, bool numuselec) 
 {  
 
-   const char* path  = "/vols/dune/nk3717/data/NDGAr_1MCAFs/";
-   const char* outpath  = "/vols/dune/nk3717/data/NDGAr_1MCAFs/AnaTreesOutputs";
+   const char* path  = "/vols/dune/nk3717/data/NDGAr_1MCAFs/ghep_files/rad250/bfield0_2/";
+   const char* outpath  = "/vols/dune/nk3717/data/NDGAr_1MCAFs/ghep_files/rad250/bfield0_2/Outputs";
 
    vector<int> *ntypes=0;
    int nutype;

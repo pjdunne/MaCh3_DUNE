@@ -173,6 +173,7 @@ struct dunendgarmc_base {
   int *particleevent;
   int *particlepdg;
   double *particleenergy;
+  double *particletheta;
   double *particlededx;
   double *particlemomentum;
   double pot_s; // s is for scale                                             
@@ -298,6 +299,7 @@ public:
   std::vector<int> *_MCPTrkID=0;
   std::vector<int> *_SimHitTrkID=0;
   std::vector<float> *_SimHitEnergy=0;
+
   double pdgmass;
   //particle masses in GeV
   double m_chargedpi = 0.13957039;

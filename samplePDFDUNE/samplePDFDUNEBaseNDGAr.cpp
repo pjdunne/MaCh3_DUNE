@@ -353,15 +353,19 @@ double samplePDFDUNEBaseNDGAr::CalcDeDx(double beta, double bg, double gamma){ /
 }
 
 void samplePDFDUNEBaseNDGAr::IsParticleAccepted(dunendgarmc_base *duneobj, int& i_truepart, int& i, int& isnotaccepted, double& highestpT, float pixel_spacing_cm, int& tot_particles){
+  int nummatched = 0;
   for(int i_anapart =0; i_anapart<_MCPStartPX->size(); i_anapart++){
     float mom_tot = pow(pow(_MCPStartPX->at(i_anapart), 2)+pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2), 0.5);
+      double transverse_mom = pow(pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2), 0.5);
     float start_radius =pow((pow(_MCPStartY->at(i_anapart)-TPC_centre_y, 2)+pow(_MCPStartZ->at(i_anapart)-TPC_centre_z, 2)), 0.5);
+//    std::cout<<"pdg ana: "<<_PDG->at(i_anapart)<<" pdg caf: "<<sr->mc.nu[0].prim[i_truepart].pdg<<" mom ana: "<<(double)(mom_tot)<<" mom caf: "<<(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())<<std::endl;
     if((_PDG->at(i_anapart) == sr->mc.nu[0].prim[i_truepart].pdg) && ((double)(mom_tot) >= 0.999*(double)(sr->mc.nu[0].prim[i_truepart].p.Mag())) && ((double)(mom_tot) <= 1.001*(double)(sr->mc.nu[0].prim[i_truepart].p.Mag()))){
-      //std::cout<<"tot_particles: "<<tot_particles<<std::endl;
+      nummatched++;
+//      std::cout<<"tot_particles: "<<tot_particles<<std::endl;
       duneobj->particlepdg[tot_particles]=_PDG->at(i_anapart);
       duneobj->particleenergy[tot_particles]=(double)(sr->mc.nu[0].prim[i_truepart].p.E);
       duneobj->particlemomentum[tot_particles]=(double)(mom_tot);
-
+      duneobj->particletheta[tot_particles]=(double)(atan(_MCPStartPX->at(i_anapart)/transverse_mom)*180/M_PI);
     if(std::abs(_PDG->at(i_anapart)) == 2212 || std::abs(_PDG->at(i_anapart)) == 211 || std::abs(_PDG->at(i_anapart)) == 13 || std::abs(_PDG->at(i_anapart)) == 11 || std::abs(_PDG->at(i_anapart)) == 321){
       double bg_charged = 0; double gamma_charged = 0;
       double beta_charged = CalcBeta(mom_tot, bg_charged, gamma_charged);
@@ -370,8 +374,6 @@ void samplePDFDUNEBaseNDGAr::IsParticleAccepted(dunendgarmc_base *duneobj, int& 
 //      std::cout<<"dedx particle "<<tot_particles<<": "<<duneobj->particlededx[tot_particles]<<std::endl; 
     }
 
-
-      double transverse_mom = pow(pow(_MCPStartPY->at(i_anapart), 2)+pow(_MCPStartPZ->at(i_anapart), 2), 0.5);
       if(transverse_mom > highestpT){
           duneobj->highestpart_pT[i] = transverse_mom;
           duneobj->highestpart_theta_angle[i] = 90 - (180/M_PI)*atan(_MCPStartPX->at(i_anapart)/transverse_mom);
@@ -400,7 +402,7 @@ void samplePDFDUNEBaseNDGAr::IsParticleAccepted(dunendgarmc_base *duneobj, int& 
         double L_yz_old = pow((pow(length_track_z, 2)+pow(length_track_y, 2)), 0.5); //in cm
         double rad_curvature = transverse_mom/(0.3*B_field); //p = 0.3*B*r where p in GeV/c, B in T, r in m
         double theta_xT = atan(_MCPStartPX->at(i_anapart)/transverse_mom); //helix is travelling in x dir as that is mag field dir
-        double pitch = std::abs(2*2*rad_curvature*tan(theta_xT)); //distance between two turns of a helix in m
+        double pitch = std::abs(2*M_PI*rad_curvature*tan(theta_xT)); //distance between two turns of a helix in m
         double helixlength = ((std::abs(length_track_x)/100)/pitch)*pow((pow(M_PI*2*rad_curvature, 2) + pow(pitch, 2)), 0.5); //L = height/pitch*sqrt((pi*diameter)**2 + pitch**2)
         double tan_theta = tan(theta_xT);
  
@@ -475,6 +477,7 @@ void samplePDFDUNEBaseNDGAr::IsParticleAccepted(dunendgarmc_base *duneobj, int& 
             L_yz_chord = std::abs(2*rad_curvature*100*sin(theta_intersect/2));
             theta_chosen = theta_intersect;
         }
+
         double N_hits = FindNHits(pixel_spacing_cm, centre_circle_y, centre_circle_z, rad_curvature);
         
         double p_mag = sr->mc.nu[0].prim[i_truepart].p.Mag();
@@ -500,7 +503,7 @@ void samplePDFDUNEBaseNDGAr::IsParticleAccepted(dunendgarmc_base *duneobj, int& 
         double sigma_theta = (pow(cos(theta_xT), 2))*(pitch/(2*M_PI*rad_curvature))*pow((pow(sigmax/(std::abs(length_track_x)/100),2) +pow(momres_tottransverse/transverse_mom, 2)), 0.5);
         double momres_frac = pow(pow((momres_tottransverse/transverse_mom), 2)+pow(sigma_theta*tan_theta, 2), 0.5);
         if(momres_frac > momentum_resolution_threshold){
- 
+//          std::cout<<"not accepted"<<std::endl; 
           isnotaccepted++;
           duneobj->momres_nonaccepted[i] = momres_frac;
           duneobj->pdg_nonaccepted[i] = sr->mc.nu[0].prim[i_truepart].pdg;
@@ -559,7 +562,7 @@ void samplePDFDUNEBaseNDGAr::IsParticleAccepted(dunendgarmc_base *duneobj, int& 
         }
       }
       else{
- //               std::cout<<"position not in fdv"<<std::endl;
+//        std::cout<<"position not in fdv"<<std::endl;
         isnotaccepted++; duneobj->pdg_nonaccepted[i] = sr->mc.nu[0].prim[i_truepart].pdg;
 //        break;
       }
@@ -577,6 +580,7 @@ void samplePDFDUNEBaseNDGAr::IsParticleAccepted(dunendgarmc_base *duneobj, int& 
     break;
     }
   }
+  if(nummatched != 1){ std::cout<<"nummatched: "<<nummatched<<std::endl;}
 }
 
 void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_base *duneobj, double pot, int nutype, int oscnutype, bool signal, bool hasfloats)
@@ -788,6 +792,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
   duneobj->particleenergy = new double[(duneobj->nEvents)*7];
   duneobj->particlededx = new double[(duneobj->nEvents)*7];
   duneobj->particlemomentum = new double[(duneobj->nEvents)*7];
+  duneobj->particletheta = new double[(duneobj->nEvents)*7];
 
   //These spline bins get filled in fillSplineBins
   duneobj->enu_s_bin = new unsigned int[duneobj->nEvents];
@@ -1005,6 +1010,7 @@ void samplePDFDUNEBaseNDGAr::setupDUNEMC(const char *sampleFile, dunendgarmc_bas
          if(isnotaccepted >0){continue;}
          duneobj->particleevent[tot_particles]= i;
          duneobj->ecaldepositfraction[tot_particles] = -1.;
+//         if(duneobj->in_fdv[i] == 1){std::cout<<"event number: "<<i<<std::endl;}
          IsParticleAccepted(duneobj, i_truepart, i, isnotaccepted, highestpT, pixel_spacing_cm, tot_particles);
 //         std::cout<<"dedx particle "<<tot_particles<<": "<<duneobj->particlededx[tot_particles]<<" pdg: "<<sr->mc.nu[0].prim[i_truepart].pdg<<std::endl;
          tot_particles++;
@@ -1336,6 +1342,10 @@ double samplePDFDUNEBaseNDGAr::ReturnKinematicParameter(KinematicTypes Kinematic
    case kParticleEvent:
          KinematicValue = dunendgarmcSamples[iSample].particleevent[iEvent];
          break;
+   case kParticleTheta:
+         KinematicValue = dunendgarmcSamples[iSample].particletheta[iEvent];
+         break;
+
 
    default:
 	 std::cout << "[ERROR]: " << __FILE__ << ":" << __LINE__ << " Did not recognise Kinematic Parameter type..." << std::endl;
@@ -1653,6 +1663,7 @@ std::vector<double> samplePDFDUNEBaseNDGAr::ReturnKinematicParameterBinning(Kine
           binningVector.push_back((double)(ibins/20)-1);
         }
         break;*/
+    case kParticleTheta:
     case kMuonZAngle:
     case kPiZAngle:
     case kPiZRecoAngle:
@@ -1854,7 +1865,7 @@ TH1D* samplePDFDUNEBaseNDGAr::get1DVarHist(std::string KinematicVar1,std::vector
   _h1DVar->GetXaxis()->SetTitle(KinematicVar1.c_str());
   //This should be the same as FillArray in core basically, except that
   //events will end up in different bins
-  if(KinematicVar1 != "ECalDepositFrac" && KinematicVar1 != "ParticlePDG" && KinematicVar1 != "ParticleMom" && KinematicVar1 != "ParticleEnergy" && KinematicVar1 != "ParticleDeDx"){
+  if(KinematicVar1 != "ECalDepositFrac" && KinematicVar1 != "ParticlePDG" && KinematicVar1 != "ParticleMom" && KinematicVar1 != "ParticleEnergy" && KinematicVar1 != "ParticleDeDx" && KinematicVar1 != "ParticleTheta"){
   for (int i=0;i<getNMCSamples();i++) {
     if (fChannel && (i!=kChannelToFill)) {
       continue;
@@ -2092,8 +2103,8 @@ TH2D* samplePDFDUNEBaseNDGAr::get2DVarHist(std::string KinematicVar1,std::string
     bool perparticle = false;
     bool perparticlekin1 = false;
     bool perparticlekin2 = false;
-   if(KinematicVar1 == "ECalDepositFrac" || KinematicVar1 == "ParticlePDG" || KinematicVar1 == "ParticleMom" || KinematicVar1 == "ParticleEnergy" || KinematicVar1 == "ParticleDeDx"){jmax = getNEventsInSample(i)*7; perparticle=true; perparticlekin1 = true;}
-   if(KinematicVar2 == "ECalDepositFrac" ||  KinematicVar2 == "ParticlePDG" || KinematicVar2 == "ParticleMom" || KinematicVar2 == "ParticleEnergy" || KinematicVar2 == "ParticleDeDx"){jmax = getNEventsInSample(i)*7; perparticle=true; perparticlekin2 = true;}
+   if(KinematicVar1 == "ECalDepositFrac" || KinematicVar1 == "ParticlePDG" || KinematicVar1 == "ParticleMom" || KinematicVar1 == "ParticleEnergy" || KinematicVar1 == "ParticleDeDx" || KinematicVar1 == "ParticleTheta"){jmax = getNEventsInSample(i)*7; perparticle=true; perparticlekin1 = true;}
+   if(KinematicVar2 == "ECalDepositFrac" ||  KinematicVar2 == "ParticlePDG" || KinematicVar2 == "ParticleMom" || KinematicVar2 == "ParticleEnergy" || KinematicVar2 == "ParticleDeDx" || KinematicVar2 == "ParticleTheta" ){jmax = getNEventsInSample(i)*7; perparticle=true; perparticlekin2 = true;}
 
     for(int j=0;j<jmax;j++) {
       int eventnum = j;

@@ -89,18 +89,18 @@ def main():
                             accepted_arr=[0.0, 1.0, 2.0]
                             k=0
                             print(len(accepted_arr))
-                            newdir='configs/SamplePDFConfigs_{pointres}mmpointres_{samplingfreq}hz_fidrad{fidrad}_Bfield{bfield}_instrumentedrad{instrumentedradius}_{ecal_containment}'.format(pointres=str(spatialres[i_res]).replace(".", "_"), samplingfreq=str(adcfreq[i_freq]).replace(".", "_"),fidrad=f"{fidrad:.2f}".replace(".", "_"), bfield = str(bfield[i_bfield]).replace(".", "_"), instrumentedradius = str(instrumentedrad[i_instrumentedrad]).replace(".", "_"), ecal_containment=ecalcontainment)
+#                            newdir='configs/SamplePDFConfigs_{pointres}mmpointres_{samplingfreq}hz_fidrad{fidrad}_Bfield{bfield}_instrumentedrad{instrumentedradius}_{ecal_containment}'.format(pointres=str(spatialres[i_res]).replace(".", "_"), samplingfreq=str(adcfreq[i_freq]).replace(".", "_"),fidrad=f"{fidrad:.2f}".replace(".", "_"), bfield = str(bfield[i_bfield]).replace(".", "_"), instrumentedradius = str(instrumentedrad[i_instrumentedrad]).replace(".", "_"), ecal_containment=ecalcontainment)
                             outdir='outputs/{pointres}mmpointres_{samplingfreq}hz_fidrad{fidrad}_Bfield{bfield}_instrumentedrad{instrumentedradius}_{ecal_containment}'.format(pointres=str(spatialres[i_res]).replace(".", "_"), samplingfreq=str(adcfreq[i_freq]).replace(".", "_"), fidrad=f"{fidrad:.2f}".replace(".", "_"), bfield = str(bfield[i_bfield]).replace(".", "_"), instrumentedradius = str(instrumentedrad[i_instrumentedrad]).replace(".", "_"), ecal_containment=ecalcontainment)
                            # p_1 = subprocess.Popen('mkdir {newdir}', shell=True)
-                            p_1 = subprocess.Popen(['mkdir', '-p', f"{newdir}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                            (output,err)= p_1.communicate()
-                            p_1status = p_1.wait()       
+#                            p_1 = subprocess.Popen(['mkdir', '-p', f"{newdir}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#                            (output,err)= p_1.communicate()
+#                            p_1status = p_1.wait()       
                             p_out = subprocess.Popen(['mkdir', '-p', f"{outdir}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                             (output,err)= p_out.communicate()
                             p_outstatus = p_out.wait()       
 
                             for i in range(0, len(enu)-1):
-                                config_samplepdf = 'configs/SamplePDFDuneNDGAr_FHC_CCnumuselec.yaml'
+#                                config_samplepdf = 'configs/SamplePDFDuneNDGAr_FHC_CCnumuselec.yaml'
                                 #kinematicstr = 'TrueNeutrinoEnergy'
                     #            newvalues = '[{boundlow:.2f}, {boundup:.2f}]'.format(boundlow=enu[i], boundup=enu[i+1])
                                 #newvalues = [enu[i], enu[i+1]]
@@ -109,26 +109,26 @@ def main():
                                 for j in range(0, len(accepted_arr)-1):
                                     print(accepted_arr)
                                     print(j)
-                                    config_samplepdf_new = '{newdir}/SamplePDFDuneNDGAr_FHC_CCnumuselec_{k}.yaml'.format(newdir=newdir, k=k)
-                                    p_2 = subprocess.Popen(['cp', f"{config_samplepdf}", f"{config_samplepdf_new}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                                    (output,err)= p_2.communicate()
-                                    p_2status = p_2.wait()
-                                    modify_samplepdfconfig(config_samplepdf_new, [accepted_arr[j], 2.0], enubounds=[enu[i], enu[i+1]], tpcfidrad=fidrad, tpcinstrumentedrad=instrumentedrad[i_instrumentedrad], ecalinnerrad=ecalinnerrad[i_instrumentedrad], ecalouterrad=ecalouterrad[i_instrumentedrad], adcsamplingfreq=adcfreq[i_freq], spatialresolution=spatialres[i_res], bfield=bfield[i_bfield], KinematicStr=True)
-                                    #modify_config(config_samplepdf_new, 'SelectionCuts', 'IsAccepted', [accepted_arr[j], 2.0], True) 
-                                    config_selec = 'configs/Selections_NDGAr_acceptancecorrection_2dhist.yaml'
-                                    config_selec_new = '{newdir}/Selections_NDGAr_acceptancecorrection_2dhist_{k}.yaml'.format(newdir=newdir,k=k)
-                                    p_3 = subprocess.Popen(['cp', f"{config_selec}", f"{config_selec_new}"],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                                    (output,err)= p_3.communicate()
-                                    p_3status = p_3.wait()
-                                    nameout = 'Output: '
-                                    if j == 1:
-                                        accepted = "Accepted"
-                                    else:
-                                        accepted = "All"
+ #                                   config_samplepdf_new = '{newdir}/SamplePDFDuneNDGAr_FHC_CCnumuselec_{k}.yaml'.format(newdir=newdir, k=k)
+ #                                   p_2 = subprocess.Popen(['cp', f"{config_samplepdf}", f"{config_samplepdf_new}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+##                                    (output,err)= p_2.communicate()
+#                                    p_2status = p_2.wait()
+#                                    modify_samplepdfconfig(config_samplepdf_new, [accepted_arr[j], 2.0], enubounds=[enu[i], enu[i+1]], tpcfidrad=fidrad, tpcinstrumentedrad=instrumentedrad[i_instrumentedrad], ecalinnerrad=ecalinnerrad[i_instrumentedrad], ecalouterrad=ecalouterrad[i_instrumentedrad], adcsamplingfreq=adcfreq[i_freq], spatialresolution=spatialres[i_res], bfield=bfield[i_bfield], KinematicStr=True)
+#                                    #modify_config(config_samplepdf_new, 'SelectionCuts', 'IsAccepted', [accepted_arr[j], 2.0], True) 
+#                                    config_selec = 'configs/Selections_NDGAr_acceptancecorrection_2dhist.yaml'
+#                                    config_selec_new = '{newdir}/Selections_NDGAr_acceptancecorrection_2dhist_{k}.yaml'.format(newdir=newdir,k=k)
+ #                                   p_3 = subprocess.Popen(['cp', f"{config_selec}", f"{config_selec_new}"],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+ #                                   (output,err)= p_3.communicate()
+ #                                   p_3status = p_3.wait()
+ #                                   nameout = 'Output: '
+ #                                   if j == 1:
+ #                                       accepted = "Accepted"
+  #                                  else:
+  #                                      accepted = "All"
                                    # filename = 'Selections_CC_AcceptanceCorrection_{accepted}Events_Enubin{binnum}'.format(accepted=accepted, binnum=i)
-                                    filename = '{outdir}/Selections_CC_AcceptanceCorrection_{accepted}Events_Enubin{binnum}'.format(outdir=outdir, accepted=accepted, binnum=i)
-                                    newoutput = '{filename}.root'.format(filename=filename)
-                                    modify_config_selections(config_selec_new, newoutput)
+#                                    filename = '{outdir}/Selections_CC_AcceptanceCorrection_{accepted}Events_Enubin{binnum}'.format(outdir=outdir, accepted=accepted, binnum=i)
+#                                    newoutput = '{filename}.root'.format(filename=filename)
+#                                    modify_config_selections(config_selec_new, newoutput)
                     #                file = 'acceptance_{inum}_{jnum}.job'.format(inum=i, jnum=j)
                     #                command = 'Selections {config_selec_new} {config_samplepdf_new} &> {filename}.txt'.format(filename=filename)
                     #                print(command)

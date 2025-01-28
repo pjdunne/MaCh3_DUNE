@@ -112,6 +112,7 @@ enum KinematicTypes {
   kParticleEnergy = 73,
   kParticleDeDx = 74,
   kParticleEvent = 75,
+  kParticleTheta = 76,
 
   kNKinematicParams
 };
@@ -195,7 +196,7 @@ inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr)
   if (KinematicParameterStr.find("ParticleDeDx") != std::string::npos) {return kParticleDeDx;}
   if (KinematicParameterStr.find("ParticleDeDx") != std::string::npos) {return kParticleDeDx;}
   if (KinematicParameterStr.find("ParticleEvent") != std::string::npos) {return kParticleEvent;}
-
+  if (KinematicParameterStr.find("ParticleTheta") != std::string::npos) {return kParticleTheta;}
   return kNKinematicParams; 
 }
 
@@ -277,6 +278,7 @@ inline std::string ReturnKinematicParameterStringFromEnum(KinematicTypes Kinemat
   if (KinematicParameter == kParticleEnergy) {return "ParticleEnergy";}
   if (KinematicParameter == kParticleDeDx) {return "ParticleDeDx";}
   if (KinematicParameter == kParticleEvent) {return "ParticleEvent";}
+  if (KinematicParameter == kParticleTheta) {return "ParticleTheta";}
 
   return "NULL"; 
 }

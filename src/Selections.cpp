@@ -121,6 +121,7 @@ int main(int argc, char * argv[]) {
   bool efficiency = fitMan->raw()["Selections"]["Efficiency"].as<bool>();
   bool purity = fitMan->raw()["Selections"]["Purity"].as<bool>();
   bool twodimhist = fitMan->raw()["Selections"]["2DHist"].as<bool>();
+  bool onedimhist = fitMan->raw()["Selections"]["1DHist"].as<bool>();
 
   if (!addFD && !addND && !addNDGAr) {std::cerr << "[ERROR:] You've chosen NOT to include FD or ND samples in the config file... you need to add something!" << std::endl; throw;}
 
@@ -356,21 +357,24 @@ int main(int argc, char * argv[]) {
 	}//end of loop over xsec systs
 
   }//end of EvalXsec
-  std::vector<std::string> HistVariables = fitMan->raw()["Selections"]["KinematicParsToPlot"].as<std::vector<std::string>>();
-  std::vector<std::string> PlotModes = fitMan->raw()["Selections"]["PlotModes"].as<std::vector<std::string>>();
+  std::vector<std::string> HistVariables1D = fitMan->raw()["Selections"]["KinematicParsToPlot1D"].as<std::vector<std::string>>();
+  std::vector<std::string> PlotModes1D = fitMan->raw()["Selections"]["PlotModes1D"].as<std::vector<std::string>>();
+  std::vector<std::string> HistVariables2D = fitMan->raw()["Selections"]["KinematicParsToPlot2D"].as<std::vector<std::string>>();
+  std::vector<std::string> PlotModes2D = fitMan->raw()["Selections"]["PlotModes2D"].as<std::vector<std::string>>();
   int Weighted = fitMan->raw()["Selections"]["Weighted"].as<int>();
-  for(int i =0; i<PlotModes.size(); i++){std::cout<<"Plot Modes "<<i<<" : "<<PlotModes[i]<<" MaCh3 Mode: "<<(int)DUNEString_ToMaCh3Mode(PlotModes[i])<<std::endl;}
+  for(int i =0; i<PlotModes1D.size(); i++){std::cout<<"Plot Modes 1D "<<i<<" : "<<PlotModes1D[i]<<" MaCh3 Mode: "<<(int)DUNEString_ToMaCh3Mode(PlotModes1D[i])<<std::endl;}
+  for(int i =0; i<PlotModes2D.size(); i++){std::cout<<"Plot Modes 2D "<<i<<" : "<<PlotModes2D[i]<<" MaCh3 Mode: "<<(int)DUNEString_ToMaCh3Mode(PlotModes2D[i])<<std::endl;}
 //  std::vector<std::string> HistVariables = {"RecoNeutrinoEnergy", "TrueNeutrinoEnergy", "PionMultiplicity", "NRecoParticles", "InFDV"};
 
   if(efficiency && purity){
     for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
+      for(int ihist=0; ihist<HistVariables1D.size(); ihist++){
+        for(int imode = 0; imode<PlotModes1D.size(); imode++){
           int mode;
           std::cout<<"ipdf: "<<ipdf<<std::endl;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
+          if(DUNEString_ToMaCh3Mode(PlotModes1D[0])==(int)(kMaCh3_nModes)){mode =-1;}
+          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes1D[imode]); std::cout<<"mode: "<<mode<<std::endl;}
+          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables1D[ihist], mode, -1, Weighted, NULL);
           string name = histogram->GetName();
           string nameadd;
           if(ipdf ==0){nameadd = "_AllSelected";}
@@ -387,13 +391,13 @@ int main(int argc, char * argv[]) {
    
   else if(efficiency){ 
     for(unsigned ipdf = 1 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
+      for(int ihist=0; ihist<HistVariables1D.size(); ihist++){
+        for(int imode = 0; imode<PlotModes1D.size(); imode++){
           int mode;
           std::cout<<"ipdf: "<<ipdf<<std::endl;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
+          if(DUNEString_ToMaCh3Mode(PlotModes1D[0])==(int)(kMaCh3_nModes)){mode =-1;}
+          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes1D[imode]); std::cout<<"mode: "<<mode<<std::endl;}
+          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables1D[ihist], mode, -1, Weighted, NULL);
           string name = histogram->GetName();
           string nameadd;
           if(ipdf ==1){nameadd = "_AllTrue";}
@@ -409,12 +413,12 @@ int main(int argc, char * argv[]) {
   else if(purity){ 
     for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
       if(ipdf == 1){continue;}
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
+      for(int ihist=0; ihist<HistVariables1D.size(); ihist++){
+        for(int imode = 0; imode<PlotModes1D.size(); imode++){
           int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
+          if(DUNEString_ToMaCh3Mode(PlotModes1D[0])==(int)(kMaCh3_nModes)){mode =-1;}
+          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes1D[imode]); std::cout<<"mode: "<<mode<<std::endl;}
+          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables1D[ihist], mode, -1, Weighted, NULL);
           string name = histogram->GetName();
           string nameadd;
           if(ipdf ==0){nameadd = "_AllSelected";}
@@ -427,15 +431,39 @@ int main(int argc, char * argv[]) {
       }
     }
   }
-
+  else if(twodimhist && onedimhist){ 
+    for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
+      for(int ihist=0; ihist<HistVariables2D.size(); ihist = ihist+2){
+        for(int imode = 0; imode<PlotModes2D.size(); imode++){
+          int mode;
+          if(DUNEString_ToMaCh3Mode(PlotModes2D[0])==(int)(kMaCh3_nModes)){mode =-1; std::cout<<"mode: "<<mode<<std::endl;}
+          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes2D[imode]); std::cout<<"mode: "<<mode<<std::endl;}
+          TH2D * histogram = (TH2D*)SamplePDFs[ipdf]->get2DVarHist(HistVariables2D[ihist], HistVariables2D[ihist+1], mode, -1, Weighted, NULL, NULL);
+          histogram ->Write();
+          delete histogram;
+          std::cout<<"end of loop"<<std::endl;
+        }
+      }
+      for(int ihist=0; ihist<HistVariables1D.size(); ihist++){
+        for(int imode = 0; imode<PlotModes1D.size(); imode++){
+          int mode;
+          if(DUNEString_ToMaCh3Mode(PlotModes1D[0])==(int)(kMaCh3_nModes)){mode =-1; std::cout<<"mode: "<<mode<<std::endl;}
+          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes1D[imode]); std::cout<<"mode: "<<mode<<std::endl;}
+          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables1D[ihist], mode, -1, Weighted, NULL);
+          histogram ->Write();
+          delete histogram;
+          }
+        }
+    }
+  }
   else if(twodimhist){ 
     for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist = ihist+2){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
+      for(int ihist=0; ihist<HistVariables2D.size(); ihist = ihist+2){
+        for(int imode = 0; imode<PlotModes2D.size(); imode++){
           int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1; std::cout<<"mode: "<<mode<<std::endl;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH2D * histogram = (TH2D*)SamplePDFs[ipdf]->get2DVarHist(HistVariables[ihist], HistVariables[ihist+1], mode, -1, Weighted, NULL, NULL);
+          if(DUNEString_ToMaCh3Mode(PlotModes2D[0])==(int)(kMaCh3_nModes)){mode =-1; std::cout<<"mode: "<<mode<<std::endl;}
+          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes2D[imode]); std::cout<<"mode: "<<mode<<std::endl;}
+          TH2D * histogram = (TH2D*)SamplePDFs[ipdf]->get2DVarHist(HistVariables2D[ihist], HistVariables2D[ihist+1], mode, -1, Weighted, NULL, NULL);
           histogram ->Write();
           delete histogram;
           std::cout<<"end of loop"<<std::endl;
@@ -443,14 +471,14 @@ int main(int argc, char * argv[]) {
       }
     }
   }
-  else{ 
+  else if(onedimhist){ 
     for(unsigned ipdf = 0 ; ipdf < SamplePDFs.size() ; ipdf++) {
-      for(int ihist=0; ihist<HistVariables.size(); ihist++){
-        for(int imode = 0; imode<PlotModes.size(); imode++){
+      for(int ihist=0; ihist<HistVariables1D.size(); ihist++){
+        for(int imode = 0; imode<PlotModes1D.size(); imode++){
           int mode;
-          if(DUNEString_ToMaCh3Mode(PlotModes[0])==(int)(kMaCh3_nModes)){mode =-1; std::cout<<"mode: "<<mode<<std::endl;}
-          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes[imode]); std::cout<<"mode: "<<mode<<std::endl;}
-          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables[ihist], mode, -1, Weighted, NULL);
+          if(DUNEString_ToMaCh3Mode(PlotModes1D[0])==(int)(kMaCh3_nModes)){mode =-1; std::cout<<"mode: "<<mode<<std::endl;}
+          else{mode = (int)DUNEString_ToMaCh3Mode(PlotModes1D[imode]); std::cout<<"mode: "<<mode<<std::endl;}
+          TH1D * histogram = (TH1D*)SamplePDFs[ipdf]->get1DVarHist(HistVariables1D[ihist], mode, -1, Weighted, NULL);
           histogram ->Write();
           delete histogram;
         }
