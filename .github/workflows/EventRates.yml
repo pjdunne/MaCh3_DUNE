@@ -56,7 +56,12 @@ jobs:
           echo "Inputs: "
           ls inputs
           echo "CVMFS: "
+          
           ls /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1
+          cd source /opt/root/bin/thisroot.sh
+          
+          cd /opt/bin/MaCh3_DUNE
+
           source build/bin/setup.MaCh3.sh
           source build/bin/setup.NuOscillator.sh
           source build/bin/setup.MaCh3DUNE.sh
