@@ -40,7 +40,8 @@ jobs:
           docker build . \
           --file ${{ matrix.file }} \
           --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
-          --build-arg MACH3_DUNE_VERSION=${{ github.ref_name }} 
+          --build-arg MACH3_DUNE_VERSION=${{ github.ref_name }}
+          --build-arg MACH3_DUNE_BUILD_ARGS="-DNuFastLinear_ENABLED=ON"
       
 
 
