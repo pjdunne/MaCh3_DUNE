@@ -52,8 +52,8 @@ jobs:
           shell: bash
           options: -v /cvmfs:/cvmfs:shared
           run: |
-            source /opt/root/bin/thisroot.sh
-            
+            which root-config
+          
             ln -sf \
             /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
             inputs
