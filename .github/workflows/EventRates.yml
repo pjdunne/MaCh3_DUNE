@@ -62,5 +62,5 @@ jobs:
 
             source bin/setup.MaCh3.sh
             source bin/setup.NuOscillator.sh
-            source setup.MaCh3DUNE.sh
+            source bin/setup.MaCh3DUNE.sh
             ./src/EventRates configs/EventRates_Beam.yaml
