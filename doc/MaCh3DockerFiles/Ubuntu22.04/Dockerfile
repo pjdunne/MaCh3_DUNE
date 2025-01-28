@@ -1,8 +1,8 @@
-# Let's be smart and use bash...
-SHELL ["/bin/bash", "-c"]
-
 #To run use: docker build --secret id=tokens,src=tokens.txt -t mach3dune .
 FROM rootproject/root:6.32.02-ubuntu22.04 AS mach3_dune_build
+
+# Let's be smart and use bash...
+SHELL ["/bin/bash", "-c"]
 
 # Add a label for the author
 LABEL maintainer="The MaCh3 Collaboration"
