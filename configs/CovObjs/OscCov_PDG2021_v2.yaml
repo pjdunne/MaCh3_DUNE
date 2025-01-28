@@ -123,8 +123,6 @@ Systematics:
     Names:
       FancyName: baseline
       ParameterName: baseline
-
-
     DetID: 984
     Error: 1.0
     FlatPrior: true
