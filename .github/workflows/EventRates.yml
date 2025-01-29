@@ -54,12 +54,14 @@ jobs:
           image: ghcr.io/dune/mach3:alma9test
           shell: bash
           options: -v /cvmfs:/cvmfs:shared
-          run: |          
+          run: |    
+          
+            mkdir inputs/DUNE_spline_files inputs/DUNE_CAF_files
             ln -sf \
-            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2021_FD_splines inputs/DUNE_spline_files
+            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2021_FD_splines/* inputs/DUNE_spline_files
             
             ln -sf \
-            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2023_FD_CAFs inputs/DUNE_CAF_files
+            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2023_FD_CAFs/* inputs/DUNE_CAF_files
 
             source ./bin/setup.MaCh3.sh
             source ./bin/setup.NuOscillator.sh
