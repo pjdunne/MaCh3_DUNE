@@ -19,8 +19,8 @@ jobs:
       matrix:
         include:
           - name: Event Rate Validation
-            test_exe: /tests/TestEventRates
-            test_config: tests/test_configs/EventRates_Beam_TEST.yaml
+            test_exe: /test/TestEventRates
+            test_config: test/test_configs/EventRates_Beam_TEST.yaml
           
         
 
