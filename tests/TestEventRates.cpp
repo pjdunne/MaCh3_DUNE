@@ -59,11 +59,11 @@ int main(int argc, char * argv[]) {
       SelectionVec.push_back(SelecChannel);
       
       TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
-      outFile<<Sample->GetName()<<" "<<Sample->getFlavourName(iOscChan)<<" "<<Hist->Integral()<<"\n";
+      outFile<<Sample->GetName()<<" "<<Sample->getFlavourName(iOscChan)<<" "<<Hist->Integral()<<" ";
     }
 
     TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
-    outFile<<Sample->GetName()<<" "<<Hist->Integral()<<"\n";
+    outFile<<Sample->GetName()<<" "<<Hist->Integral()<<" ";
   }
 
   //###############################################################################################################################
@@ -81,11 +81,11 @@ int main(int argc, char * argv[]) {
       SelectionVec.push_back(SelecChannel);
 
       TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy",SelectionVec);
-      outFile<<Sample->GetName()<<" "<<MaCh3mode_ToDUNEString((MaCh3_Mode)iModeChan)<<" "<<Hist->Integral()<<"\n";
+      outFile<<Sample->GetName()<<" "<<MaCh3mode_ToDUNEString((MaCh3_Mode)iModeChan)<<" "<<Hist->Integral()<<" ";
     }
 
     TH1* Hist = Sample->get1DVarHist("TrueNeutrinoEnergy");
-    outFile<<Sample->GetName()<<" "<<Hist->Integral()<<"\n";
+    outFile<<Sample->GetName()<<" "<<Hist->Integral()<<" ";
   }
 
   // Do you want to gener
