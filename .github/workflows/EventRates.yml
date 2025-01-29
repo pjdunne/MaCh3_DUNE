@@ -56,7 +56,6 @@ jobs:
           options: -v /cvmfs:/cvmfs:shared
           run: |    
           
-            mkdir inputs/DUNE_spline_files inputs/DUNE_CAF_files
             ln -sf \
             /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* inputs/
 
