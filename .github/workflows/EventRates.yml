@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [develop]
 
+  push:
+    branches: [hwallace/feature/event_rate_bot]
+
 permissions:
   contents: read
   packages: write
@@ -15,11 +18,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: alma9
-            file: doc/MaCh3DockerFiles/Alma9/Dockerfile
-            tag: alma9test
+          - name: Event Rate Validation
+            test_exe: /tests/TestEventRates
+            test_config: tests/test_configs/EventRates_Beam_TEST.yaml
+          
+        
 
-    name: Build CI ${{ matrix.os }}
+    name: Run Test ${{matrix.name}}
 
     steps:
       # Set up CVMFS
@@ -36,26 +41,27 @@ jobs:
       - name: start docker container with bind mount cvmfs
         run: |
           docker build . \
-          --file ${{ matrix.file }} \
-          --tag ghcr.io/dune/mach3:${{ matrix.tag }} \
+          --file doc/MaCh3DockerFiles/Alma9/Dockerfile \
+          --tag ghcr.io/dune/mach3:alma9test \
           --build-arg MACH3_DUNE_VERSION=${{ github.ref_name }} \
-          --build-arg MACH3_DUNE_BUILD_ARGS="-DCUDAProb3Linear_ENABLED=ON -DUSE_CPU=ON"
+          --build-arg MACH3_DUNE_BUILD_ARGS="-DCUDAProb3Linear_ENABLED=ON -DMACH3_BUILD_TESTS=ON"
       
-
 
       # Run event rates
       - name: Run Event Rates
         uses: addnab/docker-run-action@v3
         with:
-          image: ghcr.io/dune/mach3:${{ matrix.tag }}
+          image: ghcr.io/dune/mach3:alma9test
           shell: bash
           options: -v /cvmfs:/cvmfs:shared
           run: |          
             ln -sf \
-            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* \
-            inputs
+            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2021_FD_splines inputs/DUNE_spline_files
+            
+            ln -sf \
+            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2023_FD_CAFs inputs/DUNE_CAF_files
 
             source ./bin/setup.MaCh3.sh
             source ./bin/setup.NuOscillator.sh
             source ./bin/setup.MaCh3DUNE.sh
-            ./src/EventRates configs/EventRates_Beam.yaml
+            .${{matrix.test_exe}} ${{matrix.test_config}}
