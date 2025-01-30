@@ -18,7 +18,7 @@ void samplePDFDUNEBeamND::Init() {
   
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
   SampleDetID = SampleManager->raw()["DetID"].as<int>();
-  iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
+  IsELike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
   tot_escale_nd_pos = -999;
   tot_escale_sqrt_nd_pos = -999;
@@ -167,13 +167,12 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
 }
 
 int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
-
-  dunemc_base *duneobj = &(dunendmcSamples[iSample]);
-  int nutype = sample_nutype[iSample];
-  int oscnutype = sample_oscnutype[iSample];
-  bool signal = sample_signal[iSample];
+  int CurrErrorLevel = gErrorIgnoreLevel;
+  gErrorIgnoreLevel = kFatal;
   
   caf::StandardRecord* sr = new caf::StandardRecord();
+  dunemc_base* duneobj = &dunendmcSamples[iSample];
+
 
   std::string FileName = mc_files[iSample];
   MACH3LOG_INFO("Reading File: {}",FileName);
@@ -199,9 +198,8 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->pot_s = (pot)/1e21;
 
   duneobj->nEvents = Tree->GetEntries();
-  duneobj->nutype = nutype;
-  duneobj->oscnutype = oscnutype;
-  duneobj->signal = signal;
+  duneobj->nupdg = new int[duneobj->nEvents];
+  duneobj->nupdgUnosc = new int[duneobj->nEvents];
 
   duneobj->rw_yrec = new double[duneobj->nEvents];
   duneobj->rw_erec_lep = new double[duneobj->nEvents];
@@ -246,26 +244,26 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     duneobj->rw_erec_lep[iEvent] = (double)(sr->common.ixn.dlp[0].Enu.lep_calo);
     duneobj->rw_erec_had[iEvent] = (double)(sr->common.ixn.dlp[0].Enu.calo);
     duneobj->rw_yrec[iEvent] = (double)((_erec - _erec_lep)/_erec);
-    duneobj->rw_etru[iEvent] = (double)_ev; // in GeV
-    duneobj->rw_theta[iEvent] = (double)_LepNuAngle;
-    duneobj->rw_isCC[iEvent] = _isCC;
-    duneobj->rw_reco_q[iEvent] = _reco_q;
-    duneobj->rw_nuPDGunosc[iEvent] = _nuPDGunosc;
-    duneobj->rw_nuPDG[iEvent] = _nuPDG;
-    duneobj->rw_berpaacvwgt[iEvent] = (double)_BeRPA_cvwgt;
+    // duneobj->rw_etru[iEvent] = (double)_ev; // in GeV
+    // duneobj->rw_theta[iEvent] = (double)_LepNuAngle;
+    // duneobj->rw_isCC[iEvent] = _isCC;
+    // duneobj->rw_reco_q[iEvent] = _reco_q;
+    // duneobj->rw_nuPDGunosc[iEvent] = _nuPDGunosc;
+    // duneobj->rw_nuPDG[iEvent] = _nuPDG;
+    // duneobj->rw_berpaacvwgt[iEvent] = (double)_BeRPA_cvwgt;
     
-    duneobj->rw_eRecoP[iEvent] = (double)_eRecoP; 
-    duneobj->rw_eRecoPip[iEvent] = (double)_eRecoPip; 
-    duneobj->rw_eRecoPim[iEvent] = (double)_eRecoPim; 
-    duneobj->rw_eRecoPi0[iEvent] = (double)_eRecoPi0; 
-    duneobj->rw_eRecoN[iEvent] = (double)_eRecoN; 
+    // duneobj->rw_eRecoP[iEvent] = (double)_eRecoP; 
+    // duneobj->rw_eRecoPip[iEvent] = (double)_eRecoPip; 
+    // duneobj->rw_eRecoPim[iEvent] = (double)_eRecoPim; 
+    // duneobj->rw_eRecoPi0[iEvent] = (double)_eRecoPi0; 
+    // duneobj->rw_eRecoN[iEvent] = (double)_eRecoN; 
     
-    duneobj->rw_LepE[iEvent] = (double)_LepE; 
-    duneobj->rw_eP[iEvent] = (double)_eP; 
-    duneobj->rw_ePip[iEvent] = (double)_ePip; 
-    duneobj->rw_ePim[iEvent] = (double)_ePim; 
-    duneobj->rw_ePi0[iEvent] = (double)_ePi0; 
-    duneobj->rw_eN[iEvent] = (double)_eN; 
+    // duneobj->rw_LepE[iEvent] = (double)_LepE; 
+    // duneobj->rw_eP[iEvent] = (double)_eP; 
+    // duneobj->rw_ePip[iEvent] = (double)_ePip; 
+    // duneobj->rw_ePim[iEvent] = (double)_ePim; 
+    // duneobj->rw_ePi0[iEvent] = (double)_ePi0; 
+    // duneobj->rw_eN[iEvent] = (double)_eN; 
     
     //Assume everything is on Argon for now....
     duneobj->Target[iEvent] = 40;
@@ -278,22 +276,23 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
 
     duneobj->flux_w[iEvent] = sr->mc.nu[0].genweight;
 
-    TVector3 RecoNuMomentumVector;
-    if (IsELike) {
-      duneobj->rw_erec[iEvent] = sr->common.ixn.pandora[0].Enu.e_calo;
-      RecoNuMomentumVector = (TVector3(sr->common.ixn.pandora[0].dir.heshw.X(),sr->common.ixn.pandora[0].dir.heshw.Y(),sr->common.ixn.pandora[0].dir.heshw.Z())).Unit();
-    } else {
-      duneobj->rw_erec[iEvent] = sr->common.ixn.pandora[0].Enu.lep_calo;
-      RecoNuMomentumVector = (TVector3(sr->common.ixn.pandora[0].dir.lngtrk.X(),sr->common.ixn.pandora[0].dir.lngtrk.Y(),sr->common.ixn.pandora[0].dir.lngtrk.Z())).Unit();      
-    }
-    duneobj->rw_theta[iEvent] = RecoNuMomentumVector.Y();
+    // TVector3 RecoNuMomentumVector;
+    // if (IsELike) {
+    //   duneobj->rw_erec[iEvent] = sr->common.ixn.pandora[0].Enu.e_calo;
+    //   RecoNuMomentumVector = (TVector3(sr->common.ixn.pandora[0].dir.heshw.X(),sr->common.ixn.pandora[0].dir.heshw.Y(),sr->common.ixn.pandora[0].dir.heshw.Z())).Unit();
+    // } else {
+    //   duneobj->rw_erec[iEvent] = sr->common.ixn.pandora[0].Enu.lep_calo;
+    //   RecoNuMomentumVector = (TVector3(sr->common.ixn.pandora[0].dir.lngtrk.X(),sr->common.ixn.pandora[0].dir.lngtrk.Y(),sr->common.ixn.pandora[0].dir.lngtrk.Z())).Unit();      
+    // }
+    // duneobj->rw_theta[iEvent] = RecoNuMomentumVector.Y();
     
   }
 
   delete Tree;
   delete File;
 
-  _sampleFile->Close();
+  gErrorIgnoreLevel = CurrErrorLevel;
+
   return duneobj->nEvents;
 }
 
