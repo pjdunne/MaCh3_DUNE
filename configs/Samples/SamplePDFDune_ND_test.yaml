@@ -1,0 +1,28 @@
+SampleName: "FHC_nue"
+SampleType: "BeamFD"
+POT: 1.3628319e+23 #Actual POT /POT_gen *This POT ### Maybe put to 1
+SelectionCuts:
+Binning:
+  XVarStr: "RecoNeutrinoEnergy" 
+  XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
+  YVarStr: #or store as erec/etru
+  YVARBins: #
+DUNESampleBools:
+  iselike: yes
+InputFiles:
+  mtupleprefix: "inputs/DUNE_ND_CAF_files/" #name of file
+  mtuplesuffix: ".root"
+  splineprefix: ""
+  splinesuffix: ""
+NuOsc:
+  NuOscConfigFile: "configs/NuOsc/CUDAProb3Linear.yaml"
+NSubSamples: 12
+SubSamples:
+  - name: "FHC_numu_x_numu"
+    mtuplefile: "numu_x_numu"
+    splinefile: "numu_x_numu"
+    samplevecno: 0
+    nutype: 14
+    oscnutype: 14
+    signal: false
+

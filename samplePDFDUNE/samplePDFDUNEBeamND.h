@@ -95,7 +95,7 @@ public:
   int _reco_q;
 
   // configuration 
-  bool iselike;
+  bool IsELike;
   bool isND;
   bool IsRHC;
 
