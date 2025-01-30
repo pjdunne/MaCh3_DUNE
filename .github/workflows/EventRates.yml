@@ -56,13 +56,11 @@ jobs:
           options: -v /cvmfs:/cvmfs:shared
           run: |    
           
-            ln -sf \
-            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v1/* inputs/
-
-            ls inputs/DUNE_spline_files
-            echo "----"
-            ls inputs/DUNE_CAF_files
+            ln -s \
+            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2021_FD_splines inputs/DUNE_spline_files
             
+            ln -s \
+            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2023_FD_CAFs inputs/DUNE_CAF_files
 
             source ./bin/setup.MaCh3.sh
             source ./bin/setup.NuOscillator.sh
