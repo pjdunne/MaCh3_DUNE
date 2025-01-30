@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: [develop]
 
-  push:
-    branches: [hwallace/feature/event_rate_bot]
-
 permissions:
   contents: read
   packages: write
