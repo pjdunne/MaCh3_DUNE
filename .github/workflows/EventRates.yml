@@ -1,5 +1,12 @@
 name: Event Rates Beam
 
+# To add additional run-time tests add (to matrix)
+# - name: <your test>
+#   test_exe: /test/<your exe>
+#   test_config: path/to/tconfiguration
+#   repo_linking_command: ln -sf /path/to/files/ (usually CAFs + splines)
+
+
 on:
   pull_request:
     branches: [develop]
@@ -15,10 +22,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Event Rate Validation
+          - name: Beam Event Rate Validation
             test_exe: /test/TestEventRates
             test_config: test/test_configs/EventRates_Beam_TEST.yaml
-          
+            repo_linking_command: | 
+              ln -s \
+              /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2021_FD_splines inputs/DUNE_spline_files              
+              ln -s \
+              /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2023_FD_CAFs inputs/DUNE_CAF_files
+
         
 
     name: Run Test ${{matrix.name}}
@@ -52,13 +64,7 @@ jobs:
           shell: bash
           options: -v /cvmfs:/cvmfs:shared
           run: |    
-          
-            ln -s \
-            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2021_FD_splines inputs/DUNE_spline_files
-            
-            ln -s \
-            /cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/MaCh3/inputs/TDR/v2/DUNE_2023_FD_CAFs inputs/DUNE_CAF_files
-
+            ${{matrix.repo_linking_command}}
             source ./bin/setup.MaCh3.sh
             source ./bin/setup.NuOscillator.sh
             source ./bin/setup.MaCh3DUNE.sh
