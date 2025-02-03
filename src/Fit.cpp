@@ -84,7 +84,23 @@ int main(int argc, char * argv[]) {
   for(auto Sample : DUNEPdfs){
     MaCh3Fitter->addSamplePDF(Sample);
   }
-
+  std::string throwmatrixfilename = GetFromManager<std::string>(FitManager->raw()["General"]["ThrowMatrixFile"], "");
+  std::string throwmatrixname = GetFromManager<std::string>(FitManager->raw()["General"]["ThrowMatrixName"], "");
+  if (throwmatrixfilename == "") {
+    MACH3LOG_INFO("No throw matrix file specified, will throw from covariance matrix.");
+  }
+  else {
+    TFile *throwmatrixfile = new TFile(throwmatrixfilename.c_str());
+    if (throwmatrixfile->IsZombie()) {
+      MACH3LOG_ERROR("Couldn't find {}", throwmatrixfilename);
+      throw MaCh3Exception(__FILE__ , __LINE__ );
+    }
+    MACH3LOG_INFO("Found throw matrix file {}.", throwmatrixfilename);
+    TMatrixDSym *throwmatrix = throwmatrixfile->Get<TMatrixDSym>(throwmatrixname.c_str());
+    xsec->setThrowMatrix(throwmatrix);
+    std::cout << "Set throw matrix from file " << throwmatrixfilename << " with name " << throwmatrixname << std::endl;
+    throwmatrix->Print();
+  }
   //Start chain from random position
   xsec->throwParameters();
   if (useosc) {
