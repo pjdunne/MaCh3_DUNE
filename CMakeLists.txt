@@ -152,7 +152,7 @@ if(NOT MaCh3_FOUND)
   
   CPMAddPackage(
       NAME MaCh3
-      GIT_TAG "dbarrow257/feature/BinnedOscProbOptimsations"
+      GIT_TAG "v1.3.5"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()
