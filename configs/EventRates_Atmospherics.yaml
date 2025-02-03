@@ -37,6 +37,8 @@ General:
   ProcessMCMC: No
   Seed: 0
   Debug: No
+  StartFromPos: false
+  PosFileName: "chain_0.root"
 
 "Projections": [
   {
