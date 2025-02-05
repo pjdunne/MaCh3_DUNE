@@ -6,7 +6,11 @@ build/
 *.png
 *~
 logs/
+.cache/
 jupyter_env
 .history
 Doc
 inputs/Atmospherics/CAFs
+*.log
+outputs/
+*.out
