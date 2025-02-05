@@ -65,7 +65,7 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   MACH3LOG_INFO("cov xsec setup");
   MACH3LOG_INFO("------------------------------");
   
-  std::vector<std::string> OscMatrixFile = FitManager->raw()["General"]["Systematics"]["OscCovFile"].as<std::vector<std::string>>();
+  /*std::vector<std::string> OscMatrixFile = FitManager->raw()["General"]["Systematics"]["OscCovFile"].as<std::vector<std::string>>();
   std::string  OscMatrixName = FitManager->raw()["General"]["Systematics"]["OscCovName"].as<std::string>(); 
   std::vector<double> oscpars = FitManager->raw()["General"]["OscillationParameters"].as<std::vector<double>>();
   std::string OscPars = "";
@@ -80,7 +80,7 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   osc->setName("osc_cov");
   MACH3LOG_INFO("Osc cov setup");
   MACH3LOG_INFO("------------------------------");
-  
+  */
   // ==========================================================
   //read flat prior, fixed paramas from the config file
   std::vector<std::string> XsecFixParams   = GetFromManager<std::vector<std::string>>(FitManager->raw()["General"]["Systematics"]["XsecFix"], {""});
@@ -100,7 +100,7 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   // Fill the parameter values with their nominal values
   // should _ALWAYS_ be done before overriding with fix or flat
   xsec->setParameters();
-  osc->setParameters(oscpars); 
+  //osc->setParameters(oscpars); 
   
   //####################################################################################
   //Create samplePDFDUNE Objs

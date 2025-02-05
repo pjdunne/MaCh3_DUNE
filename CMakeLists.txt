@@ -64,13 +64,12 @@ option(MaCh3_DUNE_USE_SRProxy "Whether to build proxy classes for Standard Recor
 
 if(MaCh3_DUNE_USE_SRProxy)
   find_package(duneanaobj)
-
   if(NOT duneanaobj_FOUND)
     CPMFindPackage(
       NAME duneanaobj
-      GIT_TAG feature/Clingification_rebase2024
-      GITHUB_REPOSITORY luketpickering/duneanaobj
-      VERSION 4.0.0
+      GIT_TAG v03_06_01b
+      GITHUB_REPOSITORY DUNE/duneanaobj
+      VERSION 3.6.1b
     )
   endif()
 
@@ -80,7 +79,7 @@ if(MaCh3_DUNE_USE_SRProxy)
 else()
   CPMAddPackage(
     NAME duneanaobj
-    GIT_TAG v03_06_00
+    GIT_TAG v03_06_01b
     GITHUB_REPOSITORY "DUNE/duneanaobj"
     DOWNLOAD_ONLY YES
   )
