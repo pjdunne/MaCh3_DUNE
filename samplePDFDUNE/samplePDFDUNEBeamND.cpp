@@ -141,19 +141,50 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
+  duneobj->rw_vtx_x = new double[duneobj->nEvents];
+  duneobj->rw_vtx_y = new double[duneobj->nEvents];
+  duneobj->rw_vtx_z = new double[duneobj->nEvents];
+
+  duneobj->rw_vtx_x_end = new double[duneobj->nEvents];
+  duneobj->rw_vtx_y_end = new double[duneobj->nEvents];
+  duneobj->rw_vtx_z_end = new double[duneobj->nEvents];
+
+  duneobj->rw_reco_vtx_x = new double[duneobj->nEvents];
+  duneobj->rw_reco_vtx_y = new double[duneobj->nEvents];
+  duneobj->rw_reco_vtx_z = new double[duneobj->nEvents];
+
   duneobj->rw_isFHC = new bool[duneobj->nEvents];
   
   //FILL DUNE STRUCT
   for (int iEvent=0;iEvent<duneobj->nEvents; iEvent++) { // Loop through tree
     Tree->GetEntry(iEvent);
 
-    // int ndlp = sr->common.ixn.ndlp;
-    duneobj->rw_erec[iEvent] = (double)(sr->common.ixn.dlp[0].Enu.calo);
+    int ndlp = sr->common.ixn.ndlp;
+
+    for(int i=0; i<ndlp; i++) {
+      int ntracks = sr->nd.lar.dlp[i].ntracks;
+      for(int j=0; j<ntracks; j++) {
+          duneobj->rw_erec[iEvent] += (double)(sr->nd.lar.dlp[i].tracks[j].E/1000.); // MeV to GeV
+      }
+    }
+    duneobj->rw_reco_vtx_x[iEvent] = (double)(sr->nd.lar.dlp[0].tracks[0].start.X());
+    duneobj->rw_reco_vtx_y[iEvent] = (double)(sr->nd.lar.dlp[0].tracks[0].start.Y());
+    duneobj->rw_reco_vtx_z[iEvent] = (double)(sr->nd.lar.dlp[0].tracks[0].start.Z());
+    
+
+    int nnu = sr->mc.nnu;
+    
+    duneobj->rw_etru[iEvent] += (double)(sr->mc.nu[0].E);
+    duneobj->rw_vtx_x[iEvent] = (double)(sr->mc.nu[0].vtx.X());
+    duneobj->rw_vtx_y[iEvent] = (double)(sr->mc.nu[0].vtx.Y());
+    duneobj->rw_vtx_z[iEvent] = (double)(sr->mc.nu[0].vtx.Z());
+    
+    // duneobj->rw_theta[iEvent] = RecoNuMomentumVector.Y();
     // std::cout << "rw_erec:" <<rw_erec[iEvent]<< std::endl;
     duneobj->rw_erec_lep[iEvent] = (double)(sr->common.ixn.dlp[0].Enu.lep_calo);
     duneobj->rw_erec_had[iEvent] = (double)(sr->common.ixn.dlp[0].Enu.calo);
     duneobj->rw_yrec[iEvent] = (double)((_erec-_erec_lep)/_erec);
-    duneobj->rw_etru[iEvent] = (double)(sr->mc.nu[0].E);
+    
     duneobj->nupdg[iEvent] = (int)(sample_nupdg[iSample]);
     std::cout << "nuPDG:" <<duneobj->nupdg[iEvent]<< std::endl;
     duneobj->nupdgUnosc[iEvent] = (int)(sample_nupdgunosc[iSample]);
@@ -185,21 +216,9 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     int mode= TMath::Abs(_mode);       
     duneobj->mode[iEvent]=(double)GENIEMode_ToMaCh3Mode(mode, _isCC);
     
-    //TVector3 TrueNuMomentumVector = (TVector3(sr->mc.nu[0].momentum.X(),sr->mc.nu[0].momentum.Y(),sr->mc.nu[0].momentum.Z())).Unit();
-    //duneobj->rw_truecz[iEvent] = TrueNuMomentumVector.Y();
+
 
     duneobj->flux_w[iEvent] = (double)(sr->mc.nu[0].genweight);
-
-    // TVector3 RecoNuMomentumVector;
-    // if (IsELike) {
-    //   duneobj->rw_erec[iEvent] = sr->common.ixn.pandora[0].Enu.e_calo;
-    //   RecoNuMomentumVector = (TVector3(sr->common.ixn.pandora[0].dir.heshw.X(),sr->common.ixn.pandora[0].dir.heshw.Y(),sr->common.ixn.pandora[0].dir.heshw.Z())).Unit();
-    // } else {
-    //   duneobj->rw_erec[iEvent] = sr->common.ixn.pandora[0].Enu.lep_calo;
-    //   RecoNuMomentumVector = (TVector3(sr->common.ixn.pandora[0].dir.lngtrk.X(),sr->common.ixn.pandora[0].dir.lngtrk.Y(),sr->common.ixn.pandora[0].dir.lngtrk.Z())).Unit();      
-    // }
-    // duneobj->rw_theta[iEvent] = RecoNuMomentumVector.Y();
-    
   }
 
   delete Tree;
@@ -269,6 +288,14 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     std::cout << "rw_etru:" <<duneobj->rw_etru[iEvent]<< std::endl;
     std::cout << "rw_erec:" <<duneobj->rw_erec[iEvent]<< std::endl;
+    std::cout << "rw_erec_lep:" <<duneobj->rw_erec_lep[iEvent]<< std::endl;
+    std::cout << "rw_erec_had:" <<duneobj->rw_erec_had[iEvent]<< std::endl;
+    std::cout << "rw_reco_vtx_x:" <<duneobj->rw_reco_vtx_x[iEvent]<< std::endl;
+    std::cout << "rw_vtx_x:" <<duneobj->rw_vtx_x[iEvent]<< std::endl;    
+    std::cout << "rw_reco_vtx_y:" <<duneobj->rw_reco_vtx_y[iEvent]<< std::endl;
+    std::cout << "rw_vtx_y:" <<duneobj->rw_vtx_y[iEvent]<< std::endl;
+    std::cout << "rw_reco_vtx_z:" <<duneobj->rw_reco_vtx_z[iEvent]<< std::endl;
+    std::cout << "rw_vtx_z:" <<duneobj->rw_vtx_z[iEvent]<< std::endl;
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     std::cout << "mode:" <<duneobj->mode[iEvent]<< std::endl;
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 

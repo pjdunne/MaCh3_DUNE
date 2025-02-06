@@ -33,6 +33,7 @@ struct dunemc_base {
   double *rw_eN;
 
   double *rw_etru;
+  double *rw_etru_vis;
   double *rw_mom;
   double *rw_theta;
   double *rw_Q2;
@@ -52,6 +53,9 @@ struct dunemc_base {
   double *rw_vtx_x;
   double *rw_vtx_y;
   double *rw_vtx_z;
+  double *rw_vtx_x_end;
+  double *rw_vtx_y_end;
+  double *rw_vtx_z_end;
   double dummy_y;
   double *rw_reco_q;
   double *reco_numu;

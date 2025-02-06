@@ -90,6 +90,9 @@ public:
   double _vtx_x;
   double _vtx_y;
   double _vtx_z;
+  double _tru_vtx_x;
+  double _tru_vtx_y;
+  double _tru_vtx_z;
   double _LepTheta;
   double _Q2;
   int _reco_q;
