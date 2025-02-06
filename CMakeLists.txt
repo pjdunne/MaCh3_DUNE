@@ -121,7 +121,17 @@ endif()
 ##################################  MaCh3  ######################################
 #If MaCh3 was sourced find it, otherwise use CPM
 SET(MaCh3_FOUND FALSE)
-find_package(MaCh3 1.3.5 EXACT QUIET)
+
+# KS: Here we try to find tag matching tutorial version. If we can't find one then use develop
+# This will allow to grab tutorial for tagged MaCh3 version without a need of manually changing version
+if(NOT DEFINED MaCh3_Branch)
+      SET(MaCh3_Branch "v1.3.5")
+      find_package(MaCh3 1.3.5 EXACT QUIET)
+else()
+    # If user is just trying to use their own version we can grab it
+    find_package(MaCh3 QUIET)
+endif()
+
 
 if(NOT MaCh3_FOUND)
   cmessage(STATUS "Didn't find MaCh3, attempting to use built in MaCh3")
@@ -152,7 +162,7 @@ if(NOT MaCh3_FOUND)
   
   CPMAddPackage(
       NAME MaCh3
-      GIT_TAG "v1.3.5"
+      GIT_TAG ${MaCh3_Branch}
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()
