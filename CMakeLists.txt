@@ -152,7 +152,7 @@ if(NOT MaCh3_FOUND)
   
   CPMAddPackage(
       NAME MaCh3
-      GIT_TAG "v1.3.5"
+      GIT_TAG "v1.3.6"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()
