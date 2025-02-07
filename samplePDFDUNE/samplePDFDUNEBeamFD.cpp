@@ -7,7 +7,7 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamFD::samplePDFDUNEBeamFD(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {
+samplePDFDUNEBeamFD::samplePDFDUNEBeamFD(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {
   //Call insitialise in samplePDFFD
   Initialise();
 }
@@ -54,9 +54,7 @@ void samplePDFDUNEBeamFD::Init() {
   cvn_numu_fd_pos = -999;
   cvn_nue_fd_pos = -999;
 
-  std::vector<std::string> funcParsNames = XsecCov->GetParsNamesFromDetID(SampleDetID, SystType::kFunc);
-  std::vector<int> funcParsIndex = XsecCov->GetParsIndexFromDetID(SampleDetID, SystType::kFunc);
-  
+  /*
   nFDDetectorSystPointers = funcParsIndex.size();
   std::unordered_map<std::string, const double*> FDDetectorSystPointersMap;
   FDDetectorSystPointers = std::vector<const double*>(nFDDetectorSystPointers);
@@ -65,7 +63,6 @@ void samplePDFDUNEBeamFD::Init() {
     FDDetectorSystPointersMap.insert(std::pair<std::string, const double*>(funcParsNames.at(FuncPar_i), XsecCov->retPointer(funcParsIndex.at(FuncPar_i))));
   }
 
-  /*
   int func_it = 0;
   for (std::vector<int>::iterator it = funcParsIndex.begin(); it != funcParsIndex.end(); ++it, ++func_it) {
     std::string name = funcParsNames.at(func_it);
@@ -170,13 +167,12 @@ void samplePDFDUNEBeamFD::SetupSplines() {
   ///@todo move all of the spline setup into core
   if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
     MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-    splineFile = (splineFDBase*)DUNESplines;
+    SplineHandler = std::unique_ptr<splineFDBase>(new splinesDUNE(XsecCov));
     InitialiseSplineObject();
   }
   else{
     MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splineFile = nullptr;
+    SplineHandler = nullptr;
   }
   
   return;
@@ -186,7 +182,7 @@ void samplePDFDUNEBeamFD::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
-      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
       MCSamples[i].total_weight_pointers[j][0] = &(dunemcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunemcSamples[i].norm_s);
       MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
@@ -201,7 +197,8 @@ void samplePDFDUNEBeamFD::SetupWeightPointers() {
 int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
 
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
-  bool signal = sample_signal[iSample];
+  int nupdgUnosc = sample_nupdgunosc[iSample];
+  int nupdg = sample_nupdg[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", mc_files[iSample]);
@@ -290,7 +287,6 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->pot_s = pot/norm->GetBinContent(2);
 
   duneobj->nEvents = _data->GetEntries();
-  duneobj->signal = signal;
 
   // allocate memory for dunemc variables
   duneobj->rw_cvnnumu = new double[duneobj->nEvents];
@@ -326,6 +322,8 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
 
+  duneobj->nupdgUnosc = new int[duneobj->nEvents];
+  duneobj->nupdg = new int[duneobj->nEvents];
   duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
@@ -334,6 +332,10 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   //FILL DUNE STRUCT
   for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
     _data->GetEntry(i);
+
+    duneobj->nupdg[i] = sample_nupdg[iSample];
+    duneobj->nupdgUnosc[i] = sample_nupdgunosc[iSample];    
+    
     duneobj->rw_cvnnumu[i] = (double)_cvnnumu;
     duneobj->rw_cvnnue[i] = (double)_cvnnue;
     duneobj->rw_cvnnumu_shifted[i] = (double)_cvnnumu; 
@@ -713,19 +715,17 @@ inline std::string samplePDFDUNEBeamFD::ReturnStringFromKinematicParameter(int K
 
 void samplePDFDUNEBeamFD::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
-  fdmc_base *fdobj = &(MCSamples[iSample]);  
-  
-  fdobj->signal = duneobj->signal;
-  fdobj->SampleDetID = SampleDetID;
+  FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);  
   
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent) {
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    fdobj->nupdg[iEvent] = duneobj->rw_nuPDG[iEvent];
-    fdobj->nupdgunosc[iEvent] = duneobj->rw_nuPDGunosc[iEvent];
+    fdobj->nupdg[iEvent] = &(duneobj->nupdg[iEvent]);
+    fdobj->nupdgUnosc[iEvent] = &(duneobj->nupdgUnosc[iEvent]);
   }
+  
 }
  
 void samplePDFDUNEBeamFD::applyShifts(int iSample, int iEvent) {
@@ -759,9 +759,9 @@ void samplePDFDUNEBeamFD::applyShifts(int iSample, int iEvent) {
   double invSqrteRecoN =  1/(sqrteRecoN+0.1);
   double invSqrtSumEhad =  1/(sqrtSumEhad+0.1);
 
-  bool CCnumu {dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==14) && dunemcSamples[iSample].nutype==2};
-  bool CCnue {dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==12) && dunemcSamples[iSample].nutype==1};
-  bool NotCCnumu {!(dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==14)) && dunemcSamples[iSample].nutype==2};
+  bool CCnumu {dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==14) && dunemcSamples[iSample].nupdgUnosc==2};
+  bool CCnue {dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==12) && dunemcSamples[iSample].nupdgUnosc==1};
+  bool NotCCnumu {!(dunemcSamples[iSample].rw_isCC[iEvent]==1 && abs(dunemcSamples[iSample].rw_nuPDG[iEvent]==14)) && dunemcSamples[iSample].nupdgUnosc==2};
 
 
   TotalEScaleFD(FDDetectorSystPointers[0], &dunemcSamples[iSample].rw_erec_shifted[iEvent], dunemcSamples[iSample].rw_erec_had[iEvent], dunemcSamples[iSample].rw_erec_lep[iEvent], NotCCnumu);

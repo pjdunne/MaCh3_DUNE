@@ -40,10 +40,7 @@ void Write1DHistogramsToPdf(std::string OutFileName, std::vector<TH1D*> Histogra
 }
 
 int main(int argc, char * argv[]) {
-  if(argc == 1){
-    MACH3LOG_ERROR("Usage: bin/EventRatesDUNEBeam config.cfg");
-    return 1;
-  }
+  MaCh3Utils::MaCh3Usage(argc, argv);
   auto fitMan = std::unique_ptr<manager>(new manager(argv[1]));
 
   //###############################################################################################################################

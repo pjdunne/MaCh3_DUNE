@@ -7,7 +7,7 @@
 #include "TMath.h"
 #include "manager/manager.h"
 
-samplePDFDUNEBeamND::samplePDFDUNEBeamND(std::string mc_version_, covarianceXsec* xsec_cov_) : samplePDFFDBase(mc_version_, xsec_cov_) {  
+samplePDFDUNEBeamND::samplePDFDUNEBeamND(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {  
   Initialise();
 }
 
@@ -50,6 +50,7 @@ void samplePDFDUNEBeamND::Init() {
 
   std::vector<std::string> funcParsNames = XsecCov->GetParsNamesFromDetID(SampleDetID, SystType::kFunc);
   std::vector<int> funcParsIndex = XsecCov->GetParsIndexFromDetID(SampleDetID, SystType::kFunc);
+  /*
   nNDDetectorSystPointers = funcParsIndex.size();
   NDDetectorSystPointers = std::vector<const double*>(nNDDetectorSystPointers);
 
@@ -138,6 +139,7 @@ void samplePDFDUNEBeamND::Init() {
       throw MaCh3Exception(__FILE__, __LINE__);
     }
   }
+  */
   
   std::cout << "-------------------------------------------------------------------" <<std::endl;
 }
@@ -146,13 +148,12 @@ void samplePDFDUNEBeamND::SetupSplines() {
   ///@todo move all of the spline setup into core
   if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
     MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splinesDUNE* DUNESplines = new splinesDUNE(XsecCov);
-    splineFile = (splineFDBase*)DUNESplines;
+    SplineHandler = std::unique_ptr<splineFDBase>(new splinesDUNE(XsecCov));
     InitialiseSplineObject();
   }
   else{
     MACH3LOG_INFO("Found {} splines for this sample so I will not load or evaluate splines", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    splineFile = nullptr;
+    SplineHandler = nullptr;
   }
 
   return;
@@ -162,7 +163,7 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendmcSamples.size(); ++i) {
     for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
-      MCSamples[i].total_weight_pointers[j] = new const double*[MCSamples[i].ntotal_weight_pointers[j]];
+      MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
       MCSamples[i].total_weight_pointers[j][0] = &(dunendmcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunendmcSamples[i].norm_s);
       MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
@@ -176,7 +177,8 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
 int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
 
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
-  bool signal = sample_signal[iSample];
+  int nupdgUnosc = sample_nupdgunosc[iSample];
+  int nupdg = sample_nupdg[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", mc_files.at(iSample));
@@ -268,7 +270,6 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   }
 
 
-  duneobj->signal = signal;
 
   duneobj->rw_yrec = new double[duneobj->nEvents];
   duneobj->rw_erec_lep = new double[duneobj->nEvents];
@@ -298,6 +299,8 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_ePi0 = new double[duneobj->nEvents];
   duneobj->rw_eN = new double[duneobj->nEvents];
 
+  duneobj->nupdg = new int[duneobj->nEvents];
+  duneobj->nupdgUnosc = new int[duneobj->nEvents];
   duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
 
@@ -306,6 +309,10 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   //FILL DUNE STRUCT
   for (int i = 0; i < duneobj->nEvents; ++i) { // Loop through tree
     _data->GetEntry(i);
+
+    duneobj->nupdg[i] = sample_nupdg[iSample];
+    duneobj->nupdgUnosc[i] = sample_nupdgunosc[iSample];
+    
     duneobj->rw_erec[i] = (double)_erec;
     duneobj->rw_erec_shifted[i] = (double)_erec;
     duneobj->rw_erec_lep[i] = (double)_erec_lep;
@@ -392,18 +399,16 @@ double samplePDFDUNEBeamND::ReturnKinematicParameter(std::string KinematicParame
 
 void samplePDFDUNEBeamND::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
-  fdmc_base *fdobj = &(MCSamples[iSample]);
-  
-  fdobj->signal = duneobj->signal;
-  fdobj->SampleDetID = SampleDetID;
+  FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);
 
+  fdobj->SampleDetID = SampleDetID;
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
     fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    fdobj->nupdg[iEvent] = duneobj->rw_nuPDG[iEvent];
-    fdobj->nupdgunosc[iEvent] = duneobj->rw_nuPDGunosc[iEvent];
+    fdobj->nupdgUnosc[iEvent] = &(duneobj->nupdgUnosc[iEvent]);
+    fdobj->nupdg[iEvent] = &(duneobj->nupdg[iEvent]);
   }
 }
 
