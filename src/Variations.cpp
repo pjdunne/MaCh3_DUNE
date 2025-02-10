@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <TH1D.h>
+#include <TH2D.h>
 #include <THStack.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -104,7 +105,10 @@ int main(int argc, char * argv[]) {
 	            File->cd((ParName+"/"+SampleName).c_str());
 	  
 	            DUNEPdfs[iSample]->reweight();
-	            TH1* Hist = DUNEPdfs[iSample]->get1DHist();
+              if(Sample->GetNDim() == 1)
+	              TH1* Hist = DUNEPdfs[iSample]->get1DHist();
+              else if(Sample->GetNDim() == 2)
+                TH2* Hist = DUNEPdfs[iSample]->get2DHist();
 	            MACH3LOG_INFO("\t\t\tSample : {:<30} - Integral : {:<10}",SampleName,Hist->Integral());
 	  
 	            Hist->Write(Form("Variation_%.2e",VarVal));
