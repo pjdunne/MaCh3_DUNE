@@ -5,17 +5,17 @@
 // #include "samplePDFDUNE/samplePDFDUNEBeamNDGar.h"
 #include "samplePDFDUNE/samplePDFDUNEAtm.h"
 
-samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string SampleConfig, covarianceXsec* &xsec) {
+samplePDFFDBase* GetMaCh3DuneInstance(std::string SampleType, std::string SampleConfig, covarianceXsec* &xsec, covarianceOsc* &osc) {
 
   samplePDFFDBase *FDSample;
   if (SampleType == "BeamFD") {
-    FDSample = new samplePDFDUNEBeamFD(SampleConfig, xsec);
+    FDSample = new samplePDFDUNEBeamFD(SampleConfig, xsec, osc);
   } else if (SampleType == "BeamND") {
-    FDSample = new samplePDFDUNEBeamND(SampleConfig, xsec);
+    FDSample = new samplePDFDUNEBeamND(SampleConfig, xsec, osc);
   // } else if (SampleType == "BeamNDGar") {
   //   FDSample = new samplePDFDUNEBeamNDGar(SampleConfig, xsec);
   } else if (SampleType == "Atm") {
-    FDSample = new samplePDFDUNEAtm(SampleConfig, xsec);
+    FDSample = new samplePDFDUNEAtm(SampleConfig, xsec, osc);
   } else {
     MACH3LOG_ERROR("Invalid SampleType: {} defined in {}", SampleType, SampleConfig);
     throw MaCh3Exception(__FILE__, __LINE__);
@@ -113,10 +113,8 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
     manager* tempSampleManager = new manager(DUNESampleConfigs[Sample_i].c_str());
     std::string SampleType = tempSampleManager->raw()["SampleType"].as<std::string>();
     
-    DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESampleConfigs[Sample_i], xsec));
-    
-    DUNEPdfs.back()->SetXsecCov(xsec);
-    DUNEPdfs.back()->SetOscCov(osc);
+    DUNEPdfs.push_back(GetMaCh3DuneInstance(SampleType, DUNESampleConfigs[Sample_i], xsec, osc));
+
     // Pure for debugging, lets us set which weights we don't want via the manager
 #if DEBUG_DUNE_WEIGHTS==1
     DUNEPdfs.back()->setWeightSwitchOffVector(FitManager->getWeightSwitchOffVector());

@@ -35,13 +35,19 @@ int main(int argc, char * argv[]) {
   //###############################################################################################################################
   //Perform reweight, print total integral, and set data
 
-  std::vector<TH1D*> DUNEHists;
+  std::vector<TH1*> DUNEHists;
   for(auto Sample : DUNEPdfs){
     Sample->reweight();
-    DUNEHists.push_back(Sample->get1DHist());
+    if (Sample->GetNDim() == 1)
+      DUNEHists.push_back(Sample->get1DHist());
+    else if (Sample->GetNDim() == 2)
+      DUNEHists.push_back(Sample->get2DHist());
 
     MACH3LOG_INFO("Event rate for {} : {:<5.2f}", Sample->GetName(), Sample->get1DHist()->Integral());
-    Sample->addData(DUNEHists.back());
+    if (Sample->GetNDim() == 1)
+      Sample->addData((TH2D*)DUNEHists.back());
+    else if (Sample->GetNDim() == 2)
+      Sample->addData((TH2D*)DUNEHists.back());
   }
   std::unique_ptr<FitterBase> MaCh3Fitter = std::make_unique<mcmc>(FitManager);
 

@@ -3,12 +3,16 @@
 
 #include <iostream>
 
+#include "TVector3.h"
+#include "TLorentzVector.h"
+
 struct dunemc_base {
-  int nutype;
-  int oscnutype;
-  bool signal; // true if signue
+
   int nEvents; // how many MC events are there
   int *Target; //Target the interaction was on
+
+  int *nupdg;
+  int *nupdgUnosc;
   
   double *rw_erec;
   double *rw_erec_shifted;
@@ -1043,7 +1047,7 @@ inline std::string MaCh3mode_ToDUNEString(MaCh3_Mode i) {
     name = "ccqe";
     break;
   case kMaCh3_CC_Single_Kaon:
-    name = "ccsinglekaon";
+    name = "unknown";
     break;
   case kMaCh3_CC_DIS:
     name = "ccdis";
