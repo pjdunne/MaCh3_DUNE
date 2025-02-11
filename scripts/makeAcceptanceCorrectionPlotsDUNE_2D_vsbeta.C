@@ -113,8 +113,8 @@ void makeAcceptanceCorrectionPlotsDUNE_2D_vsbeta(TString inputfile)
   std::vector<TString> spatialres = {"1.0"};
 //  std::vector<TString> spatialres = {"1.0", "2.0", "2.5", "3.0"};
 //  std::vector<TString> bfield = {"0.5", "0.4", "0.3", "0.2", "0.1"};
-  std::vector<TString> bfield = {"0.5", "0.4", "0.3"};
-//  std::vector<TString> bfield = {"0.5"};
+//  std::vector<TString> bfield = {"0.5", "0.4", "0.3"};
+  std::vector<TString> bfield = {"0.5"};
 
 //  std::vector<TString> instrumentedrad = {"199.45", "249.45"};  
   std::vector<TString> instrumentedrad = {"249.45"};  
@@ -150,7 +150,7 @@ void makeAcceptanceCorrectionPlotsDUNE_2D_vsbeta(TString inputfile)
   TH2D* histfracbeta = new TH2D("histfracbeta", "histfracbeta", Enu.size()-1, &Enu[0], beta.size()-1, &beta[0]);
   TH2D* histfracbeta2 = new TH2D("histfracbeta2", "histfracbeta2", Enu.size()-1, &Enu[0], beta.size()-1, &beta[0]);
   TH1D* histfracenu = new TH1D("histfracenu", "histfracenu", Enu.size()-1, &Enu[0]);
-
+  TH1D* histfracthreshold = new TH1D("histfracthreshold", "histfracthreshold", beta.size()-1, &beta[0]);
   for(int i_enu = 0; i_enu<Enu.size()-1; i_enu++){
   bool morethan75percent = true;
    TString fidradpath = fidradnum[i_rad][i_fidrad].ReplaceAll(".", "_");
@@ -559,6 +559,7 @@ void makeAcceptanceCorrectionPlotsDUNE_2D_vsbeta(TString inputfile)
          if(fraction2 == 0){fraction2 = 1e-6;}
          count2 =0;
          histfracbeta->SetBinContent(i_enu+1, i_beta+1, fraction);
+         if(Enu[i_enu]==2.5){histfracthreshold->SetBinContent(i_beta+1, fraction);}
          histfracbeta2->SetBinContent(i_enu+1, i_beta+1, fraction2);
          if(beta[i_beta+1] == threshold){
          std::vector<double> fracbelowthreshold;
@@ -654,7 +655,16 @@ void makeAcceptanceCorrectionPlotsDUNE_2D_vsbeta(TString inputfile)
    histfracbeta2->GetYaxis()->SetTitle("#beta range");
    histfracbeta2->SetTitle(title);
    c0->Print("acceptancecorrectionvars_2d.ps");
+   ncd++;
+   c0->cd(ncd);
+   histfracthreshold->Draw("L");
+   histfracthreshold->GetXaxis()->SetTitle("#beta threshold");
+   histfracthreshold->GetYaxis()->SetTitle("Fractions");
+   histfracthreshold->SetTitle("Fraction of Phase Space with Acceptance less than #beta");
 
+   c0->Print("acceptancecorrectionvars_2d.ps");
+   c0->Print("acceptancecorrectionvars_threshold2_5GeV.png");
+   
    histvector.push_back(histfracenu);
    histnamesfracenu.push_back(titlelegend);
      }
