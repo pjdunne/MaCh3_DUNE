@@ -107,6 +107,7 @@ struct dunemc_base {
   bool *in_fdv;
 
   double *rw_reco_pid;
+  int *rw_iscontained;
 };
 
 // ********************************

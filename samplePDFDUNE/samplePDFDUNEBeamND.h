@@ -109,6 +109,7 @@ public:
   double _Q2;
   int _reco_q;
   double _reco_pid;
+  int _iscontained;
 
   // configuration 
   bool IsELike;

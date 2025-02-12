@@ -111,11 +111,11 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->nupdg = new int[duneobj->nEvents];
   duneobj->nupdgUnosc = new int[duneobj->nEvents];
 
-  duneobj->rw_yrec = new double[duneobj->nEvents];
-  duneobj->rw_erec_lep = new double[duneobj->nEvents];
-  duneobj->rw_erec_had = new double[duneobj->nEvents];
-  duneobj->rw_etru = new double[duneobj->nEvents];
-  duneobj->rw_erec = new double[duneobj->nEvents];
+  duneobj->rw_yrec = new double[duneobj->nEvents]; // Not filled in MicroProdN3p1
+  duneobj->rw_erec_lep = new double[duneobj->nEvents]; // Not filled in MicroProdN3p1
+  duneobj->rw_erec_had = new double[duneobj->nEvents]; // Not filled in MicroProdN3p1
+  duneobj->rw_etru = new double[duneobj->nEvents]; 
+  duneobj->rw_erec = new double[duneobj->nEvents]; 
   duneobj->rw_erec_shifted = new double[duneobj->nEvents];
   duneobj->rw_theta = new double[duneobj->nEvents];
   duneobj->flux_w = new double[duneobj->nEvents];
@@ -163,8 +163,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
 
   duneobj->rw_reco_pid = new double[duneobj->nEvents];
 
-
-
+  duneobj->rw_iscontained = new int[duneobj->nEvents];
 
   // for (int iEvent = 0; iEvent < duneobj->nEvents; ++iEvent) {
   //   int common_ndlp = sr->common.ixn.ndlp;
@@ -187,17 +186,17 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   //FILL DUNE STRUCT
   for (int iEvent=0;iEvent<duneobj->nEvents; iEvent++) { // Loop through tree
     Tree->GetEntry(iEvent);
-
     //ND LAr Reco
-
-    // duneobj->rw_erec[iEvent] = (double)(SR->mc.nu[0].E);
+    double erec_total = 0.0;
     int common_ndlp = sr->common.ixn.ndlp;
-    int part_ndlp = sr->common.ixn.dlp[0].part.ndlp;
     for(int i=0; i<common_ndlp; i++) {
+      int part_ndlp = sr->common.ixn.dlp[i].part.ndlp;
       for(int j=0; j<part_ndlp; j++) {
         //Total E_rec
-        duneobj->rw_erec[iEvent] += (double)(sr->common.ixn.dlp[i].part.dlp[j].E);
-        
+        if(sr->common.ixn.dlp[i].part.dlp[j].E > 99){
+          erec_total += (double)(0);
+        } // Fixing a Kaon bug for MicroProdN3p1 
+        else{erec_total += (double)(sr->common.ixn.dlp[i].part.dlp[j].E);}
         duneobj->rw_reco_vtx_x[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.X());
         duneobj->rw_reco_vtx_y[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.Y());
         duneobj->rw_reco_vtx_z[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.Z());
@@ -210,8 +209,13 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
         duneobj->rw_reco_py[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].p.y);
         duneobj->rw_reco_pz[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].p.z);
         
-        duneobj->rw_reco_pid[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].pdg);      
+        duneobj->rw_reco_pid[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].pdg);
+        duneobj->rw_iscontained[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].contained);
+
+        
+        duneobj->rw_erec[iEvent] = erec_total;
       }
+      std::cout << "------------------------------------------------" << std::endl;
     }
 
     
@@ -337,8 +341,8 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
     // std::cout << "This is Event "<<iEvent<< std::endl;
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
-    std::cout << "rw_etru:" <<duneobj->rw_etru[iEvent]<< std::endl;
-    std::cout << "rw_erec:" <<duneobj->rw_erec[iEvent]<< std::endl;
+    // std::cout << "rw_etru:" <<duneobj->rw_etru[iEvent]<< std::endl;
+    // std::cout << "rw_erec:" <<duneobj->rw_erec[iEvent]<< std::endl;
 
     // int common_ndlp = duneobj->common_ndlp[iEvent];
     // for(int i = 0; i < common_ndlp; i++) {
@@ -366,7 +370,7 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
     // std::cout << "nupdgUnosc:" <<duneobj->nupdgUnosc[iEvent]<< std::endl;
     fdobj->nupdg[iEvent] = &(duneobj->nupdg[iEvent]);
     // std::cout << "nupdg:" <<duneobj->nupdg[iEvent]<< std::endl;
-    std::cout << "-------------------------------------------------------------------" <<std::endl;
+    // std::cout << "-------------------------------------------------------------------" <<std::endl;
   }
 }
 
@@ -409,7 +413,6 @@ int samplePDFDUNEBeamND::ReturnKinematicParameterFromString(std::string Kinemati
   if(KinematicParameterStr == "IsFHC") return kRecoNeutrinoEnergy;
   if(KinematicParameterStr == "OscChannel") return kOscChannel;
   if(KinematicParameterStr == "Mode") return kMode;
-  std::cout << "HELP ME " <<KinematicParameterStr<<std::endl;
   return -1;
 }
 
