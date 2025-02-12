@@ -17,6 +17,15 @@
 #include "samplePDFDUNE/MaCh3DUNEFactory.h"
 #include "samplePDFDUNE/StructsDUNE.h"
 
+//CS YAML "Variations" node expects to be given each parameter to vary with :
+// - "Name": name of the parameter as written in the CovObjs YAML file 
+// - "OscParDefault" array: values that oscillation parameters should be given as a default for this specific parameter variation 
+//    ex : put sterile mixing angles to non zero values to test variations of sterile cp phases
+//    If "OscParDefault" not given, will use the "OscillationParameters" values specified in "General" node 
+// - "VarValues" array: values we want the parameter to take
+
+//TODO: Consider merging with SigmaVariations app at some point
+
 int main(int argc, char * argv[]) {
   if(argc == 1){
     MACH3LOG_ERROR("Usage: bin/EventRatesDUNEBeam config.cfg");
@@ -68,22 +77,22 @@ int main(int argc, char * argv[]) {
     for (int iPar=0;iPar<nPars;iPar++) {
       std::string ParName = CovObj->GetParName(iPar);
 
-      for (auto const &param : FitManager->raw()["General"]["Variations"]) {
+      for (auto const &param : FitManager->raw()["Variations"]) {
 
-        std::string VarName = (param["Parameter"]["Name"].as<std::string>());
+        std::string VarName = (param["Name"].as<std::string>());
 
         if(ParName == VarName) {
 
           MACH3LOG_INFO("\tParameter : {:<30}",ParName);
 
-          if(!param["Parameter"]["OscParDefault"]){ //if specific default values not specified for the parameter then use global default ones
+          if(!param["OscParDefault"]){ //if specific default values not specified for the parameter then use global default ones
             CovObj->setParameters(oscpars);
           }
           else {
-            CovObj->setParameters((param["Parameter"]["OscParDefault"].as<std::vector<double>>()));
+            CovObj->setParameters((param["OscParDefault"].as<std::vector<double>>()));
           }
 
-          std::vector<double> valVariations = (param["Parameter"]["VarValues"].as<std::vector<double>>());
+          std::vector<double> valVariations = (param["VarValues"].as<std::vector<double>>());
 
           File->cd();
           File->mkdir(ParName.c_str());
