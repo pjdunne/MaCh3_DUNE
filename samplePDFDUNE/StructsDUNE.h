@@ -105,6 +105,8 @@ struct dunemc_base {
 
   int *nrecoparticles;
   bool *in_fdv;
+
+  double *rw_reco_pid;
 };
 
 // ********************************

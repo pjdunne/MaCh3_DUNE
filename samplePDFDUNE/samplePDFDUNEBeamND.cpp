@@ -142,15 +142,17 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_z = new double[duneobj->nEvents];
-
   duneobj->rw_vtx_end_x = new double[duneobj->nEvents];
   duneobj->rw_vtx_end_y = new double[duneobj->nEvents];
   duneobj->rw_vtx_end_z = new double[duneobj->nEvents];
 
+  duneobj->rw_px = new double[duneobj->nEvents];
+  duneobj->rw_py = new double[duneobj->nEvents];
+  duneobj->rw_pz = new double[duneobj->nEvents];
+
   duneobj->rw_reco_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_y = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_z = new double[duneobj->nEvents];
-
   duneobj->rw_reco_vtx_end_x = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_end_y = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_end_z = new double[duneobj->nEvents];
@@ -159,9 +161,10 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_reco_py = new double[duneobj->nEvents];
   duneobj->rw_reco_pz = new double[duneobj->nEvents];
 
-  duneobj->rw_px = new double[duneobj->nEvents];
-  duneobj->rw_py = new double[duneobj->nEvents];
-  duneobj->rw_pz = new double[duneobj->nEvents];
+  duneobj->rw_reco_pid = new double[duneobj->nEvents];
+
+
+
 
   // for (int iEvent = 0; iEvent < duneobj->nEvents; ++iEvent) {
   //   int common_ndlp = sr->common.ixn.ndlp;
@@ -188,17 +191,17 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     //ND LAr Reco
 
     // duneobj->rw_erec[iEvent] = (double)(SR->mc.nu[0].E);
-
     int common_ndlp = sr->common.ixn.ndlp;
-      for(int i=0; i<common_ndlp; i++) {
-        int part_ndlp = sr->common.ixn.dlp[i].part.ndlp;
-        for(int j=0; j<part_ndlp; j++) {
+    int part_ndlp = sr->common.ixn.dlp[0].part.ndlp;
+    for(int i=0; i<common_ndlp; i++) {
+      for(int j=0; j<part_ndlp; j++) {
+        //Total E_rec
         duneobj->rw_erec[iEvent] += (double)(sr->common.ixn.dlp[i].part.dlp[j].E);
-
+        
         duneobj->rw_reco_vtx_x[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.X());
         duneobj->rw_reco_vtx_y[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.Y());
         duneobj->rw_reco_vtx_z[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.Z());
-
+        
         duneobj->rw_reco_vtx_end_x[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].end.X());
         duneobj->rw_reco_vtx_end_y[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].end.Y());
         duneobj->rw_reco_vtx_end_z[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].end.Z());
@@ -206,12 +209,10 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
         duneobj->rw_reco_px[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].p.x);
         duneobj->rw_reco_py[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].p.y);
         duneobj->rw_reco_pz[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].p.z);
-        std::cout << "rw_reco_px:" <<duneobj->rw_reco_px[iEvent]<< std::endl;
-        std::cout << "rw_reco_py:" <<duneobj->rw_reco_py[iEvent]<< std::endl;
-        std::cout << "rw_reco_pz:" <<duneobj->rw_reco_pz[iEvent]<< std::endl;
         
-        }
+        duneobj->rw_reco_pid[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].pdg);      
       }
+    }
 
     
 
@@ -240,12 +241,11 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     duneobj->rw_yrec[iEvent] = (double)((_erec-_erec_lep)/_erec);
     
     duneobj->nupdg[iEvent] = (int)(sample_nupdg[iSample]);
-    std::cout << "nuPDG:" <<duneobj->nupdg[iEvent]<< std::endl;
     duneobj->nupdgUnosc[iEvent] = (int)(sample_nupdgunosc[iSample]);
-    std::cout << "nuPDGunosc:" <<duneobj->nupdgUnosc[iEvent]<< std::endl;
     // duneobj->rw_theta[iEvent] = (double)_LepNuAngle;
+    
     duneobj->rw_isCC[iEvent] = sr->mc.nu[0].iscc;
-    // duneobj->rw_isFHC[iEvent] = (double)(1.0);
+    duneobj->rw_isFHC[iEvent] = (double)(1.0);
     // duneobj->rw_reco_q[iEvent] = _reco_q;
     // duneobj->rw_nuPDGunosc[iEvent] = _nuPDGunosc;
     // duneobj->rw_nuPDG[iEvent] = _nuPDG;
@@ -337,8 +337,8 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
     // std::cout << "This is Event "<<iEvent<< std::endl;
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
-    // std::cout << "rw_etru:" <<duneobj->rw_etru[iEvent]<< std::endl;
-    // std::cout << "rw_erec:" <<duneobj->rw_erec[iEvent]<< std::endl;
+    std::cout << "rw_etru:" <<duneobj->rw_etru[iEvent]<< std::endl;
+    std::cout << "rw_erec:" <<duneobj->rw_erec[iEvent]<< std::endl;
 
     // int common_ndlp = duneobj->common_ndlp[iEvent];
     // for(int i = 0; i < common_ndlp; i++) {
@@ -366,7 +366,7 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
     // std::cout << "nupdgUnosc:" <<duneobj->nupdgUnosc[iEvent]<< std::endl;
     fdobj->nupdg[iEvent] = &(duneobj->nupdg[iEvent]);
     // std::cout << "nupdg:" <<duneobj->nupdg[iEvent]<< std::endl;
-    // std::cout << "-------------------------------------------------------------------" <<std::endl;
+    std::cout << "-------------------------------------------------------------------" <<std::endl;
   }
 }
 

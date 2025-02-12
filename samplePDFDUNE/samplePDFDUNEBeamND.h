@@ -108,6 +108,7 @@ public:
   double _LepTheta;
   double _Q2;
   int _reco_q;
+  double _reco_pid;
 
   // configuration 
   bool IsELike;
