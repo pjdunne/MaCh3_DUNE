@@ -53,9 +53,9 @@ struct dunemc_base {
   double *rw_vtx_x;
   double *rw_vtx_y;
   double *rw_vtx_z;
-  double *rw_vtx_x_end;
-  double *rw_vtx_y_end;
-  double *rw_vtx_z_end;
+  double *rw_vtx_end_x;
+  double *rw_vtx_end_y;
+  double *rw_vtx_end_z;
   double dummy_y;
   double *rw_reco_q;
   double *reco_numu;
@@ -87,8 +87,18 @@ struct dunemc_base {
   double *rw_reco_vtx_x;
   double *rw_reco_vtx_y;
   double *rw_reco_vtx_z;
+  double *rw_reco_vtx_end_x;
+  double *rw_reco_vtx_end_y;
+  double *rw_reco_vtx_end_z;
+  double *rw_reco_px;
+  double *rw_reco_py;
+  double *rw_reco_pz;
   double *rw_reco_rad;
   double *rw_rad;
+
+  double *rw_px;
+  double *rw_py;
+  double *rw_pz;
 
   double *rw_elep_reco;
   double *rw_elep_true;
