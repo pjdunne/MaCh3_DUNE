@@ -370,6 +370,9 @@ const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(KinematicTypes
   case kIsFHC:
     KinematicValue = &dunendmcSamples[iSample].rw_isFHC[iEvent];
     break;
+  case kRecoY:
+    KinematicValue = &dunendmcSamples[iSample].rw_yrec[iEvent];
+    break;
   default:
     MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
     std::cout << KinPar << ReturnStringFromKinematicParameter(KinPar) << std::endl;
@@ -487,6 +490,7 @@ int samplePDFDUNEBeamND::ReturnKinematicParameterFromString(std::string Kinemati
   if(KinematicParameterStr == "RecoQ") return kRecoQ;
   if(KinematicParameterStr == "RecoNeutrinoEnergy") return kRecoNeutrinoEnergy;
   if(KinematicParameterStr == "IsFHC") return kIsFHC;
+  if(KinematicParameterStr == "RecoY") return kRecoY;
   return -1;
 }
 
@@ -496,6 +500,7 @@ std::string samplePDFDUNEBeamND::ReturnStringFromKinematicParameter(int Kinemati
     case kRecoQ: return "RecoQ";
     case kRecoNeutrinoEnergy: return "RecoNeutrinoEnergy";
     case kIsFHC: return "IsFHC";
+    case kRecoY: return "RecoY";
     default: return "";
   }
 }

@@ -31,16 +31,16 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
   std::vector<std::map<std::string,ModeState>> ModeStatus;
 
   //Create map of Mode Status
-  for (unsigned iSyst = 0; iSyst < SplineFileParPrefixNames[iSample].size(); iSyst++) 
+  for (unsigned iSyst = 0; iSyst < SplineFileParPrefixNames[iSample].size(); iSyst++)
   {
     auto modes = SplineModeVecs[iSample][iSyst];
-	ModeStatus.emplace_back();
+    ModeStatus.emplace_back();
 
 	for (auto const & mode : modes) 
-	{
+    {
 	  //Add Modes from config
-	  ModeStatus.back()[MaCh3mode_ToDUNEString((MaCh3_Mode)mode).c_str()] = kInConfig;
-	}
+      ModeStatus.back()[MaCh3mode_ToDUNEString((MaCh3_Mode)mode).c_str()] = kInConfig;
+    }
   }
 
   int nOscChannels = nOscChans[iSample];
@@ -79,9 +79,9 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
 	  if(unique_spline_names.count(std::string(SplineName)) > 0){
 		if (std::string(SplineName).find("unknown") == std::string::npos){
 		  //std::cout << "Repeated entry for spline named: " << std::string(SplineName) << std::endl;
-		  continue;
-		}
-	  }
+          continue;
+        }
+      }
       unique_spline_names.insert(std::string(SplineName));
 
       char *Syst;
@@ -104,7 +104,7 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
 
       // If the syst doesn't match any of the spline names then skip it
       if (SystNum == -1){
-		continue;
+        continue;
       }
 
       int ModeNum = -1;
@@ -118,27 +118,27 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
 
 	  //Check if mode has been registered already
 	  if(ModeStatus[SystNum].count(Mode))
-	  {
+      {
 		//Chech if mode has been found in config
 		if(ModeStatus[SystNum][Mode]!=kInFile) 
-		{
+        {
 		  ModeStatus[SystNum][Mode]=kInConfigAndInFile;
-		}
-		else 
-		{
+        }
+        else
+        {
 		  continue; //Skip if mode has been found in file but not config
-		}
-	  }
-	  else
-	  {
+        }
+      }
+      else
+      {
 		ModeStatus[SystNum][Mode]=kInFile; //If mode hasn't been registered then skip because it's not in the config 
-		continue;
-	  }
+        continue;
+      }
 
       TSpline3 *Obj = (TSpline3 *)Key->ReadObj();
       TSpline3_red *Spline = new TSpline3_red(Obj);
       delete Obj;
-      
+
       Token = strtok(NULL, "_"); // DB Needed to remove sp from spline name
 
       Var1Bin = atoi(strtok(NULL, "_"));
@@ -198,7 +198,7 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
           uniquecoeffindices.push_back(MonolithIndex); //So we can get the unique coefficients and skip flat splines later on!
           CoeffIndex+=np;
         }
-	
+
         MonolithIndex+=1;
       }
     }//End of loop over all TKeys in file
@@ -208,29 +208,29 @@ void splinesDUNE::FillSampleArray(std::string SampleName, std::vector<std::strin
   } //End of oscillation channel loop
 
   //Find all modes which have been found in the spline file but have not been specified in the config
-  for (unsigned iSyst = 0; iSyst < SplineFileParPrefixNames[iSample].size(); iSyst++) 
+  for (unsigned iSyst = 0; iSyst < SplineFileParPrefixNames[iSample].size(); iSyst++)
   {
     std::vector<std::string> MissedModes;
 	for (auto const & ModeUsage : ModeStatus[iSyst])
-	{
+    {
 	  if(ModeUsage.second==kInFile)
-	  {
-		MissedModes.push_back(ModeUsage.first);
-	  }
-	}
+      {
+        MissedModes.push_back(ModeUsage.first);
+      }
+    }
 
 	if(MissedModes.size()!=0)
-	{
+    {
       MACH3LOG_INFO("Parameter {} has splines for {} modes which have not been read in!", SplineFileParPrefixNames[iSample][iSyst].c_str(), MissedModes.size());
-	  std::cout << "Modes: ";  
+      std::cout << "Modes: ";
 	  for (auto const & Mode : MissedModes)
-	  {
-	    std::cout << Mode << " ";  
-	  }
-	  std::cout << std::endl;
+      {
+        std::cout << Mode << " ";
+      }
+      std::cout << std::endl;
     }
-  } 
-  
+  }
+
   return;
 }
 
@@ -248,7 +248,7 @@ std::vector< std::vector<int> > splinesDUNE::GetEventSplines(std::string SampleN
 
   if (SampleIndex == -1)
   {
-	MACH3LOG_ERROR("Sample not found: {}", SampleName);
+    MACH3LOG_ERROR("Sample not found: {}", SampleName);
     throw MaCh3Exception(__FILE__, __LINE__);
   }
 
@@ -257,45 +257,96 @@ std::vector< std::vector<int> > splinesDUNE::GetEventSplines(std::string SampleN
   //int Mode = MaCh3Mode_to_SplineMode(MaCh3_Mode(EventMode));
   int Mode = MaCh3_Mode(EventMode);
 
-  int Var1Bin = SplineBinning[SampleIndex][iOscChan][0]->FindBin(Var1Val)-1;
-  if (Var1Bin < 0 || Var1Bin >= SplineBinning[SampleIndex][iOscChan][0]->GetNbins()){
-	//Explicitly push back with an empty vector
-	ReturnVec.push_back(std::vector<int>());
-    return ReturnVec;
-  }
-
-  int Var2Bin = SplineBinning[SampleIndex][iOscChan][1]->FindBin(Var2Val)-1;
-  if (Var2Bin < 0 || Var2Bin >= SplineBinning[SampleIndex][iOscChan][1]->GetNbins()){
-	//Explicitly push back with an empty vector
-	ReturnVec.push_back(std::vector<int>());
-    return ReturnVec;
-  }
-
-  int Var3Bin = SplineBinning[SampleIndex][iOscChan][2]->FindBin(Var3Val)-1;
-
-  if (Var3Bin < 0 || Var3Bin >= SplineBinning[SampleIndex][iOscChan][2]->GetNbins()){
-	//Explicitly push back with an empty vector
-	ReturnVec.push_back(std::vector<int>());
-    return ReturnVec;
-  }
-
-  for(int iSyst=0; iSyst<nSplineSysts; iSyst++){
+  for (int iSyst = 0; iSyst < nSplineSysts; iSyst++) {
     std::vector<int> spline_modes = SplineModeVecs[SampleIndex][iSyst];
     int nSampleModes = (int)spline_modes.size();
 
-    //ETA - look here at the length of spline_modes and what you're actually comparing against
-    for(int iMode = 0; iMode<nSampleModes ; iMode++){
-      if(Mode == spline_modes[iMode]){
+    // ETA - look here at the length of spline_modes and what you're actually
+    // comparing against
+    for (int iMode = 0; iMode < nSampleModes; iMode++) {
+      if (Mode == spline_modes[iMode]) {
+        // HH: Moved this chunk to be after you do the mode checking
+        int Var1Bin =
+            SplineBinning[SampleIndex][iOscChan][0]->FindBin(Var1Val) - 1;
+        if (Var1Bin < 0 ||
+            Var1Bin >= SplineBinning[SampleIndex][iOscChan][0]->GetNbins()) {
+          // HH: Removing push back and instead change Var1Bin to the last bin
+          std::cout << "======================================================"
+                    << std::endl;
+          std::cout << "I'm moving event with Var1Val: " << Var1Val
+                    << " to the last Var1Bin!" << std::endl;
+          std::cout << "Sample name: " << SampleName << std::endl;
+          std::cout << "Oscillation channel: " << iOscChan << std::endl;
+          std::cout << "MaCh3 mode: " << Mode << std::endl;
+          std::cout << "Var1Val: " << Var1Val << std::endl;
+          std::cout << "Var2Val: " << Var2Val << std::endl;
+          std::cout << "Var3Val: " << Var3Val << std::endl;
+          std::cout << "======================================================"
+                    << std::endl;
+          Var1Bin = SplineBinning[SampleIndex][iOscChan][0]->GetNbins() - 1;
+          // Explicitly push back with an empty vector
+          // ReturnVec.push_back(std::vector<int>());
+          // return ReturnVec;
+        }
+
+        int Var2Bin =
+            SplineBinning[SampleIndex][iOscChan][1]->FindBin(Var2Val) - 1;
+        if (Var2Bin < 0 ||
+            Var2Bin >= SplineBinning[SampleIndex][iOscChan][1]->GetNbins()) {
+          // HH: Removing push back and instead change Var2Bin to last bin
+          std::cout << "======================================================"
+                    << std::endl;
+          std::cout << "I'm moving event with Var2Val: " << Var2Val
+                    << " to the last Var2Bin!" << std::endl;
+          std::cout << "Sample name: " << SampleName << std::endl;
+          std::cout << "Oscillation channel: " << iOscChan << std::endl;
+          std::cout << "MaCh3 mode: " << Mode << std::endl;
+          std::cout << "Var1Val: " << Var1Val << std::endl;
+          std::cout << "Var2Val: " << Var2Val << std::endl;
+          std::cout << "Var3Val: " << Var3Val << std::endl;
+          std::cout << "======================================================"
+                    << std::endl;
+          Var2Bin = SplineBinning[SampleIndex][iOscChan][1]->GetNbins() - 1;
+          // Explicitly push back with an empty vector
+          // ReturnVec.push_back(std::vector<int>());
+          // return ReturnVec;
+        }
+
+        int Var3Bin =
+            SplineBinning[SampleIndex][iOscChan][2]->FindBin(Var3Val) - 1;
+
+        if (Var3Bin < 0 ||
+            Var3Bin >= SplineBinning[SampleIndex][iOscChan][2]->GetNbins()) {
+          // HH: Removing push back and instead change Var3Bin to last bin
+          std::cout << "======================================================"
+                    << std::endl;
+          std::cout << "I'm moving event with Var3Val: " << Var3Val
+                    << " to the last Var3Bin!" << std::endl;
+          std::cout << "Sample name: " << SampleName << std::endl;
+          std::cout << "Oscillation channel: " << iOscChan << std::endl;
+          std::cout << "MaCh3 mode: " << Mode << std::endl;
+          std::cout << "Var1Val: " << Var1Val << std::endl;
+          std::cout << "Var2Val: " << Var2Val << std::endl;
+          std::cout << "Var3Val: " << Var3Val << std::endl;
+          std::cout << "======================================================"
+                    << std::endl;
+          Var3Bin = SplineBinning[SampleIndex][iOscChan][2]->GetNbins() - 1;
+          // Explicitly push back with an empty vector
+          // ReturnVec.push_back(std::vector<int>());
+          // return ReturnVec;
+        }
+
         std::vector<int> event_vec(7);
-        event_vec[0]=SampleIndex;
-        event_vec[1]=iOscChan;
-        event_vec[2]=iSyst;
-        event_vec[3]=iMode;
-        event_vec[4]=Var1Bin;
-        event_vec[5]=Var2Bin;
-        event_vec[6]=Var3Bin;
-        int splineID=indexvec[SampleIndex][iOscChan][iSyst][iMode][Var1Bin][Var2Bin][Var3Bin];
-        if(!isflatarray[splineID]){
+        event_vec[0] = SampleIndex;
+        event_vec[1] = iOscChan;
+        event_vec[2] = iSyst;
+        event_vec[3] = iMode;
+        event_vec[4] = Var1Bin;
+        event_vec[5] = Var2Bin;
+        event_vec[6] = Var3Bin;
+        int splineID = indexvec[SampleIndex][iOscChan][iSyst][iMode][Var1Bin]
+                               [Var2Bin][Var3Bin];
+        if (!isflatarray[splineID]) {
           ReturnVec.push_back(event_vec);
         }
       }

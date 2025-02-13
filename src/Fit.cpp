@@ -37,10 +37,13 @@ int main(int argc, char * argv[]) {
   //Create samplePDFSKBase Objs
 
   std::vector<samplePDFFDBase*> DUNEPdfs;
-  MakeMaCh3DuneInstance(FitManager, DUNEPdfs, xsec, osc); 
+  MakeMaCh3DuneInstance(FitManager, DUNEPdfs, xsec, osc);
 
-  //Some place to store the histograms
-  std::vector<TH1D*> PredictionHistograms;
+  // Some place to store the histograms
+  // HH: Add a check for 1D or 2D data
+  std::vector<TH1D *> PredictionHistograms1D;
+  std::vector<TH2D *> PredictionHistograms2D;
+  // std::vector<TH1D*> PredictionHistograms;
   std::vector<std::string> sample_names;
 
   auto OutputFile = std::unique_ptr<TFile>(TFile::Open(OutputFileName.c_str(), "RECREATE"));
@@ -54,17 +57,32 @@ int main(int argc, char * argv[]) {
     
     if (useosc) {osc->setParameters();}
     DUNEPdfs[sample_i] -> reweight();
-    TH1D *SampleHistogram = (TH1D*)DUNEPdfs[sample_i] -> get1DHist() -> Clone(NameTString+"_unosc");
-    PredictionHistograms.push_back(SampleHistogram);
+    // HH: Add a check for 1D or 2D data
+    if (DUNEPdfs[sample_i]->GetNDim() == 1) {
+      TH1D *SampleHistogram = (TH1D*)DUNEPdfs[sample_i] -> get1DHist() -> Clone(NameTString+"_unosc");
+      PredictionHistograms1D.push_back(SampleHistogram);
+      DUNEPdfs[sample_i]->addData(PredictionHistograms1D[sample_i]);
+    }
+    else {
+      TH2D *SampleHistogram = (TH2D*)DUNEPdfs[sample_i] -> get2DHist() -> Clone(NameTString+"_unosc");
+      PredictionHistograms2D.push_back(SampleHistogram);
+      DUNEPdfs[sample_i]->addData(PredictionHistograms2D[sample_i]);
+    }
+
     
-    DUNEPdfs[sample_i]->addData(PredictionHistograms[sample_i]);
     std::cout << "Added data to " << name << "with llh " << DUNEPdfs[sample_i]->GetLikelihood() << std::endl;
   }
   
   //Now print out some event rates, we'll make a nice latex table at some point 
   for (unsigned iPDF = 0; iPDF < DUNEPdfs.size() ; ++iPDF) {
     MACH3LOG_INFO("Integrals of nominal hists: ");
-    MACH3LOG_INFO("{} : {}",sample_names[iPDF].c_str(),PredictionHistograms[iPDF]->Integral());
+    if (DUNEPdfs[iPDF]->GetNDim() == 1) {
+      MACH3LOG_INFO("{} : {}", sample_names[iPDF].c_str(),
+                    PredictionHistograms1D[iPDF]->Integral());
+    } else {
+      MACH3LOG_INFO("{} : {}", sample_names[iPDF].c_str(),
+                    PredictionHistograms2D[iPDF]->Integral());
+    }
     MACH3LOG_INFO("--------------");
   }
   
@@ -98,8 +116,13 @@ int main(int argc, char * argv[]) {
     MACH3LOG_INFO("Found throw matrix file {}.", throwmatrixfilename);
     TMatrixDSym *throwmatrix = throwmatrixfile->Get<TMatrixDSym>(throwmatrixname.c_str());
     xsec->setThrowMatrix(throwmatrix);
-    std::cout << "Set throw matrix from file " << throwmatrixfilename << " with name " << throwmatrixname << std::endl;
-    throwmatrix->Print();
+    MACH3LOG_INFO("Set throw matrix from file {} with name {}",
+                  throwmatrixfilename, throwmatrixname);
+    // Print the throw matrix diagonals
+    for (int i = 0; i < throwmatrix->GetNrows(); i++) {
+      std::cout << (*throwmatrix)(i, i) << " ";
+    }
+    std::cout << std::endl;
   }
   //Start chain from random position
   xsec->throwParameters();
