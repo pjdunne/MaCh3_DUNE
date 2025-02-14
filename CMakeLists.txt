@@ -121,7 +121,7 @@ endif()
 ##################################  MaCh3  ######################################
 #If MaCh3 was sourced find it, otherwise use CPM
 SET(MaCh3_FOUND FALSE)
-find_package(MaCh3 1.3.6 EXACT QUIET)
+find_package(MaCh3 1.4.1 EXACT QUIET)
 
 if(NOT MaCh3_FOUND)
   cmessage(STATUS "Didn't find MaCh3, attempting to use built in MaCh3")
@@ -152,7 +152,7 @@ if(NOT MaCh3_FOUND)
   
   CPMAddPackage(
       NAME MaCh3
-      GIT_TAG "v1.3.6"
+      GIT_TAG "v1.4.1"
       GITHUB_REPOSITORY mach3-software/MaCh3
   )
 else()

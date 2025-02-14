@@ -498,7 +498,7 @@ TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::ve
 	  double Var1_Val;
 
 	  Var1_Val = ReturnKinematicParameter(Var1,i,j);
-	  if (Var1_Val!=_DEFAULT_RETURN_VAL_) {
+	  if (Var1_Val!=M3::_DEFAULT_RETURN_VAL_) {
 		_h1DVar->Fill(Var1_Val,Weight);
 	  }
     }
