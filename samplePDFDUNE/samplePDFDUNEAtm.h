@@ -38,9 +38,24 @@ protected:
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameterStr);
   std::vector<double> ReturnKinematicParameterBinning(KinematicTypes KinPar);
 
-  inline int ReturnKinematicParameterFromString(std::string KinematicStr);
-  inline std::string ReturnStringFromKinematicParameter(int KinematicVariable);
+  const std::unordered_map<std::string, int> KinematicParametersDUNE = {
+    {"TrueNeutrinoEnergy",kTrueNeutrinoEnergy},
+    {"RecoNeutrinoEnergy",kRecoNeutrinoEnergy},
+    {"TrueCosineZ",kTrueCosZ},
+    {"RecoCosineZ",kRecoCosZ},
+    {"OscChannel",kOscChannel},
+    {"Mode",kMode}
+  };
 
+  const std::unordered_map<int, std::string> ReversedKinematicParametersDUNE = {
+    {kTrueNeutrinoEnergy,"TrueNeutrinoEnergy"},
+    {kRecoNeutrinoEnergy,"RecoNeutrinoEnergy"},
+    {kTrueCosZ,"TrueCosineZ"},    
+    {kRecoCosZ,"RecoCosineZ"},
+    {kOscChannel,"OscChannel"},
+    {kMode,"Mode"}
+  };
+  
   std::vector<struct dunemc_base> dunemcSamples;
   bool IsELike;
 };

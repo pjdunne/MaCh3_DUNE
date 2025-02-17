@@ -13,6 +13,9 @@
 #include <manager/YamlHelper.h>
 
 samplePDFDUNEAtm::samplePDFDUNEAtm(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {
+  KinematicParameters = &KinematicParametersDUNE;
+  ReversedKinematicParameters = &ReversedKinematicParametersDUNE;
+  
   Initialise();
 }
 
@@ -214,25 +217,4 @@ std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(KinematicT
   }
 
   return binningVector;
-}
-
-int samplePDFDUNEAtm::ReturnKinematicParameterFromString(std::string KinematicParameterStr) {
-  int ReturnVal;
-
-  if (KinematicParameterStr == "TrueNeutrinoEnergy") {ReturnVal = kTrueNeutrinoEnergy;}
-  else if (KinematicParameterStr == "RecoNeutrinoEnergy") {ReturnVal = kRecoNeutrinoEnergy;}
-  else if (KinematicParameterStr == "TrueCosineZ") {ReturnVal = kTrueCosZ;}
-  else if (KinematicParameterStr == "RecoCosineZ") {ReturnVal = kRecoCosZ;}
-  else if (KinematicParameterStr == "OscChannel") {ReturnVal = kOscChannel;}
-  else if (KinematicParameterStr == "Mode") {ReturnVal = kMode;}
-  else {
-    MACH3LOG_ERROR("KinematicParameterStr: {} not found",KinematicParameterStr);
-    throw MaCh3Exception(__FILE__, __LINE__);
-  }
-  
-  return ReturnVal;
-}
-
-std::string samplePDFDUNEAtm::ReturnStringFromKinematicParameter(int KinematicParameter) {
-  return "";
 }
