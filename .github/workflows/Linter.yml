@@ -28,4 +28,4 @@ jobs:
           VALIDATE_PYTHON: true  # Enable Python linting
           VALIDATE_ALL_CODEBASE: true  # Lint the entire codebase
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for permissions
-          # DISABLE_LINTERS: "CPP"  # Disable linting for other languages
+          DISABLE_LINTERS: "CPP"  # Disable linting for other languages
