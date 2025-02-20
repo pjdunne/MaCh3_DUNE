@@ -139,7 +139,7 @@ void samplePDFDUNEBeamND::SetupSplines() {
   ///@todo move all of the spline setup into core
   if(XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0){
     MACH3LOG_INFO("Found {} splines for this sample so I will create a spline object", XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
-    SplineHandler = std::unique_ptr<splineFDBase>(new splinesDUNE(XsecCov));
+    SplineHandler = std::unique_ptr<splineFDBase>(new splinesDUNE(XsecCov,Modes));
     InitialiseSplineObject();
   }
   else{
