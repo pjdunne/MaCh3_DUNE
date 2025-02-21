@@ -126,7 +126,7 @@ Systematics:
 
 
     DetID: ["FD", "ATM"]
-    Error: -1.0
+    Error: 1.0
     FlatPrior: true
     ParameterBounds: [0, 999]
     ParameterGroup: Osc
