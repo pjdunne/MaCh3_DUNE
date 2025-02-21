@@ -230,7 +230,7 @@ set_target_properties(MaCh3DUNECompilerOptions PROPERTIES EXPORT_NAME CompilerOp
 
 target_include_directories(MaCh3DUNECompilerOptions
   INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Apps>
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     $<INSTALL_INTERFACE:include>)
 
@@ -240,7 +240,7 @@ install(TARGETS MaCh3DUNECompilerOptions
 
 add_subdirectory(splines)
 add_subdirectory(samplePDFDUNE)
-add_subdirectory(src)
+add_subdirectory(Apps)
 
 add_library(MaCh3DUNEAll INTERFACE)
 set_target_properties(MaCh3DUNEAll PROPERTIES EXPORT_NAME All)
