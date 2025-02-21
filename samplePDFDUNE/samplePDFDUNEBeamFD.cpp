@@ -444,8 +444,11 @@ double samplePDFDUNEBeamFD::ReturnKinematicParameter(double KinematicVariable, i
   case kM3Mode:
     KinematicValue = dunemcSamples[iSample].mode[iEvent];
     break;
+  case kOscChannel:
+    KinematicValue = MCSamples[iSample].ChannelIndex;
+    break;
   default:
-    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type");
+    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type: {}",KinPar);
     MACH3LOG_ERROR("Was given a Kinematic Variable of {}", KinematicVariable);
     throw MaCh3Exception(__FILE__, __LINE__);
   }
@@ -479,6 +482,12 @@ double samplePDFDUNEBeamFD::ReturnKinematicParameter(std::string KinematicParame
  case kCVNNue:
    KinematicValue = dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
    break;
+ case kM3Mode:
+    KinematicValue = dunemcSamples[iSample].mode[iEvent];
+    break;
+ case kOscChannel:
+    KinematicValue = MCSamples[iSample].ChannelIndex;
+    break;
  default:
    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
    throw MaCh3Exception(__FILE__, __LINE__);
