@@ -1,11 +1,4 @@
-#include <TROOT.h>
-
 #include "samplePDFDUNEBeamND.h"
-#include "TString.h"
-#include <assert.h>
-#include <stdexcept>
-#include "TMath.h"
-#include "manager/manager.h"
 
 samplePDFDUNEBeamND::samplePDFDUNEBeamND(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {  
   Initialise();
@@ -18,7 +11,6 @@ void samplePDFDUNEBeamND::Init() {
   dunendmcSamples.resize(nSamples,dunemc_base());
   
   IsRHC = SampleManager->raw()["SampleBools"]["isrhc"].as<bool>();
-  SampleDetID = SampleManager->raw()["DetID"].as<int>();
   iselike = SampleManager->raw()["SampleBools"]["iselike"].as<bool>();
 
   tot_escale_nd_pos = -999;
@@ -151,7 +143,7 @@ void samplePDFDUNEBeamND::SetupSplines() {
 }
 
 void samplePDFDUNEBeamND::SetupWeightPointers() {
-  for (int i = 0; i < (int)dunendmcSamples.size(); ++i) {
+  for (size_t i = 0; i < dunendmcSamples.size(); ++i) {
     for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
       MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
@@ -168,14 +160,12 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
 int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
 
   dunemc_base *duneobj = &(dunendmcSamples[iSample]);
-  int nupdgUnosc = sample_nupdgunosc[iSample];
-  int nupdg = sample_nupdg[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", mc_files.at(iSample));
   
   _sampleFile = TFile::Open(mc_files.at(iSample).c_str(), "READ");
-  _data = (TTree*)_sampleFile->Get("caf");
+  _data = _sampleFile->Get<TTree>("caf");
 
   if(_data){
     MACH3LOG_INFO("Found \"caf\" tree in {}", mc_files[iSample]);
@@ -237,7 +227,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   }
   duneobj->pot_s = (pot)/1e21;
 
-  duneobj->nEvents = _data->GetEntries();
+  duneobj->nEvents = static_cast<int>(_data->GetEntries());
 
   duneobj->rw_yrec = new double[duneobj->nEvents];
   duneobj->rw_erec_lep = new double[duneobj->nEvents];
@@ -280,37 +270,39 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     duneobj->nupdg[i] = sample_nupdg[iSample];
     duneobj->nupdgUnosc[i] = sample_nupdgunosc[iSample];
     
-    duneobj->rw_erec[i] = (double)_erec;
-    duneobj->rw_erec_shifted[i] = (double)_erec;
-    duneobj->rw_erec_lep[i] = (double)_erec_lep;
-    duneobj->rw_erec_had[i] = (double)(_erec - _erec_lep);
-    duneobj->rw_yrec[i] = (double)((_erec - _erec_lep)/_erec);
-    duneobj->rw_etru[i] = (double)_ev; // in GeV
-    duneobj->rw_theta[i] = (double)_LepNuAngle;
+    duneobj->rw_erec[i] = _erec;
+    duneobj->rw_erec_shifted[i] = _erec;
+    duneobj->rw_erec_lep[i] = _erec_lep;
+    duneobj->rw_erec_had[i] = (_erec - _erec_lep);
+    duneobj->rw_yrec[i] = ((_erec - _erec_lep)/_erec);
+    duneobj->rw_etru[i] = _ev; // in GeV
+    duneobj->rw_theta[i] = _LepNuAngle;
     duneobj->rw_isCC[i] = _isCC;
     duneobj->rw_reco_q[i] = _reco_q;
     duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
     duneobj->rw_nuPDG[i] = _nuPDG;
-    duneobj->rw_berpaacvwgt[i] = (double)_BeRPA_cvwgt;
+    duneobj->rw_berpaacvwgt[i] = _BeRPA_cvwgt;
     
-    duneobj->rw_eRecoP[i] = (double)_eRecoP; 
-    duneobj->rw_eRecoPip[i] = (double)_eRecoPip; 
-    duneobj->rw_eRecoPim[i] = (double)_eRecoPim; 
-    duneobj->rw_eRecoPi0[i] = (double)_eRecoPi0; 
-    duneobj->rw_eRecoN[i] = (double)_eRecoN; 
+    duneobj->rw_eRecoP[i] = _eRecoP; 
+    duneobj->rw_eRecoPip[i] = _eRecoPip; 
+    duneobj->rw_eRecoPim[i] = _eRecoPim; 
+    duneobj->rw_eRecoPi0[i] = _eRecoPi0; 
+    duneobj->rw_eRecoN[i] = _eRecoN; 
     
-    duneobj->rw_LepE[i] = (double)_LepE; 
-    duneobj->rw_eP[i] = (double)_eP; 
-    duneobj->rw_ePip[i] = (double)_ePip; 
-    duneobj->rw_ePim[i] = (double)_ePim; 
-    duneobj->rw_ePi0[i] = (double)_ePi0; 
-    duneobj->rw_eN[i] = (double)_eN; 
+    duneobj->rw_LepE[i] = _LepE; 
+    duneobj->rw_eP[i] = _eP; 
+    duneobj->rw_ePip[i] = _ePip; 
+    duneobj->rw_ePim[i] = _ePim; 
+    duneobj->rw_ePi0[i] = _ePi0; 
+    duneobj->rw_eN[i] = _eN; 
     
     //Assume everything is on Argon for now....
     duneobj->Target[i] = 40;
-    
-    int mode= TMath::Abs(_mode);       
-    duneobj->mode[i]=(double)GENIEMode_ToMaCh3Mode(mode, _isCC);
+
+    //DB TODO FIX - Magic Number 14 comes from SIMB mode handling - would need to adjust for GENIE mode handling
+    int M3Mode = Modes->GetModeFromGenerator(std::abs(_mode));
+    if (!_isCC) M3Mode += 14;
+    duneobj->mode[i] = M3Mode;
     
     duneobj->flux_w[i] = 1.0;
   }
@@ -339,7 +331,7 @@ const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(KinematicTypes
 }
 
 const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
+  KinematicTypes KinPar = static_cast<KinematicTypes>(KinematicVariable);
   return GetPointerToKinematicParameter(KinPar,iSample,iEvent);
 }
 
@@ -434,16 +426,8 @@ void samplePDFDUNEBeamND::applyShifts(int iSample, int iEvent) {
 
 }
 
-std::vector<double> samplePDFDUNEBeamND::ReturnKinematicParameterBinning(std::string KinematicParameterStr) 
-{
+std::vector<double> samplePDFDUNEBeamND::ReturnKinematicParameterBinning(std::string KinematicParameterStr) {
+  (void)KinematicParameterStr;
   std::vector<double> binningVector;
   return binningVector;
-}
-
-int samplePDFDUNEBeamND::ReturnKinematicParameterFromString(std::string KinematicParameterStr) {
-  return -1;
-}
-
-std::string samplePDFDUNEBeamND::ReturnStringFromKinematicParameter(int KinematicParameter) {
-  return "";
 }

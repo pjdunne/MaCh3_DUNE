@@ -1,16 +1,10 @@
 #include "samplePDFDUNEAtm.h"
 
+#pragma GCC diagnostic push 
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
 //Standard Record includes
 #include "duneanaobj/StandardRecord/StandardRecord.h"
-
-//ROOT includes
-#include "TError.h"
-
-//
-#include <assert.h>
-#include <manager/MaCh3Exception.h>
-#include <manager/MaCh3Logger.h>
-#include <manager/YamlHelper.h>
+#pragma GCC diagnostic pop
 
 samplePDFDUNEAtm::samplePDFDUNEAtm(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {
   KinematicParameters = &KinematicParametersDUNE;
@@ -33,7 +27,7 @@ void samplePDFDUNEAtm::SetupSplines() {
 }
 
 void samplePDFDUNEAtm::SetupWeightPointers() {
-  for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
+  for (size_t i = 0; i < dunemcSamples.size(); ++i) {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 3;
       MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
@@ -67,7 +61,7 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
   Tree->SetBranchStatus("*", 1);
   Tree->SetBranchAddress("rec", &sr);
 
-  duneobj->nEvents = Tree->GetEntries();
+  duneobj->nEvents = static_cast<int>(Tree->GetEntries());
   duneobj->norm_s = 1;
   duneobj->pot_s = 1;
 
@@ -94,11 +88,14 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
     duneobj->nupdg[iEvent] = sample_nupdg[iSample];
     duneobj->nupdgUnosc[iEvent] = sample_nupdgunosc[iSample];
 
-    duneobj->mode[iEvent] = (double)SIMBMode_ToMaCh3Mode(TMath::Abs(sr->mc.nu[0].mode),(int)sr->mc.nu[0].iscc);
+    int M3Mode = Modes->GetModeFromGenerator(std::abs(sr->mc.nu[0].mode));
+    if (!sr->mc.nu[0].iscc) M3Mode += 14;
+    duneobj->mode[iEvent] = M3Mode;
+    
     duneobj->rw_isCC[iEvent] = sr->mc.nu[0].iscc;
     duneobj->Target[iEvent] = 40;
     
-    duneobj->rw_etru[iEvent] = (double)(sr->mc.nu[0].E);
+    duneobj->rw_etru[iEvent] = static_cast<double>(sr->mc.nu[0].E);
 
     TVector3 TrueNuMomentumVector = (TVector3(sr->mc.nu[0].momentum.X(),sr->mc.nu[0].momentum.Y(),sr->mc.nu[0].momentum.Z())).Unit();
     duneobj->rw_truecz[iEvent] = TrueNuMomentumVector.Y();
@@ -167,7 +164,7 @@ const double* samplePDFDUNEAtm::GetPointerToKinematicParameter(KinematicTypes Ki
     KinematicValue = &(dunemcSamples[iSample].mode[iEvent]);
     break;
   default:
-    MACH3LOG_ERROR("Unknown KinPar: {}",KinPar);
+    MACH3LOG_ERROR("Unknown KinPar: {}",static_cast<int>(KinPar));
     throw MaCh3Exception(__FILE__, __LINE__);
   }
   
@@ -175,7 +172,7 @@ const double* samplePDFDUNEAtm::GetPointerToKinematicParameter(KinematicTypes Ki
 }
 
 const double* samplePDFDUNEAtm::GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
+  KinematicTypes KinPar = static_cast<KinematicTypes>(KinematicVariable);
   return GetPointerToKinematicParameter(KinPar,iSample,iEvent);
 }
 
@@ -198,23 +195,32 @@ std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(std::strin
 }
 
 std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(KinematicTypes KinPar)  {
-  std::vector<double> binningVector;
+  std::vector<double> ReturnVec;
   
   switch (KinPar) {
 
-  case kRecoNeutrinoEnergy:
   case kTrueNeutrinoEnergy:
     for (int i=0;i<20;i++) {
-      binningVector.emplace_back((double)i);
+      ReturnVec.emplace_back(i);
     }
-    binningVector.emplace_back(100.);
-    binningVector.emplace_back(1000.);
+    ReturnVec.emplace_back(100.);
+    ReturnVec.emplace_back(1000.);
+    break;
+
+  case kRecoCosZ:
+    ReturnVec.resize(XBinEdges.size());
+    for (unsigned int bin_i=0;bin_i<XBinEdges.size();bin_i++) {ReturnVec[bin_i] = XBinEdges[bin_i];}
+    break;
+
+  case kRecoNeutrinoEnergy:
+    ReturnVec.resize(YBinEdges.size());
+    for (unsigned int bin_i=0;bin_i<YBinEdges.size();bin_i++) {ReturnVec[bin_i] = YBinEdges[bin_i];}
     break;
     
   default:
-    MACH3LOG_ERROR("Unknown KinPar: {}",KinPar);
+    MACH3LOG_ERROR("Unknown KinPar: {}",static_cast<int>(KinPar));
     throw MaCh3Exception(__FILE__, __LINE__);
   }
 
-  return binningVector;
+  return ReturnVec;
 }

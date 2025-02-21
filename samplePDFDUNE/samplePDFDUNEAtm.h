@@ -2,8 +2,6 @@
 #define _samplePDFDUNEAtm_h_
 
 #include "splines/splinesDUNE.h"
-#include "covariance/covarianceXsec.h"
-#include "covariance/covarianceOsc.h"
 #include "samplePDF/samplePDFFDBase.h"
 
 #include "StructsDUNE.h"
@@ -25,8 +23,8 @@ protected:
   void SetupSplines();
   
   //DB functions which could be initialised to do something which is non-trivial
-  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
-  void applyShifts(int iSample, int iEvent) {}
+  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.; (void)iSample; (void)iEvent;}
+  void applyShifts(int iSample, int iEvent) {(void)iSample; (void)iEvent;}
   
   const double* GetPointerToKinematicParameter(KinematicTypes KinPar, int iSample, int iEvent);
   const double* GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent);
@@ -43,7 +41,7 @@ protected:
     {"RecoNeutrinoEnergy",kRecoNeutrinoEnergy},
     {"TrueCosineZ",kTrueCosZ},
     {"RecoCosineZ",kRecoCosZ},
-    {"OscChannel",kOscChannel},
+    {"OscillationChannel",kOscChannel},
     {"Mode",kMode}
   };
 
@@ -52,7 +50,7 @@ protected:
     {kRecoNeutrinoEnergy,"RecoNeutrinoEnergy"},
     {kTrueCosZ,"TrueCosineZ"},    
     {kRecoCosZ,"RecoCosineZ"},
-    {kOscChannel,"OscChannel"},
+    {kOscChannel,"OscillationChannel"},
     {kMode,"Mode"}
   };
   

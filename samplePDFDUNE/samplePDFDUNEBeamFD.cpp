@@ -1,11 +1,4 @@
-#include <TROOT.h>
-
 #include "samplePDFDUNEBeamFD.h"
-#include "TString.h"
-#include <assert.h>
-#include <stdexcept>
-#include "TMath.h"
-#include "manager/manager.h"
 
 samplePDFDUNEBeamFD::samplePDFDUNEBeamFD(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {
   //Call insitialise in samplePDFFD
@@ -179,7 +172,7 @@ void samplePDFDUNEBeamFD::SetupSplines() {
 }
 
 void samplePDFDUNEBeamFD::SetupWeightPointers() {
-  for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
+  for (size_t i = 0; i < dunemcSamples.size(); ++i) {
     for (int j = 0; j < dunemcSamples[i].nEvents; ++j) {
       MCSamples[i].ntotal_weight_pointers[j] = 6;
       MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
@@ -197,14 +190,12 @@ void samplePDFDUNEBeamFD::SetupWeightPointers() {
 int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
 
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
-  int nupdgUnosc = sample_nupdgunosc[iSample];
-  int nupdg = sample_nupdg[iSample];
   
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", mc_files[iSample]);
   
   _sampleFile = TFile::Open(mc_files[iSample].c_str(), "READ");
-  _data = (TTree*)_sampleFile->Get("caf");
+  _data = _sampleFile->Get<TTree>("caf");
   
   if(_data){
     MACH3LOG_INFO("Found \"caf\" tree in {}", mc_files[iSample]);
@@ -276,7 +267,7 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   _data->SetBranchStatus("vtx_z", 1);
   _data->SetBranchAddress("vtx_z", &_vtx_z);  
 
-  TH1D* norm = (TH1D*)_sampleFile->Get("norm");
+  TH1D* norm = _sampleFile->Get<TH1D>("norm");
   if(!norm){
     MACH3LOG_ERROR("Add a norm KEY to the root file using MakeNormHists.cxx");
     throw MaCh3Exception(__FILE__, __LINE__);
@@ -286,7 +277,7 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->norm_s = norm->GetBinContent(1);
   duneobj->pot_s = pot/norm->GetBinContent(2);
 
-  duneobj->nEvents = _data->GetEntries();
+  duneobj->nEvents = static_cast<int>(_data->GetEntries());
 
   // allocate memory for dunemc variables
   duneobj->rw_cvnnumu = new double[duneobj->nEvents];
@@ -336,50 +327,51 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
     duneobj->nupdg[i] = sample_nupdg[iSample];
     duneobj->nupdgUnosc[i] = sample_nupdgunosc[iSample];    
     
-    duneobj->rw_cvnnumu[i] = (double)_cvnnumu;
-    duneobj->rw_cvnnue[i] = (double)_cvnnue;
-    duneobj->rw_cvnnumu_shifted[i] = (double)_cvnnumu; 
-    duneobj->rw_cvnnue_shifted[i] = (double)_cvnnue;
+    duneobj->rw_cvnnumu[i] = (_cvnnumu);
+    duneobj->rw_cvnnue[i] = (_cvnnue);
+    duneobj->rw_cvnnumu_shifted[i] = (_cvnnumu); 
+    duneobj->rw_cvnnue_shifted[i] = (_cvnnue);
     if (iselike) {
-      duneobj->rw_erec[i] = (double)_erec_nue;
-      duneobj->rw_erec_shifted[i] = (double)_erec_nue; 
-      duneobj->rw_erec_had[i] = (double)_erec_had_nue;
-      duneobj->rw_erec_lep[i] = (double)_erec_lep_nue;
+      duneobj->rw_erec[i] = (_erec_nue);
+      duneobj->rw_erec_shifted[i] = (_erec_nue); 
+      duneobj->rw_erec_had[i] = (_erec_had_nue);
+      duneobj->rw_erec_lep[i] = (_erec_lep_nue);
     } else {
-      duneobj->rw_erec[i] = (double)_erec; 
-      duneobj->rw_erec_shifted[i] = (double)_erec; 
-      duneobj->rw_erec_had[i] = (double)_erec_had; 
-      duneobj->rw_erec_lep[i] = (double)_erec_lep; 
+      duneobj->rw_erec[i] = (_erec); 
+      duneobj->rw_erec_shifted[i] = (_erec); 
+      duneobj->rw_erec_had[i] = (_erec_had); 
+      duneobj->rw_erec_lep[i] = (_erec_lep); 
     }
     
-    duneobj->rw_eRecoP[i] = (double)_eRecoP; 
-    duneobj->rw_eRecoPip[i] = (double)_eRecoPip; 
-    duneobj->rw_eRecoPim[i] = (double)_eRecoPim; 
-    duneobj->rw_eRecoPi0[i] = (double)_eRecoPi0; 
-    duneobj->rw_eRecoN[i] = (double)_eRecoN; 
+    duneobj->rw_eRecoP[i] = (_eRecoP); 
+    duneobj->rw_eRecoPip[i] = (_eRecoPip); 
+    duneobj->rw_eRecoPim[i] = (_eRecoPim); 
+    duneobj->rw_eRecoPi0[i] = (_eRecoPi0); 
+    duneobj->rw_eRecoN[i] = (_eRecoN); 
     
-    duneobj->rw_LepE[i] = (double)_LepE; 
-    duneobj->rw_eP[i] = (double)_eP; 
-    duneobj->rw_ePip[i] = (double)_ePip; 
-    duneobj->rw_ePim[i] = (double)_ePim; 
-    duneobj->rw_ePi0[i] = (double)_ePi0; 
-    duneobj->rw_eN[i] = (double)_eN; 
+    duneobj->rw_LepE[i] = (_LepE); 
+    duneobj->rw_eP[i] = (_eP); 
+    duneobj->rw_ePip[i] = (_ePip); 
+    duneobj->rw_ePim[i] = (_ePim); 
+    duneobj->rw_ePi0[i] = (_ePi0); 
+    duneobj->rw_eN[i] = (_eN); 
     
-    duneobj->rw_etru[i] = (double)_ev;
-    duneobj->rw_theta[i] = (double)_LepNuAngle;
+    duneobj->rw_etru[i] = (_ev);
+    duneobj->rw_theta[i] = (_LepNuAngle);
     duneobj->rw_isCC[i] = _isCC;
     duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
     duneobj->rw_nuPDG[i] = _nuPDG;
-    duneobj->rw_berpaacvwgt[i] = (double)_BeRPA_cvwgt;
-    duneobj->rw_vtx_x[i] = (double)_vtx_x;
-    duneobj->rw_vtx_y[i] = (double)_vtx_y;
-    duneobj->rw_vtx_z[i] = (double)_vtx_z;
+    duneobj->rw_berpaacvwgt[i] = (_BeRPA_cvwgt);
+    duneobj->rw_vtx_x[i] = (_vtx_x);
+    duneobj->rw_vtx_y[i] = (_vtx_y);
+    duneobj->rw_vtx_z[i] = (_vtx_z);
     
     //Assume everything is on Argon for now....
     duneobj->Target[i] = 40;
     
-    int mode= TMath::Abs(_mode);       
-    duneobj->mode[i]=(double)SIMBMode_ToMaCh3Mode(mode, _isCC);
+    int M3Mode = Modes->GetModeFromGenerator(std::abs(_mode));
+    if (!_isCC) M3Mode += 14;
+    duneobj->mode[i] = M3Mode;
     
     duneobj->flux_w[i] = 1.0;
   }
@@ -388,145 +380,10 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   return duneobj->nEvents;
 }
 
-TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1, int kModeToFill, int kChannelToFill, int WeightStyle, TAxis* Axis) {
-  bool fChannel;
-  bool fMode;
-
-  if (kChannelToFill!=-1) {
-    if (kChannelToFill>dunemcSamples.size()) {
-      MACH3LOG_ERROR("Required channel is not available. kChannelToFill should be between 0 and {}",dunemcSamples.size());
-      MACH3LOG_ERROR("kChannelToFill given: {}",kChannelToFill);
-      throw MaCh3Exception(__FILE__, __LINE__);
-    }
-    fChannel = true;
-  } else {
-    fChannel = false;
-  }
-
-  if (kModeToFill!=-1) {
-    if (kModeToFill>kMaCh3_nModes) {
-      MACH3LOG_ERROR("Required mode is not available. kModeToFill should be between 0 and {}",kMaCh3_nModes);
-      MACH3LOG_ERROR("kModeToFill given: {}",kModeToFill);
-      throw MaCh3Exception(__FILE__, __LINE__);
-    }
-    fMode = true;
-  } else {
-    fMode = false;
-  }
-
-  std::vector< std::vector<double> > SelectionVec;
-
-  if (fMode) {
-    std::vector<double> SelecMode(3);
-    SelecMode[0] = kM3Mode;
-    SelecMode[1] = kModeToFill;
-    SelecMode[2] = kModeToFill+1;
-    SelectionVec.push_back(SelecMode);
-  }
-
-  if (fChannel) {
-    std::vector<double> SelecChannel(3);
-    SelecChannel[0] = kOscChannel;
-    SelecChannel[1] = kChannelToFill;
-    SelecChannel[2] = kChannelToFill+1;
-    SelectionVec.push_back(SelecChannel);
-  }
-
-  return get1DVarHist(Var1,SelectionVec,WeightStyle,Axis);
-}
-
-/*! DB New version of get1DVarHist which only fills histogram with events passing IsEventSelected
- * This works by having the Selection vector, where each component of Selection is a 2 or 3 length vector
- * If Selection[i].size()==3, Selection[i][0] is the ND280KinematicType which is being cut, and only events with ND280KinematicType values between Selection[i][1] and Selection[i][2] are accepted
- */
-TH1D* samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1,std::vector< std::vector<double> > SelectionVec, int WeightStyle, TAxis* Axis) {
-
-  Selection = SelectionVec;
-
-  for (unsigned int iStoredSelection=0;iStoredSelection<StoredSelection.size();iStoredSelection++) {
-    Selection.push_back(StoredSelection[iStoredSelection]);
-  }
-
-  for (unsigned int iSelection=0;iSelection<Selection.size();iSelection++) {
-    if (Selection[iSelection].size()!=3) {
-      MACH3LOG_ERROR("Selection Vector[{}] is not formed correctly. Expect size == 3, given: {}",iSelection,Selection[iSelection].size());
-      throw MaCh3Exception(__FILE__, __LINE__);
-    }
-  }
-
-  //DB Cut on OscChannel in this function due to speed increase from considering duneSamples structure (ie. Array of length NChannels)
-  bool fChannel = false;
-  int kChannelToFill = -1;
-  for (unsigned int iSelection=0;iSelection<Selection.size();iSelection++) {
-    if (Selection[iSelection][0] == kOscChannel) {
-      fChannel = true;
-      kChannelToFill = Selection[iSelection][1];
-    }
-  }
-
-  if (fChannel && kChannelToFill>dunemcSamples.size()) {
-    MACH3LOG_ERROR("Required channel is not available. kChannelToFill should be between 0 and {}",dunemcSamples.size());
-    MACH3LOG_ERROR("kChannelToFill given: {}",kChannelToFill);
-    throw MaCh3Exception(__FILE__, __LINE__);
-  }
-
-  TH1D* _h1DVar;
-  std::vector<double> xBinEdges = ReturnKinematicParameterBinning(ReturnStringFromKinematicParameter(Var1));
-  _h1DVar = new TH1D("", "", xBinEdges.size()-1, xBinEdges.data());
-
-  //This should be the same as FillArray in core basically, except that
-  //events will end up in different bins
-  for (int i=0;i<dunemcSamples.size();i++) {
-    if (fChannel && (i!=kChannelToFill)) {
-      continue;
-    }
-    for(int j=0;j<dunemcSamples[i].nEvents;j++) {
-
-      //DB Determine which events pass selection
-      if (!IsEventSelected(i,j)) {
-		continue;
-      }
-
-      double Weight = GetEventWeight(i,j);
-	  if (WeightStyle==1) {
-	    Weight = *(MCSamples[i].osc_w_pointer[j]) * dunemcSamples[i].pot_s * dunemcSamples[i].norm_s * dunemcSamples[i].flux_w[j];
-	  }
-
-	  //ETA - not sure about this
-	  if (MCSamples[i].xsec_w[j] == 0.) continue;
-
-	  double Var1_Val;
-
-	  Var1_Val = ReturnKinematicParameter(Var1,i,j);
-	  if (Var1_Val!=M3::_DEFAULT_RETURN_VAL_) {
-		_h1DVar->Fill(Var1_Val,Weight);
-	  }
-    }
-  }
-
-  /* DB: This is commented out be default
-  // This code shifts the histogram meaning to Events/Bin Width but this affects the overall integral of the histogram so it should not be used anywhere we care about event rates
-  // We could use Hist->Integral("width") but it would require a lot of modification throughout the code
-
-  if (Var1!=kPDFBinning) {
-    //_h1DVar->SetBinContent(1,_h1DVar->GetBinContent(0)+_h1DVar->GetBinContent(1));
-    //_h1DVar->SetBinContent(_h1DVar->GetNbinsX(),_h1DVar->GetBinContent(_h1DVar->GetNbinsX())+_h1DVar->GetBinContent(_h1DVar->GetNbinsX()+1));
-
-    for (int x=1;x<=_h1DVar->GetNbinsX();x++) {
-      _h1DVar->SetBinContent(x,_h1DVar->GetBinContent(x)/_h1DVar->GetXaxis()->GetBinWidth(x));
-    }
-
-    _h1DVar->GetYaxis()->SetTitle("Events/Bin Width");
-  }
-  */
-
-  return _h1DVar;
-}
-
 double samplePDFDUNEBeamFD::ReturnKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
+  KinematicTypes KinPar = static_cast<KinematicTypes>(KinematicVariable);
   double KinematicValue = -999;
-
+  
   switch(KinPar){
   case kTrueNeutrinoEnergy:
     KinematicValue = dunemcSamples[iSample].rw_etru[iEvent]; 
@@ -630,19 +487,8 @@ const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(std::string Ki
  return KinematicValue;
 }
 
-int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(std::string KinematicParameterStr){
-  if (KinematicParameterStr.find("TrueNeutrinoEnergy") != std::string::npos) {return kTrueNeutrinoEnergy;}
-  if (KinematicParameterStr.find("RecoNeutrinoEnergy") != std::string::npos) {return kRecoNeutrinoEnergy;}
-  if (KinematicParameterStr.find("TrueXPos") != std::string::npos) {return kTrueXPos;}
-  if (KinematicParameterStr.find("TrueYPos") != std::string::npos) {return kTrueYPos;}
-  if (KinematicParameterStr.find("TrueZPos") != std::string::npos) {return kTrueZPos;}
-  if (KinematicParameterStr.find("CVNNumu") != std::string::npos) {return kCVNNumu;}
-  if (KinematicParameterStr.find("CVNNue") != std::string::npos) {return kCVNNue;}
-  if (KinematicParameterStr.find("M3Mode") != std::string::npos) {return kM3Mode;}
-}
-
 const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent) {
-  KinematicTypes KinPar = (KinematicTypes) std::round(KinematicVariable);
+  KinematicTypes KinPar = static_cast<KinematicTypes>(KinematicVariable);
   double* KinematicValue = nullptr;
 
   switch(KinPar){
@@ -675,41 +521,6 @@ const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(double Kinemat
   return KinematicValue;
 }
 
-inline std::string samplePDFDUNEBeamFD::ReturnStringFromKinematicParameter(int KinematicParameter) {
-  std::string KinematicString = "";
- 
-  switch(KinematicParameter){
-   case kRecoNeutrinoEnergy:
-     KinematicString = "RecoNeutrinoEnergy";
-	 break;
-   case kTrueNeutrinoEnergy:
-     KinematicString = "RecoNeutrinoEnergy";
-	 break;
-   case kTrueXPos:
-	 KinematicString= "TrueXPos";
-	 break;
-   case kTrueYPos:
-	 KinematicString= "TrueYPos";
-	 break;
-   case kTrueZPos:
-	 KinematicString= "TrueZPos";
-	 break;
-   case kCVNNumu:
-	 KinematicString = "CVNNumu";
-	 break;
-   case kCVNNue:
-	 KinematicString = "CVNNue";
-	 break;
-   case kM3Mode:
-	 KinematicString = "M3Mode";
-	 break;
-   default:
-    break;
-  }
-
-  return KinematicString;
-}
-
 void samplePDFDUNEBeamFD::setupFDMC(int iSample) {
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
   FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);  
@@ -726,6 +537,9 @@ void samplePDFDUNEBeamFD::setupFDMC(int iSample) {
 }
  
 void samplePDFDUNEBeamFD::applyShifts(int iSample, int iEvent) {
+
+  (void)iSample;
+  (void)iEvent;
    
   //ETA - this is pretty horrific... we need to think of a nicer way to do this.
   //Don't want to add in hard checks on which systematics are defined but also don't want to hard-code

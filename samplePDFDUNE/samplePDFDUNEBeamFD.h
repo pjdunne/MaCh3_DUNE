@@ -1,20 +1,7 @@
 #ifndef _samplePDFDUNEBeamFD_h_
 #define _samplePDFDUNEBeamFD_h_
 
-#include <iostream>
-#include <TTree.h>
-#include <TH1D.h>
-#include <TH2D.h>
-#include <TMath.h>
-#include <TFile.h>
-#include <TGraph2DErrors.h>
-#include <vector>
-#include <omp.h>
-#include <list>
-
 #include "splines/splinesDUNE.h"
-#include "covariance/covarianceXsec.h"
-#include "covariance/covarianceOsc.h"
 #include "samplePDF/samplePDFFDBase.h"
 
 #include "StructsDUNE.h"
@@ -26,10 +13,6 @@ public:
   ~samplePDFDUNEBeamFD();
 
   enum KinematicTypes {kTrueNeutrinoEnergy,kRecoNeutrinoEnergy,kTrueXPos,kTrueYPos,kTrueZPos,kCVNNumu,kCVNNue,kM3Mode,kOscChannel};
-
-  //More robust getters to make plots in different variables, mode, osc channel, systematic weighting and with bin range 
-  TH1D* get1DVarHist(KinematicTypes Var1, int fModeToFill=-1, int fSampleToFill=-1, int WeightStyle=0, TAxis* Axis=0);
-  TH1D* get1DVarHist(KinematicTypes Var1, std::vector< std::vector<double> > Selection, int WeightStyle=0, TAxis* Axis=0);
     
  protected:
   void Init();
@@ -49,11 +32,10 @@ public:
   const double* GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent); 
 
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
-  inline int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
   inline std::string ReturnStringFromKinematicParameter(int KinematicParameterStr);
   
   //DB functions which could be initialised to do something which is non-trivial
-  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
+  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.; (void)iSample; (void)iEvent;}
   void applyShifts(int iSample, int iEvent);
 
   // dunemc

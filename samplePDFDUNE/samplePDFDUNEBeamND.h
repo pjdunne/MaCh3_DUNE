@@ -1,20 +1,7 @@
 #ifndef _samplePDFDUNEBeamND_h_
 #define _samplePDFDUNEBeamND_h_
 
-#include <iostream>
-#include <TTree.h>
-#include <TH1D.h>
-#include <TH2D.h>
-#include <TMath.h>
-#include <TFile.h>
-#include <TGraph2DErrors.h>
-#include <vector>
-#include <omp.h>
-#include <list>
-
 #include "splines/splinesDUNE.h"
-#include "covariance/covarianceXsec.h"
-#include "covariance/covarianceOsc.h"
 #include "samplePDF/samplePDFFDBase.h"
 
 #include "StructsDUNE.h"
@@ -43,11 +30,9 @@ public:
   double ReturnKinematicParameter(std::string KinematicParameter, int iSample, int iEvent);
 
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameter);
-  int ReturnKinematicParameterFromString(std::string KinematicParameterStr);
-  std::string ReturnStringFromKinematicParameter(int KinematicParameter);
   
   //DB functions which could be initialised to do something which is non-trivial
-  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
+  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.; (void)iSample; (void)iEvent;}
   void applyShifts(int iSample, int iEvent);
 
   std::vector<struct dunemc_base> dunendmcSamples;
