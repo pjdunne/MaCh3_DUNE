@@ -26,10 +26,13 @@ $ cd build
 Then perform the cmake build command:
 
 ~~~~~~~~~~~~~~
-$ cmake .. -DCUDAProb3_ENABLED=ON -DCUDAProb3Linear_ENABLED=ON
+$ cmake .. -DCUDAProb3_ENABLED=[ON,OFF] -DCUDAProb3Linear_ENABLED=[ON,OFF]
 $ make install
 ~~~~~~~~~~~~~~
 Additional cmake options are available in the MaCh3-Core README
+
+- CUDAProb3 should be used as the default for atmospheric neutrino oscillations
+- CUDAProb3Linear should be used as the default for beam oscillations
 
 Then source the installation of MaCh3:
 ~~~~~~~~~~~~~~
