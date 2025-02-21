@@ -1,7 +1,9 @@
 #include "samplePDFDUNEBeamFD.h"
 
 samplePDFDUNEBeamFD::samplePDFDUNEBeamFD(std::string mc_version_, covarianceXsec* xsec_cov_, covarianceOsc* osc_cov_) : samplePDFFDBase(mc_version_, xsec_cov_, osc_cov_) {
-  //Call insitialise in samplePDFFD
+  KinematicParameters = &KinematicParametersDUNE;
+  ReversedKinematicParameters = &ReversedKinematicParametersDUNE;
+  
   Initialise();
 }
 
@@ -194,8 +196,8 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   MACH3LOG_INFO("-------------------------------------------------------------------");
   MACH3LOG_INFO("input file: {}", mc_files[iSample]);
   
-  _sampleFile = TFile::Open(mc_files[iSample].c_str(), "READ");
-  _data = _sampleFile->Get<TTree>("caf");
+  TFile* _sampleFile = TFile::Open(mc_files[iSample].c_str(), "READ");
+  TTree* _data = _sampleFile->Get<TTree>("caf");
   
   if(_data){
     MACH3LOG_INFO("Found \"caf\" tree in {}", mc_files[iSample]);
@@ -205,6 +207,40 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
     MACH3LOG_ERROR("Could not find \"caf\" tree in {}", mc_files[iSample]);
     throw MaCh3Exception(__FILE__, __LINE__);
   }
+
+  //Reco Variables
+  double _erec;
+  double _erec_nue;
+  double _erec_had;
+  double _erec_had_nue;
+  double _erec_lep;
+  double _erec_lep_nue;
+
+  double _eRecoP;
+  double _eRecoPip;
+  double _eRecoPim;
+  double _eRecoPi0;
+  double _eRecoN;
+
+  double _cvnnumu;
+  double _cvnnue;
+  double _vtx_x;
+  double _vtx_y;
+  double _vtx_z;
+
+  //Truth Variables
+  int _mode;  
+  double _ev;
+  double _LepE;
+  double _eP;
+  double _ePip;
+  double _ePim;
+  double _ePi0;
+  double _eN;
+  double _BeRPA_cvwgt;
+  int _isCC;
+  int _nuPDGunosc;
+  int _nuPDG;
   
   _data->SetBranchStatus("*", 0);
   _data->SetBranchStatus("Ev", 1);
@@ -357,7 +393,6 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
     duneobj->rw_eN[i] = (_eN); 
     
     duneobj->rw_etru[i] = (_ev);
-    duneobj->rw_theta[i] = (_LepNuAngle);
     duneobj->rw_isCC[i] = _isCC;
     duneobj->rw_nuPDGunosc[i] = _nuPDGunosc;
     duneobj->rw_nuPDG[i] = _nuPDG;

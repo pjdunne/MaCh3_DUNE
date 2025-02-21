@@ -35,7 +35,7 @@ protected:
 
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameterStr);
   std::vector<double> ReturnKinematicParameterBinning(KinematicTypes KinPar);
-
+  
   const std::unordered_map<std::string, int> KinematicParametersDUNE = {
     {"TrueNeutrinoEnergy",kTrueNeutrinoEnergy},
     {"RecoNeutrinoEnergy",kRecoNeutrinoEnergy},
