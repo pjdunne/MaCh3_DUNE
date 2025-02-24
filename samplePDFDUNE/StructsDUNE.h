@@ -24,6 +24,36 @@ struct dunemc_base {
   double *rw_eRecoPim;
   double *rw_eRecoPi0;
   double *rw_eRecoN;
+  double *rw_eRecoMuon;
+
+  double *rw_MuMom;
+  double *rw_PipMom;
+  double *rw_PimMom;
+  double *rw_Pi0Mom;
+  double *rw_PMom;
+  double *rw_NMom;
+
+  double *rw_MuMomReco;
+
+  double *rw_MuTheta;
+  double *rw_PipTheta;
+  double *rw_PimTheta;
+  double *rw_Pi0Theta;
+  double *rw_PTheta;
+  double *rw_NTheta;
+
+  double *rw_MuThetaReco;
+
+  double *rw_MuMomTheta;
+  double *rw_PiMomTheta;
+
+  double *rw_E_diff;
+  double *rw_E_diff_Muon;
+  double *rw_E_diff_Pip;
+  double *rw_E_diff_Pim;
+  double *rw_E_diff_Pi0;
+  double *rw_E_diff_P;
+  double *rw_E_diff_N;
 
   double *rw_LepE;
   double *rw_eP;
@@ -31,6 +61,7 @@ struct dunemc_base {
   double *rw_ePim;
   double *rw_ePi0;
   double *rw_eN;
+  double *rw_eMuon;
 
   double *rw_etru;
   double *rw_etru_vis;
@@ -108,6 +139,9 @@ struct dunemc_base {
 
   double *rw_reco_pid;
   int *rw_iscontained;
+  // double* *rw_mu_track_length_truth_true;
+  // double* *rw_mu_track_length_truth_reco;
+  // double* *rw_mu_track_length_reco;
 };
 
 // ********************************

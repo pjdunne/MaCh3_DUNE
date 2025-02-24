@@ -25,7 +25,22 @@ public:
   samplePDFDUNEBeamND(std::string mc_version, covarianceXsec* xsec_cov, covarianceOsc* osc_cov);
   ~samplePDFDUNEBeamND();
 
-  enum KinematicTypes {kTrueNeutrinoEnergy,kRecoQ, kRecoNeutrinoEnergy, kIsFHC, kOscChannel, kMode};
+  enum KinematicTypes {
+    kTrueNeutrinoEnergy, 
+    kRecoQ, 
+    kRecoNeutrinoEnergy, 
+    kIsFHC, 
+    kOscChannel, 
+    kMode, 
+    kMuonMom, 
+    kMuonEnergy, 
+    kRecoMuonEnergy, 
+    kMuonTheta, 
+    kPipMom, 
+    kPipTheta, 
+    kMuonEDiff, 
+    kPipEDiff, 
+    kEDiff };
   
  protected:
   void Init();
@@ -67,10 +82,32 @@ public:
   int _reco_numu;
   int _reco_nue;
 
-  double _eRecoP;
+  int _nuPDG;
+  int _nuPDGunosc;
+
+  double _MuMom;
+  double _PipMom;
+  double _PimMom;
+  double _Pi0Mom;
+  double _PMom;
+  double _NMom;
+
+  double _MuMomReco;
+
+  double _MuTheta;
+  double _PipTheta;
+  double _PimTheta;
+  double _Pi0Theta;
+  double _PTheta;
+  double _NTheta;
+
+  double _MuThetaReco;
+
+  double _eRecoMuon;
   double _eRecoPip;
   double _eRecoPim;
   double _eRecoPi0;
+  double _eRecoP;
   double _eRecoN;
 
   double _LepNuAngle;
@@ -80,6 +117,8 @@ public:
   double _ePim;
   double _ePi0;
   double _eN;
+  double _eMuon;
+
   double _BeRPA_cvwgt;
   int _isCC;
   int nupdgUnosc;
@@ -110,6 +149,17 @@ public:
   int _reco_q;
   double _reco_pid;
   int _iscontained;
+
+  double _E_diff;
+  double _E_diff_Muon;
+  double _E_diff_Pip;
+  double _E_diff_Pim;
+  double _E_diff_Pi0;
+  double _E_diff_P;
+  double _E_diff_N;
+  // double* _mu_track_length_truth_true;
+  // double* _mu_track_length_truth_reco;
+  // double* _mu_track_length_reco;
 
   // configuration 
   bool IsELike;

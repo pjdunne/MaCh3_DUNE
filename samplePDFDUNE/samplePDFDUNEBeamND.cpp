@@ -41,7 +41,7 @@ void samplePDFDUNEBeamND::Init() {
   em_res_nd_pos = -999;
   IsELike = SampleManager->raw()["SampleBools"]["IsELike"].as<bool>();
  
-  std::cout << "-------------------------------------------------------------------" <<std::endl;
+  // std::cout << "-------------------------------------------------------------------" <<std::endl;
 }
 
 void samplePDFDUNEBeamND::SetupSplines() {
@@ -70,6 +70,10 @@ void samplePDFDUNEBeamND::SetupWeightPointers() {
       MCSamples[i].total_weight_pointers[j][3] = &(dunendmcSamples[i].rw_berpaacvwgt[j]);
       MCSamples[i].total_weight_pointers[j][4] = &(dunendmcSamples[i].flux_w[j]);
       MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
+
+      for (int k = 0; k < MCSamples[i].ntotal_weight_pointers[j]; ++k) {
+        std::cout << "Pointer " << k << ": " << *MCSamples[i].total_weight_pointers[j][k] << std::endl;
+      }
     }
   }
 }
@@ -95,8 +99,13 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     throw MaCh3Exception(__FILE__, __LINE__);
   }
   
-  std::cout << "nEvents:" <<duneobj->nEvents<< std::endl;
-
+    /*
+  -----------------------------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------------------------------
+  Initialising Branch Variables
+  -----------------------------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------------------------------
+  */ 
   Tree->SetBranchStatus("*", 1);
   Tree->SetBranchAddress("rec", &sr);
 
@@ -105,21 +114,59 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   } else {
     duneobj->norm_s = (1e21/1.905e21);
   }
-  duneobj->pot_s = (pot)/1e21;
+  duneobj->pot_s = 1;
 
   duneobj->nEvents = Tree->GetEntries();
+  duneobj->rw_isCC = new int[duneobj->nEvents];
+  duneobj->rw_iscontained = new int[duneobj->nEvents];
   duneobj->nupdg = new int[duneobj->nEvents];
   duneobj->nupdgUnosc = new int[duneobj->nEvents];
+  duneobj->mode = new double[duneobj->nEvents];
+  duneobj->Target = new int[duneobj->nEvents];
+  duneobj->rw_isFHC = new bool[duneobj->nEvents];
+  duneobj->flux_w = new double[duneobj->nEvents];
 
+
+  duneobj->rw_etru = new double[duneobj->nEvents];
   duneobj->rw_yrec = new double[duneobj->nEvents]; // Not filled in MicroProdN3p1
+  duneobj->rw_LepE = new double[duneobj->nEvents]; // Reco E for now!!!!!
+
+  duneobj->rw_eP = new double[duneobj->nEvents];
+  duneobj->rw_ePip = new double[duneobj->nEvents];
+  duneobj->rw_ePim = new double[duneobj->nEvents];
+  duneobj->rw_ePi0 = new double[duneobj->nEvents];
+  duneobj->rw_eN = new double[duneobj->nEvents];
+  duneobj->rw_eMuon = new double[duneobj->nEvents];
+
+  duneobj->rw_vtx_x = new double[duneobj->nEvents];
+  duneobj->rw_vtx_y = new double[duneobj->nEvents];
+  duneobj->rw_vtx_z = new double[duneobj->nEvents];
+  duneobj->rw_vtx_end_x = new double[duneobj->nEvents];
+  duneobj->rw_vtx_end_y = new double[duneobj->nEvents];
+  duneobj->rw_vtx_end_z = new double[duneobj->nEvents];
+  duneobj->rw_px = new double[duneobj->nEvents];
+  duneobj->rw_py = new double[duneobj->nEvents];
+  duneobj->rw_pz = new double[duneobj->nEvents];
+
+  duneobj->rw_MuMom = new double[duneobj->nEvents];
+  duneobj->rw_PipMom = new double[duneobj->nEvents];
+  duneobj->rw_PimMom = new double[duneobj->nEvents];
+  duneobj->rw_Pi0Mom = new double[duneobj->nEvents];
+  duneobj->rw_PMom = new double[duneobj->nEvents];
+  duneobj->rw_NMom = new double[duneobj->nEvents];
+
+  duneobj->rw_MuTheta = new double[duneobj->nEvents];
+  duneobj->rw_PipTheta = new double[duneobj->nEvents];
+  duneobj->rw_PimTheta = new double[duneobj->nEvents];
+  duneobj->rw_Pi0Theta = new double[duneobj->nEvents];
+  duneobj->rw_PTheta = new double[duneobj->nEvents];
+  duneobj->rw_NTheta = new double[duneobj->nEvents];
+
   duneobj->rw_erec_lep = new double[duneobj->nEvents]; // Not filled in MicroProdN3p1
   duneobj->rw_erec_had = new double[duneobj->nEvents]; // Not filled in MicroProdN3p1
-  duneobj->rw_etru = new double[duneobj->nEvents]; 
   duneobj->rw_erec = new double[duneobj->nEvents]; 
   duneobj->rw_erec_shifted = new double[duneobj->nEvents];
   duneobj->rw_theta = new double[duneobj->nEvents];
-  duneobj->flux_w = new double[duneobj->nEvents];
-  duneobj->rw_isCC = new int[duneobj->nEvents];
   duneobj->rw_reco_q = new double[duneobj->nEvents];
   duneobj->rw_berpaacvwgt = new double[duneobj->nEvents]; 
 
@@ -128,27 +175,11 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_eRecoPim = new double[duneobj->nEvents];
   duneobj->rw_eRecoPi0 = new double[duneobj->nEvents];
   duneobj->rw_eRecoN = new double[duneobj->nEvents];
+  duneobj->rw_eRecoMuon = new double[duneobj->nEvents];
 
-  duneobj->rw_LepE = new double[duneobj->nEvents];
-  duneobj->rw_eP = new double[duneobj->nEvents];
-  duneobj->rw_ePip = new double[duneobj->nEvents];
-  duneobj->rw_ePim = new double[duneobj->nEvents];
-  duneobj->rw_ePi0 = new double[duneobj->nEvents];
-  duneobj->rw_eN = new double[duneobj->nEvents];
 
-  duneobj->mode = new double[duneobj->nEvents];
-  duneobj->Target = new int[duneobj->nEvents];
 
-  duneobj->rw_vtx_x = new double[duneobj->nEvents];
-  duneobj->rw_vtx_y = new double[duneobj->nEvents];
-  duneobj->rw_vtx_z = new double[duneobj->nEvents];
-  duneobj->rw_vtx_end_x = new double[duneobj->nEvents];
-  duneobj->rw_vtx_end_y = new double[duneobj->nEvents];
-  duneobj->rw_vtx_end_z = new double[duneobj->nEvents];
-
-  duneobj->rw_px = new double[duneobj->nEvents];
-  duneobj->rw_py = new double[duneobj->nEvents];
-  duneobj->rw_pz = new double[duneobj->nEvents];
+  duneobj->rw_MuMomReco = new double[duneobj->nEvents];
 
   duneobj->rw_reco_vtx_x = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_y = new double[duneobj->nEvents];
@@ -156,47 +187,119 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_reco_vtx_end_x = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_end_y = new double[duneobj->nEvents];
   duneobj->rw_reco_vtx_end_z = new double[duneobj->nEvents];
-
   duneobj->rw_reco_px = new double[duneobj->nEvents];
   duneobj->rw_reco_py = new double[duneobj->nEvents];
   duneobj->rw_reco_pz = new double[duneobj->nEvents];
 
   duneobj->rw_reco_pid = new double[duneobj->nEvents];
 
-  duneobj->rw_iscontained = new int[duneobj->nEvents];
 
-  // for (int iEvent = 0; iEvent < duneobj->nEvents; ++iEvent) {
-  //   int common_ndlp = sr->common.ixn.ndlp;
-  //   duneobj->common_ndlp[iEvent] = common_ndlp;
-  //   duneobj->rw_reco_px[iEvent] = new double*[common_ndlp];
-  //   duneobj->rw_reco_py[iEvent] = new double*[common_ndlp];
-  //   duneobj->rw_reco_pz[iEvent] = new double*[common_ndlp];
+  duneobj->rw_E_diff = new double[duneobj->nEvents];
+  duneobj->rw_E_diff_Muon = new double[duneobj->nEvents];
+  duneobj->rw_E_diff_Pip = new double[duneobj->nEvents];
+  duneobj->rw_E_diff_Pim = new double[duneobj->nEvents];
+  duneobj->rw_E_diff_Pi0 = new double[duneobj->nEvents];
+  duneobj->rw_E_diff_P = new double[duneobj->nEvents];
+  duneobj->rw_E_diff_N = new double[duneobj->nEvents]; 
 
-  //   for (int i = 0; i < common_ndlp; ++i) {
-  //     int part_ndlp = sr->common.ixn.dlp[i].part.ndlp;
-  //     duneobj->part_ndlp[iEvent] = part_ndlp;
-  //     duneobj->rw_reco_px[iEvent][i] = new double[part_ndlp];
-  //     duneobj->rw_reco_py[iEvent][i] = new double[part_ndlp];
-  //     duneobj->rw_reco_pz[iEvent][i] = new double[part_ndlp];
-  //   }
-  // }
 
-  duneobj->rw_isFHC = new bool[duneobj->nEvents];
-  
-  //FILL DUNE STRUCT
+  duneobj->rw_reco_px = new double[duneobj->nEvents];
+  duneobj->rw_reco_py = new double[duneobj->nEvents];
+  duneobj->rw_reco_pz = new double[duneobj->nEvents];
+    /*
+    -----------------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------------
+    Initialising Base Variables
+    -----------------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------------
+    */   
   for (int iEvent=0;iEvent<duneobj->nEvents; iEvent++) { // Loop through tree
     Tree->GetEntry(iEvent);
-    //ND LAr Reco
+
+
+
+
+    duneobj->rw_isCC[iEvent] = sr->mc.nu[0].iscc;
+    duneobj->rw_isFHC[iEvent] = (double)(1.0);
+    duneobj->nupdg[iEvent] = (int)(sr->mc.nu[0].pdg);
+    duneobj->nupdgUnosc[iEvent] = (int)(sr->mc.nu[0].pdgorig);    
+    duneobj->Target[iEvent] = 40;
+    int mode= TMath::Abs(_mode);       
+    duneobj->mode[iEvent]=(double)GENIEMode_ToMaCh3Mode(mode, _isCC);
+    duneobj->flux_w[iEvent] = (double)(sr->mc.nu[0].genweight);
+
+    /*
+    -----------------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------------
+    ND-LAr Truth Information
+    -----------------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------------
+    */    
+    duneobj->rw_etru[iEvent] = (double)(sr->mc.nu[0].E);
+   
+    int nprim = sr->mc.nu[0].nprim;
+    for (int i = 0; i < nprim; i++) {
+      int pdg = sr->mc.nu[0].prim[i].pdg;
+      double energy = (double)(sr->mc.nu[0].prim[i].p.E);
+      double px = (double)(sr->mc.nu[0].prim[i].p.px);
+      double py = (double)(sr->mc.nu[0].prim[i].p.py);
+      double pz = (double)(sr->mc.nu[0].prim[i].p.pz);
+      double momentum = sqrt(px * px + py * py + pz * pz);
+      double theta = acosl(pz / momentum);
+
+      switch (pdg) {
+      case 2212:
+        duneobj->rw_eP[iEvent] = energy;
+        duneobj->rw_PMom[iEvent] = momentum;
+        duneobj->rw_PTheta[iEvent] = theta;
+        break;
+      case 211:
+        duneobj->rw_ePip[iEvent] = energy;
+        duneobj->rw_PipMom[iEvent] = momentum;
+        duneobj->rw_PipTheta[iEvent] = theta;
+        break;
+      case -211:
+        duneobj->rw_ePim[iEvent] = energy;
+        duneobj->rw_PimMom[iEvent] = momentum;
+        duneobj->rw_PimTheta[iEvent] = theta;
+        break;
+      case 111:
+        duneobj->rw_ePi0[iEvent] = energy;
+        duneobj->rw_Pi0Mom[iEvent] = momentum;
+        duneobj->rw_Pi0Theta[iEvent] = theta;
+        break;
+      case 2112:
+        duneobj->rw_eN[iEvent] = energy;
+        duneobj->rw_NMom[iEvent] = momentum;
+        duneobj->rw_NTheta[iEvent] = theta;
+        break;
+      case 13:
+        duneobj->rw_eMuon[iEvent] = energy;
+        duneobj->rw_MuMom[iEvent] = momentum;
+        duneobj->rw_MuTheta[iEvent] = theta;
+        break;
+      }
+    }
+
+    /*
+    -----------------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------------
+    ND-LAr Reco Information
+    -----------------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------------
+    */
+
     double erec_total = 0.0;
+    int nmuons =0;
     int common_ndlp = sr->common.ixn.ndlp;
     for(int i=0; i<common_ndlp; i++) {
       int part_ndlp = sr->common.ixn.dlp[i].part.ndlp;
       for(int j=0; j<part_ndlp; j++) {
         //Total E_rec
-        if(sr->common.ixn.dlp[i].part.dlp[j].E > 99){
-          erec_total += (double)(0);
-        } // Fixing a Kaon bug for MicroProdN3p1 
-        else{erec_total += (double)(sr->common.ixn.dlp[i].part.dlp[j].E);}
+        // if(sr->common.ixn.dlp[i].part.dlp[j].E > 50.0){
+        //   erec_total += (double)(0);
+        //   std::cout << "PDG: " << sr->common.ixn.dlp[i].part.dlp[j].pdg << ", E: " << sr->common.ixn.dlp[i].part.dlp[j].E << std::endl;
+        // } // Fixing a Kaon bug for MicroProdN3p1 
         duneobj->rw_reco_vtx_x[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.X());
         duneobj->rw_reco_vtx_y[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.Y());
         duneobj->rw_reco_vtx_z[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].start.Z());
@@ -212,68 +315,71 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
         duneobj->rw_reco_pid[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].pdg);
         duneobj->rw_iscontained[iEvent] = (double)(sr->common.ixn.dlp[i].part.dlp[j].contained);
 
+        std::map<int, double*> particle_energy_map = {
+          {2212, &duneobj->rw_eRecoP[iEvent]},
+          {211, &duneobj->rw_eRecoPip[iEvent]},
+          {-211, &duneobj->rw_eRecoPim[iEvent]},
+          {111, &duneobj->rw_eRecoPi0[iEvent]},
+          {2112, &duneobj->rw_eRecoN[iEvent]},
+          {13, &duneobj->rw_eRecoMuon[iEvent]}
+          // {-13, &duneobj->rw_LepE[iEvent]} //How to do muon +/-
+        };
+
+        auto it = particle_energy_map.find(sr->common.ixn.dlp[i].part.dlp[j].pdg);
+        if (it != particle_energy_map.end()) {
+          if (duneobj->rw_iscontained[iEvent] && duneobj->rw_isCC[iEvent]) {
+            *(it->second) += (double)(sr->common.ixn.dlp[i].part.dlp[j].E);
+          } else {
+            *(it->second) += -9999;
+          }
+        }
         
-        duneobj->rw_erec[iEvent] = erec_total;
       }
-      std::cout << "------------------------------------------------" << std::endl;
     }
 
-    
+    std::vector<std::pair<double, double>> energy_pairs = {
+      {duneobj->rw_eMuon[iEvent], duneobj->rw_eRecoMuon[iEvent]},
+      {duneobj->rw_ePip[iEvent], duneobj->rw_eRecoPip[iEvent]},
+      {duneobj->rw_ePim[iEvent], duneobj->rw_eRecoPim[iEvent]},
+      {duneobj->rw_ePi0[iEvent], duneobj->rw_eRecoPi0[iEvent]},
+      {duneobj->rw_eP[iEvent], duneobj->rw_eRecoP[iEvent]},
+      {duneobj->rw_eN[iEvent], duneobj->rw_eRecoN[iEvent]}
+    };
+    std::vector<double*> energy_diffs = {
+      &duneobj->rw_E_diff_Muon[iEvent],
+      &duneobj->rw_E_diff_Pip[iEvent],
+      &duneobj->rw_E_diff_Pim[iEvent],
+      &duneobj->rw_E_diff_Pi0[iEvent],
+      &duneobj->rw_E_diff_P[iEvent],
+      &duneobj->rw_E_diff_N[iEvent]
+    };
+    for (size_t i = 0; i < energy_pairs.size(); ++i) {
+      if (energy_pairs[i].first == 0 || energy_pairs[i].second == 0) {
+      *energy_diffs[i] = -9999;
+      } else {
+      *energy_diffs[i] = energy_pairs[i].first - energy_pairs[i].second;
+      }
+    }
 
-    // ND LAr True
-
-    duneobj->rw_etru[iEvent] = (double)(sr->mc.nu[0].E);
-    duneobj->rw_vtx_x[iEvent] = (double)(sr->mc.nu[0].vtx.X());
-    duneobj->rw_vtx_y[iEvent] = (double)(sr->mc.nu[0].vtx.Y());
-    duneobj->rw_vtx_z[iEvent] = (double)(sr->mc.nu[0].vtx.Z());
-
-    // duneobj->rw_vtx_end_x[iEvent] = (double)(sr->mc.nu[0].end.X());
-    // duneobj->rw_vtx_end_y[iEvent] = (double)(sr->mc.nu[0].end.Y());
-    // duneobj->rw_vtx_end_z[iEvent] = (double)(sr->mc.nu[0].end.Z());
-
-
-    // const caf::SRTrueParticle* particle = sr->mc.Particle(sr->mc.Particle().id);
-    // duneobj->rw_px[iEvent] = static_cast<double>(particle->p.X());
-    // duneobj->rw_py[iEvent] = static_cast<double>(particle->p.Y());
-    // duneobj->rw_pz[iEvent] = static_cast<double>(particle->p.Z());
-    // std::cout << "rw_px:" <<duneobj->rw_px[iEvent]<< std::endl;
-    // std::cout << "rw_py:" <<duneobj->rw_py[iEvent]<< std::endl;
-    // std::cout << "rw_pz:" <<duneobj->rw_pz[iEvent]<< std::endl;
-    
-    // duneobj->rw_theta[iEvent] = RecoNuMomentumVector.Y();
-
-    duneobj->rw_yrec[iEvent] = (double)((_erec-_erec_lep)/_erec);
-    
-    duneobj->nupdg[iEvent] = (int)(sample_nupdg[iSample]);
-    duneobj->nupdgUnosc[iEvent] = (int)(sample_nupdgunosc[iSample]);
-    // duneobj->rw_theta[iEvent] = (double)_LepNuAngle;
-    
-    duneobj->rw_isCC[iEvent] = sr->mc.nu[0].iscc;
-    duneobj->rw_isFHC[iEvent] = (double)(1.0);
-    // duneobj->rw_reco_q[iEvent] = _reco_q;
-    // duneobj->rw_nuPDGunosc[iEvent] = _nuPDGunosc;
-    // duneobj->rw_nuPDG[iEvent] = _nuPDG;
-    // duneobj->rw_berpaacvwgt[iEvent] = (double)_BeRPA_cvwgt;
-    
-    // duneobj->rw_eRecoP[iEvent] = (double)_eRecoP; 
-    // duneobj->rw_eRecoPip[iEvent] = (double)_eRecoPip; 
-    // duneobj->rw_eRecoPim[iEvent] = (double)_eRecoPim; 
-    // duneobj->rw_eRecoPi0[iEvent] = (double)_eRecoPi0; 
-    // duneobj->rw_eRecoN[iEvent] = (double)_eRecoN; 
-    
-    // duneobj->rw_LepE[iEvent] = (double)_LepE; 
-    // duneobj->rw_eP[iEvent] = (double)_eP; 
-    // duneobj->rw_ePip[iEvent] = (double)_ePip; 
-    // duneobj->rw_ePim[iEvent] = (double)_ePim; 
-    // duneobj->rw_ePi0[iEvent] = (double)_ePi0; 
-    // duneobj->rw_eN[iEvent] = (double)_eN; 
-    
-    //Assume everything is on Argon for now....
-    duneobj->Target[iEvent] = 40;
-    
-    int mode= TMath::Abs(_mode);       
-    duneobj->mode[iEvent]=(double)GENIEMode_ToMaCh3Mode(mode, _isCC);
-    duneobj->flux_w[iEvent] = (double)(sr->mc.nu[0].genweight);
+    int ndlar_ndlp = sr->nd.lar.ndlp;
+    for (int i = 0; i < ndlar_ndlp; i++) {
+      int ntracks = sr->nd.lar.dlp[i].ntracks;
+      for (int j = 0; j < ntracks; j++) {
+        erec_total+=sr->nd.lar.dlp[i].tracks[j].E;
+      }
+      int nshowers = sr->nd.lar.dlp[i].nshowers;
+      for (int j = 0; j < nshowers; j++) {
+        erec_total+=sr->nd.lar.dlp[i].showers[j].Evis;
+      }
+      if (duneobj->rw_iscontained[iEvent] && duneobj->rw_isCC[iEvent]){
+        duneobj->rw_erec[iEvent] = erec_total;
+        duneobj->rw_E_diff[iEvent] = duneobj->rw_etru[iEvent]-duneobj->rw_erec[iEvent];
+      }
+      else {
+        duneobj->rw_E_diff[iEvent] = -9999;
+        duneobj->rw_erec[iEvent] = -9999;
+      }
+    }
   }
   
   delete Tree;
@@ -307,6 +413,33 @@ const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(KinematicTypes
   case kMode:
     KinematicValue = &dunendmcSamples[iSample].mode[iEvent];
     break;
+  case kMuonMom:
+    KinematicValue = &dunendmcSamples[iSample].rw_MuMom[iEvent];
+    break;
+  case kMuonEnergy:
+    KinematicValue = &dunendmcSamples[iSample].rw_eMuon[iEvent];
+    break;
+  case kRecoMuonEnergy:
+    KinematicValue = &dunendmcSamples[iSample].rw_eRecoMuon[iEvent];
+    break;
+  case kMuonTheta:
+    KinematicValue = &dunendmcSamples[iSample].rw_MuTheta[iEvent];
+    break;
+  case kPipMom:
+    KinematicValue = &dunendmcSamples[iSample].rw_PipMom[iEvent];
+    break;
+  case kPipTheta:
+    KinematicValue = &dunendmcSamples[iSample].rw_PipTheta[iEvent];
+    break;
+  case kMuonEDiff:
+    KinematicValue = &dunendmcSamples[iSample].rw_E_diff_Muon[iEvent];
+    break;
+  case kPipEDiff:
+    KinematicValue = &dunendmcSamples[iSample].rw_E_diff_Pip[iEvent];
+    break;
+  case kEDiff:
+    KinematicValue = &dunendmcSamples[iSample].rw_E_diff[iEvent];
+    break;
   default:
     MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
     std::cout << KinPar << ReturnStringFromKinematicParameter(KinPar) << std::endl;
@@ -339,12 +472,37 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
   FarDetectorCoreInfo *fdobj = &(MCSamples[iSample]);
   
   for(int iEvent = 0 ;iEvent < fdobj->nEvents ; ++iEvent){
-    // std::cout << "This is Event "<<iEvent<< std::endl;
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
+    fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
+    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
+    fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+    fdobj->nupdgUnosc[iEvent] = &(duneobj->nupdgUnosc[iEvent]);
+    fdobj->nupdg[iEvent] = &(duneobj->nupdg[iEvent]);
+
+    // std::cout << "This is Event "<<iEvent<< std::endl;
     // std::cout << "rw_etru:" <<duneobj->rw_etru[iEvent]<< std::endl;
     // std::cout << "rw_erec:" <<duneobj->rw_erec[iEvent]<< std::endl;
-
     // int common_ndlp = duneobj->common_ndlp[iEvent];
+    // std::cout << "rw_reco_vtx_x:" <<duneobj->rw_reco_vtx_x[iEvent]<< std::endl;
+    // std::cout << "rw_vtx_x:" <<duneobj->rw_vtx_x[iEvent]<< std::endl;    
+    // std::cout << "rw_reco_vtx_y:" <<duneobj->rw_reco_vtx_y[iEvent]<< std::endl;
+    // std::cout << "rw_vtx_y:" <<duneobj->rw_vtx_y[iEvent]<< std::endl;
+    // std::cout << "rw_reco_vtx_z:" <<duneobj->rw_reco_vtx_z[iEvent]<< std::endl;
+    // std::cout << "rw_vtx_z:" <<duneobj->rw_vtx_z[iEvent]<< std::endl;
+    // std::cout << "rw_eRecoP:" <<duneobj->rw_eRecoP[iEvent]<< std::endl;
+    // std::cout << "rw_eP:" <<duneobj->rw_eP[iEvent]<< std::endl;
+    // std::cout << "rw_eRecoPip:" <<duneobj->rw_eRecoPip[iEvent]<< std::endl;
+    // std::cout << "rw_ePip:" <<duneobj->rw_ePip[iEvent]<< std::endl;
+    // std::cout << "rw_eRecoPim:" <<duneobj->rw_eRecoPim[iEvent]<< std::endl;
+    // std::cout << "rw_ePim:" <<duneobj->rw_ePim[iEvent]<< std::endl;
+    // std::cout << "rw_eRecoPi0:" <<duneobj->rw_eRecoPi0[iEvent]<< std::endl;
+    // std::cout << "rw_ePi0:" <<duneobj->rw_ePi0[iEvent]<< std::endl;
+    // std::cout << "rw_eRecoN:" <<duneobj->rw_eRecoN[iEvent]<< std::endl;
+    // std::cout << "rw_eN:" <<duneobj->rw_eN[iEvent]<< std::endl;
+    // std::cout << "mode:" <<duneobj->mode[iEvent]<< std::endl;
+    // std::cout << "Target:" <<duneobj->Target[iEvent]<< std::endl;
+    // std::cout << "isCC:" <<duneobj->rw_isCC[iEvent]<< std::endl;
+    // std::cout << "isNC:" <<fdobj->isNC[iEvent]<< std::endl;
     // for(int i = 0; i < common_ndlp; i++) {
     //   int part_ndlp = duneobj->part_ndlp[iEvent];
     //   for(int j = 0; j < part_ndlp; j++) {
@@ -353,24 +511,6 @@ void samplePDFDUNEBeamND::setupFDMC(int iSample) {
     //     std::cout << "rw_reco_pz:" <<duneobj->rw_reco_pz[iEvent][i][j]<< std::endl;
     //   }
     // }
-    // std::cout << "rw_reco_vtx_x:" <<duneobj->rw_reco_vtx_x[iEvent]<< std::endl;
-    // std::cout << "rw_vtx_x:" <<duneobj->rw_vtx_x[iEvent]<< std::endl;    
-    // std::cout << "rw_reco_vtx_y:" <<duneobj->rw_reco_vtx_y[iEvent]<< std::endl;
-    // std::cout << "rw_vtx_y:" <<duneobj->rw_vtx_y[iEvent]<< std::endl;
-    // std::cout << "rw_reco_vtx_z:" <<duneobj->rw_reco_vtx_z[iEvent]<< std::endl;
-    // std::cout << "rw_vtx_z:" <<duneobj->rw_vtx_z[iEvent]<< std::endl;
-    fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
-    // std::cout << "mode:" <<duneobj->mode[iEvent]<< std::endl;
-    fdobj->Target[iEvent] = &(duneobj->Target[iEvent]); 
-    // std::cout << "Target:" <<duneobj->Target[iEvent]<< std::endl;
-    fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
-    // std::cout << "isCC:" <<duneobj->rw_isCC[iEvent]<< std::endl;
-    // std::cout << "isNC:" <<fdobj->isNC[iEvent]<< std::endl;
-    fdobj->nupdgUnosc[iEvent] = &(duneobj->nupdgUnosc[iEvent]);
-    // std::cout << "nupdgUnosc:" <<duneobj->nupdgUnosc[iEvent]<< std::endl;
-    fdobj->nupdg[iEvent] = &(duneobj->nupdg[iEvent]);
-    // std::cout << "nupdg:" <<duneobj->nupdg[iEvent]<< std::endl;
-    // std::cout << "-------------------------------------------------------------------" <<std::endl;
   }
 }
 
@@ -410,9 +550,19 @@ int samplePDFDUNEBeamND::ReturnKinematicParameterFromString(std::string Kinemati
   if(KinematicParameterStr == "TrueNeutrinoEnergy") return kTrueNeutrinoEnergy;
   if(KinematicParameterStr == "RecoQ") return kRecoQ;
   if(KinematicParameterStr == "RecoNeutrinoEnergy") return kRecoNeutrinoEnergy;
-  if(KinematicParameterStr == "IsFHC") return kRecoNeutrinoEnergy;
+  if(KinematicParameterStr == "IsFHC") return kIsFHC;
   if(KinematicParameterStr == "OscChannel") return kOscChannel;
   if(KinematicParameterStr == "Mode") return kMode;
+  if(KinematicParameterStr == "MuonMom") return kMuonMom;
+  if(KinematicParameterStr == "MuonEnergy") return kMuonEnergy;
+  if(KinematicParameterStr == "MuonTheta") return kMuonTheta;
+  if (KinematicParameterStr == "RecoMuonEnergy") return kRecoMuonEnergy;
+  if(KinematicParameterStr == "PipMom") return kPipMom;
+  if(KinematicParameterStr == "PipTheta") return kPipTheta;
+  if(KinematicParameterStr == "MuonEDiff") return kMuonEDiff;
+  if(KinematicParameterStr == "PipEDiff") return kPipEDiff;
+  if(KinematicParameterStr == "EDiff") return kEDiff;
+
   return -1;
 }
 
@@ -424,6 +574,15 @@ std::string samplePDFDUNEBeamND::ReturnStringFromKinematicParameter(int Kinemati
     case kIsFHC: return "IsFHC";
     case kOscChannel: return "OscChannel";
     case kMode: return "Mode";
+    case kMuonMom: return "MuonMom";
+    case kMuonEnergy: return "MuonEnergy";
+    case kRecoMuonEnergy: return "RecoMuonEnergy";
+    case kMuonTheta: return "MuonTheta";
+    case kPipMom: return "PipMom";
+    case kPipTheta: return "PipTheta";
+    case kMuonEDiff: return "MuonEDiff";
+    case kPipEDiff: return "PipEDiff";
+    case kEDiff: return "EDiff";
     default: return "";
   }
 }
