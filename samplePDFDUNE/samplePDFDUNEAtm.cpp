@@ -89,11 +89,12 @@ int samplePDFDUNEAtm::setupExperimentMC(int iSample) {
     duneobj->nupdgUnosc[iEvent] = sample_nupdgunosc[iSample];
 
     int M3Mode = Modes->GetModeFromGenerator(std::abs(sr->mc.nu[0].mode));
-    if (!sr->mc.nu[0].iscc) M3Mode += 14;
+    if (!sr->mc.nu[0].iscc) M3Mode += 14; //Account for no ability to distinguish CC/NC
+    if (M3Mode > 15) M3Mode -= 1; //Account for no NCSingleKaon
     duneobj->mode[iEvent] = M3Mode;
     
     duneobj->rw_isCC[iEvent] = sr->mc.nu[0].iscc;
-    duneobj->Target[iEvent] = 40;
+    duneobj->Target[iEvent] = kTarget_Ar;
     
     duneobj->rw_etru[iEvent] = static_cast<double>(sr->mc.nu[0].E);
 
@@ -207,6 +208,7 @@ std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(KinematicT
     ReturnVec.emplace_back(1000.);
     break;
 
+  case kTrueCosZ:
   case kRecoCosZ:
     ReturnVec.resize(XBinEdges.size());
     for (unsigned int bin_i=0;bin_i<XBinEdges.size();bin_i++) {ReturnVec[bin_i] = XBinEdges[bin_i];}
@@ -215,6 +217,16 @@ std::vector<double> samplePDFDUNEAtm::ReturnKinematicParameterBinning(KinematicT
   case kRecoNeutrinoEnergy:
     ReturnVec.resize(YBinEdges.size());
     for (unsigned int bin_i=0;bin_i<YBinEdges.size();bin_i++) {ReturnVec[bin_i] = YBinEdges[bin_i];}
+    break;
+
+  case kOscChannel:
+    ReturnVec.resize(GetNsamples());
+    for (int bin_i=0;bin_i<GetNsamples();bin_i++) {ReturnVec[bin_i] = bin_i;}
+    break;
+
+  case kMode:
+    ReturnVec.resize(Modes->GetNModes());
+    for (int bin_i=0;bin_i<Modes->GetNModes();bin_i++) {ReturnVec[bin_i] = bin_i;}
     break;
     
   default:

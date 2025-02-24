@@ -401,11 +401,12 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
     duneobj->rw_vtx_y[i] = (_vtx_y);
     duneobj->rw_vtx_z[i] = (_vtx_z);
     
-    //Assume everything is on Argon for now....
-    duneobj->Target[i] = 40;
+    //Assume everything is on Argon40 for now....
+    duneobj->Target[i] = kTarget_Ar;
     
     int M3Mode = Modes->GetModeFromGenerator(std::abs(_mode));
-    if (!_isCC) M3Mode += 14;
+    if (!_isCC) M3Mode += 14; //Account for no ability to distinguish CC/NC
+    if (M3Mode > 15) M3Mode -= 1; //Account for no NCSingleKaon
     duneobj->mode[i] = M3Mode;
     
     duneobj->flux_w[i] = 1.0;
@@ -448,7 +449,7 @@ double samplePDFDUNEBeamFD::ReturnKinematicParameter(double KinematicVariable, i
     KinematicValue = MCSamples[iSample].ChannelIndex;
     break;
   default:
-    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type: {}",KinPar);
+    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type: {}", static_cast<int>(KinPar));
     MACH3LOG_ERROR("Was given a Kinematic Variable of {}", KinematicVariable);
     throw MaCh3Exception(__FILE__, __LINE__);
   }
@@ -489,7 +490,7 @@ double samplePDFDUNEBeamFD::ReturnKinematicParameter(std::string KinematicParame
     KinematicValue = MCSamples[iSample].ChannelIndex;
     break;
  default:
-   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type {}", KinematicParameter);
    throw MaCh3Exception(__FILE__, __LINE__);
  }
  
@@ -523,8 +524,14 @@ const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(std::string Ki
  case kCVNNue:
    KinematicValue = &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
    break;
+ case kM3Mode:
+   KinematicValue = &(dunemcSamples[iSample].mode[iEvent]);
+   break;
+ case kOscChannel:
+   KinematicValue = &(MCSamples[iSample].ChannelIndex);
+   break;
  default:
-   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
+   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type: {}", KinematicParameter);
    throw MaCh3Exception(__FILE__, __LINE__);
  }
  
@@ -557,9 +564,15 @@ const double* samplePDFDUNEBeamFD::GetPointerToKinematicParameter(double Kinemat
   case kCVNNue:
     KinematicValue = &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
     break;
+  case kM3Mode:
+    KinematicValue = &(dunemcSamples[iSample].mode[iEvent]);
+    break;
+  case kOscChannel:
+    KinematicValue = &(MCSamples[iSample].ChannelIndex);
+    break;
   default:
-   MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
-   throw MaCh3Exception(__FILE__, __LINE__);
+    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type: {}", KinematicVariable);
+    throw MaCh3Exception(__FILE__, __LINE__);
   }
   
   return KinematicValue;
@@ -664,29 +677,41 @@ void samplePDFDUNEBeamFD::applyShifts(int iSample, int iEvent) {
 }
 
 std::vector<double> samplePDFDUNEBeamFD::ReturnKinematicParameterBinning(std::string KinematicParameterStr) {
-  std::vector<double> binningVector;
   KinematicTypes KinematicParameter = static_cast<KinematicTypes>(ReturnKinematicParameterFromString(KinematicParameterStr));
-
-  int nBins = 0;
-  double bin_width = 0;
+  std::vector<double> ReturnVec;
+  
   switch(KinematicParameter){
-	case(kRecoNeutrinoEnergy):
-	  nBins = 20; 
-	  bin_width = 0.5; //GeV
-	  break;
-	case(kTrueNeutrinoEnergy):
-	  nBins = 20; 
-	  bin_width = 0.5; //GeV
-	  break;
-	default:
-	  nBins = 10;
-	  bin_width = 1.0;
-	  break;
-  }
+  case kTrueNeutrinoEnergy:
+  case kRecoNeutrinoEnergy:
+    ReturnVec.resize(XBinEdges.size());
+    for (unsigned int bin_i=0;bin_i<XBinEdges.size();bin_i++) {ReturnVec[bin_i] = XBinEdges[bin_i];}
+    break;
 
-  for(int bin_i = 0 ; bin_i < nBins ; bin_i++){
-	binningVector.push_back(bin_i*bin_width);
-  }
+  case kOscChannel:
+    ReturnVec.resize(GetNsamples());
+    for (int bin_i=0;bin_i<GetNsamples();bin_i++) {ReturnVec[bin_i] = bin_i;}
+    break;
 
-  return binningVector;
+  case kM3Mode:
+    ReturnVec.resize(Modes->GetNModes());
+    for (int bin_i=0;bin_i<Modes->GetNModes();bin_i++) {ReturnVec[bin_i] = bin_i;}
+    break;
+
+  case kTrueXPos:
+  case kTrueYPos:
+  case kTrueZPos:
+  case kCVNNue:
+  case kCVNNumu:
+    ReturnVec.resize(2);
+    ReturnVec[0] = 1e-8;
+    ReturnVec[1] = 1e8;
+    break;
+
+  default:
+    MACH3LOG_ERROR("Did not recognise Kinematic Parameter type: {}", static_cast<int>(KinematicParameter));
+    throw MaCh3Exception(__FILE__, __LINE__);
+
+  }      
+  
+  return ReturnVec;
 }
