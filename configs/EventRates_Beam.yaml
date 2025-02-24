@@ -1,11 +1,12 @@
 General:
-  OutputFile: "outputs/runs/034_fit.root"
+  OutputFile: "outputs/runs/038_fit.root"
   # OutputFile: "outputs/liban_stepsize/sigma_libanND.root"
   # DUNESamples: ["configs/Samples/SamplePDFDuneND_FHC_numuselec_everything.yaml"] 
   # DUNESamples: ["configs/Samples/SamplePDFDuneND_RHC_numuselec_everything.yaml"] 
   # DUNESamples: ["configs/Samples/SamplePDFDuneND_RHC_numuselec_everything_downsample.yaml"] 
   # DUNESamples: ["configs/Samples/SamplePDFDuneND_RHC_numuselec_onesample.yaml"] 
   DUNESamples: ["configs/Samples/SamplePDFDuneND_FHC_numuselec_everything_downsample.yaml", "configs/Samples/SamplePDFDuneND_RHC_numuselec_everything_downsample.yaml"] 
+  # DUNESamples: ["configs/Samples/SamplePDFDuneND_RHC_numuselec_everything_downsample.yaml"] 
   # DUNESamples: ["configs/Samples/SamplePDFDuneND_FHC_numuselec.yaml"]
   # DUNESamples: ["configs/Samples/SamplePDFDuneND_FHC_numuselec_numuonly.yaml"]
   ## Nu-FIT
@@ -21,7 +22,8 @@ General:
     # XsecCovFile: ["configs/CovObjs/liban.yaml"]
     # XsecCovFile: ["configs/CovObjs/one_flux.yaml"]
     # XsecCovFile: ["configs/CovObjs/liban_ND_norm_scale1.yaml"]
-    XsecCovFile: ["configs/CovObjs/liban_covs/Flux_ND+FD_uniform.yaml", "configs/CovObjs/liban_covs/Xsec_ND+FD.yaml"]
+    # XsecCovFile: ["configs/CovObjs/liban_covs/Flux_ND_uniform.yaml"]
+    XsecCovFile: ["configs/CovObjs/liban_covs/Flux_ND_uniform.yaml", "configs/CovObjs/liban_covs/Xsec_ND+FD_uniform_hack.yaml"]
     # XsecCovFile: ["configs/CovObjs/liban_ND_norm_RHC_20241204.yaml"]
     # XsecCovFile: ["configs/CovObjs/liban_ND.yaml", "configs/CovObjs/xsec_covariance_DUNE_systs_2022a_FD_v3_xsec.yaml"]
     XsecCovName: "xsec_cov"
@@ -44,7 +46,7 @@ General:
   Fitter:
     FitTestLikelihood: false
   MCMC:
-    NSteps: 500000
+    NSteps: 5000000
     AutoSave: 10000
   Output:
     FileName: "TestEventRates.root"
@@ -54,9 +56,9 @@ General:
   Debug: Yes
 
   # Custom throw matrix
-  # ThrowMatrixFile: "outputs/runs/031_fit.root"
+  ThrowMatrixFile: "outputs/runs/037_fit.root"
   # Entry in the throw matrix
-  # ThrowMatrixName: "AdaptiveFolder/500000_xsec_cov_throw_matrix"
+  ThrowMatrixName: "AdaptiveFolder/500000_xsec_cov_throw_matrix"
 
 AdaptionOptions:
   Settings:

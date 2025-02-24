@@ -142,8 +142,6 @@ void samplePDFDUNEAtm::setupFDMC(int iSample) {
     fdobj->nupdgUnosc[iEvent] = &(duneobj->nupdgUnosc[iEvent]);
 
     fdobj->rw_truecz[iEvent] = &(duneobj->rw_truecz[iEvent]);
-    fdobj->nupdgunosc[iEvent] = duneobj->rw_nuPDGunosc[iEvent];
-    fdobj->nupdg[iEvent] = duneobj->rw_nuPDG[iEvent];
   }
 }
 
