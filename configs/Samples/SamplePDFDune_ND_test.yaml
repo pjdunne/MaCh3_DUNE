@@ -1,16 +1,16 @@
-SampleName: "FHC_nue"
+SampleName: "FHC_numu"
 SampleType: "BeamND"
-POT: 1.3628319e+23 #Actual POT /POT_gen *This POT ### Maybe put to 1
-SelectionCuts:
+POT: 1 #Actual POT /POT_gen *This POT ### Maybe put to 1
 Binning:
-  XVarStr: "RecoNeutrinoEnergy" 
+  XVarStr: "TrueNeutrinoEnergy" 
   XVarBins: [0.,  0.5,  1.,  1.25, 1.5, 1.75, 2., 2.25, 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5., 6., 10.]
 SampleBools:
-  IsELike: true
-  isrhc: false
-  iselike: true
+  IsELike: no
+  isrhc: no
+  iselike: no
 InputFiles:
-  mtupleprefix: "inputs/DUNE_ND_CAF_files/MicroProdN3p1_NDLAr_2E18_FHC.caf.nu.0000001.CAF" #name of file
+  # mtupleprefix: "inputs/DUNE_ND_CAF_files/MicroProdN3p1_NDLAr_2E18_FHC.caf.nu.0000001.CAF" #name of file
+  mtupleprefix: "inputs/DUNE_ND_CAF_files/MicroProdN3p1_NDLAr_2E18_FHC.caf.nu.hadded." #name of file
   mtuplesuffix: ".root"
   splineprefix: ""
   splinesuffix: ""
@@ -19,8 +19,8 @@ NuOsc:
 DetID: 1 #1 is for ND-LAr
 NSubSamples: 1
 SubSamples:
-  - name: ""
-    mtuplefile: ""
+  - name: "0000001.CAF"
+    mtuplefile: "0000001.CAF"
     splinefile: ""
     samplevecno: 0
     nutype: 14
