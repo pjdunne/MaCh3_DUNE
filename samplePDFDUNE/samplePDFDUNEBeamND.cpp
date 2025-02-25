@@ -62,18 +62,13 @@ void samplePDFDUNEBeamND::SetupSplines() {
 void samplePDFDUNEBeamND::SetupWeightPointers() {
   for (int i = 0; i < (int)dunendmcSamples.size(); ++i) {
     for (int j = 0; j < dunendmcSamples[i].nEvents; ++j) {
-      MCSamples[i].ntotal_weight_pointers[j] = 6;
+      MCSamples[i].ntotal_weight_pointers[j] = 5;
       MCSamples[i].total_weight_pointers[j].resize(MCSamples[i].ntotal_weight_pointers[j]);
       MCSamples[i].total_weight_pointers[j][0] = &(dunendmcSamples[i].pot_s);
       MCSamples[i].total_weight_pointers[j][1] = &(dunendmcSamples[i].norm_s);
       MCSamples[i].total_weight_pointers[j][2] = MCSamples[i].osc_w_pointer[j];
-      MCSamples[i].total_weight_pointers[j][3] = &(dunendmcSamples[i].rw_berpaacvwgt[j]);
-      MCSamples[i].total_weight_pointers[j][4] = &(dunendmcSamples[i].flux_w[j]);
-      MCSamples[i].total_weight_pointers[j][5] = &(MCSamples[i].xsec_w[j]);
-
-      for (int k = 0; k < MCSamples[i].ntotal_weight_pointers[j]; ++k) {
-        std::cout << "Pointer " << k << ": " << *MCSamples[i].total_weight_pointers[j][k] << std::endl;
-      }
+      MCSamples[i].total_weight_pointers[j][3] = &(dunendmcSamples[i].flux_w[j]);
+      MCSamples[i].total_weight_pointers[j][4] = &(MCSamples[i].xsec_w[j]);
     }
   }
 }
@@ -99,7 +94,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     throw MaCh3Exception(__FILE__, __LINE__);
   }
   
-    /*
+  /*
   -----------------------------------------------------------------------------------------------------
   -----------------------------------------------------------------------------------------------------
   Initialising Branch Variables
@@ -125,7 +120,6 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->Target = new int[duneobj->nEvents];
   duneobj->rw_isFHC = new bool[duneobj->nEvents];
   duneobj->flux_w = new double[duneobj->nEvents];
-
 
   duneobj->rw_etru = new double[duneobj->nEvents];
   duneobj->rw_yrec = new double[duneobj->nEvents]; // Not filled in MicroProdN3p1
@@ -177,8 +171,6 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_eRecoN = new double[duneobj->nEvents];
   duneobj->rw_eRecoMuon = new double[duneobj->nEvents];
 
-
-
   duneobj->rw_MuMomReco = new double[duneobj->nEvents];
 
   duneobj->rw_reco_vtx_x = new double[duneobj->nEvents];
@@ -193,7 +185,6 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
 
   duneobj->rw_reco_pid = new double[duneobj->nEvents];
 
-
   duneobj->rw_E_diff = new double[duneobj->nEvents];
   duneobj->rw_E_diff_Muon = new double[duneobj->nEvents];
   duneobj->rw_E_diff_Pip = new double[duneobj->nEvents];
@@ -201,7 +192,6 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
   duneobj->rw_E_diff_Pi0 = new double[duneobj->nEvents];
   duneobj->rw_E_diff_P = new double[duneobj->nEvents];
   duneobj->rw_E_diff_N = new double[duneobj->nEvents]; 
-
 
   duneobj->rw_reco_px = new double[duneobj->nEvents];
   duneobj->rw_reco_py = new double[duneobj->nEvents];
@@ -288,6 +278,25 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
     -----------------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------------
     */
+  //  int ndlar_ndlp = sr->nd.lar.ndlp;
+  //  for (int i = 0; i < ndlar_ndlp; i++) {
+  //    int ntracks = sr->nd.lar.dlp[i].ntracks;
+  //    for (int j = 0; j < ntracks; j++) {
+  //      erec_total+=sr->nd.lar.dlp[i].tracks[j].E;
+  //    }
+  //    int nshowers = sr->nd.lar.dlp[i].nshowers;
+  //    for (int j = 0; j < nshowers; j++) {
+  //      erec_total+=sr->nd.lar.dlp[i].showers[j].Evis;
+  //    }
+  //    if (duneobj->rw_iscontained[iEvent] && duneobj->rw_isCC[iEvent]){
+  //      duneobj->rw_erec[iEvent] = erec_total;
+  //      duneobj->rw_E_diff[iEvent] = duneobj->rw_etru[iEvent]-duneobj->rw_erec[iEvent];
+  //    }
+  //    else {
+  //      duneobj->rw_E_diff[iEvent] = -9999;
+  //      duneobj->rw_erec[iEvent] = -9999;
+  //    }
+  //  }
 
     double erec_total = 0.0;
     int nmuons =0;
@@ -361,25 +370,7 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
       }
     }
 
-    int ndlar_ndlp = sr->nd.lar.ndlp;
-    for (int i = 0; i < ndlar_ndlp; i++) {
-      int ntracks = sr->nd.lar.dlp[i].ntracks;
-      for (int j = 0; j < ntracks; j++) {
-        erec_total+=sr->nd.lar.dlp[i].tracks[j].E;
-      }
-      int nshowers = sr->nd.lar.dlp[i].nshowers;
-      for (int j = 0; j < nshowers; j++) {
-        erec_total+=sr->nd.lar.dlp[i].showers[j].Evis;
-      }
-      if (duneobj->rw_iscontained[iEvent] && duneobj->rw_isCC[iEvent]){
-        duneobj->rw_erec[iEvent] = erec_total;
-        duneobj->rw_E_diff[iEvent] = duneobj->rw_etru[iEvent]-duneobj->rw_erec[iEvent];
-      }
-      else {
-        duneobj->rw_E_diff[iEvent] = -9999;
-        duneobj->rw_erec[iEvent] = -9999;
-      }
-    }
+
   }
   
   delete Tree;
@@ -393,7 +384,8 @@ int samplePDFDUNEBeamND::setupExperimentMC(int iSample) {
 
 const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(KinematicTypes KinPar, int iSample, int iEvent) {
   double* KinematicValue;
-  
+  static double tempValue;
+
   switch(KinPar){
   case kTrueNeutrinoEnergy:
     KinematicValue = &dunendmcSamples[iSample].rw_etru[iEvent]; 
@@ -405,10 +397,12 @@ const double* samplePDFDUNEBeamND::GetPointerToKinematicParameter(KinematicTypes
     KinematicValue = &dunendmcSamples[iSample].rw_erec[iEvent];
     break;
   case kIsFHC:
-    KinematicValue = static_cast<double*>(static_cast<void*>(&dunendmcSamples[iSample].rw_isFHC[iEvent]));
+    tempValue = static_cast<double>(dunendmcSamples[iSample].rw_isFHC[iEvent]);
+    KinematicValue = &tempValue;
     break;
   case kOscChannel:
-    KinematicValue = static_cast<double*>(static_cast<void*>(&dunendmcSamples[iSample].nupdgUnosc[iEvent]));
+    tempValue = static_cast<double>(dunendmcSamples[iSample].nupdgUnosc[iEvent]);
+    KinematicValue = &tempValue;
     break;
   case kMode:
     KinematicValue = &dunendmcSamples[iSample].mode[iEvent];
