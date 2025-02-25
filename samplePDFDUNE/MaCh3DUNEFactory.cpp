@@ -83,7 +83,7 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   
   // ==========================================================
   //read flat prior, fixed paramas from the config file
-  std::vector<std::string> XsecFixParams   = GetFromManager<std::vector<std::string>>(FitManager->raw()["General"]["Systematics"]["XsecFix"], {""});
+  std::vector<std::string> XsecFixParams = GetFromManager<std::vector<std::string>>(FitManager->raw()["General"]["Systematics"]["XsecFix"], {""});
   
   // Fixed xsec parameters loop
   if (XsecFixParams.size() == 1 && XsecFixParams.at(0) == "All") {
@@ -93,6 +93,20 @@ void MakeMaCh3DuneInstance(manager *FitManager, std::vector<samplePDFFDBase*> &D
   } else {
     for (unsigned int j = 0; j < XsecFixParams.size(); j++) {
       xsec->toggleFixParameter(XsecFixParams.at(j));
+    }
+  }
+  MACH3LOG_INFO("xsec parameters loop done");
+
+  std::vector<std::string> OscFixParams = GetFromManager<std::vector<std::string>>(FitManager->raw()["General"]["Systematics"]["OscFix"], {""});
+  
+  // Fixed xsec parameters loop
+  if (OscFixParams.size() == 1 && OscFixParams.at(0) == "All") {
+    for (int j = 0; j < xsec->getNpars(); j++) {
+      osc->toggleFixParameter(j);
+    }
+  } else {
+    for (unsigned int j = 0; j < OscFixParams.size(); j++) {
+      osc->toggleFixParameter(OscFixParams.at(j));
     }
   }
   MACH3LOG_INFO("xsec parameters loop done");

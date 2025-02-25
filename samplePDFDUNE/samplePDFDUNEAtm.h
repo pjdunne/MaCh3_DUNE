@@ -2,8 +2,6 @@
 #define _samplePDFDUNEAtm_h_
 
 #include "splines/splinesDUNE.h"
-#include "covariance/covarianceXsec.h"
-#include "covariance/covarianceOsc.h"
 #include "samplePDF/samplePDFFDBase.h"
 
 #include "StructsDUNE.h"
@@ -25,8 +23,8 @@ protected:
   void SetupSplines();
   
   //DB functions which could be initialised to do something which is non-trivial
-  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.;}
-  void applyShifts(int iSample, int iEvent) {}
+  double CalcXsecWeightFunc(int iSample, int iEvent) {return 1.; (void)iSample; (void)iEvent;}
+  void applyShifts(int iSample, int iEvent) {(void)iSample; (void)iEvent;}
   
   const double* GetPointerToKinematicParameter(KinematicTypes KinPar, int iSample, int iEvent);
   const double* GetPointerToKinematicParameter(double KinematicVariable, int iSample, int iEvent);
@@ -37,10 +35,25 @@ protected:
 
   std::vector<double> ReturnKinematicParameterBinning(std::string KinematicParameterStr);
   std::vector<double> ReturnKinematicParameterBinning(KinematicTypes KinPar);
+  
+  const std::unordered_map<std::string, int> KinematicParametersDUNE = {
+    {"TrueNeutrinoEnergy",kTrueNeutrinoEnergy},
+    {"RecoNeutrinoEnergy",kRecoNeutrinoEnergy},
+    {"TrueCosineZ",kTrueCosZ},
+    {"RecoCosineZ",kRecoCosZ},
+    {"OscillationChannel",kOscChannel},
+    {"Mode",kMode}
+  };
 
-  inline int ReturnKinematicParameterFromString(std::string KinematicStr);
-  inline std::string ReturnStringFromKinematicParameter(int KinematicVariable);
-
+  const std::unordered_map<int, std::string> ReversedKinematicParametersDUNE = {
+    {kTrueNeutrinoEnergy,"TrueNeutrinoEnergy"},
+    {kRecoNeutrinoEnergy,"RecoNeutrinoEnergy"},
+    {kTrueCosZ,"TrueCosineZ"},    
+    {kRecoCosZ,"RecoCosineZ"},
+    {kOscChannel,"OscillationChannel"},
+    {kMode,"Mode"}
+  };
+  
   std::vector<struct dunemc_base> dunemcSamples;
   bool IsELike;
 };

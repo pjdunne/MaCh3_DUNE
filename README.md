@@ -1,49 +1,45 @@
 # MaCh3_DUNE
 
 ##################################
-# CMAKE #########
+# Building MaCh3 DUNE    #########
 ##################################
 
-Dependencies
+Dependencies:
 
-- CMake (version > 3.8). 
-- MaCh3 Core tag: DUNECore2024 (To be used until the core version currently being developped gets integrated with MaCh3 DUNE)
-- ROOT (currently tested on 6.18)
+- gcc (tested on 12.2.0)
+- CMake (tested on 3.27.7) 
+- ROOT (tested on 6.28.06)
 
-Building:
+A setup script which pulls cvmfs dependancies is included here:
+$ source setup_dune_env.sh
+
+Cloning:
 
 ~~~~~~~~~~~~~~
 $ mkdir MaCh3_DUNE
 $ git clone git@github.com:DUNE/MaCh3_DUNE.git MaCh3_DUNE
 $ cd MaCh3_DUNE
-~~~~~~~~~~~~~~
-
-Now setup some dependencies and then actually build MaCh3_DUNE
-
-~~~~~~~~~~~~~~~
-$ source setup.sh # !! Here you need to make sure that ROOTSYS and Cuda libraries are also set !!
-$ source setup_dune_env.sh
 $ mkdir build;
 $ cd build
 ~~~~~~~~~~~~~~~
 
-Optional flags are described briefly below, options are shown grouped by square brackets and delimited by vertical lines. Default is on the left.
+Then perform the cmake build command:
 
 ~~~~~~~~~~~~~~
-$ cmake .. -DCPU_ONLY=[OFF|ON] -DUSE_PROB3=[OFF|ON] -DSINGLE_THREAD_ONLY=[OFF|ON] -DCUDA_SAMPLES=<path_to_cuda>/CentOS/samples
-$ make
+$ cmake .. -DCUDAProb3_ENABLED=[ON,OFF] -DCUDAProb3Linear_ENABLED=[ON,OFF]
+$ make install
+~~~~~~~~~~~~~~
+Additional cmake options are available in the MaCh3-Core README
+
+- CUDAProb3 should be used as the default for atmospheric neutrino oscillations
+- CUDAProb3Linear should be used as the default for beam oscillations
+
+Then source the installation of MaCh3:
+~~~~~~~~~~~~~~
+source build/bin/setup.MaCh3DUNE.sh
 ~~~~~~~~~~~~~~
 
-A few notes:
-CUDA_SAMPLES not necessary if using CPU_ONLY=ON
-
-If you want to simultaneously develop both the MaCh3 core code and the MaCh3 DUNE code then you can build against a local version of MaCh3 by adding:
-
-~~~~~~~~~~~~~~
-$ -DCPM_MaCh3_SOURCE=/path/to/MaCh3/folder
-~~~~~~~~~~~~~~
-
-This will overrule the CPMFindPackage command in the CMakeList.txt and will tell CPM to build that instead.
+This sets everything needed, and needs to be re-sourced on each terminal session when using MaCh3 (Along with any dependancies)
 
 ###################################
 # Event Rates ######
