@@ -21,6 +21,8 @@ struct dunemc_base {
   double *rw_eRecoPi0;
   double *rw_eRecoN;
 
+  double *rw_recopdg;
+
   double *rw_LepE;
   double *rw_eP;
   double *rw_ePip;
@@ -33,6 +35,11 @@ struct dunemc_base {
   double *rw_theta;
   double *rw_Q2;
 
+  int *rw_isnumu;
+  int *rw_isnue;
+  double *mc_isnumu;
+  double *mc_isnue;
+  double *mc_isnutau;
   double *rw_cvnnumu;
   double *rw_cvnnue;
   double *rw_cvnnumu_shifted;
@@ -41,6 +48,7 @@ struct dunemc_base {
   int *rw_reco_numu;
   double *rw_berpaacvwgt;
   int    *rw_isCC;
+  double    *rw_isCCevent;
   int    *rw_nuPDGunosc;
   int    *rw_nuPDG;
   int    *rw_run;
@@ -51,8 +59,12 @@ struct dunemc_base {
   double dummy_y;
   double *rw_reco_q;
   double *reco_numu;
+  double *nuflavour;
+  double *numuefficency;
+  double *nueefficency;
 
   double pot_s;
+  double production_pot;
   double norm_s;
 
   double *beam_w;
@@ -87,6 +99,17 @@ struct dunemc_base {
 
   int *nrecoparticles;
   bool *in_fdv;
+  
+  double *selected_numuCCevent_energy;
+  double *selected_numuCCevent_vertexpos_x;
+  double *selected_numuCCevent_vertexpos_y;
+  double *selected_numuCCevent_vertexpos_z;
+
+  double *selected_nueCCevent_energy;
+  double *selected_nueCCevent_vertexpos_x;
+  double *selected_nueCCevent_vertexpos_y;
+  double *selected_nueCCevent_vertexpos_z;
+
 };
 
 // ********************************

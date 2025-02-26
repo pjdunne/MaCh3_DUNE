@@ -9,6 +9,7 @@
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 
+
 samplePDFDUNEBeamFD::samplePDFDUNEBeamFD(std::string mc_version_,
                                          covarianceXsec *xsec_cov_)
     : samplePDFFDBase(mc_version_, xsec_cov_) {
@@ -19,14 +20,72 @@ samplePDFDUNEBeamFD::samplePDFDUNEBeamFD(std::string mc_version_,
 samplePDFDUNEBeamFD::~samplePDFDUNEBeamFD() {}
 
 void samplePDFDUNEBeamFD::Init() {
-  dunemcSamples.resize(nSamples, dunemc_base());
+  dunemcSamples.resize(nSamples, dunemc_base()); 
+  pot = SampleManager->raw()["POT"].as<double>();
+  gen_pot = SampleManager->raw()["GEN_POT"].as<double>();
+
+  numu_cut = SampleManager->raw()["numu_cut"].as<double>();
+  nue_cut = SampleManager->raw()["nue_cut"].as<double>();
+  std::cout<< "POT IS !!! ================ " <<pot <<std::endl;
+  std::cout<< "numu_cut IS !!! ================ " << numu_cut <<std::endl;
+  std::cout<< "nue_cut IS !!! ================ " << nue_cut <<std::endl;
+ 
+    
 
   MACH3LOG_INFO(
       "-------------------------------------------------------------------");
 }
 
-void samplePDFDUNEBeamFD::SetupSplines() {
 
+double samplePDFDUNEBeamFD::CalculatePOT() {
+  TChain calc_pot_chain("cafmaker/meta");  // Use correct tree name
+
+  std::string pot_branch = "pot";  // Use the correct branch name
+
+  for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
+      calc_pot_chain.AddFile((mc_files[i]).c_str());
+  }
+
+  // Check if the branch exists before proceeding
+  if (!calc_pot_chain.GetBranch(pot_branch.c_str())) {
+      std::cerr << "Error: Branch " << pot_branch << " not found in the tree!" << std::endl;
+      return 0.0;
+  }
+
+  double pot_value = 0.0;
+  calc_pot_chain.SetBranchAddress(pot_branch.c_str(), &pot_value);
+
+  double sum_pot = 0.0;
+  Long64_t nEntries = calc_pot_chain.GetEntries();
+  for (Long64_t i = 0; i < nEntries; i++) {
+      calc_pot_chain.GetEntry(i);
+      sum_pot += pot_value;
+  }
+
+  std::cout << "Summed POT: " << sum_pot << std::endl;
+  return sum_pot;
+}
+
+/*
+void samplePDFDUNEBeamFD::SetupSplines() {
+  ///@todo move all of the spline setup into core
+  if (XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0) {
+    MACH3LOG_INFO(
+        "Found {} splines for this sample so I will create a spline object",
+        XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+    splinesDUNE *DUNESplines = new splinesDUNE(XsecCov);
+    splineFile = (splineFDBase *)DUNESplines;
+    InitialiseSplineObject();
+  } else {
+    MACH3LOG_INFO("Found {} splines for this sample so I will not load or "
+                  "evaluate splines",
+                  XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline));
+    splineFile = nullptr;
+  }
+}*/
+
+
+void samplePDFDUNEBeamFD::SetupSplines() {
   ///@todo move all of the spline setup into core
   if (XsecCov->GetNumParamsFromDetID(SampleDetID, kSpline) > 0) {
     MACH3LOG_INFO(
@@ -42,6 +101,7 @@ void samplePDFDUNEBeamFD::SetupSplines() {
     splineFile = nullptr;
   }
 }
+
 
 void samplePDFDUNEBeamFD::SetupWeightPointers() {
   for (int i = 0; i < (int)dunemcSamples.size(); ++i) {
@@ -63,7 +123,29 @@ void samplePDFDUNEBeamFD::SetupWeightPointers() {
   }
 }
 
+double summed_pot = 0.0; //set the sum of the pot from each file to be 0,befor any are read in
+
+
+double getEfficiency(double mc_events_passedcut, double mc_true_total) {
+    if (mc_true_total == 0) {
+        std::cerr << "Error: Input cannot be zero." << std::endl;
+        return -1; // Return -1 to indicate an error
+    }
+    return (mc_events_passedcut/  mc_true_total);
+}
+
+double getPurity(double mc_events_passedcut, double events_incut) {
+    if (events_incut == 0) {
+        std::cerr << "Error: Input energy cannot be zero." << std::endl;
+        return -1; // Return -1 to indicate an error
+    }
+    return (mc_events_passedcut / events_incut);
+}
+
 int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
+  std::cout << "Summed POT, after sample "<< iSample << "is loaded = " << summed_pot << std::endl;
+   
+  double production_pot = 1.3628319e+23;
 
   dunemc_base *duneobj = &(dunemcSamples[iSample]);
 
@@ -83,16 +165,26 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
                    mc_files[iSample]);
     throw MaCh3Exception(__FILE__, __LINE__);
   }
+ auto meta_tree = in_file->Get<TTree>("cafmaker/meta");
+  if (!meta_tree) {
+    MACH3LOG_ERROR("Could not find \"cafmaker/meta\" TTree in {}",
+                   mc_files[iSample]);
+    throw MaCh3Exception(__FILE__, __LINE__);
+  }
 
   TTreeReader tree_rdr(in_tree);
+  TTreeReader tree_rdrmeta(meta_tree);
   // The branch "px" contains floats; access them as myPx.
   TTreeReaderValue<caf::StandardRecord> sr(tree_rdr, "rec");
+  TTreeReaderValue<caf::StandardRecord> meta(tree_rdrmeta, "meta");
 
+  //double analysis_POT = fitMan->raw()["General"]["POT"].as<double>(); 
   duneobj->nEvents = tree_rdr.GetEntries();
 
   MACH3LOG_INFO("Found \"cafmaker/cafTree\" TTree in {}", mc_files[iSample]);
   MACH3LOG_INFO("With number of entries: {}", duneobj->nEvents);
 
+ 
   duneobj->rw_etru = new double[duneobj->nEvents];
   duneobj->rw_erec_shifted = new double[duneobj->nEvents];
   duneobj->rw_vtx_x = new double[duneobj->nEvents];
@@ -102,12 +194,49 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   duneobj->rw_cvnnue_shifted = new double[duneobj->nEvents];
   duneobj->mode = new double[duneobj->nEvents];
   duneobj->Target = new int[duneobj->nEvents];
-  duneobj->rw_isCC = new int[duneobj->nEvents];
+  duneobj->rw_isCCevent = new double[duneobj->nEvents];
 
+  duneobj->rw_isnumu = new int[duneobj->nEvents];
+  duneobj->rw_isnue = new int[duneobj->nEvents];
+  duneobj->mc_isnumu = new double[duneobj->nEvents];
+  duneobj->mc_isnue = new double[duneobj->nEvents];
+  duneobj->mc_isnutau = new double[duneobj->nEvents];
+
+  duneobj->numuefficency =  new double[duneobj->nEvents];
+  duneobj->nueefficency =  new double[duneobj->nEvents];
+  duneobj->flux_w = new double[duneobj->nEvents];
+  duneobj->selected_numuCCevent_energy  =  new double[duneobj->nEvents];
+  duneobj->selected_numuCCevent_vertexpos_x  =  new double[duneobj->nEvents];
+  duneobj->selected_numuCCevent_vertexpos_y=  new double[duneobj->nEvents];
+  duneobj->selected_numuCCevent_vertexpos_z  =  new double[duneobj->nEvents];
+
+  duneobj->rw_berpaacvwgt = new double[duneobj->nEvents];
+
+  duneobj->rw_recopdg = new double[duneobj->nEvents];
+
+  duneobj->selected_nueCCevent_energy  =  new double[duneobj->nEvents];
+  duneobj->selected_nueCCevent_vertexpos_x  =  new double[duneobj->nEvents];
+  duneobj->selected_nueCCevent_vertexpos_y=  new double[duneobj->nEvents];
+  duneobj->selected_nueCCevent_vertexpos_z  =  new double[duneobj->nEvents];
+  duneobj->nuflavour = new double[duneobj->nEvents];
+  
+  TTreeReader metatree_rdr(in_file->Get<TTree>("cafmaker/meta"));
+  TTreeReaderValue<double> pot(metatree_rdr, "pot");
+  double total_pot = 0;
+  for (auto entryi : metatree_rdr) {
+     total_pot += *pot;
+  }
+  std::cout << "POT in file =  " << total_pot << std::endl;
+
+  summed_pot = summed_pot + total_pot;
+
+  std::cout << "Updated summed POT =  " << summed_pot << std::endl;
+ 
   duneobj->nutype = sample_nutype[iSample];
   duneobj->oscnutype = sample_oscnutype[iSample];
   duneobj->signal = sample_signal[iSample];
-
+  
+ 
   // after allocation, set all event entries to a bad bad value
   std::fill_n(duneobj->rw_etru, duneobj->nEvents, -99999);
   std::fill_n(duneobj->rw_erec_shifted, duneobj->nEvents, -99999);
@@ -118,7 +247,37 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
   std::fill_n(duneobj->rw_cvnnue_shifted, duneobj->nEvents, -99999);
   std::fill_n(duneobj->mode, duneobj->nEvents, -99999);
   std::fill_n(duneobj->Target, duneobj->nEvents, -99999);
-  std::fill_n(duneobj->rw_isCC, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->rw_isCCevent, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->rw_isnumu, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->rw_isnue, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->mc_isnumu, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->mc_isnue, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->mc_isnutau, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->numuefficency, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->nueefficency, duneobj->nEvents, -99999);
+  std::fill_n(duneobj->selected_numuCCevent_energy , duneobj->nEvents, -99999);
+  std::fill_n(duneobj->selected_numuCCevent_vertexpos_x , duneobj->nEvents, -99999);
+  std::fill_n(duneobj->selected_numuCCevent_vertexpos_y , duneobj->nEvents, -99999);
+  std::fill_n(duneobj->selected_numuCCevent_vertexpos_z , duneobj->nEvents, -99999);
+  std::fill_n(duneobj->nuflavour , duneobj->nEvents, -99999);
+  std::fill_n(duneobj->rw_recopdg, duneobj->nEvents, -99999);
+  
+  std::fill_n(duneobj->selected_nueCCevent_energy , duneobj->nEvents, -99999);
+  std::fill_n(duneobj->selected_nueCCevent_vertexpos_x , duneobj->nEvents, -99999);
+  std::fill_n(duneobj->selected_nueCCevent_vertexpos_y , duneobj->nEvents, -99999);
+  std::fill_n(duneobj->selected_nueCCevent_vertexpos_z , duneobj->nEvents, -99999);
+  
+
+  //TH1D numerator("numerator_isnumuCC_isselnumuCC",";E_{#nu};Rate (IsSelNumuCC && IsTrueNumuCC)",100,0,10);
+  //TH1D denominator("denominator_isnumuCC",";E_{#nu};Rate IsSelNumuCC",100,0,10);
+
+    //double numu_cut = 0.5;
+    //double nue_cut = 0.85;
+    double eventsthatpasscut = 0;
+    double total_true_ccnumu = 0;
+    double total_events_incut = 0;
+
+    double newpot = CalculatePOT();
 
   for (auto entryi : tree_rdr) {
 
@@ -126,15 +285,52 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
       continue;
     }
 
+    //bool isnumuCC = duneobj->mc_isnumu[entryi];
+    //if(!isnumuCC) { continue; } // don't need to worry about this event
+
+    //bool issel_numuCC = (sr->common.ixn.pandora[0].nuhyp.cvn.numu > numu_cut);
+
+    /*if(issel_numuCC){
+      numerator.Fill(duneobj->enutrue[entryi]);
+    }*/
+    if (sr->mc.nu[0].pdg == 14){
+    duneobj->mc_isnumu[entryi]==sr->mc.nu[0].pdg;
+    };
+
+    if (sr->mc.nu[0].pdg == 12){
+    duneobj->mc_isnue[entryi]=sr->mc.nu[0].pdg;
+    };
+
+    if (sr->mc.nu[0].pdg == 16){
+    duneobj->mc_isnutau[entryi]=sr->mc.nu[0].pdg;
+    };
+
+    duneobj->nuflavour[entryi]=sr->mc.nu[0].pdg;
     duneobj->rw_etru[entryi] = sr->mc.nu[0].E;
     duneobj->mode[entryi] = sr->mc.nu[0].mode;
     duneobj->Target[entryi] = (sr->mc.nu[0].targetPDG / 1000) % 1000;
-    duneobj->rw_isCC[entryi] = sr->mc.nu[0].iscc;
+    duneobj->rw_isCCevent[entryi] = sr->mc.nu[0].iscc;
 
+    duneobj->flux_w[entryi] = 1.0;
+
+    
+
+    //std::cout<< "rw_etru ==  " <<  sr->mc.nu[0].E <<  std::endl;
+    //std::cout<< "rw_isCCevent ==  " <<   sr->mc.nu[0].iscc <<  std::endl;
+
+    /* 
+    if (sr->mc.nu[0].pdg == 14) {
+        duneobj->mc_isnumu[entryi] = sr->mc.nu[0].pdgorig;
+    }
+    if (sr->mc.nu[0].pdg == 12) {
+        duneobj->mc_isnue[entryi] = sr->mc.nu[0].pdgorig;
+    }*/
+    
+    
     if (sr->common.ixn.pandora.size() < 1) { // no reconstructed objects
       continue;
     }
-
+    //duneobj->rw_recopdg[entryi] = sr->common.ixn.pandora[0].pdg;////////////////////////////pdg code of reco. particle
     duneobj->rw_erec_shifted[entryi] = sr->common.ixn.pandora[0].Enu.lep_calo;
     duneobj->rw_vtx_x[entryi] = sr->common.ixn.pandora[0].vtx.x;
     duneobj->rw_vtx_y[entryi] = sr->common.ixn.pandora[0].vtx.y;
@@ -142,11 +338,82 @@ int samplePDFDUNEBeamFD::setupExperimentMC(int iSample) {
     duneobj->rw_cvnnumu_shifted[entryi] =
         sr->common.ixn.pandora[0].nuhyp.cvn.numu;
     duneobj->rw_cvnnue_shifted[entryi] =
-        sr->common.ixn.pandora[0].nuhyp.cvn.nue;
+        sr->common.ixn.pandora[0].nuhyp.cvn.nue;                
+    //std::cout << "sr->common.ixn.pandora[0].nuhyp.cvn.numu; = " << sr->common.ixn.pandora[0].nuhyp.cvn.numu <<std::endl;
+    if (sr->mc.nu[0].pdg == 14  && sr->mc.nu[0].iscc ==1 ) { 
+        duneobj->selected_numuCCevent_energy[entryi] = sr->mc.nu[0].E;
+        duneobj->selected_numuCCevent_vertexpos_x[entryi] = sr->mc.nu[0].vtx.x;
+        duneobj->selected_numuCCevent_vertexpos_y[entryi] = sr->mc.nu[0].vtx.y;
+        duneobj->selected_numuCCevent_vertexpos_z[entryi] = sr->mc.nu[0].vtx.z;
+    }
+    if (sr->mc.nu[0].pdg == 12  && sr->mc.nu[0].iscc ==1 ) { 
+        duneobj->selected_nueCCevent_energy[entryi] = sr->mc.nu[0].E;
+        duneobj->selected_nueCCevent_vertexpos_x[entryi] = sr->mc.nu[0].vtx.x;
+        duneobj->selected_nueCCevent_vertexpos_y[entryi] = sr->mc.nu[0].vtx.y;
+        duneobj->selected_nueCCevent_vertexpos_z[entryi] = sr->mc.nu[0].vtx.z;
+    }
+     duneobj->rw_berpaacvwgt[entryi] = 1.0;
+
+    //std::cout << "DEBUG: numu_cut = " << numu_cut << std::endl;
+    
+    /*
+     if (sr->mc.nu[0].pdg == 12 && sr->mc.nu[0].iscc==1 && sr->common.ixn.pandora[0].nuhyp.cvn.nue  > nue_cut) { //////for efficiency/purity
+        eventsthatpasscut += 1;
+        //std::cout << "eventsthatpasscut = " << eventsthatpasscut << std::endl;
+    }*/
+    
+    if (sr->mc.nu[0].pdg == 14 && sr->mc.nu[0].iscc==1 ) { //////for efficiency/purity
+        total_true_ccnumu  += 1;
+        //std::cout << "total_true_ccnumu  = " << total_true_ccnumu  << std::endl;
+    }
+
+    
+    
+    if (sr->common.ixn.pandora[0].nuhyp.cvn.numu  > numu_cut) { //////for efficiency/purity
+        total_events_incut  += 1;
+        //std::cout << "total_events_incut  = " << total_events_incut  << std::endl;
+    }
+
+    if (sr->mc.nu[0].pdg == 14 && sr->mc.nu[0].iscc == 1 && sr->common.ixn.pandora[0].nuhyp.cvn.numu > numu_cut) {
+      eventsthatpasscut += 1;
+      /*std::cout << "Passed event: PDG=" << sr->mc.nu[0].pdg 
+                << ", isCC=" << sr->mc.nu[0].iscc 
+                << ", nue_score=" << sr->common.ixn.pandora[0].nuhyp.cvn.nue 
+                << " > " << nue_cut << std::endl;*/
   }
+  
+
+     //std::cout<< "mc nuflavour ==  " <<  sr->mc.nu[0].pdg <<  std::endl;
+     //std::cout<< "reco nuflavour ==  " <<  sr->common.ixn.pandora[0].pdg <<  std::endl;
+
+    /*
+    if (duneobj->mc_isnumu[entryi] > 0) {
+       // std::cout << "numuefficency[entryi] = " << ((sr->common.ixn.pandora[0].cvn.numu)) / static_cast<double>(duneobj->mc_isnumu[entryi])<< std::endl;
+        duneobj->numuefficency[entryi] = ((sr->common.ixn.pandora[0].nuhyp.cvn.numu)) / static_cast<double>(duneobj->mc_isnumu[entryi]);
+        
+    }
+    if (duneobj->mc_isnue[entryi] > 0) {
+      //std::cout << "numuefficency[entryi] = " << ((sr->common.ixn.pandora[0].nuhyp.cvn.nue)) / static_cast<double>(duneobj->mc_isnue[entryi])<< std::endl;
+        duneobj->nueefficency[entryi] =  (sr->common.ixn.pandora[0].nuhyp.cvn.nue) / static_cast<double>(duneobj->mc_isnue[entryi]);
+        // std::cout << "nueefficency[entryi] = " << nueefficency[entryi] << std::endl;
+    }*/
+
+
+  } //end of for loop
+  duneobj->norm_s = 1.0/newpot;
+  duneobj->pot_s = *pot; //new double[duneobj->nEvents];
+  
+  double efficiency = getEfficiency(eventsthatpasscut,total_true_ccnumu );
+  double purity= getPurity(eventsthatpasscut,total_events_incut);
+  std::cout << "eventsthatpassedcut = " << eventsthatpasscut << std::endl;
+  std::cout << "total_true_ccnumu  = " << total_true_ccnumu << std::endl;
+  std::cout << "total_events_incut = " << total_events_incut << std::endl;
+  std::cout << "cc numu efficiency = " << efficiency << std::endl;
+  std::cout << "cc numu purity = " << purity << std::endl;
 
   return duneobj->nEvents;
 }
+
 
 TH1D *samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1, int kModeToFill,
                                         int kChannelToFill, int WeightStyle,
@@ -204,7 +471,7 @@ TH1D *samplePDFDUNEBeamFD::get1DVarHist(KinematicTypes Var1, int kModeToFill,
 /*! DB New version of get1DVarHist which only fills histogram with events
  * passing IsEventSelected This works by having the Selection vector, where each
  * component of Selection is a 2 or 3 length vector If Selection[i].size()==3,
- * Selection[i][0] is the ND280KinematicType which is being cut, and only events
+ * Selection[i][0] is the ND280KinematicType which is being cut, and only eventsnuhyp
  * with ND280KinematicType values between Selection[i][1] and Selection[i][2]
  * are accepted
  */
@@ -353,7 +620,65 @@ int samplePDFDUNEBeamFD::ReturnKinematicParameterFromString(
   if (KinematicParameterStr.find("M3Mode") != std::string::npos) {
     return kM3Mode;
   }
+  if (KinematicParameterStr.find("Numu_efficiency") != std::string::npos) {
+    return kNumu_efficiency;
+  }
+  if (KinematicParameterStr.find("Nue_efficiency") != std::string::npos) {
+    return kNue_efficiency;
+  }
+  if (KinematicParameterStr.find("selected_numuCCevent_energy") != std::string::npos) {
+    return kselected_numuCCevent_energy;
+  }
+  if (KinematicParameterStr.find("selected_nueCCevent_energy") != std::string::npos) {
+    return kselected_nueCCevent_energy;
+  }
+  if (KinematicParameterStr.find("selected_numuCCevent_vertexpos_x") != std::string::npos) {
+    return kselected_numuCCevent_vertexpos_x;
+  }
+  if (KinematicParameterStr.find("selected_nueCCevent_vertexpos_x") != std::string::npos) {
+    return kselected_nueCCevent_vertexpos_x;
+  }
+  if (KinematicParameterStr.find("selected_numuCCevent_vertexpos_y") != std::string::npos) {
+    return kselected_numuCCevent_vertexpos_y;
+  }
+  if (KinematicParameterStr.find("selected_nueCCevent_vertexpos_y") != std::string::npos) {
+    return kselected_nueCCevent_vertexpos_y;
+  }
+  if (KinematicParameterStr.find("selected_numuCCevent_vertexposz") != std::string::npos) {
+    return kselected_numuCCevent_vertexpos_z;
+  }
+  if (KinematicParameterStr.find("selected_nueCCevent_vertexpos_z") != std::string::npos) {
+    return kselected_nueCCevent_vertexpos_z;
+  }
+  if (KinematicParameterStr.find("ismc_numu") != std::string::npos) {
+    return kismc_numu;
+  }
+  if (KinematicParameterStr.find("ismc_nue") != std::string::npos) {
+    return kismc_nue;
+  }
+  if (KinematicParameterStr.find("ismc_nutau") != std::string::npos) {
+    return kismc_nutau;
+  }
+  if (KinematicParameterStr.find("isCC") != std::string::npos) {
+    return kisCC;
+  }
+  if (KinematicParameterStr.find("nuflavour") != std::string::npos) {
+    return knuflavour;
+  }
+  if (KinematicParameterStr.find("reco_pdg") != std::string::npos) {
+    return krecopdg;
+  }
 }
+
+/*
+kselected_numuCCevent_energy,
+    kselected_numuCCevent_vertexpos_x,
+    kselected_numuCCevent_vertexpos_y,
+    kselected_numuCCevent_vertexpos_z,
+    kselected_nueCCevent_energy,
+    kselected_nueCCevent_vertexpos_x,
+    kselected_nueCCevent_vertexpos_y,
+    kselected_nueCCevent_vertexpos_z*/
 
 const double *
 samplePDFDUNEBeamFD::GetPointerToKinematicParameter(double KinematicVariable,
@@ -375,6 +700,40 @@ samplePDFDUNEBeamFD::GetPointerToKinematicParameter(double KinematicVariable,
     return &dunemcSamples[iSample].rw_cvnnumu_shifted[iEvent];
   case kCVNNue:
     return &dunemcSamples[iSample].rw_cvnnue_shifted[iEvent];
+  case kNumu_efficiency:
+    return &dunemcSamples[iSample].numuefficency[iEvent];
+  case kNue_efficiency:
+    return &dunemcSamples[iSample].nueefficency[iEvent];
+  case kselected_numuCCevent_energy:
+      //std::cout << "in selected_numuCCevent_energy case, the energy is = " << std::endl;
+    return &dunemcSamples[iSample].selected_numuCCevent_energy[iEvent];
+  case kselected_nueCCevent_energy:
+    return &dunemcSamples[iSample].selected_nueCCevent_energy[iEvent];
+  case kselected_numuCCevent_vertexpos_x:
+    return &dunemcSamples[iSample].selected_numuCCevent_vertexpos_x[iEvent];
+  case kselected_nueCCevent_vertexpos_x:
+    return &dunemcSamples[iSample].selected_nueCCevent_vertexpos_x[iEvent];
+  case kselected_numuCCevent_vertexpos_y:
+    return &dunemcSamples[iSample].selected_numuCCevent_vertexpos_y[iEvent];
+  case kselected_nueCCevent_vertexpos_y:
+    return &dunemcSamples[iSample].selected_nueCCevent_vertexpos_y[iEvent];
+  case kselected_numuCCevent_vertexpos_z:
+    return &dunemcSamples[iSample].selected_numuCCevent_vertexpos_z[iEvent];
+  case kselected_nueCCevent_vertexpos_z:
+    return &dunemcSamples[iSample].selected_nueCCevent_vertexpos_z[iEvent];
+  //default:
+  case kismc_numu:
+    return &dunemcSamples[iSample].mc_isnumu[iEvent];
+  case kismc_nue:
+    return &dunemcSamples[iSample].mc_isnue[iEvent];
+  case kismc_nutau:
+    return &dunemcSamples[iSample].mc_isnutau[iEvent];
+  case kisCC:
+    return &dunemcSamples[iSample].rw_isCCevent[iEvent];
+  case knuflavour:
+    return &dunemcSamples[iSample].nuflavour[iEvent];
+  case krecopdg:
+    return &dunemcSamples[iSample].rw_recopdg[iEvent];
   default:
     MACH3LOG_ERROR("Did not recognise Kinematic Parameter type...");
     throw MaCh3Exception(__FILE__, __LINE__);
@@ -390,7 +749,7 @@ inline std::string samplePDFDUNEBeamFD::ReturnStringFromKinematicParameter(
     KinematicString = "RecoNeutrinoEnergy";
     break;
   case kTrueNeutrinoEnergy:
-    KinematicString = "RecoNeutrinoEnergy";
+    KinematicString = "TrueNeutrinoEnergy";
     break;
   case kTrueXPos:
     KinematicString = "TrueXPos";
@@ -409,6 +768,48 @@ inline std::string samplePDFDUNEBeamFD::ReturnStringFromKinematicParameter(
     break;
   case kM3Mode:
     KinematicString = "M3Mode";
+    break;
+  case kselected_numuCCevent_energy:
+    KinematicString = "selected_numuCCevent_energy";
+    break;
+  case kselected_nueCCevent_energy:
+    KinematicString = "selected_nueCCevent_energy";
+    break;
+  case kselected_numuCCevent_vertexpos_x:
+    KinematicString ="selected_numuCCevent_vertexpos_x";
+    break;
+  case kselected_nueCCevent_vertexpos_x:
+    KinematicString ="selected_nueCCevent_vertexpos_x";
+    break;
+  case kselected_numuCCevent_vertexpos_y:
+    KinematicString ="selected_numuCCevent_vertexpos_y";
+    break;
+  case kselected_nueCCevent_vertexpos_y:
+    KinematicString ="selected_nueCCevent_vertexpos_y";
+    break;
+  case kselected_numuCCevent_vertexpos_z:
+    KinematicString ="selected_numuCCevent_vertexpos_z";
+    break;
+  case kselected_nueCCevent_vertexpos_z:
+    KinematicString ="selected_nueCCevent_vertexpos_z";
+    break;
+  case kismc_numu:
+    KinematicString ="ismc_numu";
+    break;
+  case kismc_nue:
+    KinematicString ="ismc_nue";
+    break;
+  case kismc_nutau:
+    KinematicString ="ismc_nutau";
+    break;
+  case kisCC:
+    KinematicString ="isCC";
+    break;
+  case knuflavour:
+    KinematicString ="nuflavour";
+    break;
+  case krecopdg:
+    KinematicString ="reco_pdg";
     break;
   default:
     break;
@@ -430,7 +831,7 @@ void samplePDFDUNEBeamFD::setupFDMC(int iSample) {
     fdobj->rw_etru[iEvent] = &(duneobj->rw_etru[iEvent]);
     fdobj->mode[iEvent] = &(duneobj->mode[iEvent]);
     fdobj->Target[iEvent] = &(duneobj->Target[iEvent]);
-    fdobj->isNC[iEvent] = !(duneobj->rw_isCC[iEvent]);
+    fdobj->isNC[iEvent] = !(duneobj->rw_isCCevent[iEvent]);
   }
 }
 

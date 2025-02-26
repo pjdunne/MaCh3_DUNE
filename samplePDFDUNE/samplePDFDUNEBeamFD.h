@@ -23,7 +23,24 @@ public:
     kCVNNumu,
     kCVNNue,
     kM3Mode,
-    kOscChannel
+    kOscChannel,
+    kNumu_efficiency,
+    kNue_efficiency,
+    kselected_numuCCevent_energy,
+    kselected_numuCCevent_vertexpos_x,
+    kselected_numuCCevent_vertexpos_y,
+    kselected_numuCCevent_vertexpos_z,
+    kselected_nueCCevent_energy,
+    kselected_nueCCevent_vertexpos_x,
+    kselected_nueCCevent_vertexpos_y,
+    kselected_nueCCevent_vertexpos_z,
+    kismc_numu,
+    kismc_nue,
+    kismc_nutau,
+    kisCC,
+    knuflavour,
+    krecopdg
+
   };
 
   // More robust getters to make plots in different variables, mode, osc
@@ -47,6 +64,8 @@ protected:
   /// hood
   void SetupSplines();
 
+  double CalculatePOT();
+
   double ReturnKinematicParameter(double KinematicVariable, int iSample,
                                   int iEvent);
   double ReturnKinematicParameter(std::string KinematicParameter, int iSample,
@@ -69,6 +88,13 @@ protected:
   double CalcXsecWeightFunc(int iSample, int iEvent) { return 1.; }
   void applyShifts(int iSample, int iEvent);
 
+  //double getEfficiency(double mc_events_passedcut, double mc_true_total);
+  //double getPurity(double mc_events_passedcut, double events_incut);
+
   // dunemc
   std::vector<dunemc_base> dunemcSamples;
+
+  double gen_pot;
+  double numu_cut;
+  double nue_cut;
 };
